@@ -5,7 +5,7 @@
 [package]
 name = "icu_experimental"
 description = "ICU4X pre-release components under active development; all code in this crate is unstable."
-version = "0.3.0-beta2"
+version = "0.3.0"
 
 authors.workspace = true
 categories.workspace = true
@@ -28,6 +28,7 @@ icu_collections = { workspace = true }
 icu_provider = { workspace = true }
 icu_locale_core = { workspace = true }
 
+icu_casemap = { workspace = true }
 icu_decimal = { workspace = true }
 icu_list = { workspace = true }
 icu_locale = { workspace = true }
@@ -70,10 +71,10 @@ icu_normalizer_data = { workspace = true }
 
 [features]
 default = ["compiled_data"]
-compiled_data = ["dep:icu_experimental_data", "icu_decimal/compiled_data", "icu_list/compiled_data", "icu_plurals/compiled_data", "icu_properties/compiled_data", "icu_normalizer/compiled_data"]
+compiled_data = ["dep:icu_experimental_data", "icu_decimal/compiled_data", "icu_list/compiled_data", "icu_plurals/compiled_data", "icu_properties/compiled_data", "icu_normalizer/compiled_data", "icu_casemap/compiled_data", "icu_provider/baked"]
 datagen = ["serde", "dep:databake", "zerovec/databake", "zerotrie/databake", "tinystr/databake", "icu_collections/databake", "log", "icu_pattern/databake", "icu_plurals/datagen", "icu_pattern/alloc", "icu_provider/export"]
 ryu = ["fixed_decimal/ryu"]
-serde = ["dep:serde", "zerovec/serde", "potential_utf/serde", "tinystr/serde", "icu_collections/serde", "icu_decimal/serde", "icu_list/serde", "icu_pattern/serde", "icu_plurals/serde", "icu_provider/alloc", "icu_provider/serde", "zerotrie/serde", "icu_normalizer/serde"]
+serde = ["dep:serde", "zerovec/serde", "potential_utf/serde", "tinystr/serde", "icu_collections/serde", "icu_decimal/serde", "icu_list/serde", "icu_pattern/serde", "icu_plurals/serde", "icu_provider/alloc", "icu_provider/serde", "zerotrie/serde", "icu_normalizer/serde", "icu_casemap/serde"]
 
 [[bench]]
 name = "transliterate"

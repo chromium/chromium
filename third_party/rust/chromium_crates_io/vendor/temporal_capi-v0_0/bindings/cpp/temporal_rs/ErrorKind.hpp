@@ -10,14 +10,14 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -35,7 +35,7 @@ inline temporal_rs::ErrorKind temporal_rs::ErrorKind::FromFFI(temporal_rs::capi:
     case temporal_rs::capi::ErrorKind_Assert:
       return static_cast<temporal_rs::ErrorKind::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 #endif // temporal_rs_ErrorKind_HPP

@@ -34,7 +34,7 @@ let mut date_iso = Date::try_new_iso(1992, 9, 2)
     .expect("Failed to initialize ISO Date instance.");
 
 assert_eq!(date_iso.day_of_week(), Weekday::Wednesday);
-assert_eq!(date_iso.year().era_year_or_extended(), 1992);
+assert_eq!(date_iso.era_year().year, 1992);
 assert_eq!(date_iso.month().ordinal, 9);
 assert_eq!(date_iso.day_of_month().0, 2);
 
@@ -53,19 +53,19 @@ use icu::calendar::Date;
 let mut date_iso = Date::try_new_iso(1992, 9, 2)
     .expect("Failed to initialize ISO Date instance.");
 
-assert_eq!(date_iso.year().era_year_or_extended(), 1992);
+assert_eq!(date_iso.era_year().year, 1992);
 assert_eq!(date_iso.month().ordinal, 9);
 assert_eq!(date_iso.day_of_month().0, 2);
 
 // Conversion into Indian calendar: 1914-08-02.
 let date_indian = date_iso.to_calendar(Indian);
-assert_eq!(date_indian.year().era_year_or_extended(), 1914);
+assert_eq!(date_indian.era_year().year, 1914);
 assert_eq!(date_indian.month().ordinal, 6);
 assert_eq!(date_indian.day_of_month().0, 11);
 
 // Conversion into Buddhist calendar: 2535-09-02.
 let date_buddhist = date_iso.to_calendar(Buddhist);
-assert_eq!(date_buddhist.year().era_year_or_extended(), 2535);
+assert_eq!(date_buddhist.era_year().year, 2535);
 assert_eq!(date_buddhist.month().ordinal, 9);
 assert_eq!(date_buddhist.day_of_month().0, 2);
 ```

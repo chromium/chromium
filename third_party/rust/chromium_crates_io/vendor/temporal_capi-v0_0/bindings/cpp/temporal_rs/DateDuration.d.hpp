@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -28,7 +29,7 @@ namespace temporal_rs {
 class DateDuration {
 public:
 
-  inline static diplomat::result<std::unique_ptr<temporal_rs::DateDuration>, temporal_rs::TemporalError> new_(double years, double months, double weeks, double days);
+  inline static diplomat::result<std::unique_ptr<temporal_rs::DateDuration>, temporal_rs::TemporalError> new_(int64_t years, int64_t months, int64_t weeks, int64_t days);
 
   inline std::unique_ptr<temporal_rs::DateDuration> abs() const;
 

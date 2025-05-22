@@ -12,6 +12,15 @@ impl<K, V> StoreConstEmpty<K, V> for ShortBoxSlice<(K, V)> {
     const EMPTY: ShortBoxSlice<(K, V)> = ShortBoxSlice::new();
 }
 
+impl<K, V> StoreSlice<K, V> for ShortBoxSlice<(K, V)> {
+    type Slice = [(K, V)];
+
+    #[inline]
+    fn lm_get_range(&self, range: core::ops::Range<usize>) -> Option<&Self::Slice> {
+        self.get(range)
+    }
+}
+
 impl<K, V> Store<K, V> for ShortBoxSlice<(K, V)> {
     #[inline]
     fn lm_len(&self) -> usize {
@@ -83,12 +92,59 @@ impl<K, V> StoreMut<K, V> for ShortBoxSlice<(K, V)> {
     fn lm_clear(&mut self) {
         self.clear();
     }
+}
 
+#[cfg(feature = "alloc")]
+impl<K: Ord, V> StoreBulkMut<K, V> for ShortBoxSlice<(K, V)> {
     fn lm_retain<F>(&mut self, mut predicate: F)
     where
         F: FnMut(&K, &V) -> bool,
     {
         self.retain(|(k, v)| predicate(k, v))
+    }
+
+    fn lm_extend<I>(&mut self, other: I)
+    where
+        I: IntoIterator<Item = (K, V)>,
+    {
+        let mut other = other.into_iter();
+        // Use an Option to hold the first item of the map and move it to
+        // items if there are more items. Meaning that if items is not
+        // empty, first is None.
+        let mut first = None;
+        let mut items = alloc::vec::Vec::new();
+        match core::mem::take(&mut self.0) {
+            ShortBoxSliceInner::ZeroOne(zo) => {
+                first = zo;
+                // Attempt to avoid the items allocation by advancing the iterator
+                // up to two times. If we eventually find a second item, we can
+                // lm_extend the Vec and with the first, next (second) and the rest
+                // of the iterator.
+                while let Some(next) = other.next() {
+                    if let Some(first) = first.take() {
+                        // lm_extend will take care of sorting and deduplicating
+                        // first, next and the rest of the other iterator.
+                        items.lm_extend([first, next].into_iter().chain(other));
+                        break;
+                    }
+                    first = Some(next);
+                }
+            }
+            ShortBoxSliceInner::Multi(existing_items) => {
+                items.reserve_exact(existing_items.len() + other.size_hint().0);
+                // We use a plain extend with existing items, which are already valid and
+                // lm_extend will fold over rest of the iterator sorting and deduplicating as needed.
+                items.extend(existing_items);
+                items.lm_extend(other);
+            }
+        }
+        if items.is_empty() {
+            debug_assert!(items.is_empty());
+            self.0 = ShortBoxSliceInner::ZeroOne(first);
+        } else {
+            debug_assert!(first.is_none());
+            self.0 = ShortBoxSliceInner::Multi(items.into_boxed_slice());
+        }
     }
 }
 

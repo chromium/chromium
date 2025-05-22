@@ -21,7 +21,7 @@ pub(crate) mod zoneddatetime;
 mod now;
 
 #[doc(inline)]
-pub use now::Now;
+pub use now::{Now, NowBuilder};
 
 #[doc(inline)]
 pub use date::{PartialDate, PlainDate};

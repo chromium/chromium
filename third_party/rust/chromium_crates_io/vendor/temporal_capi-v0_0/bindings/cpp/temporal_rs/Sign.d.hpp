@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -18,7 +19,7 @@ namespace capi {
       Sign_Zero = 0,
       Sign_Negative = -1,
     };
-    
+
     typedef struct Sign_option {union { Sign ok; }; bool is_ok; } Sign_option;
 } // namespace capi
 } // namespace

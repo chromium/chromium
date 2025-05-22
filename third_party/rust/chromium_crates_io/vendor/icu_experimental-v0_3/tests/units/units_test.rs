@@ -4,6 +4,7 @@
 
 use core::str::FromStr;
 
+use icu_experimental::measure::parser::MeasureUnitParser;
 use icu_experimental::units::converter::UnitsConverter;
 use icu_experimental::units::converter_factory::ConverterFactory;
 use icu_experimental::units::ratio::IcuRatio;
@@ -38,16 +39,9 @@ fn test_cldr_unit_tests() {
         .collect();
 
     let converter_factory = ConverterFactory::new();
-    let parser = converter_factory.parser();
+    let parser = MeasureUnitParser::default();
 
     for test in tests {
-        // TODO: Handle units conversion with a constant denominator
-        if test.input_unit.eq("liter-per-100-kilometer")
-            || test.input_unit.eq("kilowatt-hour-per-100-kilometer")
-        {
-            continue;
-        }
-
         let input_unit = parser
             .try_from_str(&test.input_unit)
             .expect("Failed to parse input unit");
@@ -214,7 +208,7 @@ fn test_units_non_convertible() {
     ];
 
     let converter_factory = ConverterFactory::new();
-    let parser = converter_factory.parser();
+    let parser = MeasureUnitParser::default();
 
     for (input, output) in non_convertible_units.iter() {
         let input_unit = parser
@@ -292,8 +286,7 @@ fn test_unparsable_units() {
         "meter second",
     ];
 
-    let converter_factory = ConverterFactory::new();
-    let parser = converter_factory.parser();
+    let parser = MeasureUnitParser::default();
 
     unparsable_units.iter().for_each(|unit| {
         assert!(

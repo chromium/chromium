@@ -53,7 +53,7 @@ impl PercentFormatter<DecimalFormatter> {
         (prefs: PercentFormatterPreferences, options: PercentFormatterOptions) -> error: DataError,
         functions: [
             try_new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -84,7 +84,7 @@ impl PercentFormatter<DecimalFormatter> {
     where
         D: ?Sized
             + DataProvider<super::super::provider::percent::PercentEssentialsV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>,
     {
         let decimal_formatter = DecimalFormatter::try_new_unstable(

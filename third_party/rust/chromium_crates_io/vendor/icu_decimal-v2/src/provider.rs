@@ -124,17 +124,17 @@ const _: () = {
     use icu_decimal_data::*;
     pub mod icu {
         pub use crate as decimal;
-        pub use icu_decimal_data::icu_locale as locale;
+        pub use icu_locale as locale;
     }
     make_provider!(Baked);
-    impl_decimal_symbols_v2!(Baked);
+    impl_decimal_symbols_v1!(Baked);
     impl_decimal_digits_v1!(Baked);
 };
 
 icu_provider::data_marker!(
     /// Data marker for decimal symbols
-    DecimalSymbolsV2,
-    "decimal/symbols/v2",
+    DecimalSymbolsV1,
+    "decimal/symbols/v1",
     DecimalSymbols<'static>,
 );
 
@@ -150,7 +150,7 @@ icu_provider::data_marker!(
 
 #[cfg(feature = "datagen")]
 /// The latest minimum set of markers required by this component.
-pub const MARKERS: &[DataMarkerInfo] = &[DecimalSymbolsV2::INFO, DecimalDigitsV1::INFO];
+pub const MARKERS: &[DataMarkerInfo] = &[DecimalSymbolsV1::INFO, DecimalDigitsV1::INFO];
 
 /// A collection of settings expressing where to put grouping separators in a decimal number.
 /// For example, `1,000,000` has two grouping separators, positioned along every 3 digits.
@@ -296,9 +296,9 @@ impl DecimalSymbols<'_> {
 }
 
 impl DecimalSymbols<'static> {
-    #[cfg(test)]
     /// Create a new en-US format for use in testing
-    pub(crate) fn new_en_for_testing() -> Self {
+    #[cfg(feature = "datagen")]
+    pub fn new_en_for_testing() -> Self {
         let strings = DecimalSymbolStrsBuilder {
             minus_sign_prefix: VarZeroCow::new_borrowed("-"),
             minus_sign_suffix: VarZeroCow::new_borrowed(""),

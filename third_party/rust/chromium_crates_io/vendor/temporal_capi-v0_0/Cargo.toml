@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82.0"
 name = "temporal_capi"
-version = "0.0.6"
+version = "0.0.7"
 authors = ["boa-dev"]
 build = false
 include = [
@@ -35,20 +35,33 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/boa-dev/temporal"
 
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+compiled_data = ["temporal_rs/compiled_data"]
+
 [lib]
 name = "temporal_capi"
 path = "src/lib.rs"
 
 [dependencies.diplomat]
-version = "0.10.0"
+version = "0.11.0"
 
 [dependencies.diplomat-runtime]
-version = "0.10.0"
+version = "0.11.0"
 
 [dependencies.icu_calendar]
-version = "2.0.0-beta2"
+version = "2.0.0"
+default-features = false
+
+[dependencies.icu_locale]
+version = "2.0.0"
+
+[dependencies.num-traits]
+version = "0.2.19"
 default-features = false
 
 [dependencies.temporal_rs]
-version = "~0.0.6"
+version = "~0.0.7"
 default-features = false

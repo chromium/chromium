@@ -11,7 +11,6 @@
 
 use icu_provider::prelude::*;
 use num_bigint::BigInt;
-use zerotrie::ZeroTrieSimpleAscii;
 use zerovec::{ule::AsULE, VarZeroVec, ZeroVec};
 
 use crate::measure::provider::single_unit::SingleUnit;
@@ -41,15 +40,10 @@ icu_provider::data_marker!(UnitsInfoV1, UnitsInfo<'static>, is_singleton = true)
 #[cfg_attr(feature = "datagen", databake(path = icu_experimental::units::provider))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 pub struct UnitsInfo<'data> {
-    // TODO: remove this field once we are using this map from `measure/provider::UnitsTrie`.
-    /// Maps from unit name (e.g. foot) to it is conversion information.
-    #[cfg_attr(feature = "serde", serde(borrow))]
-    pub units_conversion_trie: ZeroTrieSimpleAscii<ZeroVec<'data, u8>>,
-
     /// Contains the conversion information, such as the conversion rate and the base unit.
     /// For example, the conversion information for the unit `foot` is `1 foot = 0.3048 meter`.
     #[cfg_attr(feature = "serde", serde(borrow))]
-    pub convert_infos: VarZeroVec<'data, ConversionInfoULE>,
+    pub conversion_info: VarZeroVec<'data, ConversionInfoULE>,
 }
 
 icu_provider::data_struct!(UnitsInfo<'_>, #[cfg(feature = "datagen")]);

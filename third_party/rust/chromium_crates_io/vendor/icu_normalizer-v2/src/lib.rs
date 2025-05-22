@@ -63,16 +63,15 @@ extern crate alloc;
 // We don't depend on icu_properties to minimize deps, but we want to be able
 // to ensure we're using the right CCC values
 macro_rules! ccc {
-    ($name:ident, $num:expr) => {{
-        const X: CanonicalCombiningClass = {
+    ($name:ident, $num:expr) => {
+        const {
             #[cfg(feature = "icu_properties")]
             if icu_properties::props::CanonicalCombiningClass::$name.to_icu4c_value() != $num {
                 panic!("icu_normalizer has incorrect ccc values")
             }
             CanonicalCombiningClass::from_icu4c_value($num)
-        };
-        X
-    }};
+        }
+    };
 }
 
 pub mod properties;
@@ -2754,7 +2753,7 @@ impl write16::Write16 for IsNormalizedSinkUtf16<'_> {
         // an indexing failure would be a code bug rather than
         // an input or data issue.
         #[allow(clippy::indexing_slicing)]
-        if s.as_ptr() == self.expect.as_ptr() {
+        if core::ptr::eq(s.as_ptr(), self.expect.as_ptr()) {
             self.expect = &self.expect[s.len()..];
             Ok(())
         } else {
@@ -2796,7 +2795,7 @@ impl core::fmt::Write for IsNormalizedSinkUtf8<'_> {
         // an indexing failure would be a code bug rather than
         // an input or data issue.
         #[allow(clippy::indexing_slicing)]
-        if s.as_ptr() == self.expect.as_ptr() {
+        if core::ptr::eq(s.as_ptr(), self.expect.as_ptr()) {
             self.expect = &self.expect[s.len()..];
             Ok(())
         } else {
@@ -2835,7 +2834,7 @@ impl core::fmt::Write for IsNormalizedSinkStr<'_> {
         // an indexing failure would be a code bug rather than
         // an input or data issue.
         #[allow(clippy::indexing_slicing)]
-        if s.as_ptr() == self.expect.as_ptr() {
+        if core::ptr::eq(s.as_ptr(), self.expect.as_ptr()) {
             self.expect = &self.expect[s.len()..];
             Ok(())
         } else {

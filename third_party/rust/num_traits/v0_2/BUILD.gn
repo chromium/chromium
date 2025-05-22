@@ -47,11 +47,7 @@ cargo_crate("lib") {
   allow_unsafe = true
 
   build_deps = [ "//third_party/rust/autocfg/v1:buildrs_support" ]
-  features = [
-    "default",
-    "i128",
-    "std",
-  ]
+  features = [ "i128" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

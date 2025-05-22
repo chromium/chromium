@@ -74,6 +74,11 @@ impl IcuRatio {
         self.0
     }
 
+    /// Creates a new `IcuRatio` from the given integer.
+    pub fn from_integer(value: u64) -> Self {
+        Self(Ratio::from_integer(value.into()))
+    }
+
     /// Returns the reciprocal of the ratio.
     /// For example, the reciprocal of 2/3 is 3/2.
     pub(crate) fn recip(&self) -> Self {

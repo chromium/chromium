@@ -4,7 +4,7 @@
 
 //! Data for the `icu_list` crate
 //!
-//! This data was generated with CLDR version 47.0.0-BETA1, ICU version release-77-rc, and
+//! This data was generated with CLDR version 47.0.0, ICU version icu4x/2025-05-01/77.x, and
 //! LSTM segmenter version v0.1.0.
 
 #![no_std]
@@ -15,7 +15,3 @@
 include!(concat!(core::env!("ICU4X_DATA_DIR"), "/mod.rs"));
 #[cfg(not(icu4x_custom_data))]
 include!("../data/mod.rs");
-
-#[rustfmt::skip]
-pub use icu_provider_baked;
-pub use icu_locale;

@@ -40,14 +40,14 @@ impl RelativeTo {
         source: &str,
         provider: &impl TimeZoneProvider,
     ) -> TemporalResult<Self> {
-        let result = parse_date_time(source)?;
+        let result = parse_date_time(source.as_bytes())?;
 
         let Some(annotation) = result.tz else {
             let date_record = result.date.temporal_unwrap()?;
 
             let calendar = result
                 .calendar
-                .map(Calendar::from_utf8)
+                .map(Calendar::try_from_utf8)
                 .transpose()?
                 .unwrap_or_default();
 
@@ -68,17 +68,17 @@ impl RelativeTo {
                 let UtcOffsetRecordOrZ::Offset(offset) = record else {
                     return (None, true);
                 };
-                let hours_in_ns = i64::from(offset.hour) * 3_600_000_000_000_i64;
-                let minutes_in_ns = i64::from(offset.minute) * 60_000_000_000_i64;
-                let seconds_in_ns = i64::from(offset.minute) * 1_000_000_000_i64;
+                let hours_in_ns = i64::from(offset.hour()) * 3_600_000_000_000_i64;
+                let minutes_in_ns = i64::from(offset.minute()) * 60_000_000_000_i64;
+                let seconds_in_ns = i64::from(offset.second().unwrap_or(0)) * 1_000_000_000_i64;
                 let ns = offset
-                    .fraction
+                    .fraction()
                     .and_then(|x| x.to_nanoseconds())
                     .unwrap_or(0);
                 (
                     Some(
                         (hours_in_ns + minutes_in_ns + seconds_in_ns + i64::from(ns))
-                            * i64::from(offset.sign as i8),
+                            * i64::from(offset.sign() as i8),
                     ),
                     false,
                 )
@@ -87,7 +87,7 @@ impl RelativeTo {
 
         let calendar = result
             .calendar
-            .map(Calendar::from_utf8)
+            .map(Calendar::try_from_utf8)
             .transpose()?
             .unwrap_or_default();
 

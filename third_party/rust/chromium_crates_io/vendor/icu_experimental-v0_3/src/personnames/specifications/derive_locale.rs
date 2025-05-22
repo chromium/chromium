@@ -59,7 +59,7 @@ where
     let locid_script = scripts.get_locale_script(name_script).unwrap();
     person_name.name_locale().map_or_else(
         || {
-            let mut effective_locale = Locale::default();
+            let mut effective_locale = Locale::UNKNOWN;
             effective_locale.id.script = Some(locid_script);
             Ok(effective_locale)
         },

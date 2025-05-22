@@ -12,12 +12,6 @@
 //!
 //! Read more about data providers: [`icu_provider`]
 
-use crate::calendar_arithmetic::ArithmeticDate;
-use crate::chinese_based::ChineseBasedYearInfo;
-use crate::Iso;
-use calendrical_calculations::chinese_based::ChineseBased;
-use calendrical_calculations::rata_die::RataDie;
-use core::num::NonZeroU8;
 use icu_provider::prelude::*;
 use zerovec::ule::{AsULE, ULE};
 use zerovec::ZeroVec;
@@ -45,9 +39,9 @@ icu_provider::data_marker!(
 #[cfg_attr(feature = "datagen", databake(path = icu_calendar::provider::chinese_based))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 pub struct ChineseBasedCache<'data> {
-    /// The extended year corresponding to the first data entry for this year
-    pub first_extended_year: i32,
-    /// A list of precomputed data for each year beginning with first_extended_year
+    /// The ISO year corresponding to the first data entry for this year
+    pub first_related_iso_year: i32,
+    /// A list of precomputed data for each year beginning with first_related_iso_year
     #[cfg_attr(feature = "serde", serde(borrow))]
     pub data: ZeroVec<'data, PackedChineseBasedYearInfo>,
 }
@@ -56,79 +50,6 @@ icu_provider::data_struct!(
     ChineseBasedCache<'_>,
     #[cfg(feature = "datagen")]
 );
-
-impl ChineseBasedCache<'_> {
-    /// Compute this data for a range of years
-    #[cfg(feature = "datagen")]
-    pub fn compute_for<CB: ChineseBased>(extended_years: core::ops::Range<i32>) -> Self {
-        let data = crate::chinese_based::compute_many_packed::<CB>(extended_years.clone());
-        ChineseBasedCache {
-            first_extended_year: extended_years.start,
-            data: data.into(),
-        }
-    }
-
-    /// Get the cached data for a given extended year
-    pub(crate) fn get_for_extended_year(&self, extended_year: i32) -> Option<ChineseBasedYearInfo> {
-        let delta = extended_year - self.first_extended_year;
-        let delta = usize::try_from(delta).ok()?;
-
-        if delta == 0 {
-            return None;
-        }
-
-        let (Some(this_packed), Some(prev_packed)) =
-            (self.data.get(delta), self.data.get(delta - 1))
-        else {
-            return None;
-        };
-
-        let days_in_prev_year = prev_packed.days_in_year();
-
-        Some(ChineseBasedYearInfo::new(days_in_prev_year, this_packed))
-    }
-    /// Get the cached data for the Chinese Year corresponding to a given day.
-    ///
-    /// Also returns the corresponding extended year.
-    pub(crate) fn get_for_iso<CB: ChineseBased>(
-        &self,
-        iso: ArithmeticDate<Iso>,
-    ) -> Option<(ChineseBasedYearInfo, i32)> {
-        let extended_year = CB::extended_from_iso(iso.year);
-        let delta = extended_year - self.first_extended_year;
-        let delta = usize::try_from(delta).ok()?;
-        if delta <= 1 {
-            return None;
-        }
-
-        let this_packed = self.data.get(delta)?;
-        let prev_packed = self.data.get(delta - 1)?;
-
-        let iso_in_year = iso.day_of_year();
-        let fetched_data_ny_in_iso = u16::from(this_packed.ny_day_of_iso_year());
-
-        if iso_in_year >= fetched_data_ny_in_iso {
-            Some((
-                ChineseBasedYearInfo::new(prev_packed.days_in_year(), this_packed),
-                extended_year,
-            ))
-        } else {
-            // We're dealing with an ISO day in the beginning of the year, before Chinese New Year.
-            // Return data for the previous Chinese year instead.
-            if delta <= 2 {
-                return None;
-            }
-            let prev2_packed = self.data.get(delta - 2)?;
-
-            let days_in_prev_year = prev2_packed.days_in_year();
-
-            Some((
-                ChineseBasedYearInfo::new(days_in_prev_year, prev_packed),
-                extended_year - 1,
-            ))
-        }
-    }
-}
 
 /// The struct containing compiled ChineseData
 ///
@@ -165,20 +86,22 @@ impl PackedChineseBasedYearInfo {
     ///
     /// We allow it to occur as early as January 19 which is the earliest the second new moon
     /// could occur after the Winter Solstice if the solstice is pinned to December 20.
-    pub(crate) const FIRST_NY: u8 = 19;
+    const FIRST_NY: i64 = 18;
 
     pub(crate) fn new(
         month_lengths: [bool; 13],
-        leap_month_idx: Option<NonZeroU8>,
-        ny_offset: u8,
+        leap_month_idx: Option<u8>,
+        ny_offset: i64,
     ) -> Self {
         debug_assert!(
             !month_lengths[12] || leap_month_idx.is_some(),
             "Last month length should not be set for non-leap years"
         );
+        let ny_offset = ny_offset - Self::FIRST_NY;
+        debug_assert!(ny_offset >= 0, "Year offset too small to store");
         debug_assert!(ny_offset < 34, "Year offset too big to store");
         debug_assert!(
-            leap_month_idx.map(|l| l.get() <= 13).unwrap_or(true),
+            leap_month_idx.map(|l| l <= 13).unwrap_or(true),
             "Leap month indices must be 1 <= i <= 13"
         );
         let mut all = 0u32; // last byte unused
@@ -189,43 +112,33 @@ impl PackedChineseBasedYearInfo {
                 all |= 1 << month as u32;
             }
         }
-        let leap_month_idx = leap_month_idx.map(|x| x.get()).unwrap_or(0);
+        let leap_month_idx = leap_month_idx.unwrap_or(0);
         all |= (leap_month_idx as u32) << (8 + 5);
         all |= (ny_offset as u32) << (16 + 1);
         let le = all.to_le_bytes();
         Self(le[0], le[1], le[2])
     }
 
-    // Get the new year offset from January 21
+    // Get the new year difference from the ISO new year
     pub(crate) fn ny_offset(self) -> u8 {
-        self.2 >> 1
+        Self::FIRST_NY as u8 + (self.2 >> 1)
     }
 
-    /// The day of the year (1-indexed) that this is in the ISO year
-    fn ny_day_of_iso_year(self) -> u8 {
-        let ny_offset = self.ny_offset();
-        // FIRST_NY is one-indexed, offset is an offset, we can just add
-        Self::FIRST_NY + ny_offset
-    }
+    pub(crate) fn leap_month(self) -> Option<u8> {
+        let bits = (self.1 >> 5) + ((self.2 & 0b1) << 3);
 
-    pub(crate) fn ny_rd(self, related_iso: i32) -> RataDie {
-        let iso_ny = calendrical_calculations::iso::fixed_from_iso(related_iso, 1, 1);
-        // -1 because `iso_ny` is itself in the year, and ny_day_of_iso_year
-        iso_ny + i64::from(self.ny_day_of_iso_year()) - 1
-    }
-
-    pub(crate) fn leap_month_idx(self) -> Option<NonZeroU8> {
-        let low_bits = self.1 >> 5;
-        let high_bits = (self.2 & 0b1) << 3;
-
-        NonZeroU8::new(low_bits + high_bits)
+        (bits != 0).then_some(bits)
     }
 
     // Whether a particular month has 30 days (month is 1-indexed)
-    #[cfg(any(test, feature = "datagen"))]
     pub(crate) fn month_has_30_days(self, month: u8) -> bool {
         let months = u16::from_le_bytes([self.0, self.1]);
         months & (1 << (month - 1) as u16) != 0
+    }
+
+    #[cfg(any(test, feature = "datagen"))]
+    pub(crate) fn month_lengths(self) -> [bool; 13] {
+        core::array::from_fn(|i| self.month_has_30_days(i as u8 + 1))
     }
 
     // Which day of year is the last day of a month (month is 1-indexed)
@@ -239,14 +152,6 @@ impl PackedChineseBasedYearInfo {
         let long_month_bits = months & ((1 << month as u16) - 1);
         prev_month_lengths += long_month_bits.count_ones().try_into().unwrap_or(0);
         prev_month_lengths
-    }
-
-    pub(crate) fn days_in_year(self) -> u16 {
-        if self.leap_month_idx().is_some() {
-            self.last_day_of_month(13)
-        } else {
-            self.last_day_of_month(12)
-        }
     }
 }
 
@@ -273,7 +178,7 @@ mod serialization {
     struct SerdePackedChineseBasedYearInfo {
         ny_offset: u8,
         month_has_30_days: [bool; 13],
-        leap_month_idx: Option<NonZeroU8>,
+        leap_month_idx: Option<u8>,
     }
 
     impl<'de> Deserialize<'de> for PackedChineseBasedYearInfo {
@@ -307,14 +212,10 @@ mod serialization {
     #[cfg(feature = "datagen")]
     impl From<PackedChineseBasedYearInfo> for SerdePackedChineseBasedYearInfo {
         fn from(other: PackedChineseBasedYearInfo) -> Self {
-            let mut month_has_30_days = [false; 13];
-            for (i, month) in month_has_30_days.iter_mut().enumerate() {
-                *month = other.month_has_30_days(i as u8 + 1)
-            }
             Self {
                 ny_offset: other.ny_offset(),
-                month_has_30_days,
-                leap_month_idx: other.leap_month_idx(),
+                month_has_30_days: other.month_lengths(),
+                leap_month_idx: other.leap_month(),
             }
         }
     }
@@ -324,8 +225,74 @@ mod serialization {
             Self::new(
                 other.month_has_30_days,
                 other.leap_month_idx,
-                other.ny_offset,
+                other.ny_offset as i64,
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn packed_roundtrip_single(
+        mut month_lengths: [bool; 13],
+        leap_month_idx: Option<u8>,
+        ny_offset: i64,
+    ) {
+        if leap_month_idx.is_none() {
+            // Avoid bad invariants
+            month_lengths[12] = false;
+        }
+        let packed = PackedChineseBasedYearInfo::new(month_lengths, leap_month_idx, ny_offset);
+
+        assert_eq!(
+            ny_offset,
+            packed.ny_offset() as i64,
+            "Roundtrip with {month_lengths:?}, {leap_month_idx:?}, {ny_offset}"
+        );
+        assert_eq!(
+            leap_month_idx,
+            packed.leap_month(),
+            "Roundtrip with {month_lengths:?}, {leap_month_idx:?}, {ny_offset}"
+        );
+        let month_lengths_roundtrip = packed.month_lengths();
+        assert_eq!(
+            month_lengths, month_lengths_roundtrip,
+            "Roundtrip with {month_lengths:?}, {leap_month_idx:?}, {ny_offset}"
+        );
+    }
+
+    #[test]
+    fn test_roundtrip_packed() {
+        const SHORT: [bool; 13] = [false; 13];
+        const LONG: [bool; 13] = [true; 13];
+        const ALTERNATING1: [bool; 13] = [
+            false, true, false, true, false, true, false, true, false, true, false, true, false,
+        ];
+        const ALTERNATING2: [bool; 13] = [
+            true, false, true, false, true, false, true, false, true, false, true, false, true,
+        ];
+        const RANDOM1: [bool; 13] = [
+            true, true, false, false, true, true, false, true, true, true, true, false, true,
+        ];
+        const RANDOM2: [bool; 13] = [
+            false, true, true, true, true, false, true, true, true, false, false, true, false,
+        ];
+        packed_roundtrip_single(SHORT, None, 18 + 5);
+        packed_roundtrip_single(SHORT, None, 18 + 10);
+        packed_roundtrip_single(SHORT, Some(11), 18 + 15);
+        packed_roundtrip_single(LONG, Some(12), 18 + 15);
+        packed_roundtrip_single(ALTERNATING1, None, 18 + 2);
+        packed_roundtrip_single(ALTERNATING1, Some(3), 18 + 5);
+        packed_roundtrip_single(ALTERNATING2, None, 18 + 9);
+        packed_roundtrip_single(ALTERNATING2, Some(7), 18 + 26);
+        packed_roundtrip_single(RANDOM1, None, 18 + 29);
+        packed_roundtrip_single(RANDOM1, Some(12), 18 + 29);
+        packed_roundtrip_single(RANDOM1, Some(2), 18 + 21);
+        packed_roundtrip_single(RANDOM2, None, 18 + 25);
+        packed_roundtrip_single(RANDOM2, Some(2), 18 + 19);
+        packed_roundtrip_single(RANDOM2, Some(5), 18 + 2);
+        packed_roundtrip_single(RANDOM2, Some(12), 18 + 5);
     }
 }

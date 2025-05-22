@@ -2,7 +2,7 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::types::{Era, MonthCode};
+use crate::types::MonthCode;
 use displaydoc::Display;
 
 #[derive(Debug, Copy, Clone, PartialEq, Display)]
@@ -22,8 +22,8 @@ pub enum DateError {
         max: i32,
     },
     /// Unknown era
-    #[displaydoc("Unknown era {0:?}")]
-    UnknownEra(Era),
+    #[displaydoc("Unknown era")]
+    UnknownEra,
     /// Unknown month code
     #[displaydoc("Unknown month code {0:?}")]
     UnknownMonthCode(MonthCode),
@@ -63,4 +63,30 @@ impl From<RangeError> for DateError {
             max,
         }
     }
+}
+
+pub(crate) fn year_check(
+    year: i32,
+    bounds: impl core::ops::RangeBounds<i32>,
+) -> Result<i32, RangeError> {
+    use core::ops::Bound::*;
+
+    if !bounds.contains(&year) {
+        return Err(RangeError {
+            field: "year",
+            value: year,
+            min: match bounds.start_bound() {
+                Included(&m) => m,
+                Excluded(&m) => m + 1,
+                Unbounded => i32::MIN,
+            },
+            max: match bounds.end_bound() {
+                Included(&m) => m,
+                Excluded(&m) => m - 1,
+                Unbounded => i32::MAX,
+            },
+        });
+    }
+
+    Ok(year)
 }

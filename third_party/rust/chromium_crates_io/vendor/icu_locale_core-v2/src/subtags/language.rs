@@ -25,7 +25,7 @@ impl_tinystr_subtag!(
     /// ```
     /// use icu::locale::subtags::Language;
     ///
-    /// assert_eq!(Language::default().as_str(), "und");
+    /// assert_eq!(Language::UNKNOWN.as_str(), "und");
     /// ```
     ///
     /// `Notice`: ICU4X uses a narrow form of language subtag of 2-3 characters.
@@ -48,35 +48,12 @@ impl_tinystr_subtag!(
 );
 
 impl Language {
-    /// The default undefined language "und". Same as [`default()`](Default::default()).
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use icu::locale::subtags::Language;
-    ///
-    /// assert_eq!(Language::default(), Language::UND);
-    /// ```
-    pub const UND: Self = if let Ok(o) = Self::try_from_utf8(b"und") {
-        o
-    } else {
-        panic!("Failed")
-    };
+    /// The unknown language "und".
+    pub const UNKNOWN: Self = language!("und");
 
-    /// Const-friendly version of [`Default::default`].
-    pub const fn default() -> Self {
-        Self::UND
-    }
-
-    /// Tests if the [`Language`] subtag is the default one (`"und"`).
+    /// Whether this [`Language`] equals [`Language::UNKNOWN`].
     #[inline]
-    pub const fn is_default(self) -> bool {
-        matches!(self, Self::UND)
-    }
-}
-
-impl Default for Language {
-    fn default() -> Language {
-        Self::default()
+    pub const fn is_unknown(self) -> bool {
+        matches!(self, Self::UNKNOWN)
     }
 }

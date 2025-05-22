@@ -5,6 +5,7 @@
 [package]
 name = "icu_properties"
 description = "Definitions for Unicode properties"
+version = "2.0.1"
 
 authors.workspace = true
 categories.workspace = true
@@ -14,7 +15,6 @@ include.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
-version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
@@ -40,7 +40,7 @@ icu = { path = "../../components/icu", default-features = false }
 [features]
 default = ["compiled_data"]
 serde = ["dep:serde", "icu_locale_core/serde", "potential_utf/serde", "zerovec/serde", "icu_collections/serde", "icu_provider/serde", "zerotrie/serde"]
-datagen = ["serde", "dep:databake", "potential_utf/databake", "zerovec/databake", "icu_collections/databake", "icu_locale_core/databake", "zerotrie/databake"]
+datagen = ["serde", "dep:databake", "potential_utf/databake", "zerovec/databake", "icu_collections/databake", "icu_locale_core/databake", "zerotrie/databake", "icu_provider/export"]
 unicode_bidi = [ "dep:unicode-bidi" ]
-compiled_data = ["dep:icu_properties_data"]
+compiled_data = ["dep:icu_properties_data", "icu_provider/baked"]
 alloc = ["zerovec/alloc", "icu_collections/alloc"]

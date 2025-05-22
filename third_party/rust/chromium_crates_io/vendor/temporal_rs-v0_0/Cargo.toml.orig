@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["diplomat-gen", "temporal_capi"]
+members = ["diplomat-gen", "bakeddata", "provider", "temporal_capi"]
 
 [workspace.package]
 edition = "2021"
-version = "0.0.6"
+version = "0.0.7"
 rust-version = "1.82.0"
 authors = ["boa-dev"]
 license = "MIT OR Apache-2.0"
@@ -13,22 +13,28 @@ readme = "./README.md"
 exclude = [
     "docs/*",
     ".github/*",
+    "debug/",
     ".gitignore",
     "CONTRIBUTING.md",
     "cliff.toml",
 ]
 
 [workspace.dependencies]
-temporal_rs = { version = "~0.0.6", path = ".", default-features = false }
+# Self
+temporal_rs = { version = "~0.0.7", path = ".", default-features = false }
+timezone_provider = { version = "~0.0.7", path = "./provider" }
+
+# Dependencies
 tinystr = "0.8.1"
-icu_calendar = { version = "2.0.0-beta2", default-features = false }
+icu_calendar = { version = "2.0.0", default-features = false }
+icu_locale = "2.0.0"
 rustc-hash = "2.1.0"
-num-traits = "0.2.19"
-ixdtf = "0.4.0"
-iana-time-zone = "0.1.61"
-log = "0.4.26"
+num-traits = { version = "0.2.19", default-features = false }
+ixdtf = "0.5.0"
+iana-time-zone = "0.1.63"
+log = "0.4.27"
 tzif = "0.3.0"
-jiff-tzdb = "0.1.3"
+jiff-tzdb = "0.1.4"
 combine = "4.6.7"
 web-time = "1.1.0"
 
@@ -47,11 +53,12 @@ readme.workspace = true
 exclude.workspace = true
 
 [dependencies]
+
 tinystr.workspace = true
 icu_calendar = { workspace = true, features = ["compiled_data"] }
+icu_locale.workspace = true
 num-traits.workspace = true
 ixdtf = { workspace = true, features = ["duration"]}
-iana-time-zone.workspace = true
 writeable = "0.6.1"
 
 # log feature
@@ -61,18 +68,24 @@ log = { workspace = true, optional = true }
 tzif = { workspace = true, optional = true }
 jiff-tzdb = { workspace = true, optional = true }
 combine = { workspace = true, optional = true }
+timezone_provider = { workspace = true, optional = true}
 
 # System time feature
 web-time = { workspace = true, optional =  true }
+iana-time-zone = { workspace = true, optional = true }
+core_maths = "0.1.1"
 
 [features]
 default = ["sys"]
 log = ["dep:log"]
 compiled_data = ["tzdb"]
-sys = ["std", "dep:web-time"]
-tzdb = ["dep:tzif", "std", "dep:jiff-tzdb", "dep:combine"]
+sys = ["std", "dep:web-time", "dep:iana-time-zone"]
+tzdb = ["dep:tzif", "std", "dep:jiff-tzdb", "dep:combine", "dep:timezone_provider"]
 std = []
 
 [package.metadata.cargo-all-features]
 denylist = ["default"]
 max_combination_size = 4
+
+[package.metadata.docs.rs]
+all-features = true

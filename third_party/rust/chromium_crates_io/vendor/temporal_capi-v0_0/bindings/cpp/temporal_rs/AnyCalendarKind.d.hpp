@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -27,17 +28,17 @@ namespace capi {
       AnyCalendarKind_Gregorian = 6,
       AnyCalendarKind_Hebrew = 7,
       AnyCalendarKind_Indian = 8,
-      AnyCalendarKind_IslamicCivil = 9,
-      AnyCalendarKind_IslamicObservational = 10,
-      AnyCalendarKind_IslamicTabular = 11,
-      AnyCalendarKind_IslamicUmmAlQura = 12,
+      AnyCalendarKind_HijriTabularTypeIIFriday = 9,
+      AnyCalendarKind_HijriSimulatedMecca = 10,
+      AnyCalendarKind_HijriTabularTypeIIThursday = 11,
+      AnyCalendarKind_HijriUmmAlQura = 12,
       AnyCalendarKind_Iso = 13,
       AnyCalendarKind_Japanese = 14,
       AnyCalendarKind_JapaneseExtended = 15,
       AnyCalendarKind_Persian = 16,
       AnyCalendarKind_Roc = 17,
     };
-    
+
     typedef struct AnyCalendarKind_option {union { AnyCalendarKind ok; }; bool is_ok; } AnyCalendarKind_option;
 } // namespace capi
 } // namespace
@@ -55,10 +56,10 @@ public:
     Gregorian = 6,
     Hebrew = 7,
     Indian = 8,
-    IslamicCivil = 9,
-    IslamicObservational = 10,
-    IslamicTabular = 11,
-    IslamicUmmAlQura = 12,
+    HijriTabularTypeIIFriday = 9,
+    HijriSimulatedMecca = 10,
+    HijriTabularTypeIIThursday = 11,
+    HijriUmmAlQura = 12,
     Iso = 13,
     Japanese = 14,
     JapaneseExtended = 15,
@@ -73,7 +74,7 @@ public:
   // Prevent usage as boolean value
   explicit operator bool() const = delete;
 
-  inline static std::optional<temporal_rs::AnyCalendarKind> get_for_bcp47_string(std::string_view s);
+  inline static std::optional<temporal_rs::AnyCalendarKind> get_for_str(std::string_view s);
 
   inline temporal_rs::capi::AnyCalendarKind AsFFI() const;
   inline static temporal_rs::AnyCalendarKind FromFFI(temporal_rs::capi::AnyCalendarKind c_enum);

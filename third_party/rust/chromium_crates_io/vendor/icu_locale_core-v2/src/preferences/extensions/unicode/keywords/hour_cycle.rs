@@ -17,8 +17,4 @@ enum_keyword!(
         ("h23" => H23),
         /// Variant of the 12-hour clock, sometimes used in Japan. Hours are numbered 0–11. Corresponds to 'K' in patterns.
         ("h11" => H11),
-        /// Variant of the 24-hour clock, not in common use. Hours are numbered 1–24. Corresponds to 'k' in patterns.
-        ///
-        /// ❗ This is not the typical 24-hour clock! See `H23` above for the 24-hour clock used throughout most of the world.
-        ("h24" => H24),
 }, "hc");

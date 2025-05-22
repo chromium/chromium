@@ -11,9 +11,9 @@
 #[macro_export]
 macro_rules! __impl_locale_likely_subtags_script_region_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_LOCALE_LIKELY_SUBTAGS_SCRIPT_REGION_V1: &'static <icu::locale::provider::LocaleLikelySubtagsScriptRegionV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::locale::provider::LikelySubtagsForScriptRegion {
@@ -31,10 +31,10 @@ macro_rules! __impl_locale_likely_subtags_script_region_v1 {
                 },
             };
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DataProvider<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1>, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_LOCALE_LIKELY_SUBTAGS_SCRIPT_REGION_V1), metadata: icu_provider::DataResponseMetadata::default() })
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1 as icu_provider::DataMarker>::INFO, req))
@@ -44,7 +44,7 @@ macro_rules! __impl_locale_likely_subtags_script_region_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_locale_likely_subtags_script_region_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -53,10 +53,10 @@ macro_rules! __impl_locale_likely_subtags_script_region_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_locale_likely_subtags_script_region_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DryDataProvider<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponseMetadata::default())
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1 as icu_provider::DataMarker>::INFO, req))
@@ -66,17 +66,17 @@ macro_rules! __impl_locale_likely_subtags_script_region_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_locale_likely_subtags_script_region_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DryDataProvider<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponseMetadata::default())
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1 as icu_provider::DataMarker>::INFO, req))
                 }
             }
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::locale::provider::LocaleLikelySubtagsScriptRegionV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

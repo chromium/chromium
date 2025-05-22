@@ -279,7 +279,7 @@ impl Keywords {
     ///     .unicode
     ///     .keywords
     ///     .retain_by_key(|&k| k == key!("ms"));
-    /// assert_eq!(loc, Locale::default());
+    /// assert_eq!(loc, Locale::UNKNOWN);
     /// ```
     #[cfg(feature = "alloc")]
     pub fn retain_by_key<F>(&mut self, mut predicate: F)

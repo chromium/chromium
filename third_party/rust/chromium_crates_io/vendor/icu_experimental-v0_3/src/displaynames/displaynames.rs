@@ -52,7 +52,7 @@ impl RegionDisplayNames {
         /// Creates a new [`RegionDisplayNames`] from locale data and an options bag using compiled data.
         functions: [
             try_new,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -119,7 +119,7 @@ impl ScriptDisplayNames {
         /// Creates a new [`ScriptDisplayNames`] from locale data and an options bag using compiled data.
         functions: [
             try_new,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -187,7 +187,7 @@ impl VariantDisplayNames {
         /// Creates a new [`VariantDisplayNames`] from locale data and an options bag using compiled data.
         functions: [
             try_new,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -250,7 +250,7 @@ impl LanguageDisplayNames {
         /// Creates a new [`LanguageDisplayNames`] from locale data and an options bag using compiled data.
         functions: [
             try_new,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -334,7 +334,7 @@ impl LocaleDisplayNamesFormatter {
         /// Creates a new [`LocaleDisplayNamesFormatter`] from locale data and an options bag using compiled data.
         functions: [
             try_new,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]

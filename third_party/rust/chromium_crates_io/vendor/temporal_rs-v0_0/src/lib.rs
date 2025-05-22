@@ -1,5 +1,17 @@
-//! The `temporal_rs` crate is an implementation of ECMAScript's Temporal
-//! built-in objects in Rust.
+//! A native Rust implementation of ECMAScript's Temporal built-ins.
+//!
+//! Temporal is a library for working with date and time in a calendar
+//! and time zone aware manner.
+//!
+//! This crate is designed with ECMAScript implementations and general
+//! purpose in mind.
+//!
+//! ## Examples
+//!
+//! Below are a few examples to give an overview of `temporal_rs`'s current
+//! API.
+//!
+//! ### Convert from an ISO8601 [`PlainDate`]  into a Japanese [`PlainDate`]
 //!
 //! ```rust
 //! use temporal_rs::{PlainDate, Calendar};
@@ -7,7 +19,7 @@
 //! use core::str::FromStr;
 //!
 //! // Create a date with an ISO calendar
-//! let iso8601_date = PlainDate::try_new(2025, 3, 3, Calendar::default()).unwrap();
+//! let iso8601_date = PlainDate::try_new_iso(2025, 3, 3).unwrap();
 //!
 //! // Create a new date with the japanese calendar
 //! let japanese_date = iso8601_date.with_calendar(Calendar::from_str("japanese").unwrap()).unwrap();
@@ -16,13 +28,66 @@
 //! assert_eq!(japanese_date.month(), 3)
 //! ```
 //!
+//! ### Create a `PlainDateTime` from a RFC9557 IXDTF string.
+//!
+//! For more information on the Internet Extended DateTime Format (IXDTF),
+//! see [RFC9557](https://www.rfc-editor.org/rfc/rfc9557.txt).
+//!
+//! ```rust
+//! use temporal_rs::PlainDateTime;
+//! use core::str::FromStr;
+//!
+//! let pdt = PlainDateTime::from_str("2025-03-01T11:16:10[u-ca=gregory]").unwrap();
+//! assert_eq!(pdt.calendar().identifier(), "gregory");
+//! assert_eq!(pdt.year(), 2025);
+//! assert_eq!(pdt.month(), 3);
+//! assert_eq!(pdt.day(), 1);
+//! assert_eq!(pdt.hour(), 11);
+//! assert_eq!(pdt.minute(), 16);
+//! assert_eq!(pdt.second(), 10);
+//!
+//! ```
+//!
+//! ### Create a `ZonedDateTime` for a RFC9557 IXDTF string.
+//!
+//! **Important Note:** The below API is enabled with the
+//! `compiled_data` feature flag.
+//!
+//! ```rust
+//! # #[cfg(feature = "compiled_data")] {
+//! use temporal_rs::{ZonedDateTime, TimeZone};
+//! use temporal_rs::options::{Disambiguation, OffsetDisambiguation};
+//!
+//! let zdt = ZonedDateTime::from_str("2025-03-01T11:16:10Z[America/Chicago][u-ca=iso8601]", Disambiguation::Compatible, OffsetDisambiguation::Reject).unwrap();
+//! assert_eq!(zdt.year().unwrap(), 2025);
+//! assert_eq!(zdt.month().unwrap(), 3);
+//! assert_eq!(zdt.day().unwrap(), 1);
+//! assert_eq!(zdt.hour().unwrap(), 11);
+//! assert_eq!(zdt.minute().unwrap(), 16);
+//! assert_eq!(zdt.second().unwrap(), 10);
+//!
+//! let zurich_zone = TimeZone::try_from_str("Europe/Zurich").unwrap();
+//! let zdt_zurich = zdt.with_timezone(zurich_zone).unwrap();
+//! assert_eq!(zdt_zurich.year().unwrap(), 2025);
+//! assert_eq!(zdt_zurich.month().unwrap(), 3);
+//! assert_eq!(zdt_zurich.day().unwrap(), 1);
+//! assert_eq!(zdt_zurich.hour().unwrap(), 18);
+//! assert_eq!(zdt_zurich.minute().unwrap(), 16);
+//! assert_eq!(zdt_zurich.second().unwrap(), 10);
+//!
+//! # }
+//! ```
+//!
+//! ## More information
+//!
 //! [`Temporal`][proposal] is the Stage 3 proposal for ECMAScript that
 //! provides new JS objects and functions for working with dates and
 //! times that fully supports time zones and non-gregorian calendars.
 //!
-//! This library's primary source is the Temporal Proposal
-//! [specification][spec].
+//! This library's primary development source is the Temporal
+//! Proposal [specification][spec].
 //!
+//! [ixdtf]: https://www.rfc-editor.org/rfc/rfc9557.txt
 //! [proposal]: https://github.com/tc39/proposal-temporal
 //! [spec]: https://tc39.es/proposal-temporal/
 #![doc(
@@ -86,11 +151,15 @@ use core::cmp::Ordering;
 /// Re-export of `TinyAsciiStr` from `tinystr`.
 pub use tinystr::TinyAsciiStr;
 
+/// The `Temporal` result type
+pub type TemporalResult<T> = Result<T, TemporalError>;
+
 #[doc(inline)]
 pub use error::TemporalError;
 
-/// The `Temporal` result type
-pub type TemporalResult<T> = Result<T, TemporalError>;
+#[cfg(feature = "sys")]
+#[doc(inline)]
+pub use sys::Temporal;
 
 pub mod partial {
     //! Partial Date/Time component records.
@@ -103,15 +172,21 @@ pub mod partial {
 }
 
 // TODO: Potentially bikeshed how `EpochNanoseconds` should be exported.
-pub mod time {
+pub mod unix_time {
     pub use crate::epoch_nanoseconds::EpochNanoseconds;
+}
+
+/// The `Now` module includes type for building a Now.
+pub mod now {
+    pub use crate::builtins::{Now, NowBuilder};
 }
 
 pub use crate::builtins::{
     calendar::{Calendar, MonthCode},
     core::timezone::{TimeZone, UtcOffset},
-    DateDuration, Duration, Instant, Now, PlainDate, PlainDateTime, PlainMonthDay, PlainTime,
-    PlainYearMonth, TimeDuration, ZonedDateTime,
+    core::DateDuration,
+    Duration, Instant, PlainDate, PlainDateTime, PlainMonthDay, PlainTime, PlainYearMonth,
+    TimeDuration, ZonedDateTime,
 };
 
 /// A library specific trait for unwrapping assertions.

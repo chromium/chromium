@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 #include "IsoDate.d.hpp"
 #include "IsoTime.d.hpp"
@@ -24,7 +25,7 @@ namespace capi {
       temporal_rs::capi::IsoDate date;
       temporal_rs::capi::IsoTime time;
     };
-    
+
     typedef struct IsoDateTime_option {union { IsoDateTime ok; }; bool is_ok; } IsoDateTime_option;
 } // namespace capi
 } // namespace

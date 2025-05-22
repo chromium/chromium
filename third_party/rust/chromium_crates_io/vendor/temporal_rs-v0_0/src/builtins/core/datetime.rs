@@ -9,8 +9,8 @@ use crate::{
     iso::{IsoDate, IsoDateTime, IsoTime},
     options::{
         ArithmeticOverflow, DifferenceOperation, DifferenceSettings, Disambiguation,
-        DisplayCalendar, ResolvedRoundingOptions, RoundingOptions, TemporalUnit,
-        ToStringRoundingOptions, UnitGroup,
+        DisplayCalendar, ResolvedRoundingOptions, RoundingOptions, ToStringRoundingOptions, Unit,
+        UnitGroup,
     },
     parsers::{parse_date_time, IxdtfStringBuilder},
     primitive::FiniteF64,
@@ -53,7 +53,18 @@ impl PartialDateTime {
     }
 }
 
-/// The native Rust implementation of `Temporal.PlainDateTime`
+// TODO: Example doctest
+/// The native Rust implementation of a Temporal `PlainDateTime`.
+///
+/// The `PlainDateTime` represents a date and time without a
+/// time zone. The fundemental represenation of a `PlainDateTime`
+/// is it's internal ISO date and time fields and a calendar.
+///
+/// ## Reference
+///
+/// For more information, see the [MDN documentation][mdn-datetime].
+///
+/// [mdn-datetime]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime
 #[non_exhaustive]
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct PlainDateTime {
@@ -147,8 +158,8 @@ impl PlainDateTime {
             settings,
             op,
             UnitGroup::DateTime,
-            TemporalUnit::Day,
-            TemporalUnit::Nanosecond,
+            Unit::Day,
+            Unit::Nanosecond,
         )?;
 
         // Step 7-8 combined.
@@ -188,9 +199,8 @@ impl PlainDateTime {
         let diff = self
             .iso
             .diff(&other.iso, &self.calendar, options.largest_unit)?;
-
         // 4. If smallestUnit is nanosecond and roundingIncrement = 1, return diff.
-        if options.smallest_unit == TemporalUnit::Nanosecond && options.increment.get() == 1 {
+        if options.smallest_unit == Unit::Nanosecond && options.increment.get() == 1 {
             return Ok(diff);
         }
 
@@ -206,11 +216,7 @@ impl PlainDateTime {
     }
 
     // 5.5.14 DifferencePlainDateTimeWithTotal ( isoDateTime1, isoDateTime2, calendar, unit )
-    pub(crate) fn diff_dt_with_total(
-        &self,
-        other: &Self,
-        unit: TemporalUnit,
-    ) -> TemporalResult<FiniteF64> {
+    pub(crate) fn diff_dt_with_total(&self, other: &Self, unit: Unit) -> TemporalResult<FiniteF64> {
         // 1. If CompareISODateTime(isoDateTime1, isoDateTime2) = 0, then
         //    a. Return 0.
         if matches!(self.iso.cmp(&other.iso), Ordering::Equal) {
@@ -223,7 +229,7 @@ impl PlainDateTime {
         // 3. Let diff be DifferenceISODateTime(isoDateTime1, isoDateTime2, calendar, unit).
         let diff = self.iso.diff(&other.iso, &self.calendar, unit)?;
         // 4. If unit is nanosecond, return diff.[[Time]].
-        if unit == TemporalUnit::Nanosecond {
+        if unit == Unit::Nanosecond {
             return FiniteF64::try_from(diff.normalized_time_duration().0);
         }
         // 5. Let destEpochNs be GetUTCEpochNanoseconds(isoDateTime2).
@@ -241,7 +247,9 @@ impl PlainDateTime {
 // ==== Public PlainDateTime API ====
 
 impl PlainDateTime {
-    /// Creates a new `DateTime`, constraining any arguments that into a valid range.
+    /// Creates a new `DateTime`, constraining any arguments that are invalid
+    /// into a valid range.
+    #[inline]
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         year: i32,
@@ -270,7 +278,37 @@ impl PlainDateTime {
         )
     }
 
+    /// Creates a new `DateTime` with an ISO 8601 calendar, constraining any
+    /// arguments that are invalid into a valid range.
+    #[inline]
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_iso(
+        year: i32,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minute: u8,
+        second: u8,
+        millisecond: u16,
+        microsecond: u16,
+        nanosecond: u16,
+    ) -> TemporalResult<Self> {
+        Self::new(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            millisecond,
+            microsecond,
+            nanosecond,
+            Calendar::default(),
+        )
+    }
+
     /// Creates a new `DateTime`, rejecting any arguments that are not in a valid range.
+    #[inline]
     #[allow(clippy::too_many_arguments)]
     pub fn try_new(
         year: i32,
@@ -296,6 +334,34 @@ impl PlainDateTime {
             nanosecond,
             calendar,
             ArithmeticOverflow::Reject,
+        )
+    }
+
+    /// Creates a new `DateTime` with an ISO 8601 calendar, rejecting any arguments that are not in a valid range.
+    #[inline]
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_new_iso(
+        year: i32,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minute: u8,
+        second: u8,
+        millisecond: u16,
+        microsecond: u16,
+        nanosecond: u16,
+    ) -> TemporalResult<Self> {
+        Self::try_new(
+            year,
+            month,
+            day,
+            hour,
+            minute,
+            second,
+            millisecond,
+            microsecond,
+            nanosecond,
+            Calendar::default(),
         )
     }
 
@@ -381,6 +447,34 @@ impl PlainDateTime {
         let date = PlainDate::from_partial(partial.date, overflow)?;
         let iso_time = IsoTime::default().with(partial.time, overflow.unwrap_or_default())?;
         Self::from_date_and_time(date, PlainTime::new_unchecked(iso_time))
+    }
+
+    // Converts a UTF-8 encoded string into a `PlainDateTime`.
+    pub fn from_utf8(s: &[u8]) -> TemporalResult<Self> {
+        let parse_record = parse_date_time(s)?;
+
+        let calendar = parse_record
+            .calendar
+            .map(Calendar::try_from_utf8)
+            .transpose()?
+            .unwrap_or_default();
+
+        let time = parse_record
+            .time
+            .map(IsoTime::from_time_record)
+            .transpose()?
+            .unwrap_or_default();
+
+        let parsed_date = parse_record.date.temporal_unwrap()?;
+
+        let date = IsoDate::new_with_overflow(
+            parsed_date.year,
+            parsed_date.month,
+            parsed_date.day,
+            ArithmeticOverflow::Reject,
+        )?;
+
+        Ok(Self::new_unchecked(IsoDateTime::new(date, time)?, calendar))
     }
 
     /// Creates a new `DateTime` with the fields of a `PartialDateTime`.
@@ -570,7 +664,7 @@ impl PlainDateTime {
     }
 
     /// Returns the calendar day of week value.
-    pub fn day_of_week(&self) -> u16 {
+    pub fn day_of_week(&self) -> TemporalResult<u16> {
         self.calendar.day_of_week(&self.iso.date)
     }
 
@@ -580,12 +674,12 @@ impl PlainDateTime {
     }
 
     /// Returns the calendar week of year value.
-    pub fn week_of_year(&self) -> TemporalResult<Option<u16>> {
+    pub fn week_of_year(&self) -> Option<u8> {
         self.calendar.week_of_year(&self.iso.date)
     }
 
     /// Returns the calendar year of week value.
-    pub fn year_of_week(&self) -> TemporalResult<Option<i32>> {
+    pub fn year_of_week(&self) -> Option<i32> {
         self.calendar.year_of_week(&self.iso.date)
     }
 
@@ -750,30 +844,7 @@ impl FromStr for PlainDateTime {
     type Err = TemporalError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parse_record = parse_date_time(s)?;
-
-        let calendar = parse_record
-            .calendar
-            .map(Calendar::from_utf8)
-            .transpose()?
-            .unwrap_or_default();
-
-        let time = parse_record
-            .time
-            .map(IsoTime::from_time_record)
-            .transpose()?
-            .unwrap_or_default();
-
-        let parsed_date = parse_record.date.temporal_unwrap()?;
-
-        let date = IsoDate::new_with_overflow(
-            parsed_date.year,
-            parsed_date.month,
-            parsed_date.day,
-            ArithmeticOverflow::Reject,
-        )?;
-
-        Ok(Self::new_unchecked(IsoDateTime::new(date, time)?, calendar))
+        Self::from_utf8(s.as_bytes())
     }
 }
 
@@ -788,11 +859,10 @@ mod tests {
         },
         iso::{IsoDate, IsoDateTime, IsoTime},
         options::{
-            DifferenceSettings, DisplayCalendar, RoundingIncrement, RoundingOptions,
-            TemporalRoundingMode, TemporalUnit, ToStringRoundingOptions,
+            DifferenceSettings, DisplayCalendar, RoundingIncrement, RoundingMode, RoundingOptions,
+            ToStringRoundingOptions, Unit,
         },
         parsers::Precision,
-        primitive::FiniteF64,
         MonthCode, TemporalResult,
     };
 
@@ -1024,15 +1094,7 @@ mod tests {
 
         let result = pdt
             .add(
-                &Duration::from(
-                    DateDuration::new(
-                        FiniteF64::default(),
-                        FiniteF64(1.0),
-                        FiniteF64::default(),
-                        FiniteF64::default(),
-                    )
-                    .unwrap(),
-                ),
+                &Duration::from(DateDuration::new(0, 1, 0, 0).unwrap()),
                 None,
             )
             .unwrap();
@@ -1050,15 +1112,7 @@ mod tests {
 
         let result = pdt
             .subtract(
-                &Duration::from(
-                    DateDuration::new(
-                        FiniteF64::default(),
-                        FiniteF64(1.0),
-                        FiniteF64::default(),
-                        FiniteF64::default(),
-                    )
-                    .unwrap(),
-                ),
+                &Duration::from(DateDuration::new(0, 1, 0, 0).unwrap()),
                 None,
             )
             .unwrap();
@@ -1074,13 +1128,13 @@ mod tests {
             PlainDateTime::try_new(2019, 10, 29, 10, 46, 38, 271, 986, 102, Calendar::default())
                 .unwrap();
 
-        let result = dt.subtract(&Duration::hour(FiniteF64(12.0)), None).unwrap();
+        let result = dt.subtract(&Duration::hour(12), None).unwrap();
         assert_datetime(
             result,
             (2019, 10, tinystr!(4, "M10"), 28, 22, 46, 38, 271, 986, 102),
         );
 
-        let result = dt.add(&Duration::hour(FiniteF64(-12.0)), None).unwrap();
+        let result = dt.add(&Duration::hour(-12), None).unwrap();
         assert_datetime(
             result,
             (2019, 10, tinystr!(4, "M10"), 28, 22, 46, 38, 271, 986, 102),
@@ -1088,9 +1142,9 @@ mod tests {
     }
 
     fn create_diff_setting(
-        smallest: TemporalUnit,
+        smallest: Unit,
         increment: u32,
-        rounding_mode: TemporalRoundingMode,
+        rounding_mode: RoundingMode,
     ) -> DifferenceSettings {
         DifferenceSettings {
             largest_unit: None,
@@ -1109,19 +1163,18 @@ mod tests {
             PlainDateTime::try_new(2021, 9, 7, 12, 39, 40, 987, 654, 321, Calendar::default())
                 .unwrap();
 
-        let settings = create_diff_setting(TemporalUnit::Hour, 3, TemporalRoundingMode::HalfExpand);
+        let settings = create_diff_setting(Unit::Hour, 3, RoundingMode::HalfExpand);
         let result = earlier.until(&later, settings).unwrap();
 
-        assert_eq!(result.days(), 973.0);
-        assert_eq!(result.hours(), 3.0);
+        assert_eq!(result.days(), 973);
+        assert_eq!(result.hours(), 3);
 
-        let settings =
-            create_diff_setting(TemporalUnit::Minute, 30, TemporalRoundingMode::HalfExpand);
+        let settings = create_diff_setting(Unit::Minute, 30, RoundingMode::HalfExpand);
         let result = earlier.until(&later, settings).unwrap();
 
-        assert_eq!(result.days(), 973.0);
-        assert_eq!(result.hours(), 4.0);
-        assert_eq!(result.minutes(), 30.0);
+        assert_eq!(result.days(), 973);
+        assert_eq!(result.hours(), 4);
+        assert_eq!(result.minutes(), 30);
     }
 
     #[test]
@@ -1133,19 +1186,18 @@ mod tests {
             PlainDateTime::try_new(2021, 9, 7, 12, 39, 40, 987, 654, 321, Calendar::default())
                 .unwrap();
 
-        let settings = create_diff_setting(TemporalUnit::Hour, 3, TemporalRoundingMode::HalfExpand);
+        let settings = create_diff_setting(Unit::Hour, 3, RoundingMode::HalfExpand);
         let result = later.since(&earlier, settings).unwrap();
 
-        assert_eq!(result.days(), 973.0);
-        assert_eq!(result.hours(), 3.0);
+        assert_eq!(result.days(), 973);
+        assert_eq!(result.hours(), 3);
 
-        let settings =
-            create_diff_setting(TemporalUnit::Minute, 30, TemporalRoundingMode::HalfExpand);
+        let settings = create_diff_setting(Unit::Minute, 30, RoundingMode::HalfExpand);
         let result = later.since(&earlier, settings).unwrap();
 
-        assert_eq!(result.days(), 973.0);
-        assert_eq!(result.hours(), 4.0);
-        assert_eq!(result.minutes(), 30.0);
+        assert_eq!(result.days(), 973);
+        assert_eq!(result.hours(), 4);
+        assert_eq!(result.minutes(), 30);
     }
 
     #[test]
@@ -1163,7 +1215,7 @@ mod tests {
                 assert_eq!(dt.nanosecond(), expected.8);
             };
 
-        let gen_rounding_options = |smallest: TemporalUnit, increment: u32| -> RoundingOptions {
+        let gen_rounding_options = |smallest: Unit, increment: u32| -> RoundingOptions {
             RoundingOptions {
                 largest_unit: None,
                 smallest_unit: Some(smallest),
@@ -1175,33 +1227,27 @@ mod tests {
             PlainDateTime::try_new(1976, 11, 18, 14, 23, 30, 123, 456, 789, Calendar::default())
                 .unwrap();
 
-        let result = dt
-            .round(gen_rounding_options(TemporalUnit::Hour, 4))
-            .unwrap();
+        let result = dt.round(gen_rounding_options(Unit::Hour, 4)).unwrap();
         assert_datetime(result, (1976, 11, 18, 16, 0, 0, 0, 0, 0));
 
-        let result = dt
-            .round(gen_rounding_options(TemporalUnit::Minute, 15))
-            .unwrap();
+        let result = dt.round(gen_rounding_options(Unit::Minute, 15)).unwrap();
         assert_datetime(result, (1976, 11, 18, 14, 30, 0, 0, 0, 0));
 
-        let result = dt
-            .round(gen_rounding_options(TemporalUnit::Second, 30))
-            .unwrap();
+        let result = dt.round(gen_rounding_options(Unit::Second, 30)).unwrap();
         assert_datetime(result, (1976, 11, 18, 14, 23, 30, 0, 0, 0));
 
         let result = dt
-            .round(gen_rounding_options(TemporalUnit::Millisecond, 10))
+            .round(gen_rounding_options(Unit::Millisecond, 10))
             .unwrap();
         assert_datetime(result, (1976, 11, 18, 14, 23, 30, 120, 0, 0));
 
         let result = dt
-            .round(gen_rounding_options(TemporalUnit::Microsecond, 10))
+            .round(gen_rounding_options(Unit::Microsecond, 10))
             .unwrap();
         assert_datetime(result, (1976, 11, 18, 14, 23, 30, 123, 460, 0));
 
         let result = dt
-            .round(gen_rounding_options(TemporalUnit::Nanosecond, 10))
+            .round(gen_rounding_options(Unit::Nanosecond, 10))
             .unwrap();
         assert_datetime(result, (1976, 11, 18, 14, 23, 30, 123, 456, 790));
     }
@@ -1215,7 +1261,7 @@ mod tests {
         let bad_options = RoundingOptions {
             largest_unit: None,
             smallest_unit: None,
-            rounding_mode: Some(TemporalRoundingMode::Ceil),
+            rounding_mode: Some(RoundingMode::Ceil),
             increment: Some(RoundingIncrement::ONE),
         };
 

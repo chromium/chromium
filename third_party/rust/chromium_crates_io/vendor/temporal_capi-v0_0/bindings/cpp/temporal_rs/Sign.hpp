@@ -10,14 +10,14 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -33,7 +33,7 @@ inline temporal_rs::Sign temporal_rs::Sign::FromFFI(temporal_rs::capi::Sign c_en
     case temporal_rs::capi::Sign_Negative:
       return static_cast<temporal_rs::Sign::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 #endif // temporal_rs_Sign_HPP

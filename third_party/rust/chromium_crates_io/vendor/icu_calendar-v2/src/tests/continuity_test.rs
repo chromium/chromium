@@ -14,14 +14,14 @@ fn check_continuity<A: AsCalendar>(mut date: Date<A>) {
         marker: PhantomData,
     };
 
-    let mut rata_die = Iso::to_fixed(date.to_iso());
+    let mut rata_die = date.to_rata_die();
     let mut weekday = date.day_of_week();
     let mut year = date.year();
     let mut is_in_leap_year = date.is_in_leap_year();
 
     for _ in 0..(366 * 20) {
         let next_date = date.added(one_day_duration);
-        let next_rata_die = Iso::to_fixed(next_date.to_iso());
+        let next_rata_die = next_date.to_iso().to_rata_die();
         assert_eq!(next_rata_die, rata_die + 1, "{next_date:?}");
         let next_weekday = next_date.day_of_week();
         let next_year = next_date.year();
@@ -51,12 +51,12 @@ fn check_every_250_days<A: AsCalendar>(mut date: Date<A>) {
         marker: PhantomData,
     };
 
-    let mut rata_die = Iso::to_fixed(date.to_iso());
+    let mut rata_die = date.to_rata_die();
 
     for _ in 0..2000 {
         let next_date = date.added(one_thousand_days_duration);
         let next_iso = next_date.to_iso();
-        let next_rata_die = Iso::to_fixed(next_iso.to_iso());
+        let next_rata_die = next_iso.to_rata_die();
         assert_eq!(next_rata_die, rata_die + 250, "{next_date:?}");
         let next_date_roundtrip = next_iso.to_calendar(Ref(next_date.calendar()));
         assert_eq!(next_date, next_date_roundtrip, "{next_date:?}");
@@ -75,7 +75,7 @@ fn test_buddhist_continuity() {
 
 #[test]
 fn test_chinese_continuity() {
-    let cal = crate::chinese::Chinese::new();
+    let cal = crate::cal::Chinese::new();
     let cal = Ref(&cal);
     let date = Date::try_new_chinese_with_calendar(-10, 1, 1, cal);
     check_continuity(date.unwrap());
@@ -95,7 +95,7 @@ fn test_coptic_continuity() {
 
 #[test]
 fn test_dangi_continuity() {
-    let cal = crate::dangi::Dangi::new();
+    let cal = crate::cal::Dangi::new();
     let cal = Ref(&cal);
     let date = Date::try_new_dangi_with_calendar(-10, 1, 1, cal);
     check_continuity(date.unwrap());
@@ -105,7 +105,7 @@ fn test_dangi_continuity() {
 
 #[test]
 fn test_ethiopian_continuity() {
-    use crate::ethiopian::EthiopianEraStyle::*;
+    use crate::cal::EthiopianEraStyle::*;
     let date = Date::try_new_ethiopian(AmeteMihret, -10, 1, 1);
     check_continuity(date.unwrap());
     let date = Date::try_new_ethiopian(AmeteMihret, -300, 1, 1);
@@ -114,7 +114,7 @@ fn test_ethiopian_continuity() {
 
 #[test]
 fn test_ethiopian_amete_alem_continuity() {
-    use crate::ethiopian::EthiopianEraStyle::*;
+    use crate::cal::EthiopianEraStyle::*;
     let date = Date::try_new_ethiopian(AmeteAlem, -10, 1, 1);
     check_continuity(date.unwrap());
     let date = Date::try_new_ethiopian(AmeteAlem, -300, 1, 1);
@@ -146,46 +146,54 @@ fn test_indian_continuity() {
 }
 
 #[test]
-fn test_islamic_civil_continuity() {
-    let cal = crate::islamic::IslamicCivil::new();
+fn test_hijri_civil_continuity() {
+    let cal = crate::cal::HijriTabular::new(
+        crate::cal::HijriTabularLeapYears::TypeII,
+        crate::cal::HijriTabularEpoch::Friday,
+    );
     let cal = Ref(&cal);
-    let date = Date::try_new_islamic_civil_with_calendar(-10, 1, 1, cal);
+    let date = Date::try_new_hijri_tabular_with_calendar(-10, 1, 1, cal);
     check_continuity(date.unwrap());
-    let date = Date::try_new_islamic_civil_with_calendar(-300, 1, 1, cal);
+    let date = Date::try_new_hijri_tabular_with_calendar(-300, 1, 1, cal);
     check_every_250_days(date.unwrap());
 }
 
 #[test]
-fn test_islamic_observational_continuity() {
+fn test_hijri_simulated_mecca_continuity() {
     #[cfg(feature = "logging")]
     let _ = simple_logger::SimpleLogger::new().env().init();
-    let cal = crate::islamic::IslamicObservational::new();
+    let cal = crate::cal::HijriSimulated::new_mecca_always_calculating();
     let cal = Ref(&cal);
-    let date = Date::try_new_observational_islamic_with_calendar(-10, 1, 1, cal);
+    let date = Date::try_new_simulated_hijri_with_calendar(-10, 1, 1, cal);
     check_continuity(date.unwrap());
-    let date = Date::try_new_observational_islamic_with_calendar(-300, 1, 1, cal);
+    let date = Date::try_new_simulated_hijri_with_calendar(-300, 1, 1, cal);
     check_every_250_days(date.unwrap());
 }
 
 #[test]
-fn test_islamic_tabular_continuity() {
-    let cal = crate::islamic::IslamicTabular::new();
+fn test_hijri_tabular_continuity() {
+    let cal = crate::cal::HijriTabular::new(
+        crate::cal::HijriTabularLeapYears::TypeII,
+        crate::cal::HijriTabularEpoch::Thursday,
+    );
     let cal = Ref(&cal);
-    let date = Date::try_new_islamic_tabular_with_calendar(-10, 1, 1, cal);
+    let date = Date::try_new_hijri_tabular_with_calendar(-10, 1, 1, cal);
     check_continuity(date.unwrap());
-    let date = Date::try_new_islamic_tabular_with_calendar(-300, 1, 1, cal);
+    let date = Date::try_new_hijri_tabular_with_calendar(-300, 1, 1, cal);
     check_every_250_days(date.unwrap());
 }
 
 #[test]
-fn test_islamic_umm_al_qura_continuity() {
+fn test_hijri_umm_al_qura_continuity() {
     #[cfg(feature = "logging")]
     let _ = simple_logger::SimpleLogger::new().env().init();
-    let cal = crate::islamic::IslamicUmmAlQura::new();
-    let cal = Ref(&cal);
-    let date = Date::try_new_ummalqura_with_calendar(-10, 1, 1, cal);
+    let date = Date::try_new_ummalqura(-10, 1, 1);
     check_continuity(date.unwrap());
-    let date = Date::try_new_ummalqura_with_calendar(-300, 1, 1, cal);
+    let date = Date::try_new_ummalqura(1290, 1, 1);
+    check_continuity(date.unwrap());
+    let date = Date::try_new_ummalqura(1590, 1, 1);
+    check_continuity(date.unwrap());
+    let date = Date::try_new_ummalqura(-300, 1, 1);
     check_every_250_days(date.unwrap());
 }
 
@@ -199,27 +207,21 @@ fn test_iso_continuity() {
 
 #[test]
 fn test_japanese_continuity() {
-    use crate::types::Era;
-    use tinystr::tinystr;
-    let cal = crate::japanese::Japanese::new();
+    let cal = crate::cal::Japanese::new();
     let cal = Ref(&cal);
-    let date = Date::try_new_japanese_with_calendar(Era(tinystr!(16, "heisei")), 20, 1, 1, cal);
+    let date = Date::try_new_japanese_with_calendar("heisei", 20, 1, 1, cal);
     check_continuity(date.unwrap());
-    let date = Date::try_new_japanese_with_calendar(Era(tinystr!(16, "bce")), 500, 1, 1, cal);
+    let date = Date::try_new_japanese_with_calendar("bce", 500, 1, 1, cal);
     check_every_250_days(date.unwrap());
 }
 
 #[test]
 fn test_japanese_extended_continuity() {
-    use crate::types::Era;
-    use tinystr::tinystr;
-    let cal = crate::japanese::JapaneseExtended::new();
+    let cal = crate::cal::JapaneseExtended::new();
     let cal = Ref(&cal);
-    let date =
-        Date::try_new_japanese_extended_with_calendar(Era(tinystr!(16, "heisei")), 20, 1, 1, cal);
+    let date = Date::try_new_japanese_extended_with_calendar("heisei", 20, 1, 1, cal);
     check_continuity(date.unwrap());
-    let date =
-        Date::try_new_japanese_extended_with_calendar(Era(tinystr!(16, "bce")), 500, 1, 1, cal);
+    let date = Date::try_new_japanese_extended_with_calendar("bce", 500, 1, 1, cal);
     check_every_250_days(date.unwrap());
 }
 

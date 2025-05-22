@@ -45,8 +45,8 @@ impl PersonNamesFormatter {
     ) -> Result<PersonNamesFormatter, PersonNamesFormatterError>
     where
         P: ?Sized
-            + DataProvider<icu_properties::provider::ScriptWithExtensionsPropertyV1>
-            + DataProvider<icu_properties::provider::ScriptValueToShortNameV1>
+            + DataProvider<icu_properties::provider::PropertyScriptWithExtensionsV1>
+            + DataProvider<icu_properties::provider::PropertyNameShortScriptV1>
             + DataProvider<icu_locale::provider::LocaleLikelySubtagsLanguageV1>
             + DataProvider<icu_locale::provider::LocaleParentsV1>,
     {

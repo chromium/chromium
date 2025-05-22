@@ -133,12 +133,11 @@
 //!
 //! `ICU4X` provides two sets of rules AST and APIs to manage it:
 //!  * `reference` is the canonical implementation of the specification intended for
-//!                tooling and testing to use.
-//!                This module provides APIs for parsing, editing and serialization
-//!                of the rules.
-//!  * `runtime`   is a non-public, non-mutable runtime version optimized for
-//!                performance and low memory overhead. This version provides
-//!                runtime resolver used by the `PluralRules` itself.
+//!    tooling and testing to use.
+//!    This module provides APIs for parsing, editing and serialization of the rules.
+//!  * `runtime` is a non-public, non-mutable runtime version optimized for
+//!    performance and low memory overhead. This version provides
+//!    runtime resolver used by the `PluralRules` itself.
 //!
 //! [`PluralCategory`]: super::PluralCategory
 //! [`PluralCategories`]: super::PluralCategory

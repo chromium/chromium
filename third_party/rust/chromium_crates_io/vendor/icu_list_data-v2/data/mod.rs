@@ -1,7 +1,7 @@
 // @generated
-include!("list_or_v2.rs.data");
-include!("list_unit_v2.rs.data");
-include!("list_and_v2.rs.data");
+include!("list_or_v1.rs.data");
+include!("list_and_v1.rs.data");
+include!("list_unit_v1.rs.data");
 /// Marks a type as a data provider. You can then use macros like
 /// `impl_core_helloworld_v1` to add implementations.
 ///
@@ -17,7 +17,7 @@ include!("list_and_v2.rs.data");
 #[macro_export]
 macro_rules! __make_provider {
     ($ name : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $name {
             #[allow(dead_code)]
             pub(crate) const MUST_USE_MAKE_PROVIDER_MACRO: () = ();
@@ -31,8 +31,8 @@ pub use __make_provider as make_provider;
 macro_rules! impl_data_provider {
     ($ provider : ty) => {
         make_provider!($provider);
-        impl_list_or_v2!($provider);
-        impl_list_unit_v2!($provider);
-        impl_list_and_v2!($provider);
+        impl_list_or_v1!($provider);
+        impl_list_and_v1!($provider);
+        impl_list_unit_v1!($provider);
     };
 }

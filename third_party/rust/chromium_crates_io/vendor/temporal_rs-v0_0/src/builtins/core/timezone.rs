@@ -1,22 +1,22 @@
 //! This module implements the Temporal `TimeZone` and components.
 
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use alloc::{vec, vec::Vec};
 
-use ixdtf::parsers::records::{TimeZoneRecord, UtcOffsetRecord};
+use ixdtf::parsers::records::{MinutePrecisionOffset, TimeZoneRecord, UtcOffsetRecord};
+use ixdtf::parsers::TimeZoneParser;
 use num_traits::ToPrimitive;
 
 use crate::builtins::core::duration::DateDuration;
 use crate::parsers::{
-    parse_allowed_timezone_formats, parse_identifier, parse_offset, FormattableOffset,
-    FormattableTime, Precision,
+    parse_allowed_timezone_formats, parse_identifier, FormattableOffset, FormattableTime, Precision,
 };
 use crate::provider::{TimeZoneOffset, TimeZoneProvider};
 use crate::{
     builtins::core::{duration::normalized::NormalizedTimeDuration, Instant},
     iso::{IsoDate, IsoDateTime, IsoTime},
     options::Disambiguation,
-    time::EpochNanoseconds,
+    unix_time::EpochNanoseconds,
     TemporalError, TemporalResult, ZonedDateTime,
 };
 use crate::{Calendar, Sign};
@@ -28,10 +28,22 @@ const NS_IN_HOUR: i128 = 60 * 60 * 1000 * 1000 * 1000;
 pub struct UtcOffset(pub(crate) i16);
 
 impl UtcOffset {
-    pub(crate) fn from_ixdtf_record(record: UtcOffsetRecord) -> Self {
+    pub(crate) fn from_ixdtf_record(record: MinutePrecisionOffset) -> Self {
         // NOTE: ixdtf parser restricts minute/second to 0..=60
         let minutes = i16::from(record.hour) * 60 + record.minute as i16;
         Self(minutes * i16::from(record.sign as i8))
+    }
+
+    pub fn from_utf8(source: &[u8]) -> TemporalResult<Self> {
+        let record = TimeZoneParser::from_utf8(source)
+            .parse_offset()
+            .map_err(|e| TemporalError::range().with_message(e.to_string()))?;
+        match record {
+            UtcOffsetRecord::MinutePrecision(offset) => Ok(Self::from_ixdtf_record(offset)),
+            _ => {
+                Err(TemporalError::range().with_message("offset must be a minute precision offset"))
+            }
+        }
     }
 
     pub fn to_string(&self) -> TemporalResult<String> {
@@ -60,11 +72,7 @@ impl UtcOffset {
 impl core::str::FromStr for UtcOffset {
     type Err = TemporalError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut cursor = s.chars().peekable();
-        match parse_offset(&mut cursor)? {
-            Some(offset) => Ok(Self(offset)),
-            None => Err(TemporalError::range().with_message("Invalid offset")),
-        }
+        Self::from_utf8(s.as_bytes())
     }
 }
 
@@ -324,11 +332,11 @@ impl TimeZone {
             // c. Let earlierDate be BalanceISODate(isoDateTime.[[ISODate]].[[Year]],
             // isoDateTime.[[ISODate]].[[Month]],
             // isoDateTime.[[ISODate]].[[Day]] + earlierTime.[[Days]]).
-            let earlier_date = IsoDate::balance(
+            let earlier_date = IsoDate::try_balance(
                 iso.date.year,
                 iso.date.month.into(),
-                i32::from(iso.date.day) + earlier_time.0,
-            );
+                i64::from(iso.date.day) + earlier_time.0,
+            )?;
 
             // d. Let earlierDateTime be
             // CombineISODateAndTimeRecord(earlierDate, earlierTime).
@@ -346,11 +354,11 @@ impl TimeZone {
         let later_time = iso.time.add(time_duration);
         // 20. Let laterDate be BalanceISODate(isoDateTime.[[ISODate]].[[Year]],
         // isoDateTime.[[ISODate]].[[Month]], isoDateTime.[[ISODate]].[[Day]] + laterTime.[[Days]]).
-        let later_date = IsoDate::balance(
+        let later_date = IsoDate::try_balance(
             iso.date.year,
             iso.date.month.into(),
-            i32::from(iso.date.day) + later_time.0,
-        );
+            i64::from(iso.date.day) + later_time.0,
+        )?;
         // 21. Let laterDateTime be CombineISODateAndTimeRecord(laterDate, laterTime).
         let later = IsoDateTime::new_unchecked(later_date, later_time.1);
         // 22. Set possibleEpochNs to ? GetPossibleEpochNanoseconds(timeZone, laterDateTime).

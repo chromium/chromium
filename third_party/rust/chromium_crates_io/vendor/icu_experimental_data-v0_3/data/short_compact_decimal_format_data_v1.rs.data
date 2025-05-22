@@ -12,13 +12,13 @@
 #[macro_export]
 macro_rules! __impl_short_compact_decimal_format_data_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $provider {
-            const DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1: icu_provider_baked::zerotrie::Data<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1> = {
-                const TRIE: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1yabcdefghijklmnoprstuvwxyz\0\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x03\x03\x03\x03\x03\x03\x03\x03\x04\xD8\x16#:g\x99\xAF\xD3\xE3\xF2l\x83\xC0\xDD\xE7\x0E\x1Fn\xAA\xE6\xEF\xF2\xFD$\xC5fmrsz\x01\x02\xC6\xCD\x80\x81\x82\xC2\x1E-\x05arab\x82\xCEBDEIJKLMOPQSTY\x07\x0E\x1E.5ELSZah\x90\x97H\x1Elatn\x82J\x1Elatn\x82\xC2GR\x06\x1Elatn\x82\x1Elatn\x82\xC2LQ\x06\x1Elatn\x82\x1Elatn\x82O\x1Elatn\x82\xC2MW\x06\x1Elatn\x82\x1Elatn\x82B\x1Elatn\x82R\x1Elatn\x82M\x1Elatn\x82S\x1Elatn\x82A\x1Elatn\x82\xC5ADOSY\x06\x0C\x12\x18\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82D\x1Elatn\x82E\x1Elatn\x82\x83\x1Elatn\x83\x84\xC7aeghnrs\x07\x08\x11\x19 )l-Latn\x85\x86\x87c\x1Elatn\x90Qo\x1Elatn\x90Q\x88\x1Elatn\x88\x89x\x8A\x1Edeva\x8A\x8B-Cyrl\x8C\xC4ahsy\x01\x03\x04\x8Dr\x8E\x8F\x8E\xC4aeos\x02\x04\x0C\x90\0\x90\x01i\x1Edeva\x90Qb\x90\x02\xC6elnstu\x01\x03\n\x1D\x1F\x8E\x90\x03\x90\x04-IN\x90\x05\x90\x06-\xC34MU\x04\x0719\x90\x07X\x90\x08S\x90\t\x90\n\x90\x0B\xC6afiory\t\x17\x1B\x1D$\x90\x0C\x1Elatn\x90\x0C-Adlm\x90\r\x1Elatn\x90\r\x90\x0El\x8E\x90\x0F\x90\x10-CA\x90\x11\x90\x12\xC4adlu\x02\x03\x05\x90\x13\x8E\x90\x0B\x90\x14\x1Egujr\x90\x14\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90\x15\x90\x16\x90\x17\x1Edeva\x90\x17\x90\x18b\x90\x02\x90\x19\x90\x1A\xC4adst\x02\x04\x06\x90\x1B\x90\x1C\x90\x1D\x90\x1E\xC2av\x02\x90\x1F\x90 \x1Ejava\x90 \xCBaegkmnosuxy\x02\x05\x08\n\x13\x1C18:b\x90!a\x90\"p\x90#\x90$\x90%\x1Ekhmr\x90%\x90&\x1Eknda\x90&\x90'k\x90\x04\xC2\x1E-\x06deva\x90\x04Latn\x90(\x1Elatn\x90Q\x90)v\x90*-\xC3DOT\n\x14eva\x1Edeva\x90Qrya\x1Eorya\x90Qelu\x1Etelu\x90Q\x90+\xC4botv\x02\x0B\r\x90,\x90-\x1Elaoo\x90]\x90.\x90/\xC7aklnrsy\x08\n\x11\x1B$&i\x1Edeva\x90Q\x900\x8E\x1Emlym\x8E\x901i\x1Elatn\x90Q\x902\x1Elatn\x902\x903\x904\x1Elatn\x904\xC4eloq\t\x0B\r\x905\x1Elatn\x905\x90\x12\x906o\x1Elatn\x90Qr\x907\x1Eorya\x907\xC5aclst\t\x0B\r\x16\x908\x1Eguru\x908m\x8E\x909\x90:\x1Elatn\x90:\x90#-PT\x90;\xC3aou\x08\nj\x1Elatn\x90Q\x90<\x86\xCBacdikloqrvw\x15\x17 \"#%&(02\xC3\x1Eht\x06\x08latn\x90Q\x90=\x1Elatn\x90Q\x90>\x90?\x1Elatn\x90?\x90@\x8F\x90A\x8E\x90B\x90C-Latn\x8B\x90D\x90E-KE\x90F\xC9aeghikort\x0C\x15\x17 \"$&(\x90G\x1Etamldec\x90G\x90H\x1Etelu\x90H\x90I\x90\x04\x1Ethai\x90\x04\x90J\x90K\x90L\x90M\x90N\xC5gknrz\x0C\x0E\x11)\x90O\x1Earabext\x90O\x90Pd\x90Q\x90R\xC2\x1E-\tarabext\x90RIN\x1Elatn\x90R\x90S-Cyrl\x90T\xC2ei\x03c\x90U\x90Vo\x90\x04nr\x90W\x1Edeva\x90W\xC2ru\x03l\x90Xe\x90Y\xC2\x1E-\thanidec\x90YHans\x90Z\x1Ehanidec\x90Z\xC2hu>\x90[\xC2\x1E-\thanidec\x90[\xC2HM\x1E\xC2Ka\x0C\x90\x04\x1Ehanidec\x90\x04nt\x90\\\x1Ehanidec\x90\\O\x90\x04\x1Ehanidec\x90\x04\x8E" };
-                const VALUES: &'static [<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1 as icu_provider_baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
+            const DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1: icu_provider::baked::zerotrie::Data<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1> = {
+                const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1yabcdefghijklmnoprstuvwxyz\0\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x03\x03\x03\x03\x03\x03\x03\x03\x04\xD8\x16#:g\x99\xAF\xD3\xE3\xF2l\x83\xC0\xDD\xE7\x0E\x1Fn\xAA\xE6\xEF\xF2\xFD$\xC5fmrsz\x01\x02\xC6\xCD\x80\x81\x82\xC2\x1E-\x05arab\x82\xCEBDEIJKLMOPQSTY\x07\x0E\x1E.5ELSZah\x90\x97H\x1Elatn\x82J\x1Elatn\x82\xC2GR\x06\x1Elatn\x82\x1Elatn\x82\xC2LQ\x06\x1Elatn\x82\x1Elatn\x82O\x1Elatn\x82\xC2MW\x06\x1Elatn\x82\x1Elatn\x82B\x1Elatn\x82R\x1Elatn\x82M\x1Elatn\x82S\x1Elatn\x82A\x1Elatn\x82\xC5ADOSY\x06\x0C\x12\x18\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82\x1Elatn\x82D\x1Elatn\x82E\x1Elatn\x82\x83\x1Elatn\x83\x84\xC7aeghnrs\x07\x08\x11\x19 )l-Latn\x85\x86\x87c\x1Elatn\x90Qo\x1Elatn\x90Q\x88\x1Elatn\x88\x89x\x8A\x1Edeva\x8A\x8B-Cyrl\x8C\xC4ahsy\x01\x03\x04\x8Dr\x8E\x8F\x8E\xC4aeos\x02\x04\x0C\x90\0\x90\x01i\x1Edeva\x90Qb\x90\x02\xC6elnstu\x01\x03\n\x1D\x1F\x8E\x90\x03\x90\x04-IN\x90\x05\x90\x06-\xC34MU\x04\x0719\x90\x07X\x90\x08S\x90\t\x90\n\x90\x0B\xC6afiory\t\x17\x1B\x1D$\x90\x0C\x1Elatn\x90\x0C-Adlm\x90\r\x1Elatn\x90\r\x90\x0El\x8E\x90\x0F\x90\x10-CA\x90\x11\x90\x12\xC4adlu\x02\x03\x05\x90\x13\x8E\x90\x0B\x90\x14\x1Egujr\x90\x14\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90\x15\x90\x16\x90\x17\x1Edeva\x90\x17\x90\x18b\x90\x02\x90\x19\x90\x1A\xC4adst\x02\x04\x06\x90\x1B\x90\x1C\x90\x1D\x90\x1E\xC2av\x02\x90\x1F\x90 \x1Ejava\x90 \xCBaegkmnosuxy\x02\x05\x08\n\x13\x1C18:b\x90!a\x90\"p\x90#\x90$\x90%\x1Ekhmr\x90%\x90&\x1Eknda\x90&\x90'k\x90\x04\xC2\x1E-\x06deva\x90\x04Latn\x90(\x1Elatn\x90Q\x90)v\x90*-\xC3DOT\n\x14eva\x1Edeva\x90Qrya\x1Eorya\x90Qelu\x1Etelu\x90Q\x90+\xC4botv\x02\x0B\r\x90,\x90-\x1Elaoo\x90]\x90.\x90/\xC7aklnrsy\x08\n\x11\x1B$&i\x1Edeva\x90Q\x900\x8E\x1Emlym\x8E\x901i\x1Elatn\x90Q\x902\x1Elatn\x902\x903\x904\x1Elatn\x904\xC4eloq\t\x0B\r\x905\x1Elatn\x905\x90\x12\x906o\x1Elatn\x90Qr\x907\x1Eorya\x907\xC5aclst\t\x0B\r\x16\x908\x1Eguru\x908m\x8E\x909\x90:\x1Elatn\x90:\x90#-PT\x90;\xC3aou\x08\nj\x1Elatn\x90Q\x90<\x86\xCBacdikloqrvw\x15\x17 \"#%&(02\xC3\x1Eht\x06\x08latn\x90Q\x90=\x1Elatn\x90Q\x90>\x90?\x1Elatn\x90?\x90@\x8F\x90A\x8E\x90B\x90C-Latn\x8B\x90D\x90E-KE\x90F\xC9aeghikort\x0C\x15\x17 \"$&(\x90G\x1Etamldec\x90G\x90H\x1Etelu\x90H\x90I\x90\x04\x1Ethai\x90\x04\x90J\x90K\x90L\x90M\x90N\xC5gknrz\x0C\x0E\x11)\x90O\x1Earabext\x90O\x90Pd\x90Q\x90R\xC2\x1E-\tarabext\x90RIN\x1Elatn\x90R\x90S-Cyrl\x90T\xC2ei\x03c\x90U\x90Vo\x90\x04nr\x90W\x1Edeva\x90W\xC2ru\x03l\x90Xe\x90Y\xC2\x1E-\thanidec\x90YHans\x90Z\x1Ehanidec\x90Z\xC2hu>\x90[\xC2\x1E-\thanidec\x90[\xC2HM\x1E\xC2Ka\x0C\x90\x04\x1Ehanidec\x90\x04nt\x90\\\x1Ehanidec\x90\\O\x90\x04\x1Ehanidec\x90\x04\x8E" };
+                const VALUES: &'static [<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1 as icu_provider::baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
                     icu::experimental::compactdecimal::provider::CompactDecimalPatternData {
                         patterns: unsafe {
                             #[allow(unused_unsafe)]
@@ -680,24 +680,24 @@ macro_rules! __impl_short_compact_decimal_format_data_v1 {
                         },
                     },
                 ];
-                unsafe { icu_provider_baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
+                unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DataProvider<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
-                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1, req.id, req.metadata.attributes_prefix_match) {
+                let payload = if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1, req.id, req.metadata.attributes_prefix_match) {
                     payload
                 } else {
                     const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1 as icu_provider::DataMarker>::INFO.fallback_config);
                     let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
                     loop {
-                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                        if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
                             metadata.locale = Some(fallback_iterator.take());
                             break payload;
                         }
-                        if fallback_iterator.get().is_default() {
+                        if fallback_iterator.get().is_unknown() {
                             return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1 as icu_provider::DataMarker>::INFO, req));
                         }
                         fallback_iterator.step();
@@ -709,10 +709,10 @@ macro_rules! __impl_short_compact_decimal_format_data_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_short_compact_decimal_format_data_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::experimental::compactdecimal::provider::ShortCompactDecimalFormatDataV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
-                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1).collect())
+                Ok(icu_provider::baked::DataStore::iter(&Self::DATA_SHORT_COMPACT_DECIMAL_FORMAT_DATA_V1).collect())
             }
         }
     };

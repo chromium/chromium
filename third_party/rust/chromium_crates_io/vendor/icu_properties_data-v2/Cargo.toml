@@ -11,11 +11,11 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_properties_data"
-version = "2.0.0-beta2"
+version = "2.0.1"
 authors = ["The ICU4X Project Developers"]
-build = false
+build = "build.rs"
 include = [
     "data/**/*",
     "src/**/*",
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -39,10 +40,10 @@ license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
 [package.metadata.sources.cldr]
-tagged = "47.0.0-BETA1"
+tagged = "47.0.0"
 
 [package.metadata.sources.icuexport]
-tagged = "release-77-rc"
+tagged = "icu4x/2025-05-01/77.x"
 
 [package.metadata.sources.segmenter_lstm]
 tagged = "v0.1.0"
@@ -51,9 +52,7 @@ tagged = "v0.1.0"
 name = "icu_properties_data"
 path = "src/lib.rs"
 
-[dependencies.icu_provider_baked]
-version = "~2.0.0-beta2"
-default-features = false
+[dependencies]
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

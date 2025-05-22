@@ -14,7 +14,7 @@ use writeable::{impl_display_with_writeable, LengthHint, Writeable};
 
 mod timezone;
 
-pub(crate) use timezone::{parse_allowed_timezone_formats, parse_identifier, parse_offset};
+pub(crate) use timezone::{parse_allowed_timezone_formats, parse_identifier};
 
 // TODO: Move `Writeable` functionality to `ixdtf` crate
 
@@ -648,7 +648,7 @@ enum ParseVariant {
 }
 
 #[inline]
-fn parse_ixdtf(source: &str, variant: ParseVariant) -> TemporalResult<IxdtfParseRecord> {
+fn parse_ixdtf(source: &[u8], variant: ParseVariant) -> TemporalResult<IxdtfParseRecord> {
     fn cast_handler<'a>(
         _: &mut IxdtfParser<'a>,
         handler: impl FnMut(Annotation<'a>) -> Option<Annotation<'a>>,
@@ -658,7 +658,7 @@ fn parse_ixdtf(source: &str, variant: ParseVariant) -> TemporalResult<IxdtfParse
 
     let mut first_calendar: Option<Annotation> = None;
     let mut critical_duplicate_calendar = false;
-    let mut parser = IxdtfParser::from_str(source);
+    let mut parser = IxdtfParser::from_utf8(source);
 
     let handler = cast_handler(&mut parser, |annotation: Annotation<'_>| {
         if annotation.key == "u-ca".as_bytes() {
@@ -706,7 +706,7 @@ fn parse_ixdtf(source: &str, variant: ParseVariant) -> TemporalResult<IxdtfParse
 
 /// A utility function for parsing a `DateTime` string
 #[inline]
-pub(crate) fn parse_date_time(source: &str) -> TemporalResult<IxdtfParseRecord> {
+pub(crate) fn parse_date_time(source: &[u8]) -> TemporalResult<IxdtfParseRecord> {
     let record = parse_ixdtf(source, ParseVariant::DateTime)?;
 
     if record.offset == Some(UtcOffsetRecordOrZ::Z) {
@@ -719,7 +719,7 @@ pub(crate) fn parse_date_time(source: &str) -> TemporalResult<IxdtfParseRecord> 
 
 #[inline]
 pub(crate) fn parse_zoned_date_time(source: &str) -> TemporalResult<IxdtfParseRecord> {
-    let record = parse_ixdtf(source, ParseVariant::DateTime)?;
+    let record = parse_ixdtf(source.as_bytes(), ParseVariant::DateTime)?;
 
     // TODO: Support rejecting subminute precision in time zone annootations
     if record.tz.is_none() {
@@ -738,7 +738,7 @@ pub(crate) struct IxdtfParseInstantRecord {
 
 /// A utility function for parsing an `Instant` string
 #[inline]
-pub(crate) fn parse_instant(source: &str) -> TemporalResult<IxdtfParseInstantRecord> {
+pub(crate) fn parse_instant(source: &[u8]) -> TemporalResult<IxdtfParseInstantRecord> {
     let record = parse_ixdtf(source, ParseVariant::DateTime)?;
 
     let IxdtfParseRecord {
@@ -758,7 +758,7 @@ pub(crate) fn parse_instant(source: &str) -> TemporalResult<IxdtfParseInstantRec
 
 /// A utility function for parsing a `YearMonth` string
 #[inline]
-pub(crate) fn parse_year_month(source: &str) -> TemporalResult<IxdtfParseRecord> {
+pub(crate) fn parse_year_month(source: &[u8]) -> TemporalResult<IxdtfParseRecord> {
     let ym_record = parse_ixdtf(source, ParseVariant::YearMonth);
 
     if let Ok(ym) = ym_record {
@@ -780,14 +780,14 @@ pub(crate) fn parse_year_month(source: &str) -> TemporalResult<IxdtfParseRecord>
 
 /// A utilty function for parsing a `MonthDay` String.
 #[inline]
-pub(crate) fn parse_month_day(source: &str) -> TemporalResult<IxdtfParseRecord> {
+pub(crate) fn parse_month_day(source: &[u8]) -> TemporalResult<IxdtfParseRecord> {
     let md_record = parse_ixdtf(source, ParseVariant::MonthDay);
     // Error needs to be a RangeError
     md_record.map_err(|e| TemporalError::range().with_message(format!("{e}")))
 }
 
 #[inline]
-pub(crate) fn parse_time(source: &str) -> TemporalResult<TimeRecord> {
+pub(crate) fn parse_time(source: &[u8]) -> TemporalResult<TimeRecord> {
     let time_record = parse_ixdtf(source, ParseVariant::Time);
 
     let time_err = match time_record {
@@ -812,13 +812,13 @@ pub(crate) fn parse_time(source: &str) -> TemporalResult<TimeRecord> {
 
 #[inline]
 pub(crate) fn parse_allowed_calendar_formats(s: &str) -> Option<&[u8]> {
-    if let Ok(r) = parse_ixdtf(s, ParseVariant::DateTime).map(|r| r.calendar) {
+    if let Ok(r) = parse_ixdtf(s.as_bytes(), ParseVariant::DateTime).map(|r| r.calendar) {
         return Some(r.unwrap_or(&[]));
     } else if let Ok(r) = IxdtfParser::from_str(s).parse_time().map(|r| r.calendar) {
         return Some(r.unwrap_or(&[]));
-    } else if let Ok(r) = parse_ixdtf(s, ParseVariant::YearMonth).map(|r| r.calendar) {
+    } else if let Ok(r) = parse_ixdtf(s.as_bytes(), ParseVariant::YearMonth).map(|r| r.calendar) {
         return Some(r.unwrap_or(&[]));
-    } else if let Ok(r) = parse_ixdtf(s, ParseVariant::MonthDay).map(|r| r.calendar) {
+    } else if let Ok(r) = parse_ixdtf(s.as_bytes(), ParseVariant::MonthDay).map(|r| r.calendar) {
         return Some(r.unwrap_or(&[]));
     }
     None

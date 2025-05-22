@@ -18,22 +18,25 @@
 pub mod names;
 
 pub use names::{
-    BidiClassNameToValueV2, BidiClassValueToLongNameV1, BidiClassValueToShortNameV1,
-    CanonicalCombiningClassNameToValueV2, CanonicalCombiningClassValueToLongNameV1,
-    CanonicalCombiningClassValueToShortNameV1, EastAsianWidthNameToValueV2,
-    EastAsianWidthValueToLongNameV1, EastAsianWidthValueToShortNameV1,
-    GeneralCategoryMaskNameToValueV2, GeneralCategoryNameToValueV2,
-    GeneralCategoryValueToLongNameV1, GeneralCategoryValueToShortNameV1,
-    GraphemeClusterBreakNameToValueV2, GraphemeClusterBreakValueToLongNameV1,
-    GraphemeClusterBreakValueToShortNameV1, HangulSyllableTypeNameToValueV2,
-    HangulSyllableTypeValueToLongNameV1, HangulSyllableTypeValueToShortNameV1,
-    IndicSyllabicCategoryNameToValueV2, IndicSyllabicCategoryValueToLongNameV1,
-    IndicSyllabicCategoryValueToShortNameV1, JoiningTypeNameToValueV2,
-    JoiningTypeValueToLongNameV1, JoiningTypeValueToShortNameV1, LineBreakNameToValueV2,
-    LineBreakValueToLongNameV1, LineBreakValueToShortNameV1, ScriptNameToValueV2,
-    ScriptValueToLongNameV1, ScriptValueToShortNameV1, SentenceBreakNameToValueV2,
-    SentenceBreakValueToLongNameV1, SentenceBreakValueToShortNameV1, WordBreakNameToValueV2,
-    WordBreakValueToLongNameV1, WordBreakValueToShortNameV1,
+    PropertyNameLongBidiClassV1, PropertyNameLongCanonicalCombiningClassV1,
+    PropertyNameLongEastAsianWidthV1, PropertyNameLongGeneralCategoryV1,
+    PropertyNameLongGraphemeClusterBreakV1, PropertyNameLongHangulSyllableTypeV1,
+    PropertyNameLongIndicSyllabicCategoryV1, PropertyNameLongJoiningTypeV1,
+    PropertyNameLongLineBreakV1, PropertyNameLongScriptV1, PropertyNameLongSentenceBreakV1,
+    PropertyNameLongVerticalOrientationV1, PropertyNameLongWordBreakV1,
+    PropertyNameParseBidiClassV1, PropertyNameParseCanonicalCombiningClassV1,
+    PropertyNameParseEastAsianWidthV1, PropertyNameParseGeneralCategoryMaskV1,
+    PropertyNameParseGeneralCategoryV1, PropertyNameParseGraphemeClusterBreakV1,
+    PropertyNameParseHangulSyllableTypeV1, PropertyNameParseIndicSyllabicCategoryV1,
+    PropertyNameParseJoiningTypeV1, PropertyNameParseLineBreakV1, PropertyNameParseScriptV1,
+    PropertyNameParseSentenceBreakV1, PropertyNameParseVerticalOrientationV1,
+    PropertyNameParseWordBreakV1, PropertyNameShortBidiClassV1,
+    PropertyNameShortCanonicalCombiningClassV1, PropertyNameShortEastAsianWidthV1,
+    PropertyNameShortGeneralCategoryV1, PropertyNameShortGraphemeClusterBreakV1,
+    PropertyNameShortHangulSyllableTypeV1, PropertyNameShortIndicSyllabicCategoryV1,
+    PropertyNameShortJoiningTypeV1, PropertyNameShortLineBreakV1, PropertyNameShortScriptV1,
+    PropertyNameShortSentenceBreakV1, PropertyNameShortVerticalOrientationV1,
+    PropertyNameShortWordBreakV1,
 };
 
 pub use crate::props::gc::GeneralCategoryULE;
@@ -67,726 +70,747 @@ const _: () = {
         pub use icu_collections as collections;
     }
     make_provider!(Baked);
-    impl_alnum_v1!(Baked);
-    impl_alphabetic_v1!(Baked);
-    impl_ascii_hex_digit_v1!(Baked);
-    impl_basic_emoji_v1!(Baked);
-    impl_bidi_class_name_to_value_v2!(Baked);
-    impl_bidi_class_v1!(Baked);
-    impl_bidi_class_value_to_long_name_v1!(Baked);
-    impl_bidi_class_value_to_short_name_v1!(Baked);
-    impl_bidi_control_v1!(Baked);
-    impl_bidi_mirrored_v1!(Baked);
-    impl_bidi_mirroring_glyph_v1!(Baked);
-    impl_blank_v1!(Baked);
-    impl_canonical_combining_class_name_to_value_v2!(Baked);
-    impl_canonical_combining_class_v1!(Baked);
-    impl_canonical_combining_class_value_to_long_name_v1!(Baked);
-    impl_canonical_combining_class_value_to_short_name_v1!(Baked);
-    impl_case_ignorable_v1!(Baked);
-    impl_case_sensitive_v1!(Baked);
-    impl_cased_v1!(Baked);
-    impl_changes_when_casefolded_v1!(Baked);
-    impl_changes_when_casemapped_v1!(Baked);
-    impl_changes_when_lowercased_v1!(Baked);
-    impl_changes_when_nfkc_casefolded_v1!(Baked);
-    impl_changes_when_titlecased_v1!(Baked);
-    impl_changes_when_uppercased_v1!(Baked);
-    impl_dash_v1!(Baked);
-    impl_default_ignorable_code_point_v1!(Baked);
-    impl_deprecated_v1!(Baked);
-    impl_diacritic_v1!(Baked);
-    impl_east_asian_width_name_to_value_v2!(Baked);
-    impl_east_asian_width_v1!(Baked);
-    impl_east_asian_width_value_to_long_name_v1!(Baked);
-    impl_east_asian_width_value_to_short_name_v1!(Baked);
-    impl_emoji_component_v1!(Baked);
-    impl_emoji_modifier_base_v1!(Baked);
-    impl_emoji_modifier_v1!(Baked);
-    impl_emoji_presentation_v1!(Baked);
-    impl_emoji_v1!(Baked);
-    impl_extended_pictographic_v1!(Baked);
-    impl_extender_v1!(Baked);
-    impl_full_composition_exclusion_v1!(Baked);
-    impl_general_category_mask_name_to_value_v2!(Baked);
-    impl_general_category_name_to_value_v2!(Baked);
-    impl_general_category_v1!(Baked);
-    impl_general_category_value_to_long_name_v1!(Baked);
-    impl_general_category_value_to_short_name_v1!(Baked);
-    impl_graph_v1!(Baked);
-    impl_grapheme_base_v1!(Baked);
-    impl_grapheme_cluster_break_name_to_value_v2!(Baked);
-    impl_grapheme_cluster_break_v1!(Baked);
-    impl_grapheme_cluster_break_value_to_long_name_v1!(Baked);
-    impl_grapheme_cluster_break_value_to_short_name_v1!(Baked);
-    impl_grapheme_extend_v1!(Baked);
-    impl_grapheme_link_v1!(Baked);
-    impl_hangul_syllable_type_name_to_value_v2!(Baked);
-    impl_hangul_syllable_type_v1!(Baked);
-    impl_hangul_syllable_type_value_to_long_name_v1!(Baked);
-    impl_hangul_syllable_type_value_to_short_name_v1!(Baked);
-    impl_hex_digit_v1!(Baked);
-    impl_hyphen_v1!(Baked);
-    impl_id_continue_v1!(Baked);
-    impl_id_start_v1!(Baked);
-    impl_ideographic_v1!(Baked);
-    impl_ids_binary_operator_v1!(Baked);
-    impl_ids_trinary_operator_v1!(Baked);
-    impl_indic_syllabic_category_name_to_value_v2!(Baked);
-    impl_indic_syllabic_category_v1!(Baked);
-    impl_indic_syllabic_category_value_to_long_name_v1!(Baked);
-    impl_indic_syllabic_category_value_to_short_name_v1!(Baked);
-    impl_join_control_v1!(Baked);
-    impl_joining_type_name_to_value_v2!(Baked);
-    impl_joining_type_v1!(Baked);
-    impl_joining_type_value_to_long_name_v1!(Baked);
-    impl_joining_type_value_to_short_name_v1!(Baked);
-    impl_line_break_name_to_value_v2!(Baked);
-    impl_line_break_v1!(Baked);
-    impl_line_break_value_to_long_name_v1!(Baked);
-    impl_line_break_value_to_short_name_v1!(Baked);
-    impl_logical_order_exception_v1!(Baked);
-    impl_lowercase_v1!(Baked);
-    impl_math_v1!(Baked);
-    impl_nfc_inert_v1!(Baked);
-    impl_nfd_inert_v1!(Baked);
-    impl_nfkc_inert_v1!(Baked);
-    impl_nfkd_inert_v1!(Baked);
-    impl_noncharacter_code_point_v1!(Baked);
-    impl_pattern_syntax_v1!(Baked);
-    impl_pattern_white_space_v1!(Baked);
-    impl_prepended_concatenation_mark_v1!(Baked);
-    impl_print_v1!(Baked);
-    impl_quotation_mark_v1!(Baked);
-    impl_radical_v1!(Baked);
-    impl_regional_indicator_v1!(Baked);
-    impl_script_name_to_value_v2!(Baked);
-    impl_script_v1!(Baked);
-    impl_script_value_to_long_name_v1!(Baked);
-    impl_script_value_to_short_name_v1!(Baked);
-    impl_script_with_extensions_property_v1!(Baked);
-    impl_segment_starter_v1!(Baked);
-    impl_sentence_break_name_to_value_v2!(Baked);
-    impl_sentence_break_v1!(Baked);
-    impl_sentence_break_value_to_long_name_v1!(Baked);
-    impl_sentence_break_value_to_short_name_v1!(Baked);
-    impl_sentence_terminal_v1!(Baked);
-    impl_soft_dotted_v1!(Baked);
-    impl_terminal_punctuation_v1!(Baked);
-    impl_unified_ideograph_v1!(Baked);
-    impl_uppercase_v1!(Baked);
-    impl_variation_selector_v1!(Baked);
-    impl_white_space_v1!(Baked);
-    impl_word_break_name_to_value_v2!(Baked);
-    impl_word_break_v1!(Baked);
-    impl_word_break_value_to_long_name_v1!(Baked);
-    impl_word_break_value_to_short_name_v1!(Baked);
-    impl_xdigit_v1!(Baked);
-    impl_xid_continue_v1!(Baked);
-    impl_xid_start_v1!(Baked);
+    impl_property_binary_alnum_v1!(Baked);
+    impl_property_binary_alphabetic_v1!(Baked);
+    impl_property_binary_ascii_hex_digit_v1!(Baked);
+    impl_property_binary_basic_emoji_v1!(Baked);
+    impl_property_binary_bidi_control_v1!(Baked);
+    impl_property_binary_bidi_mirrored_v1!(Baked);
+    impl_property_binary_blank_v1!(Baked);
+    impl_property_binary_case_ignorable_v1!(Baked);
+    impl_property_binary_case_sensitive_v1!(Baked);
+    impl_property_binary_cased_v1!(Baked);
+    impl_property_binary_changes_when_casefolded_v1!(Baked);
+    impl_property_binary_changes_when_casemapped_v1!(Baked);
+    impl_property_binary_changes_when_lowercased_v1!(Baked);
+    impl_property_binary_changes_when_nfkc_casefolded_v1!(Baked);
+    impl_property_binary_changes_when_titlecased_v1!(Baked);
+    impl_property_binary_changes_when_uppercased_v1!(Baked);
+    impl_property_binary_dash_v1!(Baked);
+    impl_property_binary_default_ignorable_code_point_v1!(Baked);
+    impl_property_binary_deprecated_v1!(Baked);
+    impl_property_binary_diacritic_v1!(Baked);
+    impl_property_binary_emoji_component_v1!(Baked);
+    impl_property_binary_emoji_modifier_base_v1!(Baked);
+    impl_property_binary_emoji_modifier_v1!(Baked);
+    impl_property_binary_emoji_presentation_v1!(Baked);
+    impl_property_binary_emoji_v1!(Baked);
+    impl_property_binary_extended_pictographic_v1!(Baked);
+    impl_property_binary_extender_v1!(Baked);
+    impl_property_binary_full_composition_exclusion_v1!(Baked);
+    impl_property_binary_graph_v1!(Baked);
+    impl_property_binary_grapheme_base_v1!(Baked);
+    impl_property_binary_grapheme_extend_v1!(Baked);
+    impl_property_binary_grapheme_link_v1!(Baked);
+    impl_property_binary_hex_digit_v1!(Baked);
+    impl_property_binary_hyphen_v1!(Baked);
+    impl_property_binary_id_continue_v1!(Baked);
+    impl_property_binary_id_start_v1!(Baked);
+    impl_property_binary_ideographic_v1!(Baked);
+    impl_property_binary_ids_binary_operator_v1!(Baked);
+    impl_property_binary_ids_trinary_operator_v1!(Baked);
+    impl_property_binary_join_control_v1!(Baked);
+    impl_property_binary_logical_order_exception_v1!(Baked);
+    impl_property_binary_lowercase_v1!(Baked);
+    impl_property_binary_math_v1!(Baked);
+    impl_property_binary_nfc_inert_v1!(Baked);
+    impl_property_binary_nfd_inert_v1!(Baked);
+    impl_property_binary_nfkc_inert_v1!(Baked);
+    impl_property_binary_nfkd_inert_v1!(Baked);
+    impl_property_binary_noncharacter_code_point_v1!(Baked);
+    impl_property_binary_pattern_syntax_v1!(Baked);
+    impl_property_binary_pattern_white_space_v1!(Baked);
+    impl_property_binary_prepended_concatenation_mark_v1!(Baked);
+    impl_property_binary_print_v1!(Baked);
+    impl_property_binary_quotation_mark_v1!(Baked);
+    impl_property_binary_radical_v1!(Baked);
+    impl_property_binary_regional_indicator_v1!(Baked);
+    impl_property_binary_segment_starter_v1!(Baked);
+    impl_property_binary_sentence_terminal_v1!(Baked);
+    impl_property_binary_soft_dotted_v1!(Baked);
+    impl_property_binary_terminal_punctuation_v1!(Baked);
+    impl_property_binary_unified_ideograph_v1!(Baked);
+    impl_property_binary_uppercase_v1!(Baked);
+    impl_property_binary_variation_selector_v1!(Baked);
+    impl_property_binary_white_space_v1!(Baked);
+    impl_property_binary_xdigit_v1!(Baked);
+    impl_property_binary_xid_continue_v1!(Baked);
+    impl_property_binary_xid_start_v1!(Baked);
+    impl_property_enum_bidi_class_v1!(Baked);
+    impl_property_enum_bidi_mirroring_glyph_v1!(Baked);
+    impl_property_enum_canonical_combining_class_v1!(Baked);
+    impl_property_enum_east_asian_width_v1!(Baked);
+    impl_property_enum_general_category_v1!(Baked);
+    impl_property_enum_grapheme_cluster_break_v1!(Baked);
+    impl_property_enum_hangul_syllable_type_v1!(Baked);
+    impl_property_enum_indic_conjunct_break_v1!(Baked);
+    impl_property_enum_indic_syllabic_category_v1!(Baked);
+    impl_property_enum_joining_type_v1!(Baked);
+    impl_property_enum_line_break_v1!(Baked);
+    impl_property_enum_script_v1!(Baked);
+    impl_property_enum_sentence_break_v1!(Baked);
+    impl_property_enum_vertical_orientation_v1!(Baked);
+    impl_property_enum_word_break_v1!(Baked);
+    impl_property_name_long_bidi_class_v1!(Baked);
+    impl_property_name_long_canonical_combining_class_v1!(Baked);
+    impl_property_name_long_east_asian_width_v1!(Baked);
+    impl_property_name_long_general_category_v1!(Baked);
+    impl_property_name_long_grapheme_cluster_break_v1!(Baked);
+    impl_property_name_long_hangul_syllable_type_v1!(Baked);
+    impl_property_name_long_indic_syllabic_category_v1!(Baked);
+    impl_property_name_long_joining_type_v1!(Baked);
+    impl_property_name_long_line_break_v1!(Baked);
+    impl_property_name_long_script_v1!(Baked);
+    impl_property_name_long_sentence_break_v1!(Baked);
+    impl_property_name_long_vertical_orientation_v1!(Baked);
+    impl_property_name_long_word_break_v1!(Baked);
+    impl_property_name_parse_bidi_class_v1!(Baked);
+    impl_property_name_parse_canonical_combining_class_v1!(Baked);
+    impl_property_name_parse_east_asian_width_v1!(Baked);
+    impl_property_name_parse_general_category_mask_v1!(Baked);
+    impl_property_name_parse_general_category_v1!(Baked);
+    impl_property_name_parse_grapheme_cluster_break_v1!(Baked);
+    impl_property_name_parse_hangul_syllable_type_v1!(Baked);
+    impl_property_name_parse_indic_syllabic_category_v1!(Baked);
+    impl_property_name_parse_joining_type_v1!(Baked);
+    impl_property_name_parse_line_break_v1!(Baked);
+    impl_property_name_parse_script_v1!(Baked);
+    impl_property_name_parse_sentence_break_v1!(Baked);
+    impl_property_name_parse_vertical_orientation_v1!(Baked);
+    impl_property_name_parse_word_break_v1!(Baked);
+    impl_property_name_short_bidi_class_v1!(Baked);
+    impl_property_name_short_canonical_combining_class_v1!(Baked);
+    impl_property_name_short_east_asian_width_v1!(Baked);
+    impl_property_name_short_general_category_v1!(Baked);
+    impl_property_name_short_grapheme_cluster_break_v1!(Baked);
+    impl_property_name_short_hangul_syllable_type_v1!(Baked);
+    impl_property_name_short_indic_syllabic_category_v1!(Baked);
+    impl_property_name_short_joining_type_v1!(Baked);
+    impl_property_name_short_line_break_v1!(Baked);
+    impl_property_name_short_script_v1!(Baked);
+    impl_property_name_short_sentence_break_v1!(Baked);
+    impl_property_name_short_vertical_orientation_v1!(Baked);
+    impl_property_name_short_word_break_v1!(Baked);
+    impl_property_script_with_extensions_v1!(Baked);
 };
 
 icu_provider::data_marker!(
-    /// `AlnumV1`
-    AlnumV1,
+    /// `PropertyBinaryAlnumV1`
+    PropertyBinaryAlnumV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `AlphabeticV1`
-    AlphabeticV1,
+    /// `PropertyBinaryAlphabeticV1`
+    PropertyBinaryAlphabeticV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `AsciiHexDigitV1`
-    AsciiHexDigitV1,
+    /// `PropertyBinaryAsciiHexDigitV1`
+    PropertyBinaryAsciiHexDigitV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `BidiControlV1`
-    BidiControlV1,
+    /// `PropertyBinaryBidiControlV1`
+    PropertyBinaryBidiControlV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `BidiMirroredV1`
-    BidiMirroredV1,
+    /// `PropertyBinaryBidiMirroredV1`
+    PropertyBinaryBidiMirroredV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `BlankV1`
-    BlankV1,
+    /// `PropertyBinaryBlankV1`
+    PropertyBinaryBlankV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `CasedV1`
-    CasedV1,
+    /// `PropertyBinaryCasedV1`
+    PropertyBinaryCasedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `CaseIgnorableV1`
-    CaseIgnorableV1,
+    /// `PropertyBinaryCaseIgnorableV1`
+    PropertyBinaryCaseIgnorableV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `CaseSensitiveV1`
-    CaseSensitiveV1,
+    /// `PropertyBinaryCaseSensitiveV1`
+    PropertyBinaryCaseSensitiveV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenCasefoldedV1`
-    ChangesWhenCasefoldedV1,
+    /// `PropertyBinaryChangesWhenCasefoldedV1`
+    PropertyBinaryChangesWhenCasefoldedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenCasemappedV1`
-    ChangesWhenCasemappedV1,
+    /// `PropertyBinaryChangesWhenCasemappedV1`
+    PropertyBinaryChangesWhenCasemappedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenLowercasedV1`
-    ChangesWhenLowercasedV1,
+    /// `PropertyBinaryChangesWhenLowercasedV1`
+    PropertyBinaryChangesWhenLowercasedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenNfkcCasefoldedV1`
-    ChangesWhenNfkcCasefoldedV1,
+    /// `PropertyBinaryChangesWhenNfkcCasefoldedV1`
+    PropertyBinaryChangesWhenNfkcCasefoldedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenTitlecasedV1`
-    ChangesWhenTitlecasedV1,
+    /// `PropertyBinaryChangesWhenTitlecasedV1`
+    PropertyBinaryChangesWhenTitlecasedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ChangesWhenUppercasedV1`
-    ChangesWhenUppercasedV1,
+    /// `PropertyBinaryChangesWhenUppercasedV1`
+    PropertyBinaryChangesWhenUppercasedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `DashV1`
-    DashV1,
+    /// `PropertyBinaryDashV1`
+    PropertyBinaryDashV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `DefaultIgnorableCodePointV1`
-    DefaultIgnorableCodePointV1,
+    /// `PropertyBinaryDefaultIgnorableCodePointV1`
+    PropertyBinaryDefaultIgnorableCodePointV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `DeprecatedV1`
-    DeprecatedV1,
+    /// `PropertyBinaryDeprecatedV1`
+    PropertyBinaryDeprecatedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `DiacriticV1`
-    DiacriticV1,
+    /// `PropertyBinaryDiacriticV1`
+    PropertyBinaryDiacriticV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `EmojiComponentV1`
-    EmojiComponentV1,
+    /// `PropertyBinaryEmojiComponentV1`
+    PropertyBinaryEmojiComponentV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `EmojiModifierBaseV1`
-    EmojiModifierBaseV1,
+    /// `PropertyBinaryEmojiModifierBaseV1`
+    PropertyBinaryEmojiModifierBaseV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `EmojiModifierV1`
-    EmojiModifierV1,
+    /// `PropertyBinaryEmojiModifierV1`
+    PropertyBinaryEmojiModifierV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `EmojiPresentationV1`
-    EmojiPresentationV1,
+    /// `PropertyBinaryEmojiPresentationV1`
+    PropertyBinaryEmojiPresentationV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `EmojiV1`
-    EmojiV1,
+    /// `PropertyBinaryEmojiV1`
+    PropertyBinaryEmojiV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ExtendedPictographicV1`
-    ExtendedPictographicV1,
+    /// `PropertyBinaryExtendedPictographicV1`
+    PropertyBinaryExtendedPictographicV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ExtenderV1`
-    ExtenderV1,
+    /// `PropertyBinaryExtenderV1`
+    PropertyBinaryExtenderV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `FullCompositionExclusionV1`
-    FullCompositionExclusionV1,
+    /// `PropertyBinaryFullCompositionExclusionV1`
+    PropertyBinaryFullCompositionExclusionV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `GraphemeBaseV1`
-    GraphemeBaseV1,
+    /// `PropertyBinaryGraphemeBaseV1`
+    PropertyBinaryGraphemeBaseV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `GraphemeExtendV1`
-    GraphemeExtendV1,
+    /// `PropertyBinaryGraphemeExtendV1`
+    PropertyBinaryGraphemeExtendV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `GraphemeLinkV1`
-    GraphemeLinkV1,
+    /// `PropertyBinaryGraphemeLinkV1`
+    PropertyBinaryGraphemeLinkV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `GraphV1`
-    GraphV1,
+    /// `PropertyBinaryGraphV1`
+    PropertyBinaryGraphV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `HexDigitV1`
-    HexDigitV1,
+    /// `PropertyBinaryHexDigitV1`
+    PropertyBinaryHexDigitV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `HyphenV1`
-    HyphenV1,
+    /// `PropertyBinaryHyphenV1`
+    PropertyBinaryHyphenV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `IdContinueV1`
-    IdContinueV1,
+    /// `PropertyBinaryIdContinueV1`
+    PropertyBinaryIdContinueV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `IdeographicV1`
-    IdeographicV1,
+    /// `PropertyBinaryIdeographicV1`
+    PropertyBinaryIdeographicV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `IdsBinaryOperatorV1`
-    IdsBinaryOperatorV1,
+    /// `PropertyBinaryIdsBinaryOperatorV1`
+    PropertyBinaryIdsBinaryOperatorV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `IdStartV1`
-    IdStartV1,
+    /// `PropertyBinaryIdStartV1`
+    PropertyBinaryIdStartV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `IdsTrinaryOperatorV1`
-    IdsTrinaryOperatorV1,
+    /// `PropertyBinaryIdsTrinaryOperatorV1`
+    PropertyBinaryIdsTrinaryOperatorV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `JoinControlV1`
-    JoinControlV1,
+    /// `PropertyBinaryJoinControlV1`
+    PropertyBinaryJoinControlV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `LogicalOrderExceptionV1`
-    LogicalOrderExceptionV1,
+    /// `PropertyBinaryLogicalOrderExceptionV1`
+    PropertyBinaryLogicalOrderExceptionV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `LowercaseV1`
-    LowercaseV1,
+    /// `PropertyBinaryLowercaseV1`
+    PropertyBinaryLowercaseV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `MathV1`
-    MathV1,
+    /// `PropertyBinaryMathV1`
+    PropertyBinaryMathV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `NfcInertV1`
-    NfcInertV1,
+    /// `PropertyBinaryNfcInertV1`
+    PropertyBinaryNfcInertV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `NfdInertV1`
-    NfdInertV1,
+    /// `PropertyBinaryNfdInertV1`
+    PropertyBinaryNfdInertV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `NfkcInertV1`
-    NfkcInertV1,
+    /// `PropertyBinaryNfkcInertV1`
+    PropertyBinaryNfkcInertV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `NfkdInertV1`
-    NfkdInertV1,
+    /// `PropertyBinaryNfkdInertV1`
+    PropertyBinaryNfkdInertV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `NoncharacterCodePointV1`
-    NoncharacterCodePointV1,
+    /// `PropertyBinaryNoncharacterCodePointV1`
+    PropertyBinaryNoncharacterCodePointV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PatternSyntaxV1`
-    PatternSyntaxV1,
+    /// `PropertyBinaryPatternSyntaxV1`
+    PropertyBinaryPatternSyntaxV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PatternWhiteSpaceV1`
-    PatternWhiteSpaceV1,
+    /// `PropertyBinaryPatternWhiteSpaceV1`
+    PropertyBinaryPatternWhiteSpaceV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PrependedConcatenationMarkV1`
-    PrependedConcatenationMarkV1,
+    /// `PropertyBinaryPrependedConcatenationMarkV1`
+    PropertyBinaryPrependedConcatenationMarkV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `PrintV1`
-    PrintV1,
+    /// `PropertyBinaryPrintV1`
+    PropertyBinaryPrintV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `QuotationMarkV1`
-    QuotationMarkV1,
+    /// `PropertyBinaryQuotationMarkV1`
+    PropertyBinaryQuotationMarkV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `RadicalV1`
-    RadicalV1,
+    /// `PropertyBinaryRadicalV1`
+    PropertyBinaryRadicalV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `RegionalIndicatorV1`
-    RegionalIndicatorV1,
+    /// `PropertyBinaryRegionalIndicatorV1`
+    PropertyBinaryRegionalIndicatorV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `SegmentStarterV1`
-    SegmentStarterV1,
+    /// `PropertyBinarySegmentStarterV1`
+    PropertyBinarySegmentStarterV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `SentenceTerminalV1`
-    SentenceTerminalV1,
+    /// `PropertyBinarySentenceTerminalV1`
+    PropertyBinarySentenceTerminalV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `SoftDottedV1`
-    SoftDottedV1,
+    /// `PropertyBinarySoftDottedV1`
+    PropertyBinarySoftDottedV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `TerminalPunctuationV1`
-    TerminalPunctuationV1,
+    /// `PropertyBinaryTerminalPunctuationV1`
+    PropertyBinaryTerminalPunctuationV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `UnifiedIdeographV1`
-    UnifiedIdeographV1,
+    /// `PropertyBinaryUnifiedIdeographV1`
+    PropertyBinaryUnifiedIdeographV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `UppercaseV1`
-    UppercaseV1,
+    /// `PropertyBinaryUppercaseV1`
+    PropertyBinaryUppercaseV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `VariationSelectorV1`
-    VariationSelectorV1,
+    /// `PropertyBinaryVariationSelectorV1`
+    PropertyBinaryVariationSelectorV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `WhiteSpaceV1`
-    WhiteSpaceV1,
+    /// `PropertyBinaryWhiteSpaceV1`
+    PropertyBinaryWhiteSpaceV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `XdigitV1`
-    XdigitV1,
+    /// `PropertyBinaryXdigitV1`
+    PropertyBinaryXdigitV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `XidContinueV1`
-    XidContinueV1,
+    /// `PropertyBinaryXidContinueV1`
+    PropertyBinaryXidContinueV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `XidStartV1`
-    XidStartV1,
+    /// `PropertyBinaryXidStartV1`
+    PropertyBinaryXidStartV1,
     PropertyCodePointSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
     /// Data marker for the 'BidiClass' Unicode property
-    BidiClassV1,
+    PropertyEnumBidiClassV1,
     PropertyCodePointMap<'static, crate::props::BidiClass>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'CanonicalCombiningClass' Unicode property
-    CanonicalCombiningClassV1,
+    PropertyEnumCanonicalCombiningClassV1,
     PropertyCodePointMap<'static, crate::props::CanonicalCombiningClass>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'EastAsianWidth' Unicode property
-    EastAsianWidthV1,
+    PropertyEnumEastAsianWidthV1,
     PropertyCodePointMap<'static, crate::props::EastAsianWidth>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'GeneralCategory' Unicode property
-    GeneralCategoryV1,
+    PropertyEnumGeneralCategoryV1,
     PropertyCodePointMap<'static, crate::props::GeneralCategory>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'GraphemeClusterBreak' Unicode property
-    GraphemeClusterBreakV1,
+    PropertyEnumGraphemeClusterBreakV1,
     PropertyCodePointMap<'static, crate::props::GraphemeClusterBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'HangulSyllableType' Unicode property
-    HangulSyllableTypeV1,
+    PropertyEnumHangulSyllableTypeV1,
     PropertyCodePointMap<'static, crate::props::HangulSyllableType>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
+    /// Data marker for the 'IndicConjunctBreak' Unicode property
+    PropertyEnumIndicConjunctBreakV1,
+    PropertyCodePointMap<'static, crate::props::IndicConjunctBreak>,
+    is_singleton = true,
+);
+icu_provider::data_marker!(
     /// Data marker for the 'IndicSyllabicCategory' Unicode property
-    IndicSyllabicCategoryV1,
+    PropertyEnumIndicSyllabicCategoryV1,
     PropertyCodePointMap<'static, crate::props::IndicSyllabicCategory>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'JoiningType' Unicode property
-    JoiningTypeV1,
+    PropertyEnumJoiningTypeV1,
     PropertyCodePointMap<'static, crate::props::JoiningType>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'LineBreak' Unicode property
-    LineBreakV1,
+    PropertyEnumLineBreakV1,
     PropertyCodePointMap<'static, crate::props::LineBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'Script' Unicode property
-    ScriptV1,
+    PropertyEnumScriptV1,
     PropertyCodePointMap<'static, crate::props::Script>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'SentenceBreak' Unicode property
-    SentenceBreakV1,
+    PropertyEnumSentenceBreakV1,
     PropertyCodePointMap<'static, crate::props::SentenceBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
+    /// Data marker for the 'Vertical_Orientation' Unicode property
+    PropertyEnumVerticalOrientationV1,
+    PropertyCodePointMap<'static, crate::props::VerticalOrientation>,
+    is_singleton = true,
+);
+icu_provider::data_marker!(
     /// Data marker for the 'WordBreak' Unicode property
-    WordBreakV1,
+    PropertyEnumWordBreakV1,
     PropertyCodePointMap<'static, crate::props::WordBreak>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
     /// Data marker for the 'BidiMirroringGlyph' Unicode property
-    BidiMirroringGlyphV1,
+    PropertyEnumBidiMirroringGlyphV1,
     PropertyCodePointMap<'static, crate::bidi::BidiMirroringGlyph>,
     is_singleton = true,
 );
 icu_provider::data_marker!(
-    /// `BasicEmojiV1`
-    BasicEmojiV1,
+    /// `PropertyBinaryBasicEmojiV1`
+    PropertyBinaryBasicEmojiV1,
     PropertyUnicodeSet<'static>,
     is_singleton = true
 );
 icu_provider::data_marker!(
-    /// `ScriptWithExtensionsPropertyV1`
-    ScriptWithExtensionsPropertyV1,
+    /// `PropertyScriptWithExtensionsV1`
+    PropertyScriptWithExtensionsV1,
     ScriptWithExtensionsProperty<'static>,
     is_singleton = true
 );
 
 /// All data keys in this module.
 pub const MARKERS: &[DataMarkerInfo] = &[
-    AlnumV1::INFO,
-    AlphabeticV1::INFO,
-    AsciiHexDigitV1::INFO,
-    BasicEmojiV1::INFO,
-    BidiControlV1::INFO,
-    BidiMirroredV1::INFO,
-    BidiMirroringGlyphV1::INFO,
-    BlankV1::INFO,
-    CasedV1::INFO,
-    CaseIgnorableV1::INFO,
-    CaseSensitiveV1::INFO,
-    ChangesWhenCasefoldedV1::INFO,
-    ChangesWhenCasemappedV1::INFO,
-    ChangesWhenLowercasedV1::INFO,
-    ChangesWhenNfkcCasefoldedV1::INFO,
-    ChangesWhenTitlecasedV1::INFO,
-    ChangesWhenUppercasedV1::INFO,
-    DashV1::INFO,
-    DefaultIgnorableCodePointV1::INFO,
-    DeprecatedV1::INFO,
-    DiacriticV1::INFO,
-    EmojiComponentV1::INFO,
-    EmojiModifierBaseV1::INFO,
-    EmojiModifierV1::INFO,
-    EmojiPresentationV1::INFO,
-    EmojiV1::INFO,
-    ExtendedPictographicV1::INFO,
-    ExtenderV1::INFO,
-    FullCompositionExclusionV1::INFO,
-    GraphemeBaseV1::INFO,
-    GraphemeExtendV1::INFO,
-    GraphemeLinkV1::INFO,
-    GraphV1::INFO,
-    HexDigitV1::INFO,
-    HyphenV1::INFO,
-    IdContinueV1::INFO,
-    IdeographicV1::INFO,
-    IdsBinaryOperatorV1::INFO,
-    IdStartV1::INFO,
-    IdsTrinaryOperatorV1::INFO,
-    JoinControlV1::INFO,
-    LogicalOrderExceptionV1::INFO,
-    LowercaseV1::INFO,
-    MathV1::INFO,
-    NfcInertV1::INFO,
-    NfdInertV1::INFO,
-    NfkcInertV1::INFO,
-    NfkdInertV1::INFO,
-    NoncharacterCodePointV1::INFO,
-    PatternSyntaxV1::INFO,
-    PatternWhiteSpaceV1::INFO,
-    PrependedConcatenationMarkV1::INFO,
-    PrintV1::INFO,
-    QuotationMarkV1::INFO,
-    RadicalV1::INFO,
-    RegionalIndicatorV1::INFO,
-    ScriptWithExtensionsPropertyV1::INFO,
-    ScriptWithExtensionsPropertyV1::INFO,
-    SegmentStarterV1::INFO,
-    SentenceTerminalV1::INFO,
-    SoftDottedV1::INFO,
-    TerminalPunctuationV1::INFO,
-    UnifiedIdeographV1::INFO,
-    UppercaseV1::INFO,
-    VariationSelectorV1::INFO,
-    WhiteSpaceV1::INFO,
-    XdigitV1::INFO,
-    XidContinueV1::INFO,
-    XidStartV1::INFO,
-    BidiClassNameToValueV2::INFO,
-    BidiClassV1::INFO,
-    BidiClassValueToLongNameV1::INFO,
-    BidiClassValueToShortNameV1::INFO,
-    CanonicalCombiningClassNameToValueV2::INFO,
-    CanonicalCombiningClassV1::INFO,
-    CanonicalCombiningClassValueToLongNameV1::INFO,
-    CanonicalCombiningClassValueToShortNameV1::INFO,
-    EastAsianWidthNameToValueV2::INFO,
-    EastAsianWidthV1::INFO,
-    EastAsianWidthValueToLongNameV1::INFO,
-    EastAsianWidthValueToShortNameV1::INFO,
-    GeneralCategoryMaskNameToValueV2::INFO,
-    GeneralCategoryNameToValueV2::INFO,
-    GeneralCategoryV1::INFO,
-    GeneralCategoryValueToLongNameV1::INFO,
-    GeneralCategoryValueToShortNameV1::INFO,
-    GraphemeClusterBreakNameToValueV2::INFO,
-    GraphemeClusterBreakV1::INFO,
-    GraphemeClusterBreakValueToLongNameV1::INFO,
-    GraphemeClusterBreakValueToShortNameV1::INFO,
-    HangulSyllableTypeNameToValueV2::INFO,
-    HangulSyllableTypeV1::INFO,
-    HangulSyllableTypeValueToLongNameV1::INFO,
-    HangulSyllableTypeValueToShortNameV1::INFO,
-    IndicSyllabicCategoryNameToValueV2::INFO,
-    IndicSyllabicCategoryV1::INFO,
-    IndicSyllabicCategoryValueToLongNameV1::INFO,
-    IndicSyllabicCategoryValueToShortNameV1::INFO,
-    JoiningTypeNameToValueV2::INFO,
-    JoiningTypeV1::INFO,
-    JoiningTypeValueToLongNameV1::INFO,
-    JoiningTypeValueToShortNameV1::INFO,
-    LineBreakNameToValueV2::INFO,
-    LineBreakV1::INFO,
-    LineBreakValueToLongNameV1::INFO,
-    LineBreakValueToShortNameV1::INFO,
-    ScriptNameToValueV2::INFO,
-    ScriptV1::INFO,
-    ScriptValueToLongNameV1::INFO,
-    ScriptValueToShortNameV1::INFO,
-    SentenceBreakNameToValueV2::INFO,
-    SentenceBreakV1::INFO,
-    SentenceBreakValueToLongNameV1::INFO,
-    SentenceBreakValueToShortNameV1::INFO,
-    WordBreakNameToValueV2::INFO,
-    WordBreakV1::INFO,
-    WordBreakValueToLongNameV1::INFO,
-    WordBreakValueToShortNameV1::INFO,
+    PropertyNameLongBidiClassV1::INFO,
+    PropertyNameLongCanonicalCombiningClassV1::INFO,
+    PropertyNameLongEastAsianWidthV1::INFO,
+    PropertyNameLongGeneralCategoryV1::INFO,
+    PropertyNameLongGraphemeClusterBreakV1::INFO,
+    PropertyNameLongHangulSyllableTypeV1::INFO,
+    PropertyNameLongIndicSyllabicCategoryV1::INFO,
+    PropertyNameLongJoiningTypeV1::INFO,
+    PropertyNameLongLineBreakV1::INFO,
+    PropertyNameLongScriptV1::INFO,
+    PropertyNameLongSentenceBreakV1::INFO,
+    PropertyNameLongVerticalOrientationV1::INFO,
+    PropertyNameLongWordBreakV1::INFO,
+    PropertyNameParseBidiClassV1::INFO,
+    PropertyNameParseCanonicalCombiningClassV1::INFO,
+    PropertyNameParseEastAsianWidthV1::INFO,
+    PropertyNameParseGeneralCategoryMaskV1::INFO,
+    PropertyNameParseGeneralCategoryV1::INFO,
+    PropertyNameParseGraphemeClusterBreakV1::INFO,
+    PropertyNameParseHangulSyllableTypeV1::INFO,
+    PropertyNameParseIndicSyllabicCategoryV1::INFO,
+    PropertyNameParseJoiningTypeV1::INFO,
+    PropertyNameParseLineBreakV1::INFO,
+    PropertyNameParseScriptV1::INFO,
+    PropertyNameParseSentenceBreakV1::INFO,
+    PropertyNameParseVerticalOrientationV1::INFO,
+    PropertyNameParseWordBreakV1::INFO,
+    PropertyNameShortBidiClassV1::INFO,
+    PropertyNameShortCanonicalCombiningClassV1::INFO,
+    PropertyNameShortEastAsianWidthV1::INFO,
+    PropertyNameShortGeneralCategoryV1::INFO,
+    PropertyNameShortGraphemeClusterBreakV1::INFO,
+    PropertyNameShortHangulSyllableTypeV1::INFO,
+    PropertyNameShortIndicSyllabicCategoryV1::INFO,
+    PropertyNameShortJoiningTypeV1::INFO,
+    PropertyNameShortLineBreakV1::INFO,
+    PropertyNameShortScriptV1::INFO,
+    PropertyNameShortSentenceBreakV1::INFO,
+    PropertyNameShortVerticalOrientationV1::INFO,
+    PropertyNameShortWordBreakV1::INFO,
+    PropertyBinaryAlnumV1::INFO,
+    PropertyBinaryAlphabeticV1::INFO,
+    PropertyBinaryAsciiHexDigitV1::INFO,
+    PropertyBinaryBidiControlV1::INFO,
+    PropertyBinaryBidiMirroredV1::INFO,
+    PropertyBinaryBlankV1::INFO,
+    PropertyBinaryCasedV1::INFO,
+    PropertyBinaryCaseIgnorableV1::INFO,
+    PropertyBinaryCaseSensitiveV1::INFO,
+    PropertyBinaryChangesWhenCasefoldedV1::INFO,
+    PropertyBinaryChangesWhenCasemappedV1::INFO,
+    PropertyBinaryChangesWhenLowercasedV1::INFO,
+    PropertyBinaryChangesWhenNfkcCasefoldedV1::INFO,
+    PropertyBinaryChangesWhenTitlecasedV1::INFO,
+    PropertyBinaryChangesWhenUppercasedV1::INFO,
+    PropertyBinaryDashV1::INFO,
+    PropertyBinaryDefaultIgnorableCodePointV1::INFO,
+    PropertyBinaryDeprecatedV1::INFO,
+    PropertyBinaryDiacriticV1::INFO,
+    PropertyBinaryEmojiComponentV1::INFO,
+    PropertyBinaryEmojiModifierBaseV1::INFO,
+    PropertyBinaryEmojiModifierV1::INFO,
+    PropertyBinaryEmojiPresentationV1::INFO,
+    PropertyBinaryEmojiV1::INFO,
+    PropertyBinaryExtendedPictographicV1::INFO,
+    PropertyBinaryExtenderV1::INFO,
+    PropertyBinaryFullCompositionExclusionV1::INFO,
+    PropertyBinaryGraphemeBaseV1::INFO,
+    PropertyBinaryGraphemeExtendV1::INFO,
+    PropertyBinaryGraphemeLinkV1::INFO,
+    PropertyBinaryGraphV1::INFO,
+    PropertyBinaryHexDigitV1::INFO,
+    PropertyBinaryHyphenV1::INFO,
+    PropertyBinaryIdContinueV1::INFO,
+    PropertyBinaryIdeographicV1::INFO,
+    PropertyBinaryIdsBinaryOperatorV1::INFO,
+    PropertyBinaryIdStartV1::INFO,
+    PropertyBinaryIdsTrinaryOperatorV1::INFO,
+    PropertyBinaryJoinControlV1::INFO,
+    PropertyBinaryLogicalOrderExceptionV1::INFO,
+    PropertyBinaryLowercaseV1::INFO,
+    PropertyBinaryMathV1::INFO,
+    PropertyBinaryNfcInertV1::INFO,
+    PropertyBinaryNfdInertV1::INFO,
+    PropertyBinaryNfkcInertV1::INFO,
+    PropertyBinaryNfkdInertV1::INFO,
+    PropertyBinaryNoncharacterCodePointV1::INFO,
+    PropertyBinaryPatternSyntaxV1::INFO,
+    PropertyBinaryPatternWhiteSpaceV1::INFO,
+    PropertyBinaryPrependedConcatenationMarkV1::INFO,
+    PropertyBinaryPrintV1::INFO,
+    PropertyBinaryQuotationMarkV1::INFO,
+    PropertyBinaryRadicalV1::INFO,
+    PropertyBinaryRegionalIndicatorV1::INFO,
+    PropertyBinarySegmentStarterV1::INFO,
+    PropertyBinarySentenceTerminalV1::INFO,
+    PropertyBinarySoftDottedV1::INFO,
+    PropertyBinaryTerminalPunctuationV1::INFO,
+    PropertyBinaryUnifiedIdeographV1::INFO,
+    PropertyBinaryUppercaseV1::INFO,
+    PropertyBinaryVariationSelectorV1::INFO,
+    PropertyBinaryWhiteSpaceV1::INFO,
+    PropertyBinaryXdigitV1::INFO,
+    PropertyBinaryXidContinueV1::INFO,
+    PropertyBinaryXidStartV1::INFO,
+    PropertyEnumBidiClassV1::INFO,
+    PropertyEnumCanonicalCombiningClassV1::INFO,
+    PropertyEnumEastAsianWidthV1::INFO,
+    PropertyEnumGeneralCategoryV1::INFO,
+    PropertyEnumGraphemeClusterBreakV1::INFO,
+    PropertyEnumHangulSyllableTypeV1::INFO,
+    PropertyEnumIndicConjunctBreakV1::INFO,
+    PropertyEnumIndicSyllabicCategoryV1::INFO,
+    PropertyEnumJoiningTypeV1::INFO,
+    PropertyEnumLineBreakV1::INFO,
+    PropertyEnumScriptV1::INFO,
+    PropertyEnumSentenceBreakV1::INFO,
+    PropertyEnumVerticalOrientationV1::INFO,
+    PropertyEnumWordBreakV1::INFO,
+    PropertyEnumBidiMirroringGlyphV1::INFO,
+    PropertyBinaryBasicEmojiV1::INFO,
+    PropertyScriptWithExtensionsV1::INFO,
 ];
 
 /// A set of characters which share a particular property value.

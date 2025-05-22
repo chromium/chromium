@@ -15,6 +15,7 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0/src/builtins/compiled/date.rs",
     "//third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0/src/builtins/compiled/duration.rs",
     "//third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0/src/builtins/compiled/duration/tests.rs",
     "//third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_0/src/builtins/compiled/instant.rs",
@@ -65,14 +66,15 @@ cargo_crate("lib") {
   cargo_pkg_authors = "boa-dev"
   cargo_pkg_name = "temporal_rs"
   cargo_pkg_description = "Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust."
-  cargo_pkg_version = "0.0.6"
+  cargo_pkg_version = "0.0.7"
 
   allow_unsafe = true
 
   deps = [
-    "//third_party/rust/iana_time_zone/v0_1:lib",
+    "//third_party/rust/core_maths/v0_1:lib",
     "//third_party/rust/icu_calendar/v2:lib",
-    "//third_party/rust/ixdtf/v0_4:lib",
+    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/ixdtf/v0_5:lib",
     "//third_party/rust/num_traits/v0_2:lib",
     "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/writeable/v0_6:lib",

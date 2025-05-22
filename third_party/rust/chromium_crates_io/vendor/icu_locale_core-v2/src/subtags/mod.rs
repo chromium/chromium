@@ -10,7 +10,7 @@
 //! * [`Script`] is an optional field representing the written script used by the locale.
 //! * [`Region`] is the region used by the locale.
 //! * [`Variants`] is a list of optional [`Variant`] subtags containing information about the
-//!                variant adjustments used by the locale.
+//!   variant adjustments used by the locale.
 //!
 //! Subtags can be used in isolation, and all basic operations such as parsing, syntax normalization
 //! and serialization are supported on each individual subtag, but most commonly

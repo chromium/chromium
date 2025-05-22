@@ -144,7 +144,7 @@ impl CompactDecimalFormatter {
     ) -> Result<Self, DataError>
     where
         D: DataProvider<ShortCompactDecimalFormatDataV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>
             + DataProvider<icu_plurals::provider::PluralsCardinalV1>
             + ?Sized,
@@ -230,7 +230,7 @@ impl CompactDecimalFormatter {
     ) -> Result<Self, DataError>
     where
         D: DataProvider<LongCompactDecimalFormatDataV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>
             + DataProvider<icu_plurals::provider::PluralsCardinalV1>
             + ?Sized,

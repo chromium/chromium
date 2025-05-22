@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -27,7 +28,7 @@ namespace capi {
       diplomat::capi::OptionI32 era_year;
       const temporal_rs::capi::Calendar* calendar;
     };
-    
+
     typedef struct PartialDate_option {union { PartialDate ok; }; bool is_ok; } PartialDate_option;
 } // namespace capi
 } // namespace

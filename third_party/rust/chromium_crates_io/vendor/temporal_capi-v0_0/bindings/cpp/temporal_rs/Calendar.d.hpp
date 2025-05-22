@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -26,7 +27,7 @@ struct PartialDate;
 struct TemporalError;
 class AnyCalendarKind;
 class ArithmeticOverflow;
-class TemporalUnit;
+class Unit;
 }
 
 
@@ -56,7 +57,7 @@ public:
 
   inline diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> date_add(temporal_rs::IsoDate date, const temporal_rs::Duration& duration, temporal_rs::ArithmeticOverflow overflow) const;
 
-  inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> date_until(temporal_rs::IsoDate one, temporal_rs::IsoDate two, temporal_rs::TemporalUnit largest_unit) const;
+  inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> date_until(temporal_rs::IsoDate one, temporal_rs::IsoDate two, temporal_rs::Unit largest_unit) const;
 
   inline diplomat::result<std::string, temporal_rs::TemporalError> era(temporal_rs::IsoDate date) const;
 
@@ -70,13 +71,13 @@ public:
 
   inline uint8_t day(temporal_rs::IsoDate date) const;
 
-  inline uint16_t day_of_week(temporal_rs::IsoDate date) const;
+  inline diplomat::result<uint16_t, temporal_rs::TemporalError> day_of_week(temporal_rs::IsoDate date) const;
 
   inline uint16_t day_of_year(temporal_rs::IsoDate date) const;
 
-  inline diplomat::result<std::optional<uint16_t>, temporal_rs::TemporalError> week_of_year(temporal_rs::IsoDate date) const;
+  inline std::optional<uint8_t> week_of_year(temporal_rs::IsoDate date) const;
 
-  inline diplomat::result<std::optional<int32_t>, temporal_rs::TemporalError> year_of_week(temporal_rs::IsoDate date) const;
+  inline std::optional<int32_t> year_of_week(temporal_rs::IsoDate date) const;
 
   inline diplomat::result<uint16_t, temporal_rs::TemporalError> days_in_week(temporal_rs::IsoDate date) const;
 

@@ -2,7 +2,6 @@
 #[diplomat::abi_rename = "temporal_rs_{0}"]
 #[diplomat::attr(auto, namespace = "temporal_rs")]
 pub mod ffi {
-
     #[diplomat::enum_convert(temporal_rs::error::ErrorKind)]
     pub enum ErrorKind {
         Generic,
@@ -22,6 +21,12 @@ pub mod ffi {
         pub(crate) fn syntax() -> Self {
             TemporalError {
                 kind: ErrorKind::Syntax,
+            }
+        }
+
+        pub(crate) fn range() -> Self {
+            TemporalError {
+                kind: ErrorKind::Range,
             }
         }
     }

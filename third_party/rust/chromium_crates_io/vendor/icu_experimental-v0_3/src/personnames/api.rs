@@ -327,7 +327,7 @@ pub enum FormattingFormality {
 /// Person name formatter options.
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct PersonNamesFormatterOptions {
-    /// TODO: the target locale should be maximized when passed into the formatter.
+    // TODO: the target locale should be maximized when passed into the formatter.
     pub target_locale: Locale,
     pub order: FormattingOrder,
     pub length: FormattingLength,

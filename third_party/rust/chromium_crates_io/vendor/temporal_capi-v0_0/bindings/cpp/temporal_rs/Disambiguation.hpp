@@ -10,14 +10,14 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -34,7 +34,7 @@ inline temporal_rs::Disambiguation temporal_rs::Disambiguation::FromFFI(temporal
     case temporal_rs::capi::Disambiguation_Reject:
       return static_cast<temporal_rs::Disambiguation::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 #endif // temporal_rs_Disambiguation_HPP

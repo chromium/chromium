@@ -39,7 +39,7 @@ cargo_crate("lib") {
   cargo_pkg_description = "ICU pattern utilities"
   cargo_pkg_version = "0.4.0"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/displaydoc/v0_2:lib",

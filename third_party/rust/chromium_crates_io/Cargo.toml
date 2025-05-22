@@ -36,38 +36,38 @@ rustc-demangle-capi = "0.1"
 skrifa = "0.29"
 small_ctor = "0.1"
 static_assertions = "1"
-temporal_capi = "0.0.6"
+temporal_capi = "0.0.7"
 
 [dependencies.crc32fast]
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
 [dependencies.icu_casemap]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_experimental]
-version = "0.3.0-beta2"
+version = "0.3.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_locale_core]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.icu_normalizer]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_properties]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_provider]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 # Without the `artifact` field Cargo will only build the `[lib]` target from a

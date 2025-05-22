@@ -293,7 +293,7 @@ impl<'a> ScriptExtensionsSet<'a> {
 /// ```
 #[derive(Debug)]
 pub struct ScriptWithExtensions {
-    data: DataPayload<ScriptWithExtensionsPropertyV1>,
+    data: DataPayload<PropertyScriptWithExtensionsV1>,
 }
 
 /// A borrowed wrapper around script extension data, returned by
@@ -319,7 +319,7 @@ impl ScriptWithExtensions {
         () -> result: Result<ScriptWithExtensions, DataError>,
         functions: [
             new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self,
         ]
@@ -327,7 +327,7 @@ impl ScriptWithExtensions {
 
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::new)]
     pub fn try_new_unstable(
-        provider: &(impl DataProvider<ScriptWithExtensionsPropertyV1> + ?Sized),
+        provider: &(impl DataProvider<PropertyScriptWithExtensionsV1> + ?Sized),
     ) -> Result<Self, DataError> {
         Ok(ScriptWithExtensions::from_data(
             provider.load(Default::default())?.payload,
@@ -348,7 +348,7 @@ impl ScriptWithExtensions {
     /// Construct a new one from loaded data
     ///
     /// Typically it is preferable to use getters like [`load_script_with_extensions_unstable()`] instead
-    pub(crate) fn from_data(data: DataPayload<ScriptWithExtensionsPropertyV1>) -> Self {
+    pub(crate) fn from_data(data: DataPayload<PropertyScriptWithExtensionsV1>) -> Self {
         Self { data }
     }
 }
@@ -672,7 +672,7 @@ impl ScriptWithExtensionsBorrowed<'static> {
     #[cfg(feature = "compiled_data")]
     pub fn new() -> Self {
         Self {
-            data: crate::provider::Baked::SINGLETON_SCRIPT_WITH_EXTENSIONS_PROPERTY_V1,
+            data: crate::provider::Baked::SINGLETON_PROPERTY_SCRIPT_WITH_EXTENSIONS_V1,
         }
     }
 

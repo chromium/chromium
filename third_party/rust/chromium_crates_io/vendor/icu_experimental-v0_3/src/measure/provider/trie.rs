@@ -42,8 +42,8 @@ icu_provider::data_marker!(
 #[cfg_attr(feature = "datagen", databake(path = icu_experimental::measure::provider::trie))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 pub struct UnitsTrie<'data> {
-    // TODO: remove this field from units/provider::UnitsInfo once the `MeasureUnit` is fully used in the measurement units.
-    /// Maps from unit name (e.g. foot or meter) to its unit id. this id can be used to retrieve the conversion information from the `UnitsInfo`.
+    /// Maps from a unit name (e.g., "foot" or "meter") to its corresponding unit ID.
+    /// This ID represents the index of this unit in the `UnitsInfo` struct and can be used to retrieve the conversion information.
     #[cfg_attr(feature = "serde", serde(borrow))]
     pub trie: ZeroTrieSimpleAscii<ZeroVec<'data, u8>>,
 }

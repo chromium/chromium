@@ -6,6 +6,7 @@ use icu_casemap::greek_to_me::{
     self, GreekDiacritics, GreekPrecomposedLetterData, GreekVowel, PackedGreekPrecomposedLetterData,
 };
 use icu_casemap::CaseMapper;
+use icu_locale_core::LanguageIdentifier;
 use icu_normalizer::DecomposingNormalizerBorrowed;
 use icu_properties::{
     props::{GeneralCategory, GeneralCategoryGroup, Script},
@@ -78,10 +79,12 @@ fn main() {
                         '\u{1D00}'..='\u{1DBF}' | '\u{AB65}' => (),
                         // caps: [[:Grek:]&[:L:]-[\u1D00-\u1DBF\uAB65]] . NFD, remove non-letters, uppercase
                         letter if GeneralCategoryGroup::Letter.contains(gc.get(letter)) => {
-                            let uppercased = cm.uppercase_to_string(
-                                letter.encode_utf8(&mut [0; 4]),
-                                &Default::default(),
-                            );
+                            let uppercased = cm
+                                .uppercase_to_string(
+                                    letter.encode_utf8(&mut [0; 4]),
+                                    &LanguageIdentifier::UNKNOWN,
+                                )
+                                .into_owned();
                             let mut iter = uppercased.chars();
                             let uppercased = iter.next().unwrap();
                             assert!(

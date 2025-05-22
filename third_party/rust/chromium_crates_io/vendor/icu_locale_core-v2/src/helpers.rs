@@ -187,15 +187,13 @@ macro_rules! impl_tinystr_subtag {
         #[macro_export]
         #[doc(hidden)] // macro
         macro_rules! $internal_macro_name {
-            ($string:literal) => {{
+            ($string:literal) => { const {
                 use $crate::$($path ::)+ $name;
-                const R: $name =
-                    match $name::try_from_utf8($string.as_bytes()) {
-                        Ok(r) => r,
-                        #[allow(clippy::panic)] // const context
-                        _ => panic!(concat!("Invalid ", $(stringify!($path), "::",)+ stringify!($name), ": ", $string)),
-                    };
-                R
+                match $name::try_from_utf8($string.as_bytes()) {
+                    Ok(r) => r,
+                    #[allow(clippy::panic)] // const context
+                    _ => panic!(concat!("Invalid ", $(stringify!($path), "::",)+ stringify!($name), ": ", $string)),
+                }
             }};
         }
         #[doc(inline)]

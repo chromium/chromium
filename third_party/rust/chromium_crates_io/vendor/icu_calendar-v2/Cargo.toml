@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_calendar"
-version = "2.0.0-beta2"
+version = "2.0.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,13 +25,14 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
-description = "API for supporting various types of calendars"
+description = "Date APIs for Gregorian and non-Gregorian calendars"
 homepage = "https://icu4x.unicode.org"
 readme = "README.md"
 categories = ["internationalization"]
@@ -43,13 +44,19 @@ all-features = true
 
 [features]
 alloc = []
-compiled_data = ["dep:icu_calendar_data"]
+compiled_data = [
+    "dep:icu_calendar_data",
+    "dep:icu_locale",
+    "icu_locale?/compiled_data",
+    "icu_provider/baked",
+]
 datagen = [
     "serde",
     "dep:databake",
     "zerovec/databake",
     "tinystr/databake",
     "alloc",
+    "icu_provider/export",
 ]
 default = [
     "compiled_data",
@@ -68,10 +75,6 @@ serde = [
 name = "icu_calendar"
 path = "src/lib.rs"
 
-[[example]]
-name = "iso_date_manipulations"
-path = "examples/iso_date_manipulations.rs"
-
 [[bench]]
 name = "convert"
 path = "benches/convert.rs"
@@ -83,7 +86,7 @@ path = "benches/date.rs"
 harness = false
 
 [dependencies.calendrical_calculations]
-version = "0.1.1"
+version = "0.2.0"
 default-features = false
 
 [dependencies.databake]
@@ -97,21 +100,26 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.icu_calendar_data]
-version = "~2.0.0-beta2"
+version = "~2.0.0"
+optional = true
+default-features = false
+
+[dependencies.icu_locale]
+version = "~2.0.0"
 optional = true
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0-beta2"
+version = "2.0.0"
 features = ["alloc"]
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.ixdtf]
-version = "0.4.0"
+version = "0.5.0"
 optional = true
 default-features = false
 
@@ -153,7 +161,7 @@ default-features = false
 version = "1.0.45"
 
 [dev-dependencies.simple_logger]
-version = "4.0.0"
+version = "5.0.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"

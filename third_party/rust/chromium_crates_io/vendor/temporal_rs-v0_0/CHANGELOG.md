@@ -1,3 +1,37 @@
+## What's Changed in 0.0.7
+* Bump ixdtf and complete changes for update by @nekevss in [#299](https://github.com/boa-dev/temporal/pull/299)
+* A few more changes to the readme by @nekevss in [#297](https://github.com/boa-dev/temporal/pull/297)
+* Implement a builder API for Now by @nekevss in [#296](https://github.com/boa-dev/temporal/pull/296)
+* Some docs cleanup and updates by @nekevss in [#294](https://github.com/boa-dev/temporal/pull/294)
+* Add `PlainMonthDay` method + clean up by @nekevss in [#284](https://github.com/boa-dev/temporal/pull/284)
+* Add Eq, Ord impls on FiniteF64 by @sffc in [#187](https://github.com/boa-dev/temporal/pull/187)
+* Allow parsers to accept unvalidated UTF8 by @HalidOdat in [#295](https://github.com/boa-dev/temporal/pull/295)
+* Bump to icu_calendar 2.0 by @nekevss in [#292](https://github.com/boa-dev/temporal/pull/292)
+* Add ISO specific constructors to builtins by @nekevss in [#263](https://github.com/boa-dev/temporal/pull/263)
+* Rename the provider crate by @nekevss in [#289](https://github.com/boa-dev/temporal/pull/289)
+* Expose equals and compare over FFI by @Magnus-Fjeldstad in [#269](https://github.com/boa-dev/temporal/pull/269)
+* Impl round_with_provider for ZonedDateTIme by @sebastianjacmatt in [#278](https://github.com/boa-dev/temporal/pull/278)
+* Add some compiled_data FFI APIs by @Manishearth in [#273](https://github.com/boa-dev/temporal/pull/273)
+* Add string conversion functions for Temporal types by @Manishearth in [#276](https://github.com/boa-dev/temporal/pull/276)
+* Make sure temporal_capi can be built no_std by @Manishearth in [#281](https://github.com/boa-dev/temporal/pull/281)
+* Make iana-time-zone dep optional by @Manishearth in [#279](https://github.com/boa-dev/temporal/pull/279)
+* Implementation of ZonedDateTime.prototype.with by @lockels in [#267](https://github.com/boa-dev/temporal/pull/267)
+* Update Duration's inner representation from floating point to integers. by @nekevss in [#268](https://github.com/boa-dev/temporal/pull/268)
+* Add all-features = true to docs.rs metadata by @Manishearth in [#271](https://github.com/boa-dev/temporal/pull/271)
+* Fix instant math in capi by @Manishearth in [#270](https://github.com/boa-dev/temporal/pull/270)
+* Remove the Temporal prefix from Unit, RoundingMode, and UnsignedRoundingMode by @nekevss in [#254](https://github.com/boa-dev/temporal/pull/254)
+* Since until by @sebastianjacmatt in [#259](https://github.com/boa-dev/temporal/pull/259)
+* Implementation of toZonedDateTimeISO for Instant by @lockels in [#258](https://github.com/boa-dev/temporal/pull/258)
+* Implement toZonedDateTime in PlainDate by @JohannesHelleve in [#192](https://github.com/boa-dev/temporal/pull/192)
+* Add intro documentation to ZonedDateTime and PlainDateTime by @nekevss in [#253](https://github.com/boa-dev/temporal/pull/253)
+* Implement IANA normalizer baked data provider by @nekevss in [#251](https://github.com/boa-dev/temporal/pull/251)
+
+## New Contributors
+* @HalidOdat made their first contribution in [#295](https://github.com/boa-dev/temporal/pull/295)
+* @JohannesHelleve made their first contribution in [#192](https://github.com/boa-dev/temporal/pull/192)
+
+**Full Changelog**: https://github.com/boa-dev/temporal/compare/v0.0.6...0.0.7
+
 ## What's Changed in 0.0.6
 * Rename methods on `Now` and add a test by @nekevss in [#243](https://github.com/boa-dev/temporal/pull/243)
 * Add licenses to `temporal_capi` and `temporal_rs` for publish by @nekevss in [#247](https://github.com/boa-dev/temporal/pull/247)

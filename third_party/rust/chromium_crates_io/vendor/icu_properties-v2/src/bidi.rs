@@ -2,7 +2,7 @@
 // called LICENSE at the top level of the ICU4X source tree
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
-use crate::{props::EnumeratedProperty, provider::BidiMirroringGlyphV1};
+use crate::{props::EnumeratedProperty, provider::PropertyEnumBidiMirroringGlyphV1};
 use icu_collections::codepointtrie::TrieValue;
 use zerovec::ule::{AsULE, RawBytesULE};
 
@@ -10,9 +10,9 @@ use zerovec::ule::{AsULE, RawBytesULE};
 /// `Bidi_Mirrored`, and `Bidi_Paired_Bracket_Type` properties.
 #[derive(Debug, Eq, PartialEq, Clone, Copy, Default)]
 #[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
-#[cfg_attr(feature = "datagen", databake(path = icu_properties::bidi))]
+#[cfg_attr(feature = "datagen", databake(path = icu_properties::props))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
-#[non_exhaustive]
+#[allow(clippy::exhaustive_structs)] // needed for baked construction
 pub struct BidiMirroringGlyph {
     /// The mirroring glyph
     pub mirroring_glyph: Option<char>,
@@ -23,10 +23,10 @@ pub struct BidiMirroringGlyph {
 }
 
 impl EnumeratedProperty for BidiMirroringGlyph {
-    type DataMarker = BidiMirroringGlyphV1;
+    type DataMarker = PropertyEnumBidiMirroringGlyphV1;
     #[cfg(feature = "compiled_data")]
     const SINGLETON: &'static crate::provider::PropertyCodePointMap<'static, Self> =
-        crate::provider::Baked::SINGLETON_BIDI_MIRRORING_GLYPH_V1;
+        crate::provider::Baked::SINGLETON_PROPERTY_ENUM_BIDI_MIRRORING_GLYPH_V1;
     const NAME: &'static [u8] = b"Bidi_Mirroring_Glyph";
     const SHORT_NAME: &'static [u8] = b"Bidi_Mirroring_Glyph";
 }
@@ -55,7 +55,7 @@ impl AsULE for BidiMirroringGlyph {
 /// property, and need to optimize data size, please file an issue.
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]
 #[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
-#[cfg_attr(feature = "datagen", databake(path = icu_properties::bidi))]
+#[cfg_attr(feature = "datagen", databake(path = icu_properties::props))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[non_exhaustive]
 pub enum BidiPairedBracketType {

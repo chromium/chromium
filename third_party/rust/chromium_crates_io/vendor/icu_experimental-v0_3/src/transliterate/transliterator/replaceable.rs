@@ -711,7 +711,7 @@ impl<'a, 'b> Insertable<'a, 'b> {
         if free_bytes < size {
             self._rep.content.splice(
                 self.end()..self.end(),
-                core::iter::repeat(0).take(size - free_bytes),
+                core::iter::repeat_n(0, size - free_bytes),
             );
         }
     }

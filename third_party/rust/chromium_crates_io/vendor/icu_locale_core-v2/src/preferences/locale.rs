@@ -137,7 +137,7 @@ impl LocalePreferences {
     /// Constructs a new [`LocalePreferences`] struct with the defaults.
     pub const fn default() -> Self {
         Self {
-            language: Language::default(),
+            language: Language::UNKNOWN,
             script: None,
             region: None,
             variant: None,
@@ -151,9 +151,14 @@ impl LocalePreferences {
         self.language
     }
 
+    /// Preference of Region
+    pub const fn region(&self) -> Option<Region> {
+        self.region
+    }
+
     /// Extends the preferences with the values from another set of preferences.
     pub fn extend(&mut self, other: LocalePreferences) {
-        if !other.language.is_default() {
+        if !other.language.is_unknown() {
             self.language = other.language;
         }
         if let Some(script) = other.script {

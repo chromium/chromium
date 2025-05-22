@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -18,7 +19,7 @@ namespace capi {
       uint8_t month;
       uint8_t day;
     };
-    
+
     typedef struct IsoDate_option {union { IsoDate ok; }; bool is_ok; } IsoDate_option;
 } // namespace capi
 } // namespace

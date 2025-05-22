@@ -339,24 +339,16 @@ impl_writeable_for_subtag_list!(Value, "islamic", "civil");
 #[macro_export]
 #[doc(hidden)] // macro
 macro_rules! extensions_unicode_value {
-    ($value:literal) => {{
-        // What we want:
-        // const R: $crate::extensions::unicode::Value =
-        //     match $crate::extensions::unicode::Value::try_from_single_subtag($value.as_bytes()) {
-        //         Ok(r) => r,
-        //         #[allow(clippy::panic)] // const context
-        //         _ => panic!(concat!("Invalid Unicode extension value: ", $value)),
-        //     };
-        // Workaround until https://github.com/rust-lang/rust/issues/73255 lands:
-        const R: $crate::extensions::unicode::Value =
+    ($value:literal) => {
+        const {
             $crate::extensions::unicode::Value::from_subtag(
                 match $crate::subtags::Subtag::try_from_utf8($value.as_bytes()) {
                     Ok(r) => Some(r),
                     _ => panic!(concat!("Invalid Unicode extension value: ", $value)),
                 },
-            );
-        R
-    }};
+            )
+        }
+    };
 }
 #[doc(inline)]
 pub use extensions_unicode_value as value;

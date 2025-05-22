@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -17,7 +18,7 @@ namespace capi {
       bool is_minute;
       diplomat::capi::OptionU8 precision;
     };
-    
+
     typedef struct Precision_option {union { Precision ok; }; bool is_ok; } Precision_option;
 } // namespace capi
 } // namespace

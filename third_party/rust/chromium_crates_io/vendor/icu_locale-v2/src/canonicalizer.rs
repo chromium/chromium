@@ -54,7 +54,7 @@ fn uts35_rule_matches<'a, I>(
 where
     I: Iterator<Item = &'a str>,
 {
-    (language.is_default() || language == source.language)
+    (language.is_unknown() || language == source.language)
         && (script.is_none() || script == source.script)
         && (region.is_none() || region == source.region)
         && {
@@ -95,7 +95,7 @@ fn uts35_replacement<'a, I>(
 ) where
     I: Iterator<Item = &'a str>,
 {
-    if ruletype_has_language || (source.language.is_default() && !replacement.language.is_default())
+    if ruletype_has_language || (source.language.is_unknown() && !replacement.language.is_unknown())
     {
         source.language = replacement.language;
     }
@@ -165,7 +165,7 @@ fn uts35_check_language_rules(
     langid: &mut LanguageIdentifier,
     alias_data: &DataPayload<LocaleAliasesV1>,
 ) -> TransformResult {
-    if !langid.language.is_default() {
+    if !langid.language.is_unknown() {
         let lang: TinyAsciiStr<3> = langid.language.into();
         let replacement = if lang.len() == 2 {
             alias_data
@@ -341,7 +341,7 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
                 continue;
             }
 
-            if !locale.id.language.is_default() {
+            if !locale.id.language.is_unknown() {
                 // If the region is specified, check sgn-region rules first
                 if let Some(region) = locale.id.region {
                     if locale.id.language == language!("sgn") {
@@ -519,7 +519,7 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
                 if let Ok(to) = raw_to.parse() {
                     uts35_replacement(
                         lid,
-                        !lang.is_default(),
+                        !lang.is_unknown(),
                         false,
                         false,
                         Some(raw_variants),
@@ -551,7 +551,7 @@ impl<Expander: AsRef<LocaleExpander>> LocaleCanonicalizer<Expander> {
                     if let Ok(to) = raw_to.parse() {
                         uts35_replacement(
                             lid,
-                            !from.language.is_default(),
+                            !from.language.is_unknown(),
                             from.script.is_some(),
                             from.region.is_some(),
                             Some(from.variants.iter().map(Variant::as_str)),
@@ -613,7 +613,7 @@ mod test {
             let result = result.parse::<Locale>().unwrap();
             uts35_replacement(
                 &mut locale.id,
-                !rule_0.language.is_default(),
+                !rule_0.language.is_unknown(),
                 rule_0.script.is_some(),
                 rule_0.region.is_some(),
                 Some(rule_0.variants.iter().map(Variant::as_str)),

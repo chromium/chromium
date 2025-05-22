@@ -2,15 +2,18 @@
 #[diplomat::abi_rename = "temporal_rs_{0}"]
 #[diplomat::attr(auto, namespace = "temporal_rs")]
 pub mod ffi {
+    use alloc::boxed::Box;
 
     use crate::duration::ffi::{Duration, TimeDuration};
     use crate::error::ffi::TemporalError;
     use crate::options::ffi::{
-        ArithmeticOverflow, DifferenceSettings, TemporalRoundingMode, TemporalUnit,
-        ToStringRoundingOptions,
+        ArithmeticOverflow, DifferenceSettings, RoundingMode, ToStringRoundingOptions, Unit,
     };
+    use alloc::string::String;
+    use core::fmt::Write;
+    use core::str::FromStr;
     use diplomat_runtime::{DiplomatOption, DiplomatWrite};
-    use std::fmt::Write;
+    use diplomat_runtime::{DiplomatStr, DiplomatStr16};
 
     #[diplomat::opaque]
     pub struct PlainTime(pub(crate) temporal_rs::PlainTime);
@@ -73,6 +76,20 @@ pub mod ffi {
             self.0
                 .with(partial.into(), overflow.map(Into::into))
                 .map(|x| Box::new(PlainTime(x)))
+                .map_err(Into::into)
+        }
+
+        pub fn from_utf8(s: &DiplomatStr) -> Result<Box<Self>, TemporalError> {
+            temporal_rs::PlainTime::from_utf8(s)
+                .map(|c| Box::new(Self(c)))
+                .map_err(Into::into)
+        }
+
+        pub fn from_utf16(s: &DiplomatStr16) -> Result<Box<Self>, TemporalError> {
+            // TODO(#275) This should not need to convert
+            let s = String::from_utf16(s).map_err(|_| temporal_rs::TemporalError::range())?;
+            temporal_rs::PlainTime::from_str(&s)
+                .map(|c| Box::new(Self(c)))
                 .map_err(Into::into)
         }
 
@@ -145,11 +162,34 @@ pub mod ffi {
                 .map(|x| Box::new(Duration(x)))
                 .map_err(Into::into)
         }
+        pub fn equals(&self, other: &Self) -> bool {
+            self.0 == other.0
+        }
+        pub fn compare(one: &Self, two: &Self) -> core::cmp::Ordering {
+            let tuple1 = (
+                one.hour(),
+                one.minute(),
+                one.second(),
+                one.millisecond(),
+                one.microsecond(),
+                one.nanosecond(),
+            );
+            let tuple2 = (
+                two.hour(),
+                two.minute(),
+                two.second(),
+                two.millisecond(),
+                two.microsecond(),
+                two.nanosecond(),
+            );
+
+            tuple1.cmp(&tuple2)
+        }
         pub fn round(
             &self,
-            smallest_unit: TemporalUnit,
+            smallest_unit: Unit,
             rounding_increment: Option<f64>,
-            rounding_mode: Option<TemporalRoundingMode>,
+            rounding_mode: Option<RoundingMode>,
         ) -> Result<Box<Self>, TemporalError> {
             self.0
                 .round(

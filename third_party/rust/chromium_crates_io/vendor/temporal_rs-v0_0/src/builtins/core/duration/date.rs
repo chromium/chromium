@@ -1,10 +1,11 @@
 //! Implementation of a `DateDuration`
 
 use crate::{
-    iso::iso_date_to_epoch_days, options::ArithmeticOverflow, primitive::FiniteF64, Duration,
-    PlainDate, Sign, TemporalError, TemporalResult,
+    iso::iso_date_to_epoch_days, options::ArithmeticOverflow, Duration, PlainDate, Sign,
+    TemporalError, TemporalResult,
 };
-use alloc::vec::Vec;
+
+use super::duration_sign;
 
 /// `DateDuration` represents the [date duration record][spec] of the `Duration.`
 ///
@@ -16,25 +17,20 @@ use alloc::vec::Vec;
 #[derive(Debug, Default, Clone, Copy, PartialEq, PartialOrd)]
 pub struct DateDuration {
     /// `DateDuration`'s internal year value.
-    pub years: FiniteF64,
+    pub years: i64,
     /// `DateDuration`'s internal month value.
-    pub months: FiniteF64,
+    pub months: i64,
     /// `DateDuration`'s internal week value.
-    pub weeks: FiniteF64,
+    pub weeks: i64,
     /// `DateDuration`'s internal day value.
-    pub days: FiniteF64,
+    pub days: i64,
 }
 
 impl DateDuration {
     /// Creates a new, non-validated `DateDuration`.
     #[inline]
     #[must_use]
-    pub(crate) const fn new_unchecked(
-        years: FiniteF64,
-        months: FiniteF64,
-        weeks: FiniteF64,
-        days: FiniteF64,
-    ) -> Self {
+    pub(crate) const fn new_unchecked(years: i64, months: i64, weeks: i64, days: i64) -> Self {
         Self {
             years,
             months,
@@ -46,33 +42,17 @@ impl DateDuration {
     /// Returns the iterator for `DateDuration`
     #[inline]
     #[must_use]
-    pub(crate) fn fields(&self) -> Vec<FiniteF64> {
-        Vec::from(&[self.years, self.months, self.weeks, self.days])
+    pub(crate) fn fields(&self) -> [i64; 4] {
+        [self.years, self.months, self.weeks, self.days]
     }
 }
 
 impl DateDuration {
     /// Creates a new `DateDuration` with provided values.
     #[inline]
-    pub fn new(
-        years: FiniteF64,
-        months: FiniteF64,
-        weeks: FiniteF64,
-        days: FiniteF64,
-    ) -> TemporalResult<Self> {
+    pub fn new(years: i64, months: i64, weeks: i64, days: i64) -> TemporalResult<Self> {
         let result = Self::new_unchecked(years, months, weeks, days);
-        if !super::is_valid_duration(
-            years,
-            months,
-            weeks,
-            days,
-            FiniteF64::default(),
-            FiniteF64::default(),
-            FiniteF64::default(),
-            FiniteF64::default(),
-            FiniteF64::default(),
-            FiniteF64::default(),
-        ) {
+        if !super::is_valid_duration(years, months, weeks, days, 0, 0, 0, 0, 0, 0) {
             return Err(TemporalError::range().with_message("Invalid DateDuration."));
         }
         Ok(result)
@@ -83,10 +63,10 @@ impl DateDuration {
     #[must_use]
     pub fn negated(&self) -> Self {
         Self {
-            years: self.years.negate(),
-            months: self.months.negate(),
-            weeks: self.weeks.negate(),
-            days: self.days.negate(),
+            years: self.years.saturating_neg(),
+            months: self.months.saturating_neg(),
+            weeks: self.weeks.saturating_neg(),
+            days: self.days.saturating_neg(),
         }
     }
 
@@ -106,16 +86,16 @@ impl DateDuration {
     #[inline]
     #[must_use]
     pub fn sign(&self) -> Sign {
-        super::duration_sign(&self.fields())
+        duration_sign(self.fields().as_slice())
     }
 
     /// DateDurationDays
     pub(crate) fn days(&self, relative_to: &PlainDate) -> TemporalResult<i64> {
         // 1. Let yearsMonthsWeeksDuration be ! AdjustDateDurationRecord(dateDuration, 0).
-        let ymw_duration = self.adjust(FiniteF64(0.0), None, None)?;
+        let ymw_duration = self.adjust(0, None, None)?;
         // 2. If DateDurationSign(yearsMonthsWeeksDuration) = 0, return dateDuration.[[Days]].
         if ymw_duration.sign() == Sign::Zero {
-            return self.days.as_integer_if_integral();
+            return Ok(self.days);
         }
         // 3. Let later be ? CalendarDateAdd(plainRelativeTo.[[Calendar]], plainRelativeTo.[[ISODate]], yearsMonthsWeeksDuration, constrain).
         let later = relative_to.add(
@@ -140,15 +120,15 @@ impl DateDuration {
         // 6. Let yearsMonthsWeeksInDays be epochDays2 - epochDays1.
         let ymd_in_days = epoch_days_2 - epoch_days_1;
         // 7. Return dateDuration.[[Days]] + yearsMonthsWeeksInDays.
-        Ok(self.days.as_integer_if_integral::<i64>()? + i64::from(ymd_in_days))
+        Ok(self.days + ymd_in_days)
     }
 
     /// AdjustDateDurationRecord
     pub(crate) fn adjust(
         &self,
-        days: FiniteF64,
-        weeks: Option<FiniteF64>,
-        months: Option<FiniteF64>,
+        days: i64,
+        weeks: Option<i64>,
+        months: Option<i64>,
     ) -> TemporalResult<Self> {
         // 1. If weeks is not present, set weeks to dateDuration.[[Weeks]].
         // 2. If months is not present, set months to dateDuration.[[Months]].

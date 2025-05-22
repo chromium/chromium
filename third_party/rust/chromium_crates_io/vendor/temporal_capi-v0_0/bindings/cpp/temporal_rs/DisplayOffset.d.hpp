@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -17,7 +18,7 @@ namespace capi {
       DisplayOffset_Auto = 0,
       DisplayOffset_Never = 1,
     };
-    
+
     typedef struct DisplayOffset_option {union { DisplayOffset ok; }; bool is_ok; } DisplayOffset_option;
 } // namespace capi
 } // namespace

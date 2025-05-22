@@ -103,8 +103,8 @@ where
     }
 }
 
-#[doc(hidden)] // macro
 #[derive(yoke::Yokeable, Clone)]
+#[allow(missing_docs)]
 pub struct ExportBox {
     payload: Arc<dyn ExportableDataPayload + Sync + Send>,
 }

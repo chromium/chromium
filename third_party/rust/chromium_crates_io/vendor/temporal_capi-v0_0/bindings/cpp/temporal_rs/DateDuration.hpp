@@ -10,6 +10,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 #include "Sign.hpp"
 #include "TemporalError.hpp"
@@ -18,24 +19,23 @@
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
+
     typedef struct temporal_rs_DateDuration_new_result {union {temporal_rs::capi::DateDuration* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_DateDuration_new_result;
-    temporal_rs_DateDuration_new_result temporal_rs_DateDuration_new(double years, double months, double weeks, double days);
-    
+    temporal_rs_DateDuration_new_result temporal_rs_DateDuration_new(int64_t years, int64_t months, int64_t weeks, int64_t days);
+
     temporal_rs::capi::DateDuration* temporal_rs_DateDuration_abs(const temporal_rs::capi::DateDuration* self);
-    
+
     temporal_rs::capi::DateDuration* temporal_rs_DateDuration_negated(const temporal_rs::capi::DateDuration* self);
-    
+
     temporal_rs::capi::Sign temporal_rs_DateDuration_sign(const temporal_rs::capi::DateDuration* self);
-    
-    
+
     void temporal_rs_DateDuration_destroy(DateDuration* self);
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
 
-inline diplomat::result<std::unique_ptr<temporal_rs::DateDuration>, temporal_rs::TemporalError> temporal_rs::DateDuration::new_(double years, double months, double weeks, double days) {
+inline diplomat::result<std::unique_ptr<temporal_rs::DateDuration>, temporal_rs::TemporalError> temporal_rs::DateDuration::new_(int64_t years, int64_t months, int64_t weeks, int64_t days) {
   auto result = temporal_rs::capi::temporal_rs_DateDuration_new(years,
     months,
     weeks,

@@ -156,7 +156,7 @@ fn update_langid(
 ) -> TransformResult {
     let mut modified = false;
 
-    if langid.language.is_default() && !language.is_default() {
+    if langid.language.is_unknown() && !language.is_unknown() {
         langid.language = language;
         modified = true;
     }
@@ -375,23 +375,23 @@ impl LocaleExpander {
     pub fn maximize(&self, langid: &mut LanguageIdentifier) -> TransformResult {
         let data = self.as_borrowed();
 
-        if !langid.language.is_default() && langid.script.is_some() && langid.region.is_some() {
+        if !langid.language.is_unknown() && langid.script.is_some() && langid.region.is_some() {
             return TransformResult::Unmodified;
         }
 
-        if !langid.language.is_default() {
+        if !langid.language.is_unknown() {
             if let Some(region) = langid.region {
                 if let Some(script) = data.get_lr(langid.language, region) {
-                    return update_langid(Language::UND, Some(script), None, langid);
+                    return update_langid(Language::UNKNOWN, Some(script), None, langid);
                 }
             }
             if let Some(script) = langid.script {
                 if let Some(region) = data.get_ls(langid.language, script) {
-                    return update_langid(Language::UND, None, Some(region), langid);
+                    return update_langid(Language::UNKNOWN, None, Some(region), langid);
                 }
             }
             if let Some((script, region)) = data.get_l(langid.language) {
-                return update_langid(Language::UND, Some(script), Some(region), langid);
+                return update_langid(Language::UNKNOWN, Some(script), Some(region), langid);
             }
             // Language not found: return unmodified.
             return TransformResult::Unmodified;
@@ -414,7 +414,7 @@ impl LocaleExpander {
 
         // We failed to find anything in the und-SR, und-S, or und-R tables,
         // to fall back to bare "und"
-        debug_assert!(langid.language.is_default());
+        debug_assert!(langid.language.is_unknown());
         update_langid(
             data.get_und().0,
             Some(data.get_und().1),
@@ -550,7 +550,7 @@ impl LocaleExpander {
         // 3. region
         // we need to check all cases, because e.g. for "en-US" the default script is associated
         // with "en" but not "en-US"
-        if !language.is_default() {
+        if !language.is_unknown() {
             if let Some(region) = region {
                 // 1. we know both language and region
                 if let Some(script) = data.get_lr(language, region) {

@@ -4,16 +4,16 @@
 /// `icu`'s `_unstable` constructors.
 ///
 /// Using this implementation will embed the following data in the binary's data segment:
-/// * 2320B[^1] for the singleton data struct
+/// * 2310B[^1] for the singleton data struct
 ///
 /// [^1]: these numbers can be smaller in practice due to linker deduplication
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __impl_locale_likely_subtags_language_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1: &'static <icu::locale::provider::LocaleLikelySubtagsLanguageV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::locale::provider::LikelySubtagsForLanguage {
@@ -23,7 +23,7 @@ macro_rules! __impl_locale_likely_subtags_language_v1 {
                 },
                 language_region: unsafe {
                     #[allow(unused_unsafe)]
-                    zerovec::ZeroMap::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"az\0IQ\0az\0IR\0az\0RU\0ha\0CM\0ha\0SD\0kk\0AF\0kk\0CN\0kk\0IR\0kk\0MN\0ku\0LB\0ky\0CN\0ky\0TR\0mn\0CN\0ms\0CC\0pa\0PK\0sd\0IN\0sr\0ME\0sr\0RO\0sr\0RU\0sr\0TR\0tg\0PK\0ug\0KZ\0ug\0MN\0uz\0AF\0uz\0CN\0yueCN\0zh\0AU\0zh\0BN\0zh\0GB\0zh\0GF\0zh\0HK\0zh\0ID\0zh\0MO\0zh\0PA\0zh\0PF\0zh\0PH\0zh\0SR\0zh\0TH\0zh\0TW\0zh\0US\0zh\0VN\0") }, unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"ArabArabCyrlArabArabArabArabArabArabArabArabLatnMongArabArabDevaLatnLatnLatnLatnArabCyrlCyrlArabCyrlHansHantHantHantHantHantHantHantHantHantHantHantHantHantHantHant") })
+                    zerovec::ZeroMap::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"az\0IQ\0az\0IR\0az\0RU\0ha\0CM\0ha\0SD\0kk\0AF\0kk\0CN\0kk\0IR\0kk\0MN\0ku\0LB\0ky\0CN\0ky\0TR\0mn\0CN\0ms\0CC\0pa\0PK\0sd\0IN\0sr\0ME\0sr\0RO\0sr\0TR\0tg\0PK\0ug\0KZ\0ug\0MN\0uz\0AF\0uz\0CN\0yueCN\0zh\0AU\0zh\0BN\0zh\0GB\0zh\0GF\0zh\0HK\0zh\0ID\0zh\0MO\0zh\0PA\0zh\0PF\0zh\0PH\0zh\0SR\0zh\0TH\0zh\0TW\0zh\0US\0zh\0VN\0") }, unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"ArabArabCyrlArabArabArabArabArabArabArabArabLatnMongArabArabDevaLatnLatnLatnArabCyrlCyrlArabCyrlHansHantHantHantHantHantHantHantHantHantHantHantHantHantHantHant") })
                 },
                 language: unsafe {
                     #[allow(unused_unsafe)]
@@ -32,10 +32,10 @@ macro_rules! __impl_locale_likely_subtags_language_v1 {
                 und: (icu_locale_core::subtags::language!("en"), icu_locale_core::subtags::script!("Latn"), icu_locale_core::subtags::region!("US")),
             };
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DataProvider<icu::locale::provider::LocaleLikelySubtagsLanguageV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::locale::provider::LocaleLikelySubtagsLanguageV1>, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_LOCALE_LIKELY_SUBTAGS_LANGUAGE_V1), metadata: icu_provider::DataResponseMetadata::default() })
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsLanguageV1 as icu_provider::DataMarker>::INFO, req))
@@ -45,7 +45,7 @@ macro_rules! __impl_locale_likely_subtags_language_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_locale_likely_subtags_language_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::locale::provider::LocaleLikelySubtagsLanguageV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -54,10 +54,10 @@ macro_rules! __impl_locale_likely_subtags_language_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_locale_likely_subtags_language_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DryDataProvider<icu::locale::provider::LocaleLikelySubtagsLanguageV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponseMetadata::default())
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsLanguageV1 as icu_provider::DataMarker>::INFO, req))
@@ -67,17 +67,17 @@ macro_rules! __impl_locale_likely_subtags_language_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_locale_likely_subtags_language_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DryDataProvider<icu::locale::provider::LocaleLikelySubtagsLanguageV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
-                if req.id.locale.is_default() {
+                if req.id.locale.is_unknown() {
                     Ok(icu_provider::DataResponseMetadata::default())
                 } else {
                     Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::locale::provider::LocaleLikelySubtagsLanguageV1 as icu_provider::DataMarker>::INFO, req))
                 }
             }
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::locale::provider::LocaleLikelySubtagsLanguageV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

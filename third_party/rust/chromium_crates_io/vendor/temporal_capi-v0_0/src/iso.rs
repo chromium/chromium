@@ -4,7 +4,6 @@ use temporal_rs::iso;
 #[diplomat::abi_rename = "temporal_rs_{0}"]
 #[diplomat::attr(auto, namespace = "temporal_rs")]
 pub mod ffi {
-
     pub struct IsoDate {
         pub year: i32,
         pub month: u8,

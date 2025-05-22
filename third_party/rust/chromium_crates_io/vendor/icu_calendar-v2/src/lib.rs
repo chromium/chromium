@@ -34,7 +34,7 @@
 //!     .expect("Failed to initialize ISO Date instance.");
 //!
 //! assert_eq!(date_iso.day_of_week(), Weekday::Wednesday);
-//! assert_eq!(date_iso.year().era_year_or_extended(), 1992);
+//! assert_eq!(date_iso.era_year().year, 1992);
 //! assert_eq!(date_iso.month().ordinal, 9);
 //! assert_eq!(date_iso.day_of_month().0, 2);
 //!
@@ -53,19 +53,19 @@
 //! let mut date_iso = Date::try_new_iso(1992, 9, 2)
 //!     .expect("Failed to initialize ISO Date instance.");
 //!
-//! assert_eq!(date_iso.year().era_year_or_extended(), 1992);
+//! assert_eq!(date_iso.era_year().year, 1992);
 //! assert_eq!(date_iso.month().ordinal, 9);
 //! assert_eq!(date_iso.day_of_month().0, 2);
 //!
 //! // Conversion into Indian calendar: 1914-08-02.
 //! let date_indian = date_iso.to_calendar(Indian);
-//! assert_eq!(date_indian.year().era_year_or_extended(), 1914);
+//! assert_eq!(date_indian.era_year().year, 1914);
 //! assert_eq!(date_indian.month().ordinal, 6);
 //! assert_eq!(date_indian.day_of_month().0, 11);
 //!
 //! // Conversion into Buddhist calendar: 2535-09-02.
 //! let date_buddhist = date_iso.to_calendar(Buddhist);
-//! assert_eq!(date_buddhist.year().era_year_or_extended(), 2535);
+//! assert_eq!(date_buddhist.era_year().year, 2535);
 //! assert_eq!(date_buddhist.month().ordinal, 9);
 //! assert_eq!(date_buddhist.day_of_month().0, 2);
 //! ```
@@ -95,104 +95,37 @@ extern crate alloc;
 // Make sure inherent docs go first
 mod date;
 
-/// Types for individual calendars
-pub mod cal {
-    pub use crate::buddhist::Buddhist;
-    pub use crate::chinese::Chinese;
-    pub use crate::coptic::Coptic;
-    pub use crate::dangi::Dangi;
-    pub use crate::ethiopian::{Ethiopian, EthiopianEraStyle};
-    pub use crate::gregorian::Gregorian;
-    pub use crate::hebrew::Hebrew;
-    pub use crate::indian::Indian;
-    pub use crate::islamic::{
-        IslamicCivil, IslamicObservational, IslamicTabular, IslamicUmmAlQura,
-    };
-    pub use crate::iso::Iso;
-    pub use crate::japanese::{Japanese, JapaneseExtended};
-    pub use crate::julian::Julian;
-    pub use crate::persian::Persian;
-    pub use crate::roc::Roc;
+// Public modules
+mod any_calendar;
+pub mod cal;
+pub mod provider;
+pub mod types;
+pub mod week;
 
-    pub use crate::any_calendar::AnyCalendar;
-
-    /// Scaffolding types: You shouldn't need to use these, they need to be public for the `Calendar` trait impl to work.
-    pub mod scaffold {
-        pub use crate::chinese::ChineseDateInner;
-        pub use crate::coptic::CopticDateInner;
-        pub use crate::dangi::DangiDateInner;
-        pub use crate::ethiopian::EthiopianDateInner;
-        pub use crate::gregorian::GregorianDateInner;
-        pub use crate::hebrew::HebrewDateInner;
-        pub use crate::indian::Indian;
-        pub use crate::islamic::{
-            IslamicCivilDateInner, IslamicDateInner, IslamicTabularDateInner,
-            IslamicUmmAlQuraDateInner,
-        };
-        pub use crate::iso::Iso;
-        pub use crate::japanese::Japanese;
-        pub use crate::julian::JulianDateInner;
-        pub use crate::persian::PersianDateInner;
-        pub use crate::roc::RocDateInner;
-
-        pub use crate::any_calendar::AnyDateInner;
-    }
-}
-
-pub mod any_calendar;
-mod buddhist;
 mod calendar;
 mod calendar_arithmetic;
-mod chinese;
-mod chinese_based;
-mod coptic;
-mod dangi;
 mod duration;
 mod error;
-mod ethiopian;
-mod gregorian;
-mod hebrew;
-mod indian;
-mod islamic;
-mod iso;
 #[cfg(feature = "ixdtf")]
 mod ixdtf;
-mod japanese;
-mod julian;
-mod persian;
-pub mod provider;
-mod roc;
-#[cfg(test)]
-mod tests;
-pub mod types;
-mod week_of;
 
-pub mod week {
-    //! Functions for week-of-month and week-of-year arithmetic.
-    use crate::week_of;
-    pub use week_of::RelativeUnit;
-    pub use week_of::WeekCalculator;
-    pub use week_of::WeekOf;
-    #[doc(hidden)] // for debug-assert in datetime
-    pub use week_of::MIN_UNIT_DAYS;
-}
-
-#[cfg(feature = "ixdtf")]
-pub use crate::ixdtf::ParseError;
-#[doc(no_inline)]
-pub use any_calendar::{AnyCalendar, AnyCalendarKind, AnyCalendarPreferences};
+// Top-level types
+pub use any_calendar::IntoAnyCalendar;
 pub use calendar::Calendar;
 pub use date::{AsCalendar, Date, Ref};
 #[doc(hidden)] // unstable
 pub use duration::{DateDuration, DateDurationUnit};
 pub use error::{DateError, RangeError};
+#[cfg(feature = "ixdtf")]
+pub use ixdtf::ParseError;
+
+// Reexports
 #[doc(no_inline)]
-pub use gregorian::Gregorian;
-#[doc(no_inline)]
-pub use iso::Iso;
+pub use cal::{AnyCalendar, AnyCalendarKind, Gregorian, Iso};
 
 /// Locale preferences used by this crate
 pub mod preferences {
+    pub use crate::any_calendar::CalendarPreferences;
     #[doc(inline)]
     /// **This is a reexport of a type in [`icu::locale`](icu_locale_core::preferences::extensions::unicode::keywords)**.
     #[doc = "\n"] // prevent autoformatting
@@ -200,5 +133,8 @@ pub mod preferences {
     #[doc(inline)]
     /// **This is a reexport of a type in [`icu::locale`](icu_locale_core::preferences::extensions::unicode::keywords)**.
     #[doc = "\n"] // prevent autoformatting
-    pub use icu_locale_core::preferences::extensions::unicode::keywords::IslamicCalendarAlgorithm;
+    pub use icu_locale_core::preferences::extensions::unicode::keywords::HijriCalendarAlgorithm;
 }
+
+#[cfg(test)]
+mod tests;

@@ -10,21 +10,21 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
+
     bool temporal_rs_PartialDuration_is_empty(temporal_rs::capi::PartialDuration self);
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
 
-inline bool temporal_rs::PartialDuration::is_empty() {
+inline bool temporal_rs::PartialDuration::is_empty() const {
   auto result = temporal_rs::capi::temporal_rs_PartialDuration_is_empty(this->AsFFI());
   return result;
 }
@@ -32,14 +32,14 @@ inline bool temporal_rs::PartialDuration::is_empty() {
 
 inline temporal_rs::capi::PartialDuration temporal_rs::PartialDuration::AsFFI() const {
   return temporal_rs::capi::PartialDuration {
-    /* .years = */ years.has_value() ? (diplomat::capi::OptionF64{ { years.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .months = */ months.has_value() ? (diplomat::capi::OptionF64{ { months.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .weeks = */ weeks.has_value() ? (diplomat::capi::OptionF64{ { weeks.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .days = */ days.has_value() ? (diplomat::capi::OptionF64{ { days.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .hours = */ hours.has_value() ? (diplomat::capi::OptionF64{ { hours.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .minutes = */ minutes.has_value() ? (diplomat::capi::OptionF64{ { minutes.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .seconds = */ seconds.has_value() ? (diplomat::capi::OptionF64{ { seconds.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
-    /* .milliseconds = */ milliseconds.has_value() ? (diplomat::capi::OptionF64{ { milliseconds.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
+    /* .years = */ years.has_value() ? (diplomat::capi::OptionI64{ { years.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .months = */ months.has_value() ? (diplomat::capi::OptionI64{ { months.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .weeks = */ weeks.has_value() ? (diplomat::capi::OptionI64{ { weeks.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .days = */ days.has_value() ? (diplomat::capi::OptionI64{ { days.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .hours = */ hours.has_value() ? (diplomat::capi::OptionI64{ { hours.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .minutes = */ minutes.has_value() ? (diplomat::capi::OptionI64{ { minutes.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .seconds = */ seconds.has_value() ? (diplomat::capi::OptionI64{ { seconds.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
+    /* .milliseconds = */ milliseconds.has_value() ? (diplomat::capi::OptionI64{ { milliseconds.value() }, true }) : (diplomat::capi::OptionI64{ {}, false }),
     /* .microseconds = */ microseconds.has_value() ? (diplomat::capi::OptionF64{ { microseconds.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
     /* .nanoseconds = */ nanoseconds.has_value() ? (diplomat::capi::OptionF64{ { nanoseconds.value() }, true }) : (diplomat::capi::OptionF64{ {}, false }),
   };

@@ -10,6 +10,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 #include "Sign.hpp"
 #include "TemporalError.hpp"
@@ -18,26 +19,25 @@
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
+
     typedef struct temporal_rs_TimeDuration_new_result {union {temporal_rs::capi::TimeDuration* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_TimeDuration_new_result;
-    temporal_rs_TimeDuration_new_result temporal_rs_TimeDuration_new(double hours, double minutes, double seconds, double milliseconds, double microseconds, double nanoseconds);
-    
+    temporal_rs_TimeDuration_new_result temporal_rs_TimeDuration_new(int64_t hours, int64_t minutes, int64_t seconds, int64_t milliseconds, double microseconds, double nanoseconds);
+
     temporal_rs::capi::TimeDuration* temporal_rs_TimeDuration_abs(const temporal_rs::capi::TimeDuration* self);
-    
+
     temporal_rs::capi::TimeDuration* temporal_rs_TimeDuration_negated(const temporal_rs::capi::TimeDuration* self);
-    
+
     bool temporal_rs_TimeDuration_is_within_range(const temporal_rs::capi::TimeDuration* self);
-    
+
     temporal_rs::capi::Sign temporal_rs_TimeDuration_sign(const temporal_rs::capi::TimeDuration* self);
-    
-    
+
     void temporal_rs_TimeDuration_destroy(TimeDuration* self);
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
 
-inline diplomat::result<std::unique_ptr<temporal_rs::TimeDuration>, temporal_rs::TemporalError> temporal_rs::TimeDuration::new_(double hours, double minutes, double seconds, double milliseconds, double microseconds, double nanoseconds) {
+inline diplomat::result<std::unique_ptr<temporal_rs::TimeDuration>, temporal_rs::TemporalError> temporal_rs::TimeDuration::new_(int64_t hours, int64_t minutes, int64_t seconds, int64_t milliseconds, double microseconds, double nanoseconds) {
   auto result = temporal_rs::capi::temporal_rs_TimeDuration_new(hours,
     minutes,
     seconds,

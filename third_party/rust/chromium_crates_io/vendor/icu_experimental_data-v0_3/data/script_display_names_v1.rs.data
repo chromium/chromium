@@ -12,13 +12,13 @@
 #[macro_export]
 macro_rules! __impl_script_display_names_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $provider {
-            const DATA_SCRIPT_DISPLAY_NAMES_V1: icu_provider_baked::zerotrie::Data<icu::experimental::displaynames::provider::ScriptDisplayNamesV1> = {
-                const TRIE: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1zabcdefghijklmnopqrstuvwxyz\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x14?\\n\xAB\xD5\xE8\x0C(0\x86\xA0\xC8\xE7\xF3\r\x10%~\xA6\xBD\xCB\xCE\xD7\xFC\xC6fkmrsz\x01\x02\x03\x04\x07\x80\x81\x82\x83\x84t\x85\x86\xC8aeghlnrs\x07\x08\x0B\r\x0F\x10\x13l-Latn\x87\x88\x89c\x8Ao\x8Ao\x8B\x8C\x8Dx\x8E\x8F-Cyrl\x90\0\xC6aehsvy\x02\x05\x08\r\x0F\x90\x01b\x90\x02r\x90\x03\x90\x04w\x90\x05\x90\x06\x90\x07\xC4aeos\x02\x04\x07\x90\x08\x90\ti\x90\nb\x90\x0B\xC7elnostu\x02\x0E\x1B\x1D+-\x90\x0C\x90\r-polyton\x90\x0E\x90\x0F-\xC2AI\x03U\x90\x10N\x90\x11\x90\x12\x90\x13-\xC24U\x0419\x90\x14S\x90\x15\x90\x16\x90\x17\xC6afiory\x07\x0E\x13\x15\x1C\x90\x18-AF\x90\x19-Adlm\x90\x1A\x90\x1Bl\x90\x1C\x90\x1D\x90\x1E-CA\x90\x1F\x90 \xC4adlu\x05\x07\t\x90!a\x90\"\x90#\x90$\x90%\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90&\x90'\x90(-Latn\x90)\x90*b\x90+\x90,\x90-\xC7adegist\x02\x04\x06\x08\n\x0C\x90.\x90/\x900\x901\x902\x903\x904\xC2av\x02\x905\x906\xCBaegkmnosuxy\x02\x05\x08\n\x0C\x0E\x1A#%>\x907a\x908p\x909\x90:\x90;\x90<\x90=k\x90>-Latn\x90?\x90@-Deva\x90A\x90Bv\x90C-\xC3DOT\x05\neva\x90Drya\x90Eelu\x90F\x90G\xC6bimotv\x02\x05\x08\n\x0C\x90Hj\x90Io\x90J\x90K\x90L\x90M\xC9aiklnrsty\x03\x05\x07\t\x0E\x10\x12\x14i\x90N\x90O\x90P\x90Q\x90Ri\x90S\x90T\x90U\x90V\x90W\xC7delnoqs\x03\x05\x07\t\x0B\x0Es\x90X\x90Y\x90Z\x90[\x90\\o\x90]o\x90^\xC3cmr\x02\x04\x90I\x90_\x90`\xC5aclst\x02\x05\x07\t\x90am\x90b\x90c\x90d\x90e-PT\x90fu\x90g\xC5amouw\x03\x05\x07\tj\x90h\x90i\x90j\x90k\x90J\xCFacdikloqrtuvwyz\n\x0C\x15\x17\x19\x1B\x1D\x1F(*,.58\x90l\xC2ht\x02\x90m\x90n\x90o\x90p-Deva\x90q\x90r\x90s\x90t\x90u\x90v\x90w-Latn\x90x\x90y\x90z\x90{\x90|-KE\x90}r\x90~l\x90\x7F\xCAaeghiknort\x02\x04\x06\x08\n\x0C\x0E\x10\x12\x91\0\x91\x01\x91\x02\x91\x03\x91\x04\x91\x05\x90y\x91\x06\x91\x07\x91\x08\xC4gkrz\x02\x04\x06\x91\t\x91\n\x91\x0B\x91\x0C-Cyrl\x91\r\xC3eim\x03\x05c\x91\x0E\x91\x0Fw\x91\x10o\x91\x11\xC2hn\x02\x91\x12r\x91\x13\xC3oru\x07\x15\x91\x14-BJ\x91\x15l\x91\x16-\xC2CV\x03O\x91\x17E\x91\x17e\x91\x18-Hans\x91\x19\xC3ahu\x02\x16\x91\x1A\x91\x1B-\xC2HM\n\xC2Ka\x02\x91\x1Cnt\x91\x1DO\x91\x1C\x91\x1E" };
-                const VALUES: &'static [<icu::experimental::displaynames::provider::ScriptDisplayNamesV1 as icu_provider_baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
+            const DATA_SCRIPT_DISPLAY_NAMES_V1: icu_provider::baked::zerotrie::Data<icu::experimental::displaynames::provider::ScriptDisplayNamesV1> = {
+                const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1zabcdefghijklmnopqrstuvwxyz\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x02\x02\x02\x02\x14?\\n\xAB\xD5\xE8\x0C(0\x86\xA0\xC8\xE7\xF3\r\x10%~\xA6\xBD\xCB\xCE\xD7\xFC\xC6fkmrsz\x01\x02\x03\x04\x07\x80\x81\x82\x83\x84t\x85\x86\xC8aeghlnrs\x07\x08\x0B\r\x0F\x10\x13l-Latn\x87\x88\x89c\x8Ao\x8Ao\x8B\x8C\x8Dx\x8E\x8F-Cyrl\x90\0\xC6aehsvy\x02\x05\x08\r\x0F\x90\x01b\x90\x02r\x90\x03\x90\x04w\x90\x05\x90\x06\x90\x07\xC4aeos\x02\x04\x07\x90\x08\x90\ti\x90\nb\x90\x0B\xC7elnostu\x02\x0E\x1B\x1D+-\x90\x0C\x90\r-polyton\x90\x0E\x90\x0F-\xC2AI\x03U\x90\x10N\x90\x11\x90\x12\x90\x13-\xC24U\x0419\x90\x14S\x90\x15\x90\x16\x90\x17\xC6afiory\x07\x0E\x13\x15\x1C\x90\x18-AF\x90\x19-Adlm\x90\x1A\x90\x1Bl\x90\x1C\x90\x1D\x90\x1E-CA\x90\x1F\x90 \xC4adlu\x05\x07\t\x90!a\x90\"\x90#\x90$\x90%\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90&\x90'\x90(-Latn\x90)\x90*b\x90+\x90,\x90-\xC7adegist\x02\x04\x06\x08\n\x0C\x90.\x90/\x900\x901\x902\x903\x904\xC2av\x02\x905\x906\xCBaegkmnosuxy\x02\x05\x08\n\x0C\x0E\x1A#%>\x907a\x908p\x909\x90:\x90;\x90<\x90=k\x90>-Latn\x90?\x90@-Deva\x90A\x90Bv\x90C-\xC3DOT\x05\neva\x90Drya\x90Eelu\x90F\x90G\xC6bimotv\x02\x05\x08\n\x0C\x90Hj\x90Io\x90J\x90K\x90L\x90M\xC9aiklnrsty\x03\x05\x07\t\x0E\x10\x12\x14i\x90N\x90O\x90P\x90Q\x90Ri\x90S\x90T\x90U\x90V\x90W\xC7delnoqs\x03\x05\x07\t\x0B\x0Es\x90X\x90Y\x90Z\x90[\x90\\o\x90]o\x90^\xC3cmr\x02\x04\x90I\x90_\x90`\xC5aclst\x02\x05\x07\t\x90am\x90b\x90c\x90d\x90e-PT\x90fu\x90g\xC5amouw\x03\x05\x07\tj\x90h\x90i\x90j\x90k\x90J\xCFacdikloqrtuvwyz\n\x0C\x15\x17\x19\x1B\x1D\x1F(*,.58\x90l\xC2ht\x02\x90m\x90n\x90o\x90p-Deva\x90q\x90r\x90s\x90t\x90u\x90v\x90w-Latn\x90x\x90y\x90z\x90{\x90|-KE\x90}r\x90~l\x90\x7F\xCAaeghiknort\x02\x04\x06\x08\n\x0C\x0E\x10\x12\x91\0\x91\x01\x91\x02\x91\x03\x91\x04\x91\x05\x90y\x91\x06\x91\x07\x91\x08\xC4gkrz\x02\x04\x06\x91\t\x91\n\x91\x0B\x91\x0C-Cyrl\x91\r\xC3eim\x03\x05c\x91\x0E\x91\x0Fw\x91\x10o\x91\x11\xC2hn\x02\x91\x12r\x91\x13\xC3oru\x07\x15\x91\x14-BJ\x91\x15l\x91\x16-\xC2CV\x03O\x91\x17E\x91\x17e\x91\x18-Hans\x91\x19\xC3ahu\x02\x16\x91\x1A\x91\x1B-\xC2HM\n\xC2Ka\x02\x91\x1Cnt\x91\x1DO\x91\x1C\x91\x1E" };
+                const VALUES: &'static [<icu::experimental::displaynames::provider::ScriptDisplayNamesV1 as icu_provider::baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
                     icu::experimental::displaynames::provider::ScriptDisplayNames {
                         names: unsafe {
                             #[allow(unused_unsafe)]
@@ -1770,24 +1770,24 @@ macro_rules! __impl_script_display_names_v1 {
                         },
                     },
                 ];
-                unsafe { icu_provider_baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
+                unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DataProvider<icu::experimental::displaynames::provider::ScriptDisplayNamesV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::experimental::displaynames::provider::ScriptDisplayNamesV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
-                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1, req.id, req.metadata.attributes_prefix_match) {
+                let payload = if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1, req.id, req.metadata.attributes_prefix_match) {
                     payload
                 } else {
                     const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::experimental::displaynames::provider::ScriptDisplayNamesV1 as icu_provider::DataMarker>::INFO.fallback_config);
                     let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
                     loop {
-                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                        if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
                             metadata.locale = Some(fallback_iterator.take());
                             break payload;
                         }
-                        if fallback_iterator.get().is_default() {
+                        if fallback_iterator.get().is_unknown() {
                             return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::experimental::displaynames::provider::ScriptDisplayNamesV1 as icu_provider::DataMarker>::INFO, req));
                         }
                         fallback_iterator.step();
@@ -1799,10 +1799,10 @@ macro_rules! __impl_script_display_names_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_script_display_names_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::experimental::displaynames::provider::ScriptDisplayNamesV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
-                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1).collect())
+                Ok(icu_provider::baked::DataStore::iter(&Self::DATA_SCRIPT_DISPLAY_NAMES_V1).collect())
             }
         }
     };

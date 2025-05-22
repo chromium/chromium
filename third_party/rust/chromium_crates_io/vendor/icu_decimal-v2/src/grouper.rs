@@ -164,11 +164,11 @@ fn test_grouper() {
             };
             let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
             struct Provider(RefCell<Option<DecimalSymbols<'static>>>, [char; 10]);
-            impl DataProvider<DecimalSymbolsV2> for Provider {
+            impl DataProvider<DecimalSymbolsV1> for Provider {
                 fn load(
                     &self,
                     _req: icu_provider::DataRequest,
-                ) -> Result<icu_provider::DataResponse<DecimalSymbolsV2>, icu_provider::DataError>
+                ) -> Result<icu_provider::DataResponse<DecimalSymbolsV1>, icu_provider::DataError>
                 {
                     Ok(DataResponse {
                         metadata: Default::default(),

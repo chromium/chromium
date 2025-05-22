@@ -12,13 +12,13 @@
 #[macro_export]
 macro_rules! __impl_short_second_relative_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl $provider {
-            const DATA_SHORT_SECOND_RELATIVE_V1: icu_provider_baked::zerotrie::Data<icu::experimental::relativetime::provider::ShortSecondRelativeV1> = {
-                const TRIE: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1zabcdefghijklmnopqrstuvwxyz\0\0\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x148L^\x97\xB7\xC7\xEB\xFF\x077Gl|\x84\x9E\xA1\xA9\xEC\x101:=AV\xC6fkmrsz\x01\x02\x03\x04\x07\x80\x81\x82\x83\x84t\x85\x86\xC7aeglnrs\x07\x08\t\x0B\x0C\x0Fl-Latn\x87\x88\x89o\x8A\x8B\x8Cx\x8D\x8E-Cyrl\x8F\xC4ahsy\x02\x05\n\x90\0r\x90\x01\x90\x02w\x90\x03\x90\x04\xC4aeos\x02\x04\x07\x90\x05\x90\x06i\x90\x07b\x90\x08\xC6elnstu\x02\x04\x17)+\x90\t\x90\n\x90\x0B-\xC30AC\x04\x0701\x90\x0CU\x90\rA\x90\r\x90\x0E-\xC3AMP\x03\x06R\x90\x0FX\x90\x10Y\x90\x0F\x90\x11\x90\x12\xC6afiory\x02\t\x0E\x10\x12\x90\x13-Adlm\x90\x14\x90\x15l\x90\x16\x90\x17\x90\x18\x90\x19\xC4adlu\x02\x04\x06\x90\x1A\x90\x1B\x90\x1C\x90\x1D\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90\x1E\x90\x1F\x90 -Latn\x90!\x90\"b\x90#\x90$\x90%\xC5adgst\x02\x04\x06\x08\x90&\x90'\x90(\x90)\x90*\xC2av\x02\x90+\x90,\xC9aegkmnouy\x02\x05\x08\n\x0C\x0E\x1A\x1C\x90-a\x90.p\x90/\x900\x901\x902\x903k\x904-Latn\x905\x906\x907\xC4botv\x02\x04\x06\x908\x909\x90:\x90;\xC9aiklnrsty\x03\x05\x07\t\x0B\r\x0F\x11i\x90<\x90=\x90>\x90?\x90@\x90A\x90B\x90C\x90D\xC4elno\x02\x04\x06\x90E\x90F\x90G\x90H\xC2mr\x02\x90I\x90J\xC5aclst\x02\x05\x07\t\x90Km\x90L\x90M\x90N\x90O-PT\x90Pu\x90Q\xC2ou\x02\x90R\x90S\xCCacdikloqrvwy\x03\x05\x07\t\x0B\r\x0F\x11$&(h\x90T\x90U\x90V\x90W\x90X\x90Y\x90Z\x90[\x90\\-\xC2BL\x03A\x90]atn\x90^-BA\x8E\x90_\x90`r\x90a\xC9aeghikort\x02\x04\x06\x08\n\x0C\x0E\x10\x90b\x90c\x90d\x90e\x90f\x90g\x90h\x90i\x90j\xC5gknrz\x02\x04\x07\x0E\x90k\x90ld\x90m\x90n-IN\x90o\x90p-Cyrl\x90q\xC2ei\x03c\x90r\x90so\x90tnr\x90u\xC3oru\x02\x05\x90vl\x90we\x90x-Hans\x90y\xC2hu\t\x90z-Hant\x90{\x90|" };
-                const VALUES: &'static [<icu::experimental::relativetime::provider::ShortSecondRelativeV1 as icu_provider_baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
+            const DATA_SHORT_SECOND_RELATIVE_V1: icu_provider::baked::zerotrie::Data<icu::experimental::relativetime::provider::ShortSecondRelativeV1> = {
+                const TRIE: icu_provider::baked::zerotrie::ZeroTrieSimpleAscii<&'static [u8]> = icu_provider::baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1zabcdefghijklmnopqrstuvwxyz\0\0\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x02\x02\x148L^\x97\xB7\xC7\xEB\xFF\x077Gl|\x84\x9E\xA1\xA9\xEC\x101:=AV\xC6fkmrsz\x01\x02\x03\x04\x07\x80\x81\x82\x83\x84t\x85\x86\xC7aeglnrs\x07\x08\t\x0B\x0C\x0Fl-Latn\x87\x88\x89o\x8A\x8B\x8Cx\x8D\x8E-Cyrl\x8F\xC4ahsy\x02\x05\n\x90\0r\x90\x01\x90\x02w\x90\x03\x90\x04\xC4aeos\x02\x04\x07\x90\x05\x90\x06i\x90\x07b\x90\x08\xC6elnstu\x02\x04\x17)+\x90\t\x90\n\x90\x0B-\xC30AC\x04\x0701\x90\x0CU\x90\rA\x90\r\x90\x0E-\xC3AMP\x03\x06R\x90\x0FX\x90\x10Y\x90\x0F\x90\x11\x90\x12\xC6afiory\x02\t\x0E\x10\x12\x90\x13-Adlm\x90\x14\x90\x15l\x90\x16\x90\x17\x90\x18\x90\x19\xC4adlu\x02\x04\x06\x90\x1A\x90\x1B\x90\x1C\x90\x1D\xC7aeirsuy\x02\x04\r\x0F\x12\x14\x90\x1E\x90\x1F\x90 -Latn\x90!\x90\"b\x90#\x90$\x90%\xC5adgst\x02\x04\x06\x08\x90&\x90'\x90(\x90)\x90*\xC2av\x02\x90+\x90,\xC9aegkmnouy\x02\x05\x08\n\x0C\x0E\x1A\x1C\x90-a\x90.p\x90/\x900\x901\x902\x903k\x904-Latn\x905\x906\x907\xC4botv\x02\x04\x06\x908\x909\x90:\x90;\xC9aiklnrsty\x03\x05\x07\t\x0B\r\x0F\x11i\x90<\x90=\x90>\x90?\x90@\x90A\x90B\x90C\x90D\xC4elno\x02\x04\x06\x90E\x90F\x90G\x90H\xC2mr\x02\x90I\x90J\xC5aclst\x02\x05\x07\t\x90Km\x90L\x90M\x90N\x90O-PT\x90Pu\x90Q\xC2ou\x02\x90R\x90S\xCCacdikloqrvwy\x03\x05\x07\t\x0B\r\x0F\x11$&(h\x90T\x90U\x90V\x90W\x90X\x90Y\x90Z\x90[\x90\\-\xC2BL\x03A\x90]atn\x90^-BA\x8E\x90_\x90`r\x90a\xC9aeghikort\x02\x04\x06\x08\n\x0C\x0E\x10\x90b\x90c\x90d\x90e\x90f\x90g\x90h\x90i\x90j\xC5gknrz\x02\x04\x07\x0E\x90k\x90ld\x90m\x90n-IN\x90o\x90p-Cyrl\x90q\xC2ei\x03c\x90r\x90so\x90tnr\x90u\xC3oru\x02\x05\x90vl\x90we\x90x-Hans\x90y\xC2hu\t\x90z-Hant\x90{\x90|" };
+                const VALUES: &'static [<icu::experimental::relativetime::provider::ShortSecondRelativeV1 as icu_provider::baked::zerotrie::DynamicDataMarker>::DataStruct] = &[
                     icu::experimental::relativetime::provider::RelativeTimePatternData {
                         relatives: unsafe {
                             #[allow(unused_unsafe)]
@@ -1148,24 +1148,24 @@ macro_rules! __impl_short_second_relative_v1 {
                         future: icu::plurals::provider::PluralElementsPackedCow { elements: alloc::borrow::Cow::Borrowed(unsafe { icu::plurals::provider::PluralElementsPackedULE::from_bytes_unchecked(b"\x80\x19\x13kumasekhondi angu- ezayo\x01\0\x10\x13kusekhondi elingu- elizayo") }) },
                     },
                 ];
-                unsafe { icu_provider_baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
+                unsafe { icu_provider::baked::zerotrie::Data::from_trie_and_values_unchecked(TRIE, VALUES) }
             };
         }
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::DataProvider<icu::experimental::relativetime::provider::ShortSecondRelativeV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::experimental::relativetime::provider::ShortSecondRelativeV1>, icu_provider::DataError> {
                 let mut metadata = icu_provider::DataResponseMetadata::default();
-                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SHORT_SECOND_RELATIVE_V1, req.id, req.metadata.attributes_prefix_match) {
+                let payload = if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SHORT_SECOND_RELATIVE_V1, req.id, req.metadata.attributes_prefix_match) {
                     payload
                 } else {
                     const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::experimental::relativetime::provider::ShortSecondRelativeV1 as icu_provider::DataMarker>::INFO.fallback_config);
                     let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
                     loop {
-                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_SHORT_SECOND_RELATIVE_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                        if let Some(payload) = icu_provider::baked::DataStore::get(&Self::DATA_SHORT_SECOND_RELATIVE_V1, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
                             metadata.locale = Some(fallback_iterator.take());
                             break payload;
                         }
-                        if fallback_iterator.get().is_default() {
+                        if fallback_iterator.get().is_unknown() {
                             return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::experimental::relativetime::provider::ShortSecondRelativeV1 as icu_provider::DataMarker>::INFO, req));
                         }
                         fallback_iterator.step();
@@ -1177,10 +1177,10 @@ macro_rules! __impl_short_second_relative_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_short_second_relative_v1!($provider);
-        #[clippy::msrv = "1.81"]
+        #[clippy::msrv = "1.82"]
         impl icu_provider::IterableDataProvider<icu::experimental::relativetime::provider::ShortSecondRelativeV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
-                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_SHORT_SECOND_RELATIVE_V1).collect())
+                Ok(icu_provider::baked::DataStore::iter(&Self::DATA_SHORT_SECOND_RELATIVE_V1).collect())
             }
         }
     };

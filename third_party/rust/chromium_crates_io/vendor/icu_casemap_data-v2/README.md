@@ -4,7 +4,7 @@
 
 Data for the `icu_casemap` crate
 
-This data was generated with CLDR version 47.0.0-BETA1, ICU version release-77-rc, and
+This data was generated with CLDR version 47.0.0, ICU version icu4x/2025-05-01/77.x, and
 LSTM segmenter version v0.1.0.
 
 <!-- cargo-rdme end -->

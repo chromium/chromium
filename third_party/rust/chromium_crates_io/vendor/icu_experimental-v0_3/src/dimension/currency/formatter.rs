@@ -60,7 +60,7 @@ impl CurrencyFormatter {
         (prefs: CurrencyFormatterPreferences, options: super::options::CurrencyFormatterOptions) -> error: DataError,
         functions: [
             try_new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -102,7 +102,7 @@ impl CurrencyFormatter {
     where
         D: ?Sized
             + DataProvider<super::super::provider::currency::CurrencyEssentialsV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>,
     {
         let locale = CurrencyEssentialsV1::make_locale(prefs.locale_preferences);

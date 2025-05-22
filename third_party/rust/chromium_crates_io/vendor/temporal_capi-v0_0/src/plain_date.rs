@@ -14,8 +14,13 @@ pub mod ffi {
     use crate::plain_month_day::ffi::PlainMonthDay;
     use crate::plain_time::ffi::PlainTime;
     use crate::plain_year_month::ffi::PlainYearMonth;
+    use alloc::boxed::Box;
+    use alloc::string::String;
+    use core::fmt::Write;
     use diplomat_runtime::{DiplomatOption, DiplomatStrSlice, DiplomatWrite};
-    use std::fmt::Write;
+    use diplomat_runtime::{DiplomatStr, DiplomatStr16};
+
+    use core::str::FromStr;
 
     #[diplomat::opaque]
     pub struct PlainDate(pub(crate) temporal_rs::PlainDate);
@@ -78,6 +83,7 @@ pub mod ffi {
                 .map(|x| Box::new(PlainDate(x)))
                 .map_err(Into::into)
         }
+
         pub fn with(
             &self,
             partial: PartialDate,
@@ -93,6 +99,20 @@ pub mod ffi {
             self.0
                 .with_calendar(calendar.0.clone())
                 .map(|x| Box::new(PlainDate(x)))
+                .map_err(Into::into)
+        }
+
+        pub fn from_utf8(s: &DiplomatStr) -> Result<Box<Self>, TemporalError> {
+            temporal_rs::PlainDate::from_utf8(s)
+                .map(|c| Box::new(Self(c)))
+                .map_err(Into::into)
+        }
+
+        pub fn from_utf16(s: &DiplomatStr16) -> Result<Box<Self>, TemporalError> {
+            // TODO(#275) This should not need to convert
+            let s = String::from_utf16(s).map_err(|_| temporal_rs::TemporalError::range())?;
+            temporal_rs::PlainDate::from_str(&s)
+                .map(|c| Box::new(Self(c)))
                 .map_err(Into::into)
         }
 
@@ -155,6 +175,16 @@ pub mod ffi {
                 .map_err(Into::into)
         }
 
+        pub fn equals(&self, other: &Self) -> bool {
+            self.0 == other.0
+        }
+
+        pub fn compare(one: &Self, two: &Self) -> core::cmp::Ordering {
+            let tuple1 = (one.iso_year(), one.iso_month(), one.iso_day());
+            let tuple2 = (two.iso_year(), two.iso_month(), two.iso_day());
+
+            tuple1.cmp(&tuple2)
+        }
         pub fn year(&self) -> i32 {
             self.0.year()
         }
@@ -169,17 +199,17 @@ pub mod ffi {
         pub fn day(&self) -> u8 {
             self.0.day()
         }
-        pub fn day_of_week(&self) -> u16 {
-            self.0.day_of_week()
+        pub fn day_of_week(&self) -> Result<u16, TemporalError> {
+            self.0.day_of_week().map_err(Into::into)
         }
         pub fn day_of_year(&self) -> u16 {
             self.0.day_of_year()
         }
-        pub fn week_of_year(&self) -> Result<Option<u16>, TemporalError> {
-            self.0.week_of_year().map_err(Into::into)
+        pub fn week_of_year(&self) -> Option<u8> {
+            self.0.week_of_year()
         }
-        pub fn year_of_week(&self) -> Result<Option<i32>, TemporalError> {
-            self.0.year_of_week().map_err(Into::into)
+        pub fn year_of_week(&self) -> Option<i32> {
+            self.0.year_of_week()
         }
         pub fn days_in_week(&self) -> Result<u16, TemporalError> {
             self.0.days_in_week().map_err(Into::into)

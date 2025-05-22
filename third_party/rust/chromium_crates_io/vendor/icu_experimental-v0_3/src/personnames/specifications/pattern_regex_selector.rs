@@ -54,10 +54,7 @@ impl PersonNamePattern<'_> {
             }
         });
         let missing_fields = self.name_fields.iter().fold(0, |count, (name_field, _)| {
-            if available_name_fields
-                .iter()
-                .any(|&field| field == name_field)
-            {
+            if available_name_fields.contains(&name_field) {
                 count
             } else {
                 count + 1

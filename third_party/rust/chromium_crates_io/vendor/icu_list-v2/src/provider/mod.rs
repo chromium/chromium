@@ -38,34 +38,34 @@ const _: () = {
     use icu_list_data::*;
     pub mod icu {
         pub use crate as list;
-        pub use icu_list_data::icu_locale as locale;
+        pub use icu_locale as locale;
     }
     make_provider!(Baked);
-    impl_list_and_v2!(Baked);
-    impl_list_or_v2!(Baked);
-    impl_list_unit_v2!(Baked);
+    impl_list_and_v1!(Baked);
+    impl_list_or_v1!(Baked);
+    impl_list_unit_v1!(Baked);
 };
 
 #[cfg(feature = "datagen")]
 /// The latest minimum set of markers required by this component.
-pub const MARKERS: &[DataMarkerInfo] = &[ListAndV2::INFO, ListOrV2::INFO, ListUnitV2::INFO];
+pub const MARKERS: &[DataMarkerInfo] = &[ListAndV1::INFO, ListOrV1::INFO, ListUnitV1::INFO];
 
 data_marker!(
     /// Marker for and lists
-    ListAndV2,
-    "list/and/v2",
+    ListAndV1,
+    "list/and/v1",
     ListFormatterPatterns<'static>,
 );
 data_marker!(
     /// Marker for or lists
-    ListOrV2,
-    "list/or/v2",
+    ListOrV1,
+    "list/or/v1",
     ListFormatterPatterns<'static>,
 );
 data_marker!(
     /// Marker for unit lists
-    ListUnitV2,
-    "list/unit/v2",
+    ListUnitV1,
+    "list/unit/v1",
     ListFormatterPatterns<'static>,
 );
 

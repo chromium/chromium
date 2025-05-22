@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -19,7 +20,7 @@ namespace capi {
       DisplayCalendar_Never = 2,
       DisplayCalendar_Critical = 3,
     };
-    
+
     typedef struct DisplayCalendar_option {union { DisplayCalendar ok; }; bool is_ok; } DisplayCalendar_option;
 } // namespace capi
 } // namespace

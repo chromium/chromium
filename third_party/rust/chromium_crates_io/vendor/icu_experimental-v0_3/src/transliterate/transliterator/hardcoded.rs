@@ -51,7 +51,7 @@ impl HexTransliterator {
 
             let c_u32 = c as u32;
             // rounding-up division by 4
-            let length = (u32::BITS - c_u32.leading_zeros() + 3) / 4;
+            let length = (u32::BITS - c_u32.leading_zeros()).div_ceil(4);
             let padding = self.min_length.saturating_sub(length as u8);
             dest.apply_size_hint(
                 self.prefix.len() + padding as usize + length as usize + self.suffix.len(),

@@ -358,7 +358,7 @@ impl<'trie, T: TrieValue> CodePointTrie<'trie, T> {
     /// [`CodePointTrieHeader::high_start`].
     fn small_index(&self, code_point: u32) -> u32 {
         if code_point >= self.header.high_start {
-            self.data.len() as u32 - HIGH_VALUE_NEG_DATA_OFFSET
+            w!((self.data.len() as u32) - HIGH_VALUE_NEG_DATA_OFFSET)
         } else {
             self.internal_small_index(code_point) // helper fn
         }
@@ -384,7 +384,9 @@ impl<'trie, T: TrieValue> CodePointTrie<'trie, T> {
             } else {
                 return self.trie_error_val_index();
             };
-        let fast_index_val: u32 = index_array_val as u32 + (code_point & FAST_TYPE_DATA_MASK);
+        let masked_cp = code_point & FAST_TYPE_DATA_MASK;
+        let index_array_val = index_array_val as u32;
+        let fast_index_val: u32 = w!(index_array_val + masked_cp);
         fast_index_val
     }
 

@@ -13,12 +13,13 @@
 edition = "2021"
 rust-version = "1.82.0"
 name = "temporal_rs"
-version = "0.0.6"
+version = "0.0.7"
 authors = ["boa-dev"]
 build = false
 exclude = [
     "docs/*",
     ".github/*",
+    "debug/",
     ".gitignore",
     "CONTRIBUTING.md",
     "cliff.toml",
@@ -48,6 +49,9 @@ repository = "https://github.com/boa-dev/temporal"
 denylist = ["default"]
 max_combination_size = 4
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 compiled_data = ["tzdb"]
 default = ["sys"]
@@ -56,12 +60,14 @@ std = []
 sys = [
     "std",
     "dep:web-time",
+    "dep:iana-time-zone",
 ]
 tzdb = [
     "dep:tzif",
     "std",
     "dep:jiff-tzdb",
     "dep:combine",
+    "dep:timezone_provider",
 ]
 
 [lib]
@@ -72,28 +78,40 @@ path = "src/lib.rs"
 version = "4.6.7"
 optional = true
 
+[dependencies.core_maths]
+version = "0.1.1"
+
 [dependencies.iana-time-zone]
-version = "0.1.61"
+version = "0.1.63"
+optional = true
 
 [dependencies.icu_calendar]
-version = "2.0.0-beta2"
+version = "2.0.0"
 features = ["compiled_data"]
 default-features = false
 
+[dependencies.icu_locale]
+version = "2.0.0"
+
 [dependencies.ixdtf]
-version = "0.4.0"
+version = "0.5.0"
 features = ["duration"]
 
 [dependencies.jiff-tzdb]
-version = "0.1.3"
+version = "0.1.4"
 optional = true
 
 [dependencies.log]
-version = "0.4.26"
+version = "0.4.27"
 optional = true
 
 [dependencies.num-traits]
 version = "0.2.19"
+default-features = false
+
+[dependencies.timezone_provider]
+version = "~0.0.7"
+optional = true
 
 [dependencies.tinystr]
 version = "0.8.1"

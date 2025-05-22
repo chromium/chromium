@@ -56,14 +56,14 @@ fn test_locale_invalid() {
 
 #[test]
 fn test_locale_is_empty() {
-    let locale: Locale = Locale::default();
+    let locale: Locale = Locale::UNKNOWN;
     assert!(locale.extensions.is_empty());
     assert_writeable_eq!(locale, "und");
 }
 
 #[test]
 fn test_locale_conversions() {
-    let locale: Locale = Locale::default();
+    let locale: Locale = Locale::UNKNOWN;
     let langid: LanguageIdentifier = locale.clone().into();
     let locale2: Locale = langid.into();
     assert_eq!(locale, locale2);

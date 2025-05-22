@@ -2,7 +2,7 @@
 
 use core::str::FromStr;
 
-use crate::{iso::IsoDateTime, time::EpochNanoseconds, TemporalResult};
+use crate::{iso::IsoDateTime, unix_time::EpochNanoseconds, TemporalResult};
 use alloc::vec::Vec;
 
 /// `TimeZoneOffset` represents the number of seconds to be added to UT in order to determine local time.

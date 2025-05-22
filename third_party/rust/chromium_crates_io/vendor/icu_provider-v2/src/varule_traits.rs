@@ -17,7 +17,7 @@ use zerovec::{maps::ZeroMapKV, ZeroMap2d};
 /// data struct is multiplied across a large number of data marker attributes.
 ///
 /// Both [`MaybeAsVarULE`] and [`MaybeEncodeAsVarULE`] should be implemented
-/// on all data structs. The [`data_struct!`] macro provides an impl.
+/// on all data structs. The [`data_struct!`](crate::data_struct) macro provides an impl.
 pub trait MaybeAsVarULE {
     /// The [`VarULE`] type for this data struct, or `[()]`
     /// if it cannot be represented as [`VarULE`].
@@ -26,7 +26,9 @@ pub trait MaybeAsVarULE {
 
 /// Export-only trait associated with [`MaybeAsVarULE`]. See that trait
 /// for additional details.
-// #[cfg(feature = "export")] // TODO(#5230): Enable feature gating
+///
+/// ✨ *Enabled with the `export` Cargo feature.*
+#[cfg(feature = "export")]
 pub trait MaybeEncodeAsVarULE: MaybeAsVarULE {
     /// Returns the [`MaybeAsVarULE::EncodedStruct`] that represents this data struct,
     /// or `None` if the data struct does not support this representation.
@@ -34,8 +36,8 @@ pub trait MaybeEncodeAsVarULE: MaybeAsVarULE {
 }
 
 /// Implements required traits on data structs, such as [`MaybeEncodeAsVarULE`].
-#[macro_export]
-macro_rules! __data_struct {
+#[macro_export] // canonical location is crate root
+macro_rules! data_struct {
     (<$generic:ident: $bound:tt> $ty:path $(, $(#[$attr:meta])*)?) => {
         impl<$generic: $bound> $crate::ule::MaybeAsVarULE for $ty {
             type EncodedStruct = [()];
@@ -77,8 +79,6 @@ macro_rules! __data_struct {
         }
     };
 }
-#[doc(inline)]
-pub use __data_struct as data_struct;
 
 //=== Standard impls ===//
 
@@ -96,6 +96,7 @@ where
 }
 
 #[cfg(feature = "alloc")]
+#[cfg(feature = "export")]
 impl<'a, K0, K1, V> MaybeEncodeAsVarULE for ZeroMap2d<'a, K0, K1, V>
 where
     K0: ZeroMapKV<'a>,
@@ -114,6 +115,7 @@ impl<T, const N: usize> MaybeAsVarULE for [T; N] {
     type EncodedStruct = [()];
 }
 
+#[cfg(feature = "export")]
 impl<T, const N: usize> MaybeEncodeAsVarULE for [T; N] {
     fn maybe_encode_as_varule(&self) -> Option<&Self::EncodedStruct> {
         None

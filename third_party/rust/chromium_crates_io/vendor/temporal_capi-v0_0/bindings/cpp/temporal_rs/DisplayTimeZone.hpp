@@ -10,14 +10,14 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -33,7 +33,7 @@ inline temporal_rs::DisplayTimeZone temporal_rs::DisplayTimeZone::FromFFI(tempor
     case temporal_rs::capi::DisplayTimeZone_Critical:
       return static_cast<temporal_rs::DisplayTimeZone::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 #endif // temporal_rs_DisplayTimeZone_HPP

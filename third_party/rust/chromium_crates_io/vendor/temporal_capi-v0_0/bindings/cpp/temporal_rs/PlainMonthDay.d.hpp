@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -36,6 +37,14 @@ public:
   inline static diplomat::result<std::unique_ptr<temporal_rs::PlainMonthDay>, temporal_rs::TemporalError> create_with_overflow(uint8_t month, uint8_t day, const temporal_rs::Calendar& calendar, temporal_rs::ArithmeticOverflow overflow, std::optional<int32_t> ref_year);
 
   inline diplomat::result<std::unique_ptr<temporal_rs::PlainMonthDay>, temporal_rs::TemporalError> with(temporal_rs::PartialDate partial, temporal_rs::ArithmeticOverflow overflow) const;
+
+  inline bool equals(const temporal_rs::PlainMonthDay& other) const;
+
+  inline static int8_t compare(const temporal_rs::PlainMonthDay& one, const temporal_rs::PlainMonthDay& two);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainMonthDay>, temporal_rs::TemporalError> from_utf8(std::string_view s);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainMonthDay>, temporal_rs::TemporalError> from_utf16(std::u16string_view s);
 
   inline int32_t iso_year() const;
 

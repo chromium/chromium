@@ -178,7 +178,7 @@ impl Fields {
     ///     .transform
     ///     .fields
     ///     .retain_by_key(|&k| k == key!("d0"));
-    /// assert_eq!(loc, Locale::default());
+    /// assert_eq!(loc, Locale::UNKNOWN);
     /// ```
     pub fn retain_by_key<F>(&mut self, mut predicate: F)
     where

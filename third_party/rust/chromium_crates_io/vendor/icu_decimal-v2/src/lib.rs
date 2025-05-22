@@ -133,18 +133,12 @@ pub mod preferences {
 }
 
 /// Types that can be fed to [`DecimalFormatter`] and their utilities
+///
+/// This module contains re-exports from the [`fixed_decimal`] crate.
 pub mod input {
-    /// **This is a reexport of a type in [`fixed_decimal`]**.
-    #[doc = "\n"] // prevent autoformatting
     pub use fixed_decimal::Decimal;
-    /// **This is a reexport of a type in [`fixed_decimal`]**.
-    ///
-    /// This type can be made available with the `"ryu"` Cargo feature.
-    #[doc = "\n"] // prevent autoformatting
     #[cfg(feature = "ryu")]
     pub use fixed_decimal::FloatPrecision;
-    /// **This is a reexport of a type in [`fixed_decimal`]**.
-    #[doc = "\n"] // prevent autoformatting
     pub use fixed_decimal::SignDisplay;
 }
 
@@ -160,10 +154,10 @@ pub mod input {
 ///
 /// See the crate-level documentation for examples.
 #[doc = decimal_formatter_size!()]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DecimalFormatter {
     options: options::DecimalFormatterOptions,
-    symbols: DataPayload<provider::DecimalSymbolsV2>,
+    symbols: DataPayload<provider::DecimalSymbolsV1>,
     digits: DataPayload<provider::DecimalDigitsV1>,
 }
 
@@ -181,13 +175,13 @@ impl DecimalFormatter {
 
     #[doc = icu_provider::gen_buffer_unstable_docs!(UNSTABLE, Self::try_new)]
     pub fn try_new_unstable<
-        D: DataProvider<provider::DecimalSymbolsV2> + DataProvider<provider::DecimalDigitsV1> + ?Sized,
+        D: DataProvider<provider::DecimalSymbolsV1> + DataProvider<provider::DecimalDigitsV1> + ?Sized,
     >(
         provider: &D,
         prefs: DecimalFormatterPreferences,
         options: options::DecimalFormatterOptions,
     ) -> Result<Self, DataError> {
-        let locale = provider::DecimalSymbolsV2::make_locale(prefs.locale_preferences);
+        let locale = provider::DecimalSymbolsV1::make_locale(prefs.locale_preferences);
         let provided_nu = prefs.numbering_system.as_ref().map(|s| s.as_str());
 
         // In case the user explicitly specified a numbering system, use digits from that numbering system. In case of explicitly specified numbering systems,
@@ -212,7 +206,7 @@ impl DecimalFormatter {
 
         if let Some(provided_nu) = provided_nu {
             // Load symbols for the locale/numsys pair provided
-            let symbols: DataPayload<provider::DecimalSymbolsV2> = provider
+            let symbols: DataPayload<provider::DecimalSymbolsV1> = provider
                 .load(DataRequest {
                     id: DataIdentifierBorrowed::for_marker_attributes_and_locale(
                         DataMarkerAttributes::from_str_or_panic(provided_nu),
@@ -259,7 +253,7 @@ impl DecimalFormatter {
                 digits,
             })
         } else {
-            let symbols: DataPayload<provider::DecimalSymbolsV2> = provider
+            let symbols: DataPayload<provider::DecimalSymbolsV1> = provider
                 .load(DataRequest {
                     id: DataIdentifierBorrowed::for_marker_attributes_and_locale(
                         DataMarkerAttributes::empty(),

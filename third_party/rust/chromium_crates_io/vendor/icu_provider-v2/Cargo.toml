@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_provider"
-version = "2.0.0-beta2"
+version = "2.0.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -49,7 +50,9 @@ all-features = true
 alloc = [
     "icu_locale_core/alloc",
     "zerovec/alloc",
+    "zerotrie/alloc",
 ]
+baked = ["zerotrie"]
 deserialize_bincode_1 = [
     "serde",
     "dep:bincode",
@@ -105,12 +108,12 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.erased-serde]
-version = "0.3.11"
+version = "0.4.0"
 features = ["alloc"]
 optional = true
 
 [dependencies.icu_locale_core]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.log]
@@ -162,6 +165,11 @@ features = [
     "alloc",
     "derive",
 ]
+default-features = false
+
+[dependencies.zerotrie]
+version = "0.2.0"
+optional = true
 default-features = false
 
 [dependencies.zerovec]

@@ -74,7 +74,9 @@ macro_rules! __enum_keyword {
             ),*
         }
     };
-    ($(#[$doc:meta])* $([$derive_attrs:ty])? $name:ident {
+    ($(#[$doc:meta])*
+    $([$derive_attrs:ty])?
+    $name:ident {
         $(
             $(#[$variant_doc:meta])*
             $([$variant_attr:ty])?
@@ -84,7 +86,10 @@ macro_rules! __enum_keyword {
                 ),*
             })?)
         ),* $(,)?
-    }, $ext_key:literal) => {
+    },
+    $ext_key:literal
+    $(, $input:ident, $aliases:stmt)?
+    ) => {
         $crate::__enum_keyword!(
             $(#[$doc])*
             $([$derive_attrs])?
@@ -125,6 +130,12 @@ macro_rules! __enum_keyword {
                 let subtag = s.get_subtag(0)
                                 // No subtag is equivalent to the "true" value.
                                 .unwrap_or(&$crate::subtags::subtag!("true"));
+                #[allow(unused_imports)]
+                use $crate::extensions::unicode::value;
+                $(
+                    let $input = s;
+                    $aliases
+                )?
                 Ok(match subtag.as_str() {
                     $(
                         $key => {
@@ -173,7 +184,7 @@ macro_rules! __enum_keyword {
             }
 
             /// A helper function for displaying as a `&str`.
-            pub const fn as_str(&self) -> &str {
+            pub const fn as_str(&self) -> &'static str {
                 match self {
                     $(
                         // This is circumventing a limitation of the macro_rules - we need to have a conditional
@@ -216,6 +227,35 @@ mod tests {
 
         let v = unicode::Value::from_str("standard").unwrap();
         let dk = DummyKeyword::try_from(&v).unwrap();
+        assert_eq!(dk, DummyKeyword::Standard);
+        assert_eq!(unicode::Value::from(dk), v);
+
+        let v = unicode::Value::from_str("rare").unwrap();
+        let dk = DummyKeyword::try_from(&v).unwrap();
+        assert_eq!(dk, DummyKeyword::Rare);
+        assert_eq!(unicode::Value::from(dk), v);
+
+        let v = unicode::Value::from_str("foo").unwrap();
+        let dk = DummyKeyword::try_from(&v);
+        assert!(dk.is_err());
+
+        assert_eq!(DummyKeyword::Standard.as_str(), "standard");
+    }
+
+    #[test]
+    fn enum_keywords_test_alias() {
+        enum_keyword!(DummyKeyword {
+            ("standard" => Standard),
+            ("rare" => Rare),
+        }, "dk", s, if *s == value!("std") { return Ok(Self::Standard) });
+
+        let v = unicode::Value::from_str("standard").unwrap();
+        let dk = DummyKeyword::try_from(&v).unwrap();
+        assert_eq!(dk, DummyKeyword::Standard);
+        assert_eq!(unicode::Value::from(dk), v);
+
+        let v_alias = unicode::Value::from_str("std").unwrap();
+        let dk = DummyKeyword::try_from(&v_alias).unwrap();
         assert_eq!(dk, DummyKeyword::Standard);
         assert_eq!(unicode::Value::from(dk), v);
 

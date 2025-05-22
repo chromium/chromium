@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_decimal"
-version = "2.0.0-beta2"
+version = "2.0.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -46,7 +47,12 @@ alloc = [
     "serde?/alloc",
     "zerovec/alloc",
 ]
-compiled_data = ["dep:icu_decimal_data"]
+compiled_data = [
+    "dep:icu_decimal_data",
+    "dep:icu_locale",
+    "icu_locale?/compiled_data",
+    "icu_provider/baked",
+]
 datagen = [
     "serde",
     "dep:databake",
@@ -93,16 +99,21 @@ version = "0.7.0"
 default-features = false
 
 [dependencies.icu_decimal_data]
-version = "~2.0.0-beta2"
+version = "~2.0.0"
+optional = true
+default-features = false
+
+[dependencies.icu_locale]
+version = "~2.0.0"
 optional = true
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.serde]
@@ -124,17 +135,17 @@ version = "0.11.1"
 default-features = false
 
 [dev-dependencies.getrandom]
-version = "0.2"
-features = ["js"]
+version = "0.3"
+features = ["wasm_js"]
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 
 [dev-dependencies.rand_distr]
-version = "0.4"
+version = "0.5"
 
 [dev-dependencies.rand_pcg]
-version = "0.3"
+version = "0.9"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"

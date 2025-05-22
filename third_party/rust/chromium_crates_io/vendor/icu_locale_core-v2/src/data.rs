@@ -48,7 +48,7 @@ use core::str::FromStr;
 ///     DataLocale::from(locale!("hi-IN-u-sd-inas"))
 /// );
 /// ```
-#[derive(Clone, Copy, Default, PartialEq, Hash, Eq)]
+#[derive(Clone, Copy, PartialEq, Hash, Eq)]
 #[non_exhaustive]
 pub struct DataLocale {
     /// Language subtag
@@ -63,11 +63,23 @@ pub struct DataLocale {
     pub subdivision: Option<Subtag>,
 }
 
+impl Default for DataLocale {
+    fn default() -> Self {
+        Self {
+            language: Language::UNKNOWN,
+            script: None,
+            region: None,
+            variant: None,
+            subdivision: None,
+        }
+    }
+}
+
 impl DataLocale {
     /// `const` version of `Default::default`
     pub const fn default() -> Self {
         DataLocale {
-            language: Language::UND,
+            language: Language::UNKNOWN,
             script: None,
             region: None,
             variant: None,
@@ -318,12 +330,12 @@ impl DataLocale {
     /// ```
     /// use icu_provider::DataLocale;
     ///
-    /// assert!("und".parse::<DataLocale>().unwrap().is_default());
-    /// assert!(!"de-u-sd-denw".parse::<DataLocale>().unwrap().is_default());
-    /// assert!(!"und-ES".parse::<DataLocale>().unwrap().is_default());
+    /// assert!("und".parse::<DataLocale>().unwrap().is_unknown());
+    /// assert!(!"de-u-sd-denw".parse::<DataLocale>().unwrap().is_unknown());
+    /// assert!(!"und-ES".parse::<DataLocale>().unwrap().is_unknown());
     /// ```
-    pub fn is_default(&self) -> bool {
-        self.language.is_default()
+    pub fn is_unknown(&self) -> bool {
+        self.language.is_unknown()
             && self.script.is_none()
             && self.region.is_none()
             && self.variant.is_none()

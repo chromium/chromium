@@ -36,22 +36,20 @@
 /// [`Heap Allocations in Constants`]: https://github.com/rust-lang/const-eval/issues/20
 #[macro_export]
 macro_rules! langid {
-    ($langid:literal) => {{
-        const R: $crate::LanguageIdentifier =
-            match $crate::LanguageIdentifier::try_from_utf8_with_single_variant($langid.as_bytes()) {
-                Ok((language, script, region, variant)) => $crate::LanguageIdentifier {
-                    language,
-                    script,
-                    region,
-                    variants: match variant {
-                        Some(v) => $crate::subtags::Variants::from_variant(v),
-                        None => $crate::subtags::Variants::new(),
-                    }
-                },
-                #[allow(clippy::panic)] // const context
-                _ => panic!(concat!("Invalid language code: ", $langid, " . Note langid! macro can only support up to a single variant tag. Use runtime parsing instead.")),
-            };
-        R
+    ($langid:literal) => { const {
+        match $crate::LanguageIdentifier::try_from_utf8_with_single_variant($langid.as_bytes()) {
+            Ok((language, script, region, variant)) => $crate::LanguageIdentifier {
+                language,
+                script,
+                region,
+                variants: match variant {
+                    Some(v) => $crate::subtags::Variants::from_variant(v),
+                    None => $crate::subtags::Variants::new(),
+                }
+            },
+            #[allow(clippy::panic)] // const context
+            _ => panic!(concat!("Invalid language code: ", $langid, " . Note langid! macro can only support up to a single variant tag. Use runtime parsing instead.")),
+        }
     }};
 }
 
@@ -121,45 +119,43 @@ macro_rules! langid {
 /// [`Heap Allocations in Constants`]: https://github.com/rust-lang/const-eval/issues/20
 #[macro_export]
 macro_rules! locale {
-    ($locale:literal) => {{
-        const R: $crate::Locale =
-            match $crate::Locale::try_from_utf8_with_single_variant_single_keyword_unicode_extension(
-                $locale.as_bytes(),
-            ) {
-                Ok((language, script, region, variant, keyword)) => $crate::Locale {
-                    id: $crate::LanguageIdentifier {
-                        language,
-                        script,
-                        region,
-                        variants: match variant {
-                            Some(v) => $crate::subtags::Variants::from_variant(v),
-                            None => $crate::subtags::Variants::new(),
-                        },
-                    },
-                    extensions: match keyword {
-                        Some(k) => $crate::extensions::Extensions::from_unicode(
-                            $crate::extensions::unicode::Unicode {
-                                keywords: $crate::extensions::unicode::Keywords::new_single(
-                                    k.0,
-                                    $crate::extensions::unicode::Value::from_subtag(k.1),
-                                ),
-
-                                attributes: $crate::extensions::unicode::Attributes::new(),
-                            },
-                        ),
-                        None => $crate::extensions::Extensions::new(),
+    ($locale:literal) => { const {
+        match $crate::Locale::try_from_utf8_with_single_variant_single_keyword_unicode_extension(
+            $locale.as_bytes(),
+        ) {
+            Ok((language, script, region, variant, keyword)) => $crate::Locale {
+                id: $crate::LanguageIdentifier {
+                    language,
+                    script,
+                    region,
+                    variants: match variant {
+                        Some(v) => $crate::subtags::Variants::from_variant(v),
+                        None => $crate::subtags::Variants::new(),
                     },
                 },
-                #[allow(clippy::panic)] // const context
-                _ => panic!(concat!(
-                    "Invalid language code: ",
-                    $locale,
-                    " . Note the locale! macro only supports up to one variant tag; \
-                                        and one unicode keyword, other extension are \
-                                        not supported. Use runtime parsing instead."
-                )),
-            };
-        R
+                extensions: match keyword {
+                    Some(k) => $crate::extensions::Extensions::from_unicode(
+                        $crate::extensions::unicode::Unicode {
+                            keywords: $crate::extensions::unicode::Keywords::new_single(
+                                k.0,
+                                $crate::extensions::unicode::Value::from_subtag(k.1),
+                            ),
+
+                            attributes: $crate::extensions::unicode::Attributes::new(),
+                        },
+                    ),
+                    None => $crate::extensions::Extensions::new(),
+                },
+            },
+            #[allow(clippy::panic)] // const context
+            _ => panic!(concat!(
+                "Invalid language code: ",
+                $locale,
+                " . Note the locale! macro only supports up to one variant tag; \
+                                    and one unicode keyword, other extension are \
+                                    not supported. Use runtime parsing instead."
+            )),
+        }
     }};
 }
 

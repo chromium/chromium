@@ -4,7 +4,7 @@
 
 use fixed_decimal::{Decimal, Sign};
 use icu_decimal::{
-    options::DecimalFormatterOptions, provider::DecimalDigitsV1, provider::DecimalSymbolsV2,
+    options::DecimalFormatterOptions, provider::DecimalDigitsV1, provider::DecimalSymbolsV1,
     DecimalFormatter, DecimalFormatterPreferences,
 };
 use icu_locale_core::preferences::{define_preferences, prefs_convert};
@@ -179,7 +179,7 @@ macro_rules! constructor {
         where
             D: DataProvider<PluralsCardinalV1>
                 + DataProvider<$marker>
-                + DataProvider<DecimalSymbolsV2> + DataProvider<DecimalDigitsV1>
+                + DataProvider<DecimalSymbolsV1> + DataProvider<DecimalDigitsV1>
                 + ?Sized,
         {
             let locale = <$marker>::make_locale(prefs.locale_preferences);

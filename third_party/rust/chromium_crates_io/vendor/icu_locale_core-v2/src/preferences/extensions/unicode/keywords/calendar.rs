@@ -9,15 +9,15 @@ use crate::preferences::extensions::unicode::enum_keyword;
 
 #[cfg(feature = "alloc")]
 enum_keyword!(
-    /// Islamic Calendar sub-type
+    /// Hijri Calendar sub-type
     ///
     /// The list is based on [`CLDR Calendars`](https://github.com/unicode-org/cldr/blob/main/common/bcp47/calendar.xml)
-    IslamicCalendarAlgorithm {
-        /// Islamic calendar, Umm al-Qura
+    HijriCalendarAlgorithm {
+        /// Hijri calendar, Umm al-Qura
         Umalqura,
         /// Hijri calendar, tabular (intercalary years \[2,5,7,10,13,16,18,21,24,26,29] - astronomical epoch)
         Tbla,
-        /// Islamic calendar, tabular (intercalary years \[2,5,7,10,13,16,18,21,24,26,29] - civil epoch)
+        /// Hijri calendar, tabular (intercalary years \[2,5,7,10,13,16,18,21,24,26,29] - civil epoch)
         Civil,
         /// Hijri calendar, Saudi Arabia sighting
         Rgsa
@@ -51,8 +51,8 @@ enum_keyword!(
         ("hebrew" => Hebrew),
         /// Indian calendar
         ("indian" => Indian),
-        /// Islamic calendar
-        ("islamic" => Islamic(IslamicCalendarAlgorithm) {
+        /// Hijri calendar
+        ("islamic" => Hijri(HijriCalendarAlgorithm) {
              ("umalqura" => Umalqura),
              ("tbla" => Tbla),
              ("civil" => Civil),
@@ -66,4 +66,4 @@ enum_keyword!(
         ("persian" => Persian),
         /// Republic of China calendar
         ("roc" => Roc)
-}, "ca");
+}, "ca", s, if *s == value!("islamicc") { return Ok(Self::Hijri(Some(HijriCalendarAlgorithm::Civil))); });

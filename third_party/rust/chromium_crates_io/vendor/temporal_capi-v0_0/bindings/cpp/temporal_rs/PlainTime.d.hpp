@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -22,8 +23,8 @@ struct PartialTime;
 struct TemporalError;
 struct ToStringRoundingOptions;
 class ArithmeticOverflow;
-class TemporalRoundingMode;
-class TemporalUnit;
+class RoundingMode;
+class Unit;
 }
 
 
@@ -44,6 +45,10 @@ public:
   inline static diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> from_partial(temporal_rs::PartialTime partial, std::optional<temporal_rs::ArithmeticOverflow> overflow);
 
   inline diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> with(temporal_rs::PartialTime partial, std::optional<temporal_rs::ArithmeticOverflow> overflow) const;
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> from_utf8(std::string_view s);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> from_utf16(std::u16string_view s);
 
   inline uint8_t hour() const;
 
@@ -69,7 +74,11 @@ public:
 
   inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> since(const temporal_rs::PlainTime& other, temporal_rs::DifferenceSettings settings) const;
 
-  inline diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> round(temporal_rs::TemporalUnit smallest_unit, std::optional<double> rounding_increment, std::optional<temporal_rs::TemporalRoundingMode> rounding_mode) const;
+  inline bool equals(const temporal_rs::PlainTime& other) const;
+
+  inline static int8_t compare(const temporal_rs::PlainTime& one, const temporal_rs::PlainTime& two);
+
+  inline diplomat::result<std::unique_ptr<temporal_rs::PlainTime>, temporal_rs::TemporalError> round(temporal_rs::Unit smallest_unit, std::optional<double> rounding_increment, std::optional<temporal_rs::RoundingMode> rounding_mode) const;
 
   inline diplomat::result<std::string, temporal_rs::TemporalError> to_ixdtf_string(temporal_rs::ToStringRoundingOptions options) const;
 

@@ -27,11 +27,14 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "icu_casemap_data"
   cargo_pkg_description = "Data for the icu_casemap crate"
-  cargo_pkg_version = "2.0.0-beta2"
+  cargo_pkg_version = "2.0.0"
 
   allow_unsafe = false
 
-  deps = [ "//third_party/rust/icu_provider_baked/v2:lib" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/icu_casemap_data-v2/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_casemap_data-v2/build.rs",
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

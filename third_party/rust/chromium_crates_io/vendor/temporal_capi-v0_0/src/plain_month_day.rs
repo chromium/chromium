@@ -4,12 +4,16 @@
 pub mod ffi {
     use crate::calendar::ffi::Calendar;
     use crate::error::ffi::TemporalError;
+    use alloc::boxed::Box;
 
     use crate::options::ffi::ArithmeticOverflow;
     use crate::plain_date::ffi::{PartialDate, PlainDate};
 
+    use alloc::string::String;
+    use core::fmt::Write;
+    use core::str::FromStr;
     use diplomat_runtime::DiplomatWrite;
-    use std::fmt::Write;
+    use diplomat_runtime::{DiplomatStr, DiplomatStr16};
 
     #[diplomat::opaque]
     pub struct PlainMonthDay(pub(crate) temporal_rs::PlainMonthDay);
@@ -41,6 +45,28 @@ pub mod ffi {
             self.0
                 .with(partial.try_into()?, overflow.into())
                 .map(|x| Box::new(PlainMonthDay(x)))
+                .map_err(Into::into)
+        }
+
+        pub fn equals(&self, other: &Self) -> bool {
+            self.0 == other.0
+        }
+
+        pub fn compare(one: &Self, two: &Self) -> core::cmp::Ordering {
+            (one.iso_year(), one.iso_month()).cmp(&(two.iso_year(), two.iso_month()))
+        }
+
+        pub fn from_utf8(s: &DiplomatStr) -> Result<Box<Self>, TemporalError> {
+            temporal_rs::PlainMonthDay::from_utf8(s)
+                .map(|c| Box::new(Self(c)))
+                .map_err(Into::into)
+        }
+
+        pub fn from_utf16(s: &DiplomatStr16) -> Result<Box<Self>, TemporalError> {
+            // TODO(#275) This should not need to convert
+            let s = String::from_utf16(s).map_err(|_| temporal_rs::TemporalError::range())?;
+            temporal_rs::PlainMonthDay::from_str(&s)
+                .map(|c| Box::new(Self(c)))
                 .map_err(Into::into)
         }
 

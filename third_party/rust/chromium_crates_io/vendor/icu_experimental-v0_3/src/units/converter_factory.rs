@@ -3,7 +3,6 @@
 // (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
 
 use crate::measure::measureunit::MeasureUnit;
-use crate::measure::parser::MeasureUnitParser;
 use crate::measure::provider::single_unit::SingleUnit;
 use crate::units::provider;
 use crate::units::ratio::IcuRatio;
@@ -43,7 +42,7 @@ impl ConverterFactory {
         () -> error: DataError,
         functions: [
             new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self,
         ]
@@ -69,10 +68,6 @@ impl ConverterFactory {
         let payload = provider.load(DataRequest::default())?.payload;
 
         Ok(Self { payload })
-    }
-
-    pub fn parser(&self) -> MeasureUnitParser<'_> {
-        MeasureUnitParser::from_payload(self.payload.get().units_conversion_trie.as_borrowed())
     }
 
     /// Calculates the offset between two units by performing the following steps:
@@ -116,7 +111,7 @@ impl ConverterFactory {
         let input_conversion_info = self
             .payload
             .get()
-            .convert_infos
+            .conversion_info
             .get(input_unit.single_units[0].unit_id as usize);
         debug_assert!(
             input_conversion_info.is_some(),
@@ -127,7 +122,7 @@ impl ConverterFactory {
         let output_conversion_info = self
             .payload
             .get()
-            .convert_infos
+            .conversion_info
             .get(output_unit.single_units[0].unit_id as usize);
         debug_assert!(
             output_conversion_info.is_some(),
@@ -181,7 +176,7 @@ impl ConverterFactory {
                 let items_from_item = factory
                     .payload
                     .get()
-                    .convert_infos
+                    .conversion_info
                     .get(item.unit_id as usize);
 
                 debug_assert!(items_from_item.is_some(), "Failed to get convert info");
@@ -250,7 +245,7 @@ impl ConverterFactory {
         let conversion_info = self
             .payload
             .get()
-            .convert_infos
+            .conversion_info
             .get(unit_item.unit_id as usize);
         debug_assert!(conversion_info.is_some(), "Failed to get conversion info");
         let conversion_info = conversion_info?;
@@ -286,9 +281,21 @@ impl ConverterFactory {
             conversion_rate *= Self::compute_conversion_term(self, input_item, 1)?;
         }
 
+        if input_unit.constant_denominator != 0 {
+            conversion_rate /= IcuRatio::from_integer(input_unit.constant_denominator);
+        }
+
         for output_item in output_unit.single_units.iter() {
             conversion_rate *=
                 Self::compute_conversion_term(self, output_item, root_to_unit2_direction_sign)?;
+        }
+
+        if output_unit.constant_denominator != 0 {
+            if is_reciprocal {
+                conversion_rate /= IcuRatio::from_integer(output_unit.constant_denominator);
+            } else {
+                conversion_rate *= IcuRatio::from_integer(output_unit.constant_denominator);
+            }
         }
 
         let offset = self.compute_offset(input_unit, output_unit)?;
@@ -321,5 +328,56 @@ impl ConverterFactory {
                 },
             )))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ConverterFactory;
+    use crate::measure::parser::MeasureUnitParser;
+
+    #[test]
+    fn test_converter_factory() {
+        let factory = ConverterFactory::new();
+        let parser = MeasureUnitParser::default();
+        let input_unit = parser.try_from_str("meter").unwrap();
+        let output_unit = parser.try_from_str("foot").unwrap();
+        let converter = factory.converter::<f64>(&input_unit, &output_unit).unwrap();
+        let result = converter.convert(&1000.0);
+        assert!(
+            ((result - 3280.84) / 3280.84).abs() < 0.00001,
+            "The relative difference between the result and the expected value is too large: {}",
+            ((result - 3280.84) / 3280.84).abs()
+        );
+    }
+
+    #[test]
+    fn test_converter_factory_with_constant_denominator() {
+        let factory = ConverterFactory::new();
+        let parser = MeasureUnitParser::default();
+        let input_unit = parser.try_from_str("liter-per-100-kilometer").unwrap();
+        let output_unit = parser.try_from_str("mile-per-gallon").unwrap();
+        let converter = factory.converter::<f64>(&input_unit, &output_unit).unwrap();
+        let result = converter.convert(&1.0);
+        assert!(
+            ((result - 235.21) / 235.21).abs() < 0.0001,
+            "The relative difference between the result and the expected value is too large: {}",
+            ((result - 235.21) / 235.21).abs()
+        );
+    }
+
+    #[test]
+    fn test_converter_factory_with_offset() {
+        let factory = ConverterFactory::new();
+        let parser = MeasureUnitParser::default();
+        let input_unit = parser.try_from_str("celsius").unwrap();
+        let output_unit = parser.try_from_str("fahrenheit").unwrap();
+        let converter = factory.converter::<f64>(&input_unit, &output_unit).unwrap();
+        let result = converter.convert(&0.0);
+        assert!(
+            ((result - 32.0) / 32.0).abs() < 0.00001,
+            "The relative difference between the result and the expected value is too large: {}",
+            ((result - 32.0) / 32.0).abs()
+        );
     }
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -55,6 +56,10 @@ public:
 
   inline diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> with_calendar(const temporal_rs::Calendar& calendar) const;
 
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> from_utf8(std::string_view s);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> from_utf16(std::u16string_view s);
+
   inline int32_t iso_year() const;
 
   inline uint8_t iso_month() const;
@@ -73,6 +78,10 @@ public:
 
   inline diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> since(const temporal_rs::PlainDate& other, temporal_rs::DifferenceSettings settings) const;
 
+  inline bool equals(const temporal_rs::PlainDate& other) const;
+
+  inline static int8_t compare(const temporal_rs::PlainDate& one, const temporal_rs::PlainDate& two);
+
   inline int32_t year() const;
 
   inline uint8_t month() const;
@@ -81,13 +90,13 @@ public:
 
   inline uint8_t day() const;
 
-  inline uint16_t day_of_week() const;
+  inline diplomat::result<uint16_t, temporal_rs::TemporalError> day_of_week() const;
 
   inline uint16_t day_of_year() const;
 
-  inline diplomat::result<std::optional<uint16_t>, temporal_rs::TemporalError> week_of_year() const;
+  inline std::optional<uint8_t> week_of_year() const;
 
-  inline diplomat::result<std::optional<int32_t>, temporal_rs::TemporalError> year_of_week() const;
+  inline std::optional<int32_t> year_of_week() const;
 
   inline diplomat::result<uint16_t, temporal_rs::TemporalError> days_in_week() const;
 

@@ -176,7 +176,7 @@ impl TryFrom<LocaleSubtags> for LanguageIdentifier {
         let language = if let Some(lang) = subtags.language {
             lang.parse().expect("Failed to parse language subtag")
         } else {
-            subtags::Language::default()
+            subtags::Language::UNKNOWN
         };
         let script = subtags
             .script
@@ -205,7 +205,7 @@ impl TryFrom<LocaleSubtags> for Locale {
         let language = if let Some(lang) = subtags.language {
             lang.parse().expect("Failed to parse language subtag")
         } else {
-            subtags::Language::default()
+            subtags::Language::UNKNOWN
         };
         let script = subtags
             .script

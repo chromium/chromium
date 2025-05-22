@@ -105,9 +105,6 @@ remove_crates = []
 [crate.adler2.extra_kv]
 allow_unsafe = false
 
-[crate.android_system_properties.extra_kv]
-allow_unsafe = true
-
 [crate.anstyle.extra_kv]
 allow_unsafe = true
 
@@ -157,9 +154,6 @@ allow_unsafe = true
 
 [crate.codespan-reporting]
 extra_kv = { allow_unsafe = false }
-
-[crate.core-foundation-sys.extra_kv]
-allow_unsafe = true
 
 [crate.core_maths.extra_kv]
 allow_unsafe = false
@@ -251,9 +245,6 @@ allow_unsafe = false
 group = 'test'
 extra_kv = { allow_unsafe = false }
 
-[crate.iana-time-zone.extra_kv]
-allow_unsafe = true
-
 [crate.icu_calendar.extra_kv]
 allow_unsafe = false
 
@@ -306,9 +297,6 @@ extra_src_roots = ['../data']
 [crate.icu_provider]
 extra_kv = { allow_unsafe = true }
 
-[crate.icu_provider_baked]
-extra_kv = { allow_unsafe = true }
-
 [crate.icu_casemap.extra_kv]
 allow_unsafe = false
 
@@ -337,13 +325,13 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.icu_normalizer.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_normalizer_data.extra_kv]
 allow_unsafe = false
 
 [crate.icu_pattern.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_plurals.extra_kv]
 allow_unsafe = false
@@ -561,29 +549,8 @@ allow_unsafe = true
 [crate.unicode-width.extra_kv]
 allow_unsafe = false
 
-[crate.utf8_iter.extra_kv]
-allow_unsafe = true
-
 [crate.winapi-util.extra_kv]
 allow_unsafe = true
-
-[crate.windows-core.extra_kv]
-allow_unsafe = false
-
-[crate.windows-implement.extra_kv]
-allow_unsafe = false
-
-[crate.windows-interface.extra_kv]
-allow_unsafe = false
-
-[crate.windows-link.extra_kv]
-allow_unsafe = false
-
-[crate.windows-result.extra_kv]
-allow_unsafe = false
-
-[crate.windows-strings.extra_kv]
-allow_unsafe = false
 
 [crate.windows-sys.extra_kv]
 allow_unsafe = false

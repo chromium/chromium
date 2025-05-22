@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_normalizer"
-version = "2.0.0-beta2"
+version = "2.0.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -45,6 +46,7 @@ all-features = true
 compiled_data = [
     "dep:icu_normalizer_data",
     "icu_properties?/compiled_data",
+    "icu_provider/baked",
 ]
 datagen = [
     "serde",
@@ -53,6 +55,7 @@ datagen = [
     "icu_collections/databake",
     "zerovec/databake",
     "icu_properties?/datagen",
+    "icu_provider/export",
 ]
 default = [
     "compiled_data",
@@ -126,21 +129,21 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.0.0-beta2"
+version = "~2.0.0"
 default-features = false
 
 [dependencies.icu_normalizer_data]
-version = "~2.0.0-beta2"
+version = "~2.0.0"
 optional = true
 default-features = false
 
 [dependencies.icu_properties]
-version = "~2.0.0-beta2"
+version = "~2.0.0"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0-beta2"
+version = "2.0.0"
 default-features = false
 
 [dependencies.serde]
@@ -184,7 +187,7 @@ version = "0.7.2"
 default-features = false
 
 [dev-dependencies.atoi]
-version = "1.0.0"
+version = "2.0.0"
 
 [dev-dependencies.detone]
 version = "1.0.0"

@@ -30,7 +30,7 @@ pub fn name_order_derive(
 
         // switch lookup with UND
         let mut chain_locale_und = *chain_locale;
-        chain_locale_und.language = Language::UND;
+        chain_locale_und.language = Language::UNKNOWN;
         let chain_locale_und_str = chain_locale_und.write_to_string();
 
         if given_first

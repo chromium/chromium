@@ -20,7 +20,7 @@ mod algorithms;
 /// algorithm. See *[the design doc]* for a detailed description and [#2243](
 /// https://github.com/unicode-org/icu4x/issues/2243) to track alignment with *UTS #35*.
 ///
-/// If running fallback in a loop, use [`DataLocale::is_default()`] to break from the loop.
+/// If running fallback in a loop, use [`DataLocale::is_unknown()`] to break from the loop.
 ///
 /// # Examples
 ///
@@ -118,7 +118,7 @@ impl LocaleFallbacker {
     icu_provider::gen_buffer_data_constructors!(() -> error: DataError,
         functions: [
             new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
     ]);
@@ -146,7 +146,7 @@ impl LocaleFallbacker {
                 language_script: Default::default(),
                 // Unused
                 und: (
-                    Default::default(),
+                    Language::UNKNOWN,
                     crate::subtags::script!("Zzzz"),
                     crate::subtags::region!("ZZ"),
                 ),

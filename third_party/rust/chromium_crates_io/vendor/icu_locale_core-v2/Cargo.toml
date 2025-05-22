@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "icu_locale_core"
-version = "2.0.0-beta2"
+version = "2.0.0"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -111,7 +112,7 @@ version = "0.2.3"
 default-features = false
 
 [dependencies.litemap]
-version = "0.7.3"
+version = "0.8.0"
 features = ["alloc"]
 default-features = false
 

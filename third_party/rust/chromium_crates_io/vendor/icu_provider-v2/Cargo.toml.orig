@@ -28,6 +28,7 @@ tinystr = { workspace = true }
 yoke = { workspace = true, features = ["alloc", "derive"] }
 zerofrom = { workspace = true, features = ["alloc", "derive"] }
 zerovec = { workspace = true, features = ["derive"]}
+zerotrie = { workspace = true, optional = true }
 
 # log
 log = { workspace = true, optional = true }
@@ -53,7 +54,7 @@ criterion = { workspace = true }
 
 [features]
 std = ["alloc"]
-alloc = ["icu_locale_core/alloc", "zerovec/alloc"]
+alloc = ["icu_locale_core/alloc", "zerovec/alloc", "zerotrie/alloc"]
 sync = []
 # Enable logging of additional context of data errors
 logging = ["dep:log"]
@@ -65,6 +66,9 @@ serde = ["dep:serde", "yoke/serde"]
 deserialize_json = ["serde", "dep:serde_json"]
 deserialize_bincode_1 = ["serde", "dep:bincode", "std"]
 deserialize_postcard_1 = ["serde", "dep:postcard"]
+
+# Dependencies for baked provider scaffolding
+baked = ["zerotrie"]
 
 # Dependencies for running data generation
 export = ["serde", "dep:erased-serde", "dep:databake", "std", "sync", "dep:postcard", "zerovec/databake"]

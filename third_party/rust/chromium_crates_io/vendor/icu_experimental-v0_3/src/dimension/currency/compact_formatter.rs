@@ -71,7 +71,7 @@ impl CompactCurrencyFormatter {
         (prefs: CompactCurrencyFormatterPreferences, options: CompactCurrencyFormatterOptions) -> error: DataError,
         functions: [
             try_new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -129,7 +129,7 @@ impl CompactCurrencyFormatter {
             + DataProvider<crate::dimension::provider::currency::CurrencyEssentialsV1>
             + DataProvider<crate::dimension::provider::currency_compact::ShortCurrencyCompactV1>
             + DataProvider<crate::compactdecimal::provider::ShortCompactDecimalFormatDataV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>
             + DataProvider<icu_plurals::provider::PluralsCardinalV1>,
     {

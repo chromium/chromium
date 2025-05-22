@@ -68,7 +68,7 @@ impl LongCompactCurrencyFormatter {
         ) -> error: DataError,
         functions: [
             try_new: skip,
-                        try_new_with_buffer_provider,
+            try_new_with_buffer_provider,
             try_new_unstable,
             Self
         ]
@@ -130,7 +130,7 @@ impl LongCompactCurrencyFormatter {
         D: ?Sized
             + DataProvider<crate::dimension::provider::extended_currency::CurrencyExtendedDataV1>
             + DataProvider<crate::dimension::provider::currency_patterns::CurrencyPatternsDataV1>
-            + DataProvider<icu_decimal::provider::DecimalSymbolsV2>
+            + DataProvider<icu_decimal::provider::DecimalSymbolsV1>
             + DataProvider<icu_decimal::provider::DecimalDigitsV1>
             + DataProvider<icu_plurals::provider::PluralsCardinalV1>
             + DataProvider<crate::compactdecimal::provider::LongCompactDecimalFormatDataV1>,

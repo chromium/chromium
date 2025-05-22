@@ -10,14 +10,14 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -32,7 +32,7 @@ inline temporal_rs::DisplayOffset temporal_rs::DisplayOffset::FromFFI(temporal_r
     case temporal_rs::capi::DisplayOffset_Never:
       return static_cast<temporal_rs::DisplayOffset::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 #endif // temporal_rs_DisplayOffset_HPP

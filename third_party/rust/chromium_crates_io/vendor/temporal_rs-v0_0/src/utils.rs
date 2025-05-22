@@ -19,8 +19,8 @@ pub(crate) const MS_PER_MINUTE: i64 = 60_000;
 /// `EpochDaysToEpochMS`
 ///
 /// Functionally the same as Date's abstract operation `MakeDate`
-pub(crate) fn epoch_days_to_epoch_ms(day: i32, time: i64) -> i64 {
-    (day as i64 * MS_PER_DAY as i64) + time
+pub(crate) fn epoch_days_to_epoch_ms(day: i64, time: i64) -> i64 {
+    (day * MS_PER_DAY as i64) + time
 }
 
 /// 3.5.11 PadISOYear ( y )

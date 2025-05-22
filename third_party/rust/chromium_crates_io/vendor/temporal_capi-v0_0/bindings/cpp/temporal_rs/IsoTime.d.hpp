@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -21,7 +22,7 @@ namespace capi {
       uint16_t microsecond;
       uint16_t nanosecond;
     };
-    
+
     typedef struct IsoTime_option {union { IsoTime ok; }; bool is_ok; } IsoTime_option;
 } // namespace capi
 } // namespace

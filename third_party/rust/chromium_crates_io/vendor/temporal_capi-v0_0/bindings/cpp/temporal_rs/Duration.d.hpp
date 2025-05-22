@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 namespace temporal_rs {
@@ -33,11 +34,15 @@ namespace temporal_rs {
 class Duration {
 public:
 
-  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> create(double years, double months, double weeks, double days, double hours, double minutes, double seconds, double milliseconds, double microseconds, double nanoseconds);
+  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> create(int64_t years, int64_t months, int64_t weeks, int64_t days, int64_t hours, int64_t minutes, int64_t seconds, int64_t milliseconds, double microseconds, double nanoseconds);
 
-  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> from_day_and_time(double day, const temporal_rs::TimeDuration& time);
+  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> from_day_and_time(int64_t day, const temporal_rs::TimeDuration& time);
 
   inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> from_partial_duration(temporal_rs::PartialDuration partial);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> from_utf8(std::string_view s);
+
+  inline static diplomat::result<std::unique_ptr<temporal_rs::Duration>, temporal_rs::TemporalError> from_utf16(std::u16string_view s);
 
   inline bool is_time_within_range() const;
 
@@ -45,25 +50,25 @@ public:
 
   inline const temporal_rs::DateDuration& date() const;
 
-  inline double years() const;
+  inline int64_t years() const;
 
-  inline double months() const;
+  inline int64_t months() const;
 
-  inline double weeks() const;
+  inline int64_t weeks() const;
 
-  inline double days() const;
+  inline int64_t days() const;
 
-  inline double hours() const;
+  inline int64_t hours() const;
 
-  inline double minutes() const;
+  inline int64_t minutes() const;
 
-  inline double seconds() const;
+  inline int64_t seconds() const;
 
-  inline double milliseconds() const;
+  inline int64_t milliseconds() const;
 
-  inline double microseconds() const;
+  inline std::optional<double> microseconds() const;
 
-  inline double nanoseconds() const;
+  inline std::optional<double> nanoseconds() const;
 
   inline temporal_rs::Sign sign() const;
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 #include "ErrorKind.d.hpp"
 
@@ -21,7 +22,7 @@ namespace capi {
     struct TemporalError {
       temporal_rs::capi::ErrorKind kind;
     };
-    
+
     typedef struct TemporalError_option {union { TemporalError ok; }; bool is_ok; } TemporalError_option;
 } // namespace capi
 } // namespace

@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
@@ -19,7 +20,7 @@ namespace capi {
       Disambiguation_Later = 2,
       Disambiguation_Reject = 3,
     };
-    
+
     typedef struct Disambiguation_option {union { Disambiguation ok; }; bool is_ok; } Disambiguation_option;
 } // namespace capi
 } // namespace

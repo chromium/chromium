@@ -10,17 +10,17 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdlib>
 #include "../diplomat_runtime.hpp"
 
 
 namespace temporal_rs {
 namespace capi {
     extern "C" {
-    
-    typedef struct temporal_rs_AnyCalendarKind_get_for_bcp47_string_result {union {temporal_rs::capi::AnyCalendarKind ok; }; bool is_ok;} temporal_rs_AnyCalendarKind_get_for_bcp47_string_result;
-    temporal_rs_AnyCalendarKind_get_for_bcp47_string_result temporal_rs_AnyCalendarKind_get_for_bcp47_string(diplomat::capi::DiplomatStringView s);
-    
-    
+
+    typedef struct temporal_rs_AnyCalendarKind_get_for_str_result {union {temporal_rs::capi::AnyCalendarKind ok; }; bool is_ok;} temporal_rs_AnyCalendarKind_get_for_str_result;
+    temporal_rs_AnyCalendarKind_get_for_str_result temporal_rs_AnyCalendarKind_get_for_str(diplomat::capi::DiplomatStringView s);
+
     } // extern "C"
 } // namespace capi
 } // namespace
@@ -40,10 +40,10 @@ inline temporal_rs::AnyCalendarKind temporal_rs::AnyCalendarKind::FromFFI(tempor
     case temporal_rs::capi::AnyCalendarKind_Gregorian:
     case temporal_rs::capi::AnyCalendarKind_Hebrew:
     case temporal_rs::capi::AnyCalendarKind_Indian:
-    case temporal_rs::capi::AnyCalendarKind_IslamicCivil:
-    case temporal_rs::capi::AnyCalendarKind_IslamicObservational:
-    case temporal_rs::capi::AnyCalendarKind_IslamicTabular:
-    case temporal_rs::capi::AnyCalendarKind_IslamicUmmAlQura:
+    case temporal_rs::capi::AnyCalendarKind_HijriTabularTypeIIFriday:
+    case temporal_rs::capi::AnyCalendarKind_HijriSimulatedMecca:
+    case temporal_rs::capi::AnyCalendarKind_HijriTabularTypeIIThursday:
+    case temporal_rs::capi::AnyCalendarKind_HijriUmmAlQura:
     case temporal_rs::capi::AnyCalendarKind_Iso:
     case temporal_rs::capi::AnyCalendarKind_Japanese:
     case temporal_rs::capi::AnyCalendarKind_JapaneseExtended:
@@ -51,12 +51,12 @@ inline temporal_rs::AnyCalendarKind temporal_rs::AnyCalendarKind::FromFFI(tempor
     case temporal_rs::capi::AnyCalendarKind_Roc:
       return static_cast<temporal_rs::AnyCalendarKind::Value>(c_enum);
     default:
-      abort();
+      std::abort();
   }
 }
 
-inline std::optional<temporal_rs::AnyCalendarKind> temporal_rs::AnyCalendarKind::get_for_bcp47_string(std::string_view s) {
-  auto result = temporal_rs::capi::temporal_rs_AnyCalendarKind_get_for_bcp47_string({s.data(), s.size()});
+inline std::optional<temporal_rs::AnyCalendarKind> temporal_rs::AnyCalendarKind::get_for_str(std::string_view s) {
+  auto result = temporal_rs::capi::temporal_rs_AnyCalendarKind_get_for_str({s.data(), s.size()});
   return result.is_ok ? std::optional<temporal_rs::AnyCalendarKind>(temporal_rs::AnyCalendarKind::FromFFI(result.ok)) : std::nullopt;
 }
 #endif // temporal_rs_AnyCalendarKind_HPP
