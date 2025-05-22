@@ -27,8 +27,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     public CommerceBottomSheetContent(
             View contentView, BottomSheetController bottomSheetController) {
         mContentView = contentView;
-        mRecyclerView =
-                (RecyclerView) mContentView.findViewById(R.id.commerce_content_recycler_view);
+        mRecyclerView = mContentView.findViewById(R.id.commerce_content_recycler_view);
         mBottomSheetController = bottomSheetController;
         mIsHalfHeightDisabled = false;
     }

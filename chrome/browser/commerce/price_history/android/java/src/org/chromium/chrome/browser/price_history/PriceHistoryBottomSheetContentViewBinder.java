@@ -29,9 +29,8 @@ public class PriceHistoryBottomSheetContentViewBinder {
     private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        TextView priceHistoryDescription =
-                (TextView) view.findViewById(R.id.price_history_description);
-        TextView openUrlButton = (TextView) view.findViewById(R.id.open_jackpot_url_button);
+        TextView priceHistoryDescription = view.findViewById(R.id.price_history_description);
+        TextView openUrlButton = view.findViewById(R.id.open_jackpot_url_button);
         if (PRICE_HISTORY_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_history_title))
                     .setText(model.get(PRICE_HISTORY_TITLE));
@@ -41,8 +40,7 @@ public class PriceHistoryBottomSheetContentViewBinder {
             priceHistoryDescription.setVisibility(
                     model.get(PRICE_HISTORY_DESCRIPTION_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (PRICE_HISTORY_CHART == propertyKey) {
-            LinearLayout priceHistoryLayout =
-                    (LinearLayout) view.findViewById(R.id.price_history_layout);
+            LinearLayout priceHistoryLayout = view.findViewById(R.id.price_history_layout);
             View previousChart = priceHistoryLayout.findViewById(PRICE_HISTORY_CHART_ID);
             if (previousChart != null) {
                 priceHistoryLayout.removeView(previousChart);

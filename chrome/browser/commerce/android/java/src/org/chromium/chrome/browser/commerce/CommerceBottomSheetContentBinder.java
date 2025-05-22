@@ -43,7 +43,7 @@ public class CommerceBottomSheetContentBinder {
                             ? View.VISIBLE
                             : View.GONE);
         } else if (propertyKey == CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING) {
-            LinearLayout itemContainer = (LinearLayout) view.findViewById(R.id.item_container);
+            LinearLayout itemContainer = view.findViewById(R.id.item_container);
             if (model.get(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING)) {
                 itemContainer.setPadding(0, 0, 0, 0);
             } else {

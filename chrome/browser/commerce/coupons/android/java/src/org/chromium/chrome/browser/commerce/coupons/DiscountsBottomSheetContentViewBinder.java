@@ -26,7 +26,7 @@ import org.chromium.ui.widget.ButtonCompat;
 public class DiscountsBottomSheetContentViewBinder {
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ButtonCompat copyButton = (ButtonCompat) view.findViewById(R.id.copy_button);
+        ButtonCompat copyButton = view.findViewById(R.id.copy_button);
         if (COPY_BUTTON_TEXT == propertyKey) {
             copyButton.setText(model.get(COPY_BUTTON_TEXT));
         } else if (COPY_BUTTON_ON_CLICK_LISTENER == propertyKey) {
@@ -44,7 +44,7 @@ public class DiscountsBottomSheetContentViewBinder {
             ((TextView) view.findViewById(R.id.description_detail))
                     .setText(model.get(DESCRIPTION_DETAIL));
         } else if (EXPIRY_TIME == propertyKey) {
-            TextView expiryTimeTextView = ((TextView) view.findViewById(R.id.expiry_time));
+            TextView expiryTimeTextView = view.findViewById(R.id.expiry_time);
             if (model.get(EXPIRY_TIME) != null) {
                 expiryTimeTextView.setVisibility(View.VISIBLE);
                 expiryTimeTextView.setText(model.get(EXPIRY_TIME));

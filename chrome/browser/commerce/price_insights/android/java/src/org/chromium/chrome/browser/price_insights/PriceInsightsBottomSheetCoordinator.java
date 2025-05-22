@@ -121,7 +121,7 @@ public class PriceInsightsBottomSheetCoordinator {
 
     /** Request to show the price insights bottom sheet. */
     public void requestShowContent() {
-        ScrollView scrollView = (ScrollView) mPriceInsightsView.findViewById(R.id.scroll_view);
+        ScrollView scrollView = mPriceInsightsView.findViewById(R.id.scroll_view);
         mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView, scrollView);
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mBottomSheetMediator.requestShowContent();

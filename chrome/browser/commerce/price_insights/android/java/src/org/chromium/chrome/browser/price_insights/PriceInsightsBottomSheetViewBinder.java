@@ -40,9 +40,8 @@ public class PriceInsightsBottomSheetViewBinder {
     private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ButtonCompat priceTrackingButton =
-                (ButtonCompat) view.findViewById(R.id.price_tracking_button);
-        TextView openUrlButton = (TextView) view.findViewById(R.id.open_jackpot_url_button);
+        ButtonCompat priceTrackingButton = view.findViewById(R.id.price_tracking_button);
+        TextView openUrlButton = view.findViewById(R.id.open_jackpot_url_button);
         if (PRICE_TRACKING_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_tracking_title))
                     .setText(model.get(PRICE_TRACKING_TITLE));
@@ -85,8 +84,7 @@ public class PriceInsightsBottomSheetViewBinder {
             ((TextView) view.findViewById(R.id.price_history_description))
                     .setText(model.get(PRICE_HISTORY_DESCRIPTION));
         } else if (PRICE_HISTORY_CHART == propertyKey) {
-            LinearLayout priceHistoryLayout =
-                    (LinearLayout) view.findViewById(R.id.price_history_layout);
+            LinearLayout priceHistoryLayout = view.findViewById(R.id.price_history_layout);
             View previousChart = priceHistoryLayout.findViewById(PRICE_HISTORY_CHART_ID);
             if (previousChart != null) {
                 priceHistoryLayout.removeView(previousChart);
