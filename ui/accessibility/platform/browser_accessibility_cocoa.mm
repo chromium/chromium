@@ -510,8 +510,6 @@ bool ui::IsNSRange(id value) {
   raw_ptr<ui::BrowserAccessibility, DanglingUntriaged> _owner;
   // An array of children of this object. Cached to avoid re-computing.
   NSMutableArray* __strong _children;
-  // Whether the children have changed and need to be updated.
-  bool _needsToUpdateChildren;
   // Whether _children is currently being computed.
   bool _gettingChildren;
   // Stores the previous value of an edit field.
@@ -581,7 +579,6 @@ bool ui::IsNSRange(id value) {
               withPlatformNode:(ui::AXPlatformNodeMac*)platform_node {
   if ((self = [super initWithNode:platform_node])) {
     _owner = accessibility;
-    _needsToUpdateChildren = true;
     _gettingChildren = false;
   }
   return self;
@@ -603,11 +600,11 @@ bool ui::IsNSRange(id value) {
       "childrenChanged");
   base::UmaHistogramBoolean("Accessibility.Performance."
                             "BrowserAccessibilityCocoa::needsToUpdateChildren",
-                            _needsToUpdateChildren);
+                            !!_children);
 
   if (![self instanceActive])
     return nil;
-  if (_needsToUpdateChildren) {
+  if (!_children) {
     base::AutoReset<bool> set_getting_children(&_gettingChildren, true);
     // PlatformChildCount may add extra mac nodes if the node requires them.
     uint32_t childCount = _owner->PlatformChildCount();
@@ -635,7 +632,6 @@ bool ui::IsNSRange(id value) {
         [_children addObject:child->GetNativeViewAccessible().Get()];
       }
     }
-    _needsToUpdateChildren = false;
   }
   return _children;
 }
@@ -647,7 +643,7 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive] || _gettingChildren) {
     return;
   }
-  _needsToUpdateChildren = true;
+  _children = nil;
   if (![self isIncludedInPlatformTree]) {
     BrowserAccessibility* parent = _owner->PlatformGetParent();
     if (parent) {
