@@ -241,7 +241,12 @@ void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
 
   widget_ = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
       dialog_delegate_.get(), gfx::NativeWindow(),
+#if BUILDFLAG(IS_MAC)
       top_web_contents->GetNativeView()));
+#else
+      top_web_contents->GetTopLevelNativeWindow()));
+#endif
+
   widget_->MakeCloseSynchronous(base::BindOnce(
       &DesktopDataControlsDialog::CloseDialog, base::Unretained(this)));
   widget_->SetBounds(
