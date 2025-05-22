@@ -5,17 +5,26 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- The following styles may be used to style views provided by a CustomViewBinder or attached
          to the app menu as headers or footers. -->
 
     <!-- Styling for an icon in an app menu icon row. -->
-    <style name="OverflowMenuButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
-        <item name="android:scaleType">center</item>
-        <item name="tint">@color/default_icon_color_tint_list</item>
+    <style name="OverflowMenuButton" parent="Widget.Material3.Button.IconButton">
+        <!-- Perfect square. -->
+        <item name="android:layout_width">?android:attr/listPreferredItemHeightSmall</item>
+        <item name="android:layout_height">?android:attr/listPreferredItemHeightSmall</item>
+        <!-- Position the button at the center within the wrapper. -->
+        <item name="android:layout_gravity">center</item>
+        <!-- Ensure each button's content block (text + icon) is centered
+        vertically and horizontally within each cell. -->
+        <item name="android:gravity">center</item>
+        <!-- Place each button at the start of its content block (text + icon),
+         which is already centered within its own cell. -->
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@color/default_icon_color_tint_list</item>
+        <item name="iconPadding">0dp</item>
     </style>
 </resources>

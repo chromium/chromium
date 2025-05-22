@@ -14,7 +14,6 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -835,39 +836,39 @@ public class AppMenuItemViewBinderTest {
 
         ViewGroup parentView = mActivity.findViewById(android.R.id.content);
         View view = mModelListAdapter.getView(0, null, parentView);
-        ImageButton button = view.findViewById(R.id.button_one);
+        MaterialButton button = view.findViewById(R.id.button_one);
         Assert.assertEquals(
                 "Incorrect content description for icon 1",
                 TITLE_1,
                 button.getContentDescription());
-        Assert.assertNotNull("Should have an icon for icon 1", button.getDrawable());
+        Assert.assertNotNull("Should have an icon for icon 1", button.getIcon());
 
         button = view.findViewById(R.id.button_two);
         Assert.assertEquals(
                 "Incorrect content description for icon 2",
                 TITLE_2,
                 button.getContentDescription());
-        Assert.assertNotNull("Should have an icon for icon 2", button.getDrawable());
+        Assert.assertNotNull("Should have an icon for icon 2", button.getIcon());
 
         button = view.findViewById(R.id.button_three);
         Assert.assertEquals(
                 "Incorrect content description for icon 3",
                 TITLE_3,
                 button.getContentDescription());
-        Assert.assertNotNull("Should have an icon for icon 3", button.getDrawable());
+        Assert.assertNotNull("Should have an icon for icon 3", button.getIcon());
 
         button = view.findViewById(R.id.button_four);
         Assert.assertEquals(
                 "Incorrect content description for icon 4",
                 TITLE_4,
                 button.getContentDescription());
-        Assert.assertNotNull("Should have an icon for icon 4", button.getDrawable());
+        Assert.assertNotNull("Should have an icon for icon 4", button.getIcon());
 
         button = view.findViewById(R.id.button_five);
         Assert.assertEquals(
                 "Incorrect content description for icon 5",
                 TITLE_5,
                 button.getContentDescription());
-        Assert.assertNotNull("Should have an icon for icon 5", button.getDrawable());
+        Assert.assertNotNull("Should have an icon for icon 5", button.getIcon());
     }
 }

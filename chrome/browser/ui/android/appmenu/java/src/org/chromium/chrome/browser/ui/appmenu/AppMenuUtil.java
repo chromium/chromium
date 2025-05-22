@@ -10,7 +10,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.LocalizationUtils;
@@ -61,15 +60,15 @@ public class AppMenuUtil {
     }
 
     /**
-     * This builds an {@link Animator} for the enter animation of icon row menu items.  This means
-     * it will animate the alpha from 0 to 1 and translate the views from 10dp to 0dp on the x axis.
+     * This builds an {@link Animator} for the enter animation of icon row menu items. This means it
+     * will animate the alpha from 0 to 1 and translate the views from 10dp to 0dp on the x axis.
      *
      * @param buttons The list of icons in the menu item that should be animated.
      * @param isMenuIconAtStart Whether the menu was triggered from a menu icon positioned at start.
-     * @return        The {@link Animator}.
+     * @return The {@link Animator}.
      */
     public static Animator buildIconItemEnterAnimator(
-            final ImageView[] buttons, boolean isMenuIconAtStart) {
+            final View[] buttons, boolean isMenuIconAtStart) {
         if (buttons.length < 1) return new AnimatorSet();
         float dpToPx = buttons[0].getContext().getResources().getDisplayMetrics().density;
         final boolean rtl = LocalizationUtils.isLayoutRtl();
@@ -82,7 +81,7 @@ public class AppMenuUtil {
         for (int i = 0; i < maxViewsToAnimate; i++) {
             final int startDelay = ENTER_ITEM_ADDL_DELAY_MS * i;
 
-            ImageView view = buttons[i];
+            View view = buttons[i];
             Animator alpha = ObjectAnimator.ofFloat(view, View.ALPHA, 0.f, 1.f);
             Animator translate = ObjectAnimator.ofFloat(view, View.TRANSLATION_X, offsetXPx, 0);
             alpha.setStartDelay(startDelay);

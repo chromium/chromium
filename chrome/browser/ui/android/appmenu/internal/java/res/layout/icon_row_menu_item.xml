@@ -9,25 +9,58 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
     android:layout_gravity="top|start"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:baselineAligned="false" >
 
-    <org.chromium.ui.widget.ChromeImageButton
+    <!-- Using weight = 1, evenly distribute the buttons along the width of the
+    space.  -->
+    <FrameLayout
+        android:id="@+id/button_wrapper_one"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
         android:id="@+id/button_one"
         style="@style/OverflowMenuButton" />
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_two"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_two"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_two"
+            style="@style/OverflowMenuButton" />
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_three"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_three"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_three"
+            style="@style/OverflowMenuButton" />
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_four"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_four"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_four"
+            style="@style/OverflowMenuButton" />
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_five"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_five"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_five"
+            style="@style/OverflowMenuButton" />
+    </FrameLayout>
 </LinearLayout>

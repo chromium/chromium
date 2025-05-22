@@ -18,6 +18,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
@@ -37,6 +39,15 @@ class AppMenuItemViewBinder {
     /** IDs of all of the buttons in icon_row_menu_item.xml. */
     private static final int[] BUTTON_IDS = {
         R.id.button_one, R.id.button_two, R.id.button_three, R.id.button_four, R.id.button_five
+    };
+
+    /** IDs of all of the buttons wrappers in icon_row_menu_item.xml. */
+    private static final int[] BUTTON_WRAPPER_IDS = {
+        R.id.button_wrapper_one,
+        R.id.button_wrapper_two,
+        R.id.button_wrapper_three,
+        R.id.button_wrapper_four,
+        R.id.button_wrapper_five
     };
 
     public static void bindStandardItem(PropertyModel model, View view, PropertyKey key) {
@@ -186,16 +197,29 @@ class AppMenuItemViewBinder {
                     model.get(AppMenuItemProperties.CLICK_HANDLER);
 
             int numItems = iconList.size();
-            ImageButton[] buttons = new ImageButton[numItems];
+            MaterialButton[] buttons = new MaterialButton[numItems];
             for (int i = 0; i < 5; i++) {
-                ImageButton button = view.findViewById(BUTTON_IDS[i]);
+                View buttonWrapper = view.findViewById(BUTTON_WRAPPER_IDS[i]);
+                MaterialButton button = buttonWrapper.findViewById(BUTTON_IDS[i]);
                 if (i < numItems) {
                     buttons[i] = button;
+                    buttonWrapper.setVisibility(View.VISIBLE);
                     button.setVisibility(View.VISIBLE);
-                    setupImageButton(button, iconList.get(i).model, appMenuClickHandler);
+                    Drawable icon = iconList.get(i).model.get(AppMenuItemProperties.ICON);
+                    icon = DrawableCompat.wrap(icon.mutate());
+                    @ColorRes
+                    int resId =
+                            iconList.get(i).model.get(AppMenuItemProperties.CHECKED)
+                                    ? R.color.default_icon_color_accent1_tint_list
+                                    : R.color.default_icon_color_tint_list;
+                    button.setIcon(icon);
+                    button.setIconTint(
+                            AppCompatResources.getColorStateList(button.getContext(), resId));
+                    setupMenuButton(button, iconList.get(i).model, appMenuClickHandler);
                 } else {
+                    buttonWrapper.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
-                    button.setImageDrawable(null);
+                    button.setIcon(null);
                 }
             }
 
@@ -260,10 +284,12 @@ class AppMenuItemViewBinder {
         button.setOnClickListener(v -> appMenuClickHandler.onItemClick(model));
         button.setOnLongClickListener(v -> appMenuClickHandler.onItemLongClick(model, button));
 
+        View buttonWrapper = (View) button.getParent();
         if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {
-            ViewHighlighter.turnOnHighlight(button, new HighlightParams(HighlightShape.CIRCLE));
+            ViewHighlighter.turnOnHighlight(
+                    buttonWrapper, new HighlightParams(HighlightShape.CIRCLE));
         } else {
-            ViewHighlighter.turnOffHighlight(button);
+            ViewHighlighter.turnOffHighlight(buttonWrapper);
         }
 
         // Menu items may be hidden by command line flags before they get to this point.
