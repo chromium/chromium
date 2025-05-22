@@ -1436,7 +1436,6 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1449,6 +1448,26 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
+        },
+        "test": "sync_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
+      },
+      {
+        "args": [
+          "--disable-field-trial-config"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "sync_integration_tests_no_field_trial",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sync_integration_tests",
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"

@@ -462,13 +462,9 @@ ci.builder(
                 ),
             ),
             "sync_integration_tests": targets.mixin(
-                ci_only = True,
                 swarming = targets.swarming(
                     shards = 3,
                 ),
-            ),
-            "sync_integration_tests_no_field_trial": targets.remove(
-                reason = "Having infra failure (crbug.com/419179070)",
             ),
             "telemetry_perf_unittests": targets.remove(
                 reason = "Some test cases fail on win-rel (crbug/40622135).",
@@ -601,9 +597,6 @@ ci.thin_tester(
                     "When we switch CQ builders(e.g. use Win11 to replace ",
                     "Win10), we also need to update this field.",
                 ],
-            ),
-            "sync_integration_tests": targets.remove(
-                reason = "Having infra failure (crbug.com/419179070)",
             ),
             "sync_integration_tests_no_field_trial": targets.remove(
                 reason = "crbug/40630866",
