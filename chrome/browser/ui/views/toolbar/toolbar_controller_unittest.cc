@@ -251,7 +251,7 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   views::View* view = container_view()->AddChildView(std::move(observed_view));
 
   EXPECT_CALL(toolbar_controller, EndPopOut(kDummyButton));
-  container_view()->RemoveChildView(view);
+  container_view()->RemoveChildViewT<views::View>(view);
 }
 
 constexpr int kElementFlexOrderStart = 1;

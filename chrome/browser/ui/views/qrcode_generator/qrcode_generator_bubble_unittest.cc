@@ -65,11 +65,8 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
-    // TODO(crbug.com/40232479) - We can probably clean this up and
-    // get rid of the need for a WidgetAutoClosePtr when we switch to
-    // CLIENT_OWNS_WIDGET.
     anchor_widget_.reset(
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET)
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET)
             .release());
     anchor_view_ =
         anchor_widget_->SetContentsView(std::make_unique<views::View>());
@@ -79,6 +76,9 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
         base::DoNothing(), GURL("https://www.chromium.org/a"));
 
     bubble_ = bubble.get();
+    // TODO(crbug.com/40232479) - We can probably clean this up and
+    // get rid of the need for a WidgetAutoClosePtr when we switch to
+    // CLIENT_OWNS_WIDGET.
     bubble_widget_.reset(
         views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)));
   }
@@ -131,7 +131,7 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-  WidgetAutoclosePtr anchor_widget_;
+  std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   WidgetAutoclosePtr bubble_widget_;
   raw_ptr<QRCodeGeneratorBubble, DanglingUntriaged> bubble_;

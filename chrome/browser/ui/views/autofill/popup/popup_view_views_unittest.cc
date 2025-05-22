@@ -1345,13 +1345,13 @@ TEST_F(PopupViewViewsTest, ChildWidgetRetriggersMouseMovesToParent) {
 
 TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
   controller().set_suggestions({SuggestionType::kAddressEntry});
-  PopupViewViews view(controller().GetWeakPtr());
-  views::Widget* widget =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET)
-          .release();
-  ShowView(&view, *widget);
+  auto view = std::make_unique<PopupViewViews>(controller().GetWeakPtr());
+  PopupViewViews* raw_view = view.get();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  ShowView(view.release(), *widget);
 
-  auto [sub_controller, sub_view] = OpenSubView(view);
+  auto [sub_controller, sub_view] = OpenSubView(*raw_view);
   base::WeakPtr<views::Widget> sub_widget = sub_view->GetWidget()->GetWeakPtr();
 
   ASSERT_FALSE(sub_widget->IsClosed());
