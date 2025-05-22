@@ -144,6 +144,13 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   ExtensionResource r8(extension_id, inner_dir, outer_via_reparse);
   r8.set_follow_symlinks_anywhere();
   EXPECT_FALSE(r8.GetFilePath().empty());
+
+  // Make sure that a non-normalized extension root path is supported.
+  base::FilePath inner_dir_non_normalized =
+      temp.GetPath().AppendASCII("dIrEcToRy");
+  ExtensionResource r9(extension_id, inner_dir_non_normalized,
+                       base::FilePath().AppendASCII("inner"));
+  EXPECT_FALSE(r9.GetFilePath().empty());
 #endif
 }
 

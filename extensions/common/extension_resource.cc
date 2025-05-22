@@ -53,14 +53,16 @@ base::FilePath ExtensionResource::GetFilePath(
     const base::FilePath& extension_root,
     const base::FilePath& relative_path,
     SymlinkPolicy symlink_policy) {
-  // We need to resolve the parent references in the extension_root
-  // path on its own because IsParent doesn't like parent references.
-  base::FilePath clean_extension_root(
-      base::MakeAbsoluteFilePath(extension_root));
-  if (clean_extension_root.empty())
+  // We need to normalize `extension_root` on its own because `IsParent` doesn't
+  // normalize file paths. Without normalization parent references, Windows
+  // short paths, or different path capitalization will cause `IsParent` to
+  // return false.
+  base::FilePath normalized_extension_root;
+  if (!base::NormalizeFilePath(extension_root, &normalized_extension_root)) {
     return base::FilePath();
+  }
 
-  base::FilePath full_path = clean_extension_root.Append(relative_path);
+  base::FilePath full_path = normalized_extension_root.Append(relative_path);
 
   // If we are allowing the file to be a symlink outside of the root, then the
   // path before resolving the symlink must still be within it.
@@ -99,7 +101,7 @@ base::FilePath ExtensionResource::GetFilePath(
   }
 
   if (symlink_policy != FOLLOW_SYMLINKS_ANYWHERE &&
-      !clean_extension_root.IsParent(full_path)) {
+      !normalized_extension_root.IsParent(full_path)) {
     return base::FilePath();
   }
 
