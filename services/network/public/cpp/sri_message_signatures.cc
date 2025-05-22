@@ -29,12 +29,12 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@authority", "@query-param", "@query", "@path",
-    "@scheme",    "@status"
+    "@authority", "@query-param", "@query", "@method",
+    "@path",      "@scheme",      "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
-    // "@method", "@request-target", "@target-uri",
+    // "@request-target", "@target-uri",
 };
 
 ParameterType ParamNameToType(std::string_view name) {
@@ -274,21 +274,22 @@ std::string SerializeSignatureParams(
 }
 
 std::string SerializeDerivedComponent(
-    const GURL& request_url,
+    const net::URLRequest& url_request,
     const int response_status_code,
     const mojom::SRIMessageSignatureComponentPtr& component) {
   DCHECK(base::Contains(kDerivedComponents, component->name));
+  DCHECK(url_request.url().is_valid());
 
   if (component->name == "@authority") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-authority
-    if (request_url.has_port()) {
-      return base::StrCat(
-          {request_url.host_piece(), ":", request_url.port_piece()});
+    if (url_request.url().has_port()) {
+      return base::StrCat({url_request.url().host_piece(), ":",
+                           url_request.url().port_piece()});
     }
-    return request_url.host();
+    return url_request.url().host();
   } else if (component->name == "@query") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
-    return base::StrCat({"?", request_url.query()});
+    return base::StrCat({"?", url_request.url().query()});
   } else if (component->name == "@query-param") {
     DCHECK(component->params.size() == 2u);
     auto name_it =
@@ -298,16 +299,19 @@ std::string SerializeDerivedComponent(
                      });
     DCHECK(name_it != component->params.end() && (*name_it)->value.has_value());
     std::string param_value;
-    if (net::GetValueForKeyInQuery(request_url, *(*name_it)->value,
+    if (net::GetValueForKeyInQuery(url_request.url(), *(*name_it)->value,
                                    &param_value)) {
       return base::EscapeAllExceptUnreserved(param_value);
     }
     return std::string();
+  } else if (component->name == "@method") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-method
+    return url_request.method();
   } else if (component->name == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
-    return request_url.path();
+    return url_request.url().path();
   } else if (component->name == "@scheme") {
-    return request_url.scheme();
+    return url_request.url().scheme();
   } else if (component->name == "@status") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
     return base::NumberToString(response_status_code);
@@ -619,7 +623,7 @@ std::optional<std::string> ConstructSignatureBase(
         return std::nullopt;
       }
       component_value = SerializeDerivedComponent(
-          request_url, headers.response_code(), component);
+          url_request, headers.response_code(), component);
 
       //      *  If the component name does not start with an "at" (`@`)
       //         character, canonizalize the HTTP field value ... If the field
