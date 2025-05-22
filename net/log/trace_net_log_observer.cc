@@ -83,6 +83,10 @@ class SourceTrack final : public perfetto::Track {
   perfetto::StaticString source_type_string_;
 };
 
+perfetto::StaticString SourceTypeToStaticString(NetLogSourceType source_type) {
+  return perfetto::StaticString(NetLog::SourceTypeToString(source_type));
+}
+
 }  // namespace
 
 TraceNetLogObserver::TraceNetLogObserver(Options options)
@@ -109,14 +113,18 @@ perfetto::Track TraceNetLogObserver::MaybeSetUpAndGetRootTrack() {
 }
 
 void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
+  const auto get_source_track = [&](uint32_t source_id,
+                                    perfetto::StaticString source_type_string) {
+    return SourceTrack(track_id_base_ + entry.source.id,
+                       MaybeSetUpAndGetRootTrack(), source_type_string);
+  };
+
   base::Value::Dict params = entry.params.Clone();
   // Add source's start time as a parameter. The net-log viewer requires it.
   params.Set("source_start_time",
              NetLog::TickCountToString(entry.source.start_time));
-  const perfetto::StaticString source_type_string(
-      NetLog::SourceTypeToString(entry.source.type));
-  const SourceTrack track(track_id_base_ + entry.source.id,
-                          MaybeSetUpAndGetRootTrack(), source_type_string);
+  const auto source_type_string = SourceTypeToStaticString(entry.source.type);
+  const auto track = get_source_track(entry.source.id, source_type_string);
 
   // The tracing category must be a compile-time constant, hence the macro to
   // handle the sensitive vs non-sensitive categories.
@@ -129,23 +137,56 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
     }                                                            \
   } while (false)
 
+  // We use Perfetto Flows to represent source dependencies; these will show up
+  // as arrows in the Perfetto UI. The dependency is on a source, i.e. a track,
+  // but Perfetto flows start from an event, not a track. To work around this we
+  // write a made-up instant event on the source dependency track to act as an
+  // anchor for the flow.
+  std::optional<uint64_t> source_dependency_flow_id;
+  const base::DictValue* const source_dependency =
+      params.FindDict("source_dependency");
+  if (source_dependency != nullptr) {
+    const std::optional<int> source_dependency_id =
+        source_dependency->FindInt("id");
+    const std::optional<int> source_dependency_type =
+        source_dependency->FindInt("type");
+    if (source_dependency_id.has_value() &&
+        source_dependency_type.has_value()) {
+      source_dependency_flow_id = base::RandUint64();
+      CALL_TRACE_EVENT(
+          TRACE_EVENT_INSTANT,
+          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
+          get_source_track(
+              *source_dependency_id,
+              SourceTypeToStaticString(
+                  static_cast<NetLogSourceType>(*source_dependency_type))),
+          perfetto::Flow::ProcessScoped(*source_dependency_flow_id));
+    }
+  }
+  const auto set_event_fields = [&](perfetto::EventContext& event_context) {
+    if (source_dependency_flow_id.has_value()) {
+      perfetto::TerminatingFlow::ProcessScoped (*source_dependency_flow_id)(
+          event_context);
+    }
+  };
+
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
       CALL_TRACE_EVENT(
           TRACE_EVENT_BEGIN,
           perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
-          "source_type", source_type_string, "params",
+          set_event_fields, "source_type", source_type_string, "params",
           std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
-      CALL_TRACE_EVENT(TRACE_EVENT_END, track, "params",
+      CALL_TRACE_EVENT(TRACE_EVENT_END, track, set_event_fields, "params",
                        std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
       CALL_TRACE_EVENT(
           TRACE_EVENT_INSTANT,
           perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
-          "source_type", source_type_string, "params",
+          set_event_fields, "source_type", source_type_string, "params",
           std::make_unique<TracedValue>(std::move(params)));
       break;
   }
