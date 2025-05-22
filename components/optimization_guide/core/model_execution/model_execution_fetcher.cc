@@ -185,8 +185,43 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/398296762): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
-      // TODO(crbug.com/403003789): Add network traffic annotation.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation(
+          "zero_state_suggestions_model_execution", R"(
+    semantics {
+      sender: "Gemini in Chrome - Zero State Suggestions"
+      description:
+        "Generates contextual suggestions about the current page when Gemini "
+        "in Chrome does not have a query."
+      trigger:
+        "User opens Gemini in Chrome via browser entrypoint, OS entrypoint, or"
+        " hot key."
+      destination: GOOGLE_OWNED_SERVICE
+      data:
+        "Title, URL, and content of the page, which may potentially contain "
+        "user input. The access token is also sent to verify user is of "
+        "sufficient age to use Gemini in Chrome."
+      internal {
+        contacts {
+          email: "chrome-intelligence-core@google.com"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+      }
+      last_reviewed: "2025-05-21"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "This feature can be disabled via GeminiSettings."
+      chrome_policy {
+        GeminiSettings {
+          GeminiSettings: 1
+        }
+      }
+    })");
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:

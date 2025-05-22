@@ -513,4 +513,5 @@ Refer to README.md for content description and update process.
  <item id="gemini_user_status" added_in_milestone="137" content_hash_code="03062011" os_list="linux,windows" file_path="chrome/browser/glic/glic_user_status_fetcher.cc" />
  <item id="notification_telemetry" added_in_milestone="137" content_hash_code="07930dca" os_list="linux,windows,android,chromeos" file_path="chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service.cc" />
  <item id="corp_register_support_host_request" added_in_milestone="138" content_hash_code="03509e36" os_list="linux,windows,chromeos" file_path="remoting/host/corp_register_support_host_request.cc" />
+ <item id="zero_state_suggestions_model_execution" added_in_milestone="138" content_hash_code="04362741" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
 </annotations>

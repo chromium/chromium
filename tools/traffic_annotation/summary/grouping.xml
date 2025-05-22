@@ -378,6 +378,7 @@ after discussions on the right group.
       <annotation id="gemini_user_status"/>
       <annotation id="notification_telemetry"/>
       <annotation id="corp_register_support_host_request"/>
+      <annotation id="zero_state_suggestions_model_execution"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
