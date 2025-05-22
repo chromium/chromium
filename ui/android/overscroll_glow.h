@@ -5,6 +5,7 @@
 #ifndef UI_ANDROID_OVERSCROLL_GLOW_H_
 #define UI_ANDROID_OVERSCROLL_GLOW_H_
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -100,10 +101,10 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   EdgeEffect* GetOppositeEdge(int edge_index);
 
   raw_ptr<OverscrollGlowClient> client_;
-  std::unique_ptr<EdgeEffect> edge_effects_[EDGE_COUNT];
+  std::array<std::unique_ptr<EdgeEffect>, EDGE_COUNT> edge_effects_;
 
   gfx::SizeF viewport_size_;
-  float edge_offsets_[EDGE_COUNT];
+  std::array<float, EDGE_COUNT> edge_offsets_;
   bool initialized_;
   bool allow_horizontal_overscroll_;
   bool allow_vertical_overscroll_;
