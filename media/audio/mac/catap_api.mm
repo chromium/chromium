@@ -27,6 +27,17 @@ OSStatus CatapApiImpl::AudioDeviceCreateIOProcID(
                                      out_proc_id);
 }
 
+OSStatus CatapApiImpl::AudioObjectGetPropertyDataSize(
+    AudioObjectID in_object_id,
+    const AudioObjectPropertyAddress* in_address,
+    UInt32 in_qualifier_data_size,
+    const void* in_qualifier_data,
+    UInt32* out_data_size) {
+  return ::AudioObjectGetPropertyDataSize(in_object_id, in_address,
+                                          in_qualifier_data_size,
+                                          in_qualifier_data, out_data_size);
+}
+
 OSStatus CatapApiImpl::AudioObjectGetPropertyData(
     AudioObjectID in_object_id,
     const AudioObjectPropertyAddress* in_address,

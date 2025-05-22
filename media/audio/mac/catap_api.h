@@ -25,6 +25,12 @@ class CatapApi {
       AudioDeviceIOProc proc,
       void* in_client_data,
       AudioDeviceIOProcID* out_proc_id) = 0;
+  virtual OSStatus AudioObjectGetPropertyDataSize(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      UInt32 in_qualifier_data_size,
+      const void* in_qualifier_data,
+      UInt32* out_data_size) = 0;
   virtual OSStatus AudioObjectGetPropertyData(
       AudioObjectID in_object_id,
       const AudioObjectPropertyAddress* in_address,
@@ -69,6 +75,12 @@ class API_AVAILABLE(macos(14.2)) CatapApiImpl : public CatapApi {
                                      AudioDeviceIOProc proc,
                                      void* in_client_data,
                                      AudioDeviceIOProcID* out_proc_id) override;
+  OSStatus AudioObjectGetPropertyDataSize(
+      AudioObjectID in_object_id,
+      const AudioObjectPropertyAddress* in_address,
+      UInt32 in_qualifier_data_size,
+      const void* in_qualifier_data,
+      UInt32* out_data_size) override;
   OSStatus AudioObjectGetPropertyData(
       AudioObjectID in_object_id,
       const AudioObjectPropertyAddress* in_address,

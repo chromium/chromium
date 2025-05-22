@@ -8,6 +8,7 @@
 #include <CoreAudio/CATapDescription.h>
 #include <CoreAudio/CoreAudio.h>
 #import <Foundation/Foundation.h>
+#include <unistd.h>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -57,16 +58,11 @@ OSStatus DeviceIoProc(AudioDeviceID,
 
   return noErr;
 }
-
 }  // namespace
 
 // 0.0 is used to indicate that this device doesn't support setting the volume.
 // TODO(crbug.com/415953612): Is this okay, or do we need to support this?
 constexpr float kMaxVolume = 0.0;
-
-}  // namespace media
-
-namespace media {
 
 CatapAudioInputStream::CatapAudioInputStream(
     std::unique_ptr<CatapApi> catap_api,
@@ -104,28 +100,41 @@ CatapAudioInputStream::~CatapAudioInputStream() {
 AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "CatapAudioInputStream::Open");
+  // TODO(crbug.com/419323791): Add UMA logging of errors and duration of the
+  // call to Open().
 
   if (is_device_open_) {
     SendLogMessage("%s => Device is already open.", __func__);
     return OpenOutcome::kFailed;
   }
 
-  // TODO(crbug.com/415953671): Add support for device_id_ ==
-  // AudioDeviceDescription::kLoopbackWithoutChromeId, that is, where we exclude
-  // Chrome's audio from the capture.
+  NSArray<NSNumber*>* process_audio_device_ids_to_exclude = @[];
+  if (device_id_ == AudioDeviceDescription::kLoopbackWithoutChromeId) {
+    // Get a list of all CoreAudio process device IDs that belong to the Chrome
+    // audio service.
+    pid_t chrome_audio_service_pid = getpid();
+    process_audio_device_ids_to_exclude =
+        GetProcessAudioDeviceIds(chrome_audio_service_pid);
+    if (![process_audio_device_ids_to_exclude count]) {
+      SendLogMessage("%s => Could not determine audio objects that belong to "
+                     "the audio service.",
+                     __func__);
+    }
+  }
 
   if (base::FeatureList::IsEnabled(kMacCatapCaptureDefaultDevice)) {
     // Mix all process audio streams destined for the selected device stream
     // except the given processes.
     tap_description_ = [[CATapDescription alloc]
-        initExcludingProcesses:@[]
+        initExcludingProcesses:process_audio_device_ids_to_exclude
                   andDeviceUID:[NSString stringWithUTF8String:
                                              default_output_device_id_.c_str()]
                     withStream:0];
   } else {
     // Mix all processes to a stereo stream except the given processes.
     tap_description_ =
-        [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:@[]];
+        [[CATapDescription alloc] initStereoGlobalTapButExcludeProcesses:
+                                      process_audio_device_ids_to_exclude];
   }
 
   if (params_.channels() == 1) {
@@ -165,7 +174,7 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
   // Initialization: Step 2.
   // Create the aggregate device.
   status = catap_api_->AudioHardwareCreateAggregateDevice(
-      (CFDictionaryRef)CFBridgingRetain(aggregate_device_properties_),
+      (__bridge CFDictionaryRef)aggregate_device_properties_,
       &aggregate_device_id_);
   if (status != noErr) {
     SendLogMessage("%s => Error creating aggregate device.", __func__);
@@ -329,11 +338,66 @@ void CatapAudioInputStream::OnCatapSample(
   }
 }
 
+NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(
+    pid_t chrome_process_id) {
+  // Returns all CoreAudio process audio device IDs that belong to the specified
+  // process ID.
+
+  // TODO(crbug.com/419323791): Add UMA logging of the duration of
+  // GetProcessAudioDeviceIds().
+
+  AudioObjectPropertyAddress property_address = {
+      kAudioHardwarePropertyProcessObjectList, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
+  UInt32 property_size;
+
+  // Get all CoreAudio process audio device IDs (which are UInt32).
+  OSStatus result = catap_api_->AudioObjectGetPropertyDataSize(
+      kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &property_size);
+  if (result != noErr) {
+    SendLogMessage("%s => Could not get number of process audio device IDs.",
+                   __func__);
+    return @[];
+  }
+
+  UInt32 num_devices = property_size / sizeof(AudioDeviceID);
+  auto device_ids = std::vector<AudioDeviceID>(num_devices);
+  result = catap_api_->AudioObjectGetPropertyData(
+      kAudioObjectSystemObject, &property_address, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
+  if (result != noErr) {
+    SendLogMessage("%s => Could not get process audio device IDs.", __func__);
+    return @[];
+  }
+
+  NSMutableArray<NSNumber*>* process_audio_device_ids_array =
+      [NSMutableArray arrayWithCapacity:num_devices];
+
+  for (AudioDeviceID device_id : device_ids) {
+    // Get the process ID and add the device to the list if there's a match.
+    property_address.mSelector = kAudioProcessPropertyPID;
+    int32_t process_id;
+    property_size = sizeof(int32_t);
+    result = catap_api_->AudioObjectGetPropertyData(
+        device_id, &property_address, /*in_qualifier_data_size=*/0,
+        /*in_qualifier_data=*/nullptr, &property_size, &process_id);
+    if (result != noErr) {
+      SendLogMessage(
+          "%s => Could not determine process ID of process audio device ID.",
+          __func__);
+      continue;  // Skip this device and continue to the next.
+    }
+
+    if (process_id == chrome_process_id) {
+      [process_audio_device_ids_array addObject:@(device_id)];
+    }
+  }
+
+  return process_audio_device_ids_array;
+}
+
 bool CatapAudioInputStream::ProbeAudioTapPermissions() {
-  // Probe audio tap permission by getting and setting
-  // AudioTapPropertyDescription. If either of these operations fail, this
-  // function returns false which is an indication that we don't have system
-  // audio capture permission.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CATapDescription* description;
@@ -343,16 +407,16 @@ bool CatapAudioInputStream::ProbeAudioTapPermissions() {
       kAudioObjectPropertyElementMain};
 
   OSStatus status = catap_api_->AudioObjectGetPropertyData(
-      tap_, &propertyAddress, /*inQualifierDataSize=*/0,
-      /*inQualifierData=*/nullptr, &propertySize, &description);
+      tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &propertySize, &description);
 
   if (status != noErr) {
     return false;
   }
 
   status = catap_api_->AudioObjectSetPropertyData(
-      tap_, &propertyAddress, /*inQualifierDataSize=*/0,
-      /*inQualifierData=*/nullptr, propertySize, &description);
+      tap_, &propertyAddress, /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, propertySize, &description);
 
   if (status != noErr) {
     return false;

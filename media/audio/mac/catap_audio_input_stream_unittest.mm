@@ -4,6 +4,7 @@
 #include "media/audio/mac/catap_audio_input_stream.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -62,6 +63,14 @@ class API_AVAILABLE(macos(14.2)) MockCatapApi : public CatapApi {
                AudioDeviceIOProc proc,
                void* in_client_data,
                AudioDeviceIOProcID* out_proc_id),
+              (override));
+  MOCK_METHOD(OSStatus,
+              AudioObjectGetPropertyDataSize,
+              (AudioObjectID in_object_id,
+               const AudioObjectPropertyAddress* in_address,
+               UInt32 in_qualifier_data_size,
+               const void* in_qualifier_data,
+               UInt32* ioDataSize),
               (override));
   MOCK_METHOD(OSStatus,
               AudioObjectGetPropertyData,
@@ -133,14 +142,12 @@ class CatapAudioInputStreamTest : public testing::Test {
 
       // Set up expectations for a successful open.
       EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
-          .Times(1)
           .WillOnce(
               [](CATapDescription* in_description, AudioObjectID* out_tap) {
                 *out_tap = kTap;
                 return noErr;
               });
       EXPECT_CALL(mock_catap_api(), AudioHardwareCreateAggregateDevice)
-          .Times(1)
           .WillOnce([](CFDictionaryRef in_device_properties,
                        AudioDeviceID* out_device) {
             *out_device = kAggregateDeviceId;
@@ -149,7 +156,6 @@ class CatapAudioInputStreamTest : public testing::Test {
       // Add call expectation for AudioDeviceCreateIOProcID. Store the callback
       // to be able to simulate audio capture callbacks.
       EXPECT_CALL(mock_catap_api(), AudioDeviceCreateIOProcID)
-          .Times(1)
           .WillOnce([this](AudioDeviceID in_device, AudioDeviceIOProc proc,
                            void* in_client_data,
                            AudioDeviceIOProcID* out_proc_id) {
@@ -163,10 +169,8 @@ class CatapAudioInputStreamTest : public testing::Test {
       // The following two calls are done when probing the tap, which is
       // enabled by default.
       EXPECT_CALL(mock_catap_api(), AudioObjectGetPropertyData)
-          .Times(1)
           .WillOnce(testing::Return(noErr));
       EXPECT_CALL(mock_catap_api(), AudioObjectSetPropertyData)
-          .Times(1)
           .WillOnce(testing::Return(with_permissions ? noErr : -1));
 
       // Initialize the stream.
@@ -181,7 +185,6 @@ class CatapAudioInputStreamTest : public testing::Test {
         return;
       }
       EXPECT_CALL(mock_catap_api(), AudioDeviceDestroyIOProcID)
-          .Times(1)
           .WillOnce(
               [](AudioDeviceID in_device, AudioDeviceIOProcID in_proc_id) {
                 EXPECT_EQ(in_device, kAggregateDeviceId);
@@ -189,13 +192,11 @@ class CatapAudioInputStreamTest : public testing::Test {
                 return noErr;
               });
       EXPECT_CALL(mock_catap_api(), AudioHardwareDestroyAggregateDevice)
-          .Times(1)
           .WillOnce([](AudioDeviceID in_device) {
             EXPECT_EQ(in_device, kAggregateDeviceId);
             return noErr;
           });
       EXPECT_CALL(mock_catap_api(), AudioHardwareDestroyProcessTap)
-          .Times(1)
           .WillOnce([](AudioObjectID in_tap) {
             EXPECT_EQ(in_tap, kTap);
             return noErr;
@@ -240,7 +241,6 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
                 OnData(testing::_, testing::_, testing::_, testing::_))
         .Times(testing::AtLeast(1));
     EXPECT_CALL(mock_catap_api(), AudioDeviceStart)
-        .Times(1)
         .WillOnce([](AudioDeviceID in_device, AudioDeviceIOProcID in_proc_id) {
           EXPECT_EQ(in_device, kAggregateDeviceId);
           EXPECT_EQ(in_proc_id, kTapIoProcId);
@@ -270,7 +270,6 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
     audio_proc_(0, in_now, &input_data, &input_time, output_data, output_time,
                 stream_);
     EXPECT_CALL(mock_catap_api(), AudioDeviceStop)
-        .Times(1)
         .WillOnce([](AudioDeviceID in_device, AudioDeviceIOProcID in_proc_id) {
           EXPECT_EQ(in_device, kAggregateDeviceId);
           EXPECT_EQ(in_proc_id, kTapIoProcId);
@@ -279,4 +278,117 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
     stream_->Stop();
   }
 }
+
+TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
+  if (@available(macOS 14.2, *)) {
+    auto mock_catap_api_object = std::make_unique<MockCatapApi>();
+    // Keep a raw pointer to set expectations.
+    mock_catap_api_ = mock_catap_api_object.get();
+
+    // Create a CatapAudioInputStream for testing with kLoopbackWithoutChromeId.
+    stream_ = CreateCatapAudioInputStreamForTesting(
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                        kCatapLoopbackFramesPerBuffer),
+        media::AudioDeviceDescription::kLoopbackWithoutChromeId,
+        base::DoNothing(), base::DoNothing(),
+        media::AudioDeviceDescription::kDefaultDeviceId,
+        std::move(mock_catap_api_object));
+    EXPECT_TRUE(stream_);
+
+    // Arbitrary number of CoreAudio process audio device IDs to be returned by
+    // GetProcessAudioDeviceIds.
+    constexpr UInt32 kNumberAudioDeviceIds = 2;
+    // Set up expectations for a successful open.
+    std::set<AudioObjectID> device_ids_to_exclude;
+    EXPECT_CALL(mock_catap_api(), AudioObjectGetPropertyDataSize)
+        .WillOnce([](AudioObjectID in_object_id,
+                     const AudioObjectPropertyAddress* in_address,
+                     UInt32 in_qualifier_data_size,
+                     const void* in_qualifier_data, UInt32* ioDataSize) {
+          *ioDataSize = kNumberAudioDeviceIds * sizeof(AudioDeviceID);
+          return noErr;
+        });
+
+    EXPECT_CALL(mock_catap_api(), AudioObjectGetPropertyData)
+        .WillOnce([](AudioObjectID in_object_id,
+                     const AudioObjectPropertyAddress* in_address,
+                     UInt32 in_qualifier_data_size,
+                     const void* in_qualifier_data, UInt32* ioDataSize,
+                     void* outData) {
+          // Return a list of fake device IDs.
+          base::span UNSAFE_BUFFERS(device_ids(
+              static_cast<AudioDeviceID*>(outData), kNumberAudioDeviceIds));
+          for (size_t i = 0; i < kNumberAudioDeviceIds; ++i) {
+            device_ids[i] = i + 1;
+          }
+          return noErr;
+        })
+        .WillOnce([&device_ids_to_exclude](
+                      AudioObjectID in_object_id,
+                      const AudioObjectPropertyAddress* in_address,
+                      UInt32 in_qualifier_data_size,
+                      const void* in_qualifier_data, UInt32* ioDataSize,
+                      void* outData) {
+          // The second call is to get the process ID of the first device.
+          // Set it to the same as the PID of the current process to simulate a
+          // process audio device ID that belongs to Chrome.
+          int32_t* process_id = static_cast<int32_t*>(outData);
+          *process_id = getpid();
+          // Store the device IDs that are returned.
+          device_ids_to_exclude.insert(in_object_id);
+          return noErr;
+        })
+        .WillOnce([](AudioObjectID in_object_id,
+                     const AudioObjectPropertyAddress* in_address,
+                     UInt32 in_qualifier_data_size,
+                     const void* in_qualifier_data, UInt32* ioDataSize,
+                     void* outData) {
+          // The third call is to get the process ID of the second device. Set
+          // it to something other that the PID of the current process to
+          // simulate some other process audio device ID that should not be
+          // excluded.
+          int32_t* process_id = static_cast<int32_t*>(outData);
+          *process_id = getpid() + 1;
+          return noErr;
+        })
+        .WillOnce(testing::Return(noErr));
+
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateProcessTap)
+        .WillOnce([&device_ids_to_exclude](CATapDescription* in_description,
+                                           AudioObjectID* out_tap) {
+          // Check that the CoreAudio process device IDs to exclude are properly
+          // set in the tap description.
+          EXPECT_EQ([in_description processes].count,
+                    device_ids_to_exclude.size());
+          for (NSNumber* device_id_number in [in_description processes]) {
+            EXPECT_TRUE(device_ids_to_exclude.count(
+                static_cast<AudioObjectID>([device_id_number intValue])));
+          }
+          *out_tap = kTap;
+          return noErr;
+        });
+
+    EXPECT_CALL(mock_catap_api(), AudioHardwareCreateAggregateDevice)
+        .WillOnce([](CFDictionaryRef in_device_properties,
+                     AudioDeviceID* out_device) {
+          *out_device = kAggregateDeviceId;
+          return noErr;
+        });
+    EXPECT_CALL(mock_catap_api(), AudioDeviceCreateIOProcID)
+        .WillOnce([this](AudioDeviceID in_device, AudioDeviceIOProc proc,
+                         void* in_client_data,
+                         AudioDeviceIOProcID* out_proc_id) {
+          EXPECT_EQ(in_device, kAggregateDeviceId);
+          audio_proc_ = proc;
+          EXPECT_EQ(in_client_data, stream_);
+          *out_proc_id = kTapIoProcId;
+          return noErr;
+        });
+
+    // Initialize the stream.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  }
+}
+
 }  // namespace media

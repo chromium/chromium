@@ -85,6 +85,14 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
                      const AudioTimeStamp* input_time);
 
  private:
+  // Returns all CoreAudio process audio device IDs that belong to the specified
+  // process ID.
+  NSArray<NSNumber*>* GetProcessAudioDeviceIds(pid_t chrome_process_id);
+
+  // Probe audio tap permission by getting and setting
+  // AudioTapPropertyDescription. If either of these operations fail, this
+  // function returns false which is an indication that we don't have system
+  // audio capture permission.
   bool ProbeAudioTapPermissions();
 
   // Send log messages to the stream creator.
