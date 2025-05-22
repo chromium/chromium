@@ -255,6 +255,7 @@ export class Page {
     document.addEventListener('click', function(event) {
       if (moreActionsList && event.target !== moreActionsButton &&
           event.target !== moreActionsIcon) {
+        moreActionsButton.setAttribute('aria-expanded', 'false');
         moreActionsList.classList.add('more-actions-visibility');
       }
     });
@@ -303,6 +304,7 @@ export class Page {
       } else if (event.key === 'Escape') {
         event.preventDefault();
         moreActionsList.classList.add('more-actions-visibility');
+        moreActionsButton.setAttribute('aria-expanded', 'false');
       }
     });
 
@@ -312,8 +314,10 @@ export class Page {
       if (moreActionsList.classList.contains('more-actions-visibility')) {
         currentIndex = 0;
         focusMenuItem(currentIndex);
+        moreActionsButton.setAttribute('aria-expanded', 'false');
       } else {
         currentIndex = -1;
+        moreActionsButton.setAttribute('aria-expanded', 'true');
       }
     });
   }
