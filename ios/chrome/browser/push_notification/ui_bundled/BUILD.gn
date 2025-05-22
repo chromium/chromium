@@ -153,7 +153,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:constants",
-    "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/settings/ui_bundled/notifications:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

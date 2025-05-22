@@ -1140,21 +1140,6 @@ const FeatureEntry::FeatureVariation
              kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm),
          nullptr}};
 
-const FeatureEntry::FeatureParam kSetUpListInFirstRunArm1[] = {
-    {set_up_list::kSetUpListInFirstRunParam, "1"}};
-const FeatureEntry::FeatureParam kSetUpListInFirstRunArm2[] = {
-    {set_up_list::kSetUpListInFirstRunParam, "2"}};
-const FeatureEntry::FeatureParam kSetUpListInFirstRunArm3[] = {
-    {set_up_list::kSetUpListInFirstRunParam, "3"}};
-
-const FeatureEntry::FeatureVariation kSetUpListInFirstRunVariations[] = {
-    {" - Variation 1", kSetUpListInFirstRunArm1,
-     std::size(kSetUpListInFirstRunArm1), nullptr},
-    {" - Variation 2", kSetUpListInFirstRunArm2,
-     std::size(kSetUpListInFirstRunArm2), nullptr},
-    {" - Variation 3", kSetUpListInFirstRunArm3,
-     std::size(kSetUpListInFirstRunArm3), nullptr}};
-
 const FeatureEntry::FeatureParam kSetUpListDuration3Days[] = {
     {set_up_list::kSetUpListDurationParam, "2"}};
 const FeatureEntry::FeatureParam kSetUpListDuration5Days[] = {
@@ -2371,11 +2356,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIOSStartTimeBrowserBackgroundRemediations,
          kIOSStartTimeBrowserBackgroundRemediationsVariations,
          "IOSStartTimeStartupRemediations")},
-    {"set-up-list-in-first-run", flag_descriptions::kSetUpListInFirstRunName,
-     flag_descriptions::kSetUpListInFirstRunNameDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListInFirstRun,
-                                    kSetUpListInFirstRunVariations,
-                                    "SetUpListInFirstRun")},
     {"lens-unary-http-transport-enabled",
      flag_descriptions::kLensUnaryHttpTransportEnabledName,
      flag_descriptions::kLensUnaryHttpTransportEnabledDescription,

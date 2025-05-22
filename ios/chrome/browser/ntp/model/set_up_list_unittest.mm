@@ -16,7 +16,6 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"

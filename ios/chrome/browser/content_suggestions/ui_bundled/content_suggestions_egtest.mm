@@ -129,7 +129,6 @@ void TapMagicStackEditButton() {
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
-    config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
     config.features_disabled.push_back(
         set_up_list::kSetUpListWithoutSignInItem);
   }

@@ -6,7 +6,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -52,7 +51,6 @@ id<GREYMatcher> OptInScreenMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kContentPushNotifications);
-  config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   return config;
 }
 

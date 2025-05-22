@@ -23,9 +23,7 @@ bool IsSetUpListActive(PrefService* local_prefs,
   }
   // Check if we are within the duration of the Set Up List, relevant to the
   // FRE.
-  if (set_up_list::GetSetUpListInFirstRunVariation() ==
-          set_up_list::FirstRunVariationType::kDisabled &&
-      IsFirstRun()) {
+  if (IsFirstRun()) {
     // If this is the first time the app has been opened, First Run will not
     // have been completed yet. In this case, we will wait until the next run.
     return false;
@@ -44,10 +42,6 @@ bool IsSetUpListActive(PrefService* local_prefs,
 }
 
 bool ShouldShowCompactedSetUpListModule() {
-  if (set_up_list::GetSetUpListInFirstRunVariation() !=
-      set_up_list::FirstRunVariationType::kDisabled) {
-    return true;
-  }
   return !IsFirstRun();
 }
 

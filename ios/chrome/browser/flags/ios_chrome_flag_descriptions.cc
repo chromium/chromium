@@ -1308,10 +1308,6 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
-const char kSetUpListInFirstRunName[] = "Set Up List in First Run";
-const char kSetUpListInFirstRunNameDescription[] =
-    "Displays the Set Up List in the First Run.";
-
 const char kSetUpListShortenedDurationName[] = "Set Up List Shortened Duration";
 const char kSetUpListShortenedDurationDescription[] =
     "Reduces the Set Up List duration in the NTP to the selected parameter.";

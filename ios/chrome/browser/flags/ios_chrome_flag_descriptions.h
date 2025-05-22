@@ -775,9 +775,6 @@ extern const char kShopCardDescription[];
 extern const char kShopCardImpressionLimitsName[];
 extern const char kShopCardImpressionLimitsDescription[];
 
-extern const char kSetUpListInFirstRunName[];
-extern const char kSetUpListInFirstRunNameDescription[];
-
 extern const char kSetUpListShortenedDurationName[];
 extern const char kSetUpListShortenedDurationDescription[];
 

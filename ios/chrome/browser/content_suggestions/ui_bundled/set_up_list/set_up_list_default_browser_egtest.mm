@@ -87,9 +87,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TODO(crbug.com/379305809): Re-enable if kSetUpListInFirstRun is launched
-  // with the Default Browser item.
-  config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   // Set first run details to show Set Up List.
   config.additional_args.push_back("-FirstRunRecency");
   config.additional_args.push_back("1");
