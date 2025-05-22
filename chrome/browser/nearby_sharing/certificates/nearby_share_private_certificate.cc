@@ -26,10 +26,9 @@
 #include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
 #include "crypto/aes_ctr.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "crypto/hmac.h"
-#include "crypto/sha2.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 
 namespace {
 
@@ -163,7 +162,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     : visibility_(visibility),
       not_before_(not_before),
       not_after_(not_before_ + GetCertificateValidityPeriod()),
-      key_pair_(crypto::ECPrivateKey::Create()),
+      private_key_(crypto::keypair::PrivateKey::GenerateEcP256()),
       metadata_encryption_key_(
           GenerateRandomBytes<kNearbyShareNumBytesMetadataEncryptionKey>()),
       unencrypted_metadata_(std::move(unencrypted_metadata)) {
@@ -176,7 +175,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::Time not_before,
     base::Time not_after,
-    std::unique_ptr<crypto::ECPrivateKey> key_pair,
+    crypto::keypair::PrivateKey private_key,
     base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
     base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>
         metadata_encryption_key,
@@ -187,7 +186,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     : visibility_(visibility),
       not_before_(not_before),
       not_after_(not_after),
-      key_pair_(std::move(key_pair)),
+      private_key_(std::move(private_key)),
       unencrypted_metadata_(std::move(unencrypted_metadata)),
       consumed_salts_(std::move(consumed_salts)) {
   DCHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne);
@@ -197,7 +196,8 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
 }
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
-    const NearbySharePrivateCertificate& other) {
+    const NearbySharePrivateCertificate& other)
+    : private_key_(other.private_key_) {
   *this = other;
 }
 
@@ -209,7 +209,7 @@ NearbySharePrivateCertificate& NearbySharePrivateCertificate::operator=(
   visibility_ = other.visibility_;
   not_before_ = other.not_before_;
   not_after_ = other.not_after_;
-  key_pair_ = other.key_pair_->Copy();
+  private_key_ = other.private_key_;
   base::span(secret_key_).copy_from(other.secret_key_);
   base::span(id_).copy_from(other.id_);
   base::span(metadata_encryption_key_)
@@ -250,18 +250,10 @@ NearbySharePrivateCertificate::EncryptMetadataKey() {
                                          std::move(metadata_encryption_key));
 }
 
-std::optional<std::vector<uint8_t>> NearbySharePrivateCertificate::Sign(
+std::vector<uint8_t> NearbySharePrivateCertificate::Sign(
     base::span<const uint8_t> payload) const {
-  std::unique_ptr<crypto::ECSignatureCreator> signer(
-      crypto::ECSignatureCreator::Create(key_pair_.get()));
-
-  std::vector<uint8_t> signature;
-  if (!signer->Sign(payload, &signature)) {
-    CD_LOG(ERROR, Feature::NS) << "Signing failed.";
-    return std::nullopt;
-  }
-
-  return signature;
+  return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
+                            private_key_, payload);
 }
 
 std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
@@ -272,11 +264,7 @@ NearbySharePrivateCertificate::HashAuthenticationToken(
 
 std::optional<nearby::sharing::proto::PublicCertificate>
 NearbySharePrivateCertificate::ToPublicCertificate() const {
-  std::vector<uint8_t> public_key;
-  if (!key_pair_->ExportPublicKey(&public_key)) {
-    CD_LOG(ERROR, Feature::NS) << "Failed to export public key.";
-    return std::nullopt;
-  }
+  std::vector<uint8_t> public_key = private_key_.ToSubjectPublicKeyInfo();
 
   std::optional<std::vector<uint8_t>> encrypted_metadata_bytes =
       EncryptMetadata();
@@ -338,14 +326,13 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
 }
 
 base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
-  std::vector<uint8_t> key_pair;
-  key_pair_->ExportPrivateKey(&key_pair);
+  std::vector<uint8_t> private_key = private_key_.ToPrivateKeyInfo();
 
   return base::Value::Dict()
       .Set(kVisibility, static_cast<int>(visibility_))
       .Set(kNotBefore, base::TimeToValue(not_before_))
       .Set(kNotAfter, base::TimeToValue(not_after_))
-      .Set(kKeyPair, BytesToEncodedString(key_pair))
+      .Set(kKeyPair, BytesToEncodedString(private_key))
       .Set(kSecretKey, BytesToEncodedString(secret_key_))
       .Set(kMetadataEncryptionKey,
            BytesToEncodedString(metadata_encryption_key_))
@@ -386,8 +373,11 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
   if (!bytes_opt)
     return std::nullopt;
 
-  std::unique_ptr<crypto::ECPrivateKey> key_pair =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(*bytes_opt);
+  auto private_key_opt =
+      crypto::keypair::PrivateKey::FromPrivateKeyInfo(*bytes_opt);
+  if (!private_key_opt) {
+    return std::nullopt;
+  }
 
   bytes_opt = EncodedStringToBytes(dict.FindString(kSecretKey));
   if (!bytes_opt) {
@@ -428,7 +418,7 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
       consumed_salts = StringToSalts(*str_ptr);
 
   return NearbySharePrivateCertificate(
-      visibility, not_before, not_after, std::move(key_pair),
+      visibility, not_before, not_after, std::move(*private_key_opt),
       std::move(secret_key), std::move(metadata_encryption_key), std::move(id),
       std::move(unencrypted_metadata), std::move(consumed_salts));
 }

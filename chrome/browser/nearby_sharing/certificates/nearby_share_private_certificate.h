@@ -19,12 +19,9 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
+#include "crypto/keypair.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
-
-namespace crypto {
-class ECPrivateKey;
-}  // namespace crypto
 
 // Stores metadata and crypto keys for the local device. This certificate
 // can be converted to a public certificate and sent to select contacts, who
@@ -52,7 +49,7 @@ class NearbySharePrivateCertificate {
       nearby_share::mojom::Visibility visibility,
       base::Time not_before,
       base::Time not_after,
-      std::unique_ptr<crypto::ECPrivateKey> key_pair,
+      crypto::keypair::PrivateKey private_key,
       base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
       base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>
           metadata_encryption_key,
@@ -87,10 +84,8 @@ class NearbySharePrivateCertificate {
   // is not thread safe.
   std::optional<NearbyShareEncryptedMetadataKey> EncryptMetadataKey();
 
-  // Signs the input |payload| with the private key from |key_pair_|. Returns
-  // std::nullopt if the signing was unsuccessful.
-  std::optional<std::vector<uint8_t>> Sign(
-      base::span<const uint8_t> payload) const;
+  // Signs the input |payload| with |private_key_|.
+  std::vector<uint8_t> Sign(base::span<const uint8_t> payload) const;
 
   // Creates a hash of the |authentication_token|, using |secret_key_|. The use
   // of HKDF and the output vector size is part of the Nearby Share protocol and
@@ -142,10 +137,9 @@ class NearbySharePrivateCertificate {
   base::Time not_before_;
   base::Time not_after_;
 
-  // The public/private P-256 key pair used for verification/signing to ensure
-  // secret of public certificates. The public key is included in the
-  // public certificate, but the private key will never leave the device.
-  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
+  // The private key used for this certificate. The public key derived from it
+  // will be included in the certificate; the private key stays on device.
+  crypto::keypair::PrivateKey private_key_;
 
   // A 32-byte AES key used, along with a salt, to encrypt the
   // |metadata_encryption_key_|, after which it can be safely advertised.  Also,
