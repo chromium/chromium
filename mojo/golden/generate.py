@@ -17,7 +17,6 @@ _PARSER_SCRIPT = os.path.join(_SCRIPT_DIR,
 _GENERATOR_SCRIPT = os.path.join(
     _SCRIPT_DIR, '../public/tools/bindings/mojom_bindings_generator.py')
 
-
 def removesuffix(string, suffix):
     if not suffix or not string.endswith(suffix):
         return string
@@ -49,9 +48,15 @@ def generate_bindings(input_dir, output_dir):
         ],
                        check=True)
 
-        for lang in ['typescript', 'c++']:
+        for lang in ['typescript', 'c++', 'java']:
+          language_flags = []
+
           lang_tmp_output = f'{tmp_bindings_dir}/{lang}'
           lang_output = f'{output_dir}/{lang}'
+
+          if lang == 'java':
+            language_flags += ['--java_output_directory=' + lang_tmp_output]
+
 
           # Paths to module files relative to the bindings output directory.
           mojom_modules = (os.path.join('../../modules',
@@ -62,12 +67,13 @@ def generate_bindings(input_dir, output_dir):
               '--bytecode_path', tmp_bytecode_dir, '--generators', lang,
               # typemap is hardcoded for now.
               '--typemap', f'{input_dir}/typemap.json',
-              *mojom_modules
-          ],
+              *language_flags, *mojom_modules],
                          check=True)
           # Append '.golden' file extension to avoid presubmit checks.
-          for entry in os.scandir(lang_tmp_output):
-              os.rename(entry.path, entry.path + '.golden')
+          for root, dirs, files in os.walk(lang_tmp_output):
+              for file in files:
+                path = root + '/'.join(dirs) + '/' + file
+                os.rename(path, path + '.golden')
           shutil.copytree(lang_tmp_output, lang_output, dirs_exist_ok=True)
 
 

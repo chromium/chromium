@@ -734,15 +734,18 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
   mojo::internal::MessageFragment<decltype(params->result)>
       result_fragment(params.message());
   result_fragment.Claim(&params->result);
+  
   mojo::internal::Serialize<::golden::ResultInterface_SyncMethod_ResponseParam_ResultDataView>(
-      in_result,
-      result_fragment,
-      true);
+    in_result,
+    result_fragment,
+    true);
 
-  MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-      params->result.is_null(),
-      mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-      "null result in ");
+  
+  MOJO_INTERNAL_CHECK_SERIALIZATION(
+    mojo::internal::SendValidation::kDefault,
+    !(params->result.is_null()),
+    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+    "null result in ");
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(ResultInterface::Name_);

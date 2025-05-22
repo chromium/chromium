@@ -638,16 +638,17 @@ class Generator(generator.Generator):
     # srcjar in the output directory.
     basename = "%s.srcjar" % self.module.path
     zip_filename = os.path.join(self.output_dir, basename)
-    with TempDir() as temp_java_root:
-      self.output_dir = os.path.join(temp_java_root, package_path)
-      self._DoGenerateFiles();
-      with action_helpers.atomic_output(zip_filename) as f:
-        zip_helpers.zip_directory(f, temp_java_root)
 
     if args.java_output_directory:
       # If requested, generate the java files directly into indicated directory.
       self.output_dir = os.path.join(args.java_output_directory, package_path)
       self._DoGenerateFiles();
+    else:
+      with TempDir() as temp_java_root:
+        self.output_dir = os.path.join(temp_java_root, package_path)
+        self._DoGenerateFiles()
+        with action_helpers.atomic_output(zip_filename) as f:
+          zip_helpers.zip_directory(f, temp_java_root)
 
   def GetJinjaParameters(self):
     return {
