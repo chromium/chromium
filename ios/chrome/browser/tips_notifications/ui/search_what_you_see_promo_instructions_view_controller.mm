@@ -28,6 +28,8 @@ NSString* const kSearchWhatYouSeePromoInstructionsAXID =
     l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_2),
     l10n_util::GetNSString(IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_STEP_3),
   ];
+  self.secondaryActionString = l10n_util::GetNSString(
+      IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_INSTRUCTION_LEARN_MORE_ACTION);
 
   [super viewDidLoad];
 

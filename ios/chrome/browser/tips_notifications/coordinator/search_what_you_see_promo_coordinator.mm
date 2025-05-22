@@ -6,11 +6,15 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/search_what_you_see_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "url/gurl.h"
 
 @interface SearchWhatYouSeePromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -55,6 +59,13 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  if (_viewController.presentedViewController &&
+      _viewController.presentedViewController == _instructionsViewController) {
+    [self openURLInNewTab:GURL(kLearnMoreLensURL)];
+
+    return;
+  }
+
   _instructionsViewController =
       [[SearchWhatYouSeePromoInstructionsViewController alloc] init];
   _instructionsViewController.actionHandler = self;
@@ -101,6 +112,14 @@
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [handler dismissSearchWhatYouSeePromo];
+}
+
+// Opens a given URL in a new tab.
+- (void)openURLInNewTab:(GURL)URL {
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+      openURLInNewTab:command];
 }
 
 @end
