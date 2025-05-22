@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
@@ -53,6 +54,7 @@ import java.util.TreeMap;
 
 /** Service that creates/destroys the WebRTC notification when media capture starts/stops. */
 public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificationService.Impl {
+    private static final String TAG = "MediaCapture";
     private static final String ACTION_MEDIA_CAPTURE_UPDATE =
             "org.chromium.chrome.browser.media.SCREEN_CAPTURE_UPDATE";
     private static final String ACTION_SCREEN_CAPTURE_STOP =
@@ -417,7 +419,11 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                     NOTIFICATION_MEDIA_IS_INCOGNITO,
                     TabWindowManagerSingleton.getInstance().getTabById(tabId).isIncognito());
         }
-        context.startService(intent);
+        try {
+            context.startService(intent);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Unable to start service for update: " + e);
+        }
     }
 
     /** Clear any previous media notifications. */
@@ -429,7 +435,11 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         if (notificationIds == null || notificationIds.isEmpty()) return;
 
         Context context = ContextUtils.getApplicationContext();
-        context.startService(new Intent(context, MediaCaptureNotificationService.class));
+        try {
+            context.startService(new Intent(context, MediaCaptureNotificationService.class));
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Unable to start service for clear: " + e);
+        }
     }
 
     /** Build PendingIntent for the actions of screen capture notification. */
