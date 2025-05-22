@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
@@ -31,6 +33,8 @@ void ClipboardChangeEventController::FocusedFrameChanged() {
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
   if (window.document()->hasFocus()) {
     if (fire_clipboardchange_on_focus_) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kClipboardChangeEventFiredAfterFocusGain);
       OnClipboardChanged();
     }
   }
@@ -113,6 +117,9 @@ void ClipboardChangeEventController::OnClipboardChanged() {
 
       event_target_->DispatchEvent(
           *ClipboardChangeEvent::Create(standard_types));
+
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kClipboardChangeEventFired);
     }
   } else {
     // Schedule a clipboardchange event when the page regains focus

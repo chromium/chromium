@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
 
@@ -70,6 +72,9 @@ void Clipboard::AddedEventListener(
       event_type != event_type_names::kClipboardchange) {
     return;
   }
+
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kClipboardChangeEventAddListener);
 
   if (!clipboard_change_event_controller_) {
     Navigator& navigator = *GetSupplementable();

@@ -23,5 +23,5 @@
     RuntimeEnabled=ClipboardChangeEvent
 ] interface ClipboardChangeEvent : Event {
     constructor(optional ClipboardChangeEventInit eventInitDict = {});
-    readonly attribute FrozenArray<DOMString> types;
+    [MeasureAs=ClipboardChangeEventTypesAttribute] readonly attribute FrozenArray<DOMString> types;
 };
