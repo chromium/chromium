@@ -803,6 +803,9 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_DETAIL" desc="More detail confirming that the user wants to delete a particular user dictionary">
    <ph name="dictionary">$1</ph> will be permanently deleted. This action can't be undone.
   </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON_LABEL" desc="Accessible name for button that will delete user a user dictionary in the Japanese IME.">
+   Delete dictionary
+  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON" desc="Button that will confirm deletion of user dictionary in Japanese IME">
    Delete
   </message>

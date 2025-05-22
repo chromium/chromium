@@ -56,13 +56,14 @@
   [[statusMessage_]]
 </div>
 <div class="cr-row bottom-border">
-  <cr-expand-button expanded="{{expanded_}}">
-    [[dict.name]]
+  <cr-expand-button expanded="{{expanded_}}" >
+    <div id="dict-name">[[dict.name]]</div>
   </cr-expand-button>
   <div class="separator"></div>
   <cr-icon-button class="icon-clear"
     on-click="showDeleteDialog_"
-    title="DeleteDictionary"
+    aria-label="$i18n{japaneseDeleteDictionaryLabel}"
+    aria-describedby="dict-name"
   >
   </cr-icon-button>
 </div>
@@ -73,12 +74,12 @@
     type="text"
     on-change="saveName_"></cr-input>
     <div class="button-container">
-      <cr-button on-click="importDictionary_">
+      <cr-button on-click="importDictionary_" aria-describedby="dict-name">
         <span>
           $i18n{japaneseDictionaryImport}
         </span>
       </cr-button>
-      <cr-button on-click="exportDictionary_">
+      <cr-button on-click="exportDictionary_" aria-describedby="dict-name">
         <span>
           $i18n{japaneseDictionaryExport}
         </span>
@@ -95,7 +96,7 @@
     </os-japanese-dictionary-entry-row>
   </template>
   <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-button class="indented" on-click="addEntry_">
+    <cr-button class="indented" on-click="addEntry_" aria-describedby="dict-name">
       <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
         $i18n{japaneseDictionaryNewEntry}
     </cr-button>

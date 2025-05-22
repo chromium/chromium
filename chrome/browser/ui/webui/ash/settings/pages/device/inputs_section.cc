@@ -473,6 +473,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"editDictionaryLabel", IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL},
       {"japaneseClearPersonalizationData",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CLEAR_PERSONALIZATION_DATA},
+      {"japaneseDeleteDictionaryLabel",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON_LABEL},
       {"japaneseDeleteDictionary",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY},
       {"japaneseDeleteDictionaryDetail",
