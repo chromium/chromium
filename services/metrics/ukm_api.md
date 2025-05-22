@@ -28,8 +28,11 @@ Any events and metrics you collect need to be defined in
   file for definitions. Note this is the same file for UMA histogram definitions
   so these can ideally be reused.
 * If the metric is numeric, then its unit should be stated in the `summary`.
-  For example, "seconds", "ms", "KiB". If a bucketing scheme is used, you should
-  explain that too so that it's clear to people reading query results.
+  For example, "seconds", "ms", "KiB". If a bucketing scheme is used, you
+  should explain that too so that it's clear to people reading query results.
+  Precise measurements of user actions timing, e.g. in milliseconds, require
+  bucketing to be applied, for instance using
+  [GetExponentialBucketMinForFineUserTiming](https://source.chromium.org/chromium/chromium/src/+/main:services/metrics/public/cpp/metrics_utils.h;l=22;drc=098756533733ea50b2dcb1c40d9a9e18d49febbe).
 * If an event will only happen once per Navigation, it can be marked
   `singular="true"` so that the generated proto definition defines the field as
   "optional" instead of "repeated". If multiple such events are attempted, it's
