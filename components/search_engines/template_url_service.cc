@@ -324,6 +324,29 @@ void LogSyncChangesToHistogram(const syncer::SyncChangeList& change_list,
   }
 }
 
+bool ShouldCommitUpdateToAccount(
+    const std::optional<TemplateURLData>& old_account_data,
+    const std::optional<TemplateURLData>& new_account_data) {
+  CHECK(base::FeatureList::IsEnabled(
+      syncer::kSeparateLocalAndAccountSearchEngines));
+  if (old_account_data == new_account_data || !new_account_data.has_value()) {
+    // Account data is unchanged or does not exist.
+    return false;
+  }
+  bool account_data_changed = true;
+  // If no local data exists, account data is newly added and hence
+  // `account_data_changed` is true.
+  if (old_account_data.has_value()) {
+    // Avoid favicon-only changes.
+    TemplateURLData new_account_data_copy = *new_account_data;
+    new_account_data_copy.favicon_url = old_account_data->favicon_url;
+    account_data_changed = new_account_data_copy != *old_account_data;
+  }
+  base::UmaHistogramBoolean("Sync.SearchEngine.FaviconOnlyUpdate",
+                            !account_data_changed);
+  return account_data_changed;
+}
+
 }  // namespace
 
 // TemplateURLService::LessWithPrefix -----------------------------------------
@@ -2628,10 +2651,11 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   // Mark if account data has changed, since it is possible that only the
   // current local data was updated. In such case, avoid sending any update to
   // sync.
-  const bool account_data_changed =
+  const bool should_send_update_to_sync =
       !base::FeatureList::IsEnabled(
           syncer::kSeparateLocalAndAccountSearchEngines) ||
-      (new_values.GetAccountData() != existing_turl->GetAccountData());
+      ShouldCommitUpdateToAccount(existing_turl->GetAccountData(),
+                                  new_values.GetAccountData());
   // It is possible that corresponding local data didn't exist before and now
   // `new_values` writes local data. In such case, an add operation needs to be
   // performed on the database instead of update.
@@ -2667,7 +2691,7 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
       }
     }
 
-    if (account_data_changed) {
+    if (should_send_update_to_sync) {
       // Inform sync of the update.
       ProcessTemplateURLChange(FROM_HERE, existing_turl,
                                syncer::SyncChange::ACTION_UPDATE);

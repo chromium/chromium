@@ -7340,3 +7340,71 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       /*sample=*/0,
       /*expected_bucket_count=*/1);
 }
+
+class TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits
+    : public TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kSearchEngineAvoidFaviconOnlyCommits};
+};
+
+TEST_F(TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits,
+       ShouldNotCommitFaviconOnlyChanges) {
+  // Add a local-only search engine.
+  TemplateURL* local_turl = model()->Add(
+      CreateTestTemplateURL(u"localkey", "http://localkey.com", "localguid",
+                            base::Time::FromTimeT(100)));
+
+  // Add an account-only search engine.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(TemplateURLService::CreateSyncDataFromTemplateURLData(
+      CreateTestTemplateURL(u"keyword", "http://keyword.com", "guid",
+                            base::Time::FromTimeT(100))
+          ->data()));
+  // Start syncing.
+  model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
+                                    PassProcessor());
+
+  base::HistogramTester histogram_tester;
+
+  // Local-only search engines: no affect since they have no account data.
+  ASSERT_EQ(local_turl, model()->GetTemplateURLForGUID("localguid"));
+  ASSERT_EQ(local_turl->GetAccountData(), std::nullopt);
+  TemplateURLData data = local_turl->data();
+  // Update the favicon URL.
+  data.favicon_url = GURL("http://localfavicon.com");
+  model()->UpdateData(local_turl, data);
+  ASSERT_EQ(local_turl->favicon_url(), GURL("http://localfavicon.com"));
+  ASSERT_EQ(local_turl->GetAccountData(), std::nullopt);
+  ASSERT_EQ(0u, processor()->change_list_size());
+  histogram_tester.ExpectTotalCount("Sync.SearchEngine.FaviconOnlyUpdate", 0);
+  // Update any other field.
+  data.SetKeyword(u"newkeyword");
+  model()->UpdateData(local_turl, data);
+  ASSERT_EQ(local_turl->keyword(), u"newkeyword");
+  EXPECT_EQ(0u, processor()->change_list_size());
+  histogram_tester.ExpectTotalCount("Sync.SearchEngine.FaviconOnlyUpdate", 0);
+
+  // Search engines with account data.
+  TemplateURL* account_turl = model()->GetTemplateURLForGUID("guid");
+  ASSERT_NE(account_turl, nullptr);
+  ASSERT_EQ(account_turl->GetLocalData(), std::nullopt);
+  // Update the favicon URL.
+  data = account_turl->data();
+  data.favicon_url = GURL("http://favicon.com");
+  model()->UpdateData(account_turl, data);
+  ASSERT_EQ(account_turl->favicon_url(), GURL("http://favicon.com"));
+  EXPECT_EQ(0u, processor()->change_list_size());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Sync.SearchEngine.FaviconOnlyUpdate"),
+      base::BucketsAre(base::Bucket(true, 1)));
+
+  // Update any other field.
+  data.SetKeyword(u"newkeyword");
+  model()->UpdateData(account_turl, data);
+  ASSERT_EQ(account_turl->keyword(), u"newkeyword");
+  EXPECT_EQ(1u, processor()->change_list_size());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Sync.SearchEngine.FaviconOnlyUpdate"),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+}

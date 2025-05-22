@@ -650,6 +650,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   FRIEND_TEST_ALL_PREFIXES(
       TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
       MergeInSyncTemplateURL);
+  FRIEND_TEST_ALL_PREFIXES(
+      TemplateURLServiceSyncTestWithAvoidFaviconOnlyCommits,
+      ShouldNotCommitFaviconOnlyChanges);
 
   friend class InstantUnitTestBase;
   friend class Scoper;
