@@ -18,7 +18,7 @@ def CheckNoBannedFunctions(input_api, output_api):
         and f.LocalPath().endswith(('.h', '.cc'))
     )
     banned_functions = [
-        (r'\bFormControlType\b',
+        (r'\bFormControlType\(',
          'Consider FormControlTypeForAutofill() instead.'),
         (r'\bIsConnected\b',
          'Consider IsAccessible() instead.'),
