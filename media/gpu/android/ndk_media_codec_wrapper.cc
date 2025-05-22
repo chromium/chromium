@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -135,7 +136,7 @@ base::span<uint8_t> NdkMediaCodecWrapper::GetInputBuffer(size_t idx) {
 base::span<uint8_t> NdkMediaCodecWrapper::GetOutputBuffer(
     const OutputInfo& info) {
   size_t capacity = 0;
-  const size_t size = static_cast<size_t>(info.info.size);
+  const size_t size = base::saturated_cast<size_t>(info.info.size);
   // `AMediaCodec_getOutputBuffer()` already took `info.info.offset` into
   // account, we don't need to do it again here.
 
