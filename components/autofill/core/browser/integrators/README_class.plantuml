@@ -17,7 +17,6 @@ interface "FastCheckoutDelegate" as fcod
 interface "PasswordManagerDelegate" as pmd
 interface "AutofillSuggestionDelegate" as asd
 class "AutofillExternalDelegate" as aed
-class "PasswordManagerDelegateImpl" as pmdi
 class "PasswordAutofillManager" as pam
 class "BrowserAutofillManager" as bam {
   + set_fast_checkout_delegate
@@ -40,8 +39,7 @@ pam . aed
 asd <|.. (pam, aed)
 
 'Each delegate is implemented by a respective impl class in its component.
-pam "many" --o "1" pmdi
-pmdi ..|> pmd
+pam  ..|> pmd
 ttfd <|.. TouchToFillDelegateImpl
 fcod <|.. FastCheckoutDelegateImpl
 

@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -46,7 +47,8 @@ class PasswordManualFallbackMetricsRecorder;
 class PasswordSuggestionGenerator;
 
 // This class is responsible for filling password forms.
-class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
+class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
+                                public autofill::PasswordManagerDelegate {
  public:
   PasswordAutofillManager(PasswordManagerDriver* password_manager_driver,
                           autofill::AutofillClient* autofill_client,
@@ -56,6 +58,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   PasswordAutofillManager& operator=(const PasswordAutofillManager&) = delete;
 
   ~PasswordAutofillManager() override;
+
+  // PasswordManagerDelegate:
+#if BUILDFLAG(IS_ANDROID)
+  void ShowKeyboardReplacingSurface(
+      const autofill::PasswordSuggestionRequest& request) override;
+#endif  // BUILDFLAG(IS_ANDROID)
+  void ShowSuggestions(
+      const autofill::TriggeringField& triggering_field) override;
 
   // AutofillSuggestionDelegate implementation.
   std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()

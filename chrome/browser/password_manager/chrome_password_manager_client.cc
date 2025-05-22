@@ -1686,6 +1686,20 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+autofill::PasswordManagerDelegate*
+ChromePasswordManagerClient::GetAutofillDelegate(
+    const autofill::FieldGlobalId& field_id) {
+  if (content::RenderFrameHost* rfh = autofill::FindRenderFrameHostByToken(
+          *web_contents(), field_id.frame_token)) {
+    if (password_manager::ContentPasswordManagerDriver* driver =
+            password_manager::ContentPasswordManagerDriver::
+                GetForRenderFrameHost(rfh)) {
+      return driver->GetPasswordAutofillManager();
+    }
+  }
+  return nullptr;
+}
+
 void ChromePasswordManagerClient::SetTestObserver(
     PasswordGenerationPopupObserver* observer) {
   observer_ = observer;

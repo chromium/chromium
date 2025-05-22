@@ -120,6 +120,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() final;
+  PasswordManagerDelegate* GetPasswordManagerDelegate(
+      const FieldGlobalId& field_id) final;
   void GetAiPageContent(GetAiPageContentCallback callback) final;
   AutofillAiDelegate* GetAutofillAiDelegate() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;

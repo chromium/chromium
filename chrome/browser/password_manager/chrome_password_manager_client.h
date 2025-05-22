@@ -356,6 +356,9 @@ class ChromePasswordManagerClient
   void GenerationElementLostFocus() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  autofill::PasswordManagerDelegate* GetAutofillDelegate(
+      const autofill::FieldGlobalId& field_id);
+
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);
 

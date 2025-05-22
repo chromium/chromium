@@ -93,7 +93,8 @@ AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
   return nullptr;
 }
 
-PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate() {
+PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(
+    const FieldGlobalId& field_id) {
   return nullptr;
 }
 

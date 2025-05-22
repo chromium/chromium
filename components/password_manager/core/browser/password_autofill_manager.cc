@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -149,6 +150,18 @@ PasswordAutofillManager::~PasswordAutofillManager() {
   manual_fallback_flow_.reset();
   manual_fallback_metrics_recorder_.reset();
 }
+
+void PasswordAutofillManager::ShowSuggestions(
+    const autofill::TriggeringField& triggering_field) {
+  // TODO: crbug.com/410743802 - Implement.
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void PasswordAutofillManager::ShowKeyboardReplacingSurface(
+    const autofill::PasswordSuggestionRequest& request) {
+  // TODO: crbug.com/410743802 - Implement.
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
 PasswordAutofillManager::GetDriver() {

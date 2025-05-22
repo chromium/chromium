@@ -487,6 +487,13 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
       web_contents()->GetBrowserContext());
 }
 
+PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(
+    const FieldGlobalId& field_id) {
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(web_contents());
+  return client ? client->GetAutofillDelegate(field_id) : nullptr;
+}
+
 void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
       optimization_guide::DefaultAIPageContentOptions();

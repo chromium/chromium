@@ -2077,6 +2077,7 @@ static_library("browser") {
     "//chrome/services/speech/buildflags",
     "//components/application_locale_storage",
     "//components/assist_ranker",
+    "//components/autofill/content/browser",
     "//components/autofill/core/browser",
     "//components/back_forward_cache",
     "//components/background_fetch",

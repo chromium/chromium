@@ -12,9 +12,20 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
 
+namespace content {
+class WebContents;
+class RenderFrameHost;
+}  // namespace content
+
 namespace autofill {
 
 class AutofillManager;
+
+// Finds the RenderFrameHost in web_contents with the given `frame_token` or
+// returns nullptr if it does not exist.
+content::RenderFrameHost* FindRenderFrameHostByToken(
+    content::WebContents& web_contents,
+    const LocalFrameToken& frame_token);
 
 // The renderer forms together with the id of the RenderFrameHost hosting
 // them.

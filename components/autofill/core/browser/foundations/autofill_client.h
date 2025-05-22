@@ -326,8 +326,10 @@ class AutofillClient {
   // the window of this tab.
   virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
 
-  // Returns the `PasswordManagerDelegate`.
-  virtual PasswordManagerDelegate* GetPasswordManagerDelegate();
+  // Returns the `PasswordManagerDelegate` responsible to provide
+  // password suggestions for the given `field_id`.
+  virtual PasswordManagerDelegate* GetPasswordManagerDelegate(
+      const FieldGlobalId& field_id);
 
   // TODO(crbug.com/365494310): Move these methods to a plus-address-specific
   // client class.

@@ -18,19 +18,11 @@ Title: Generating suggestions with PasswordManagerDelegate
 
 participant BrowserAutofillManager as bam
 participant AutofillClient as afc
-participant PasswordManagerDelegate as apmd
-participant PasswordAutofillManager_Frame_1 as pam1
-participant PasswordAutofillManager_Frame_2 as pam2
+participant "PasswordAutofillManager is PasswordManagerDelegate" as apmd
 
-bam -> afc:  getPasswordManagerDelegate()
-afc --> bam:  PasswordManagerDelegate
+bam -> afc:  GetPasswordManagerDelegate(field)
+note right of afc: Finds frame-specific delegate!
+afc --> bam:  <PasswordAutofillManager is PasswordManagerDelegate>
 bam -> apmd:  GetSuggestions(TriggeringField)
-apmd -> apmd: for (apm : all_apm) GetSuggestionsForField(TriggeringField)
-apmd -> pam1: GetSuggestionsForField(TriggeringField)
-note right of pam1: No frame-specific suggestions!
-pam1 --> apmd: {fallbacks?}
-apmd -> pam2: GetSuggestionsForField(TriggeringField)
-note right of pam2: Found frame-\nspecific suggestions!
-pam2 --> apmd: {credentials, fallbacks}
-apmd --> bam: {credentials, fallbacks}
+apmd -> bam: <frame-specific suggestions for field>
 @enduml

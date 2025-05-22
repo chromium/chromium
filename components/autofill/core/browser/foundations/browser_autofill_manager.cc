@@ -1100,15 +1100,16 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
     base::optional_ref<const PasswordSuggestionRequest> password_request) {
-  if (client().GetPasswordManagerDelegate() && password_request.has_value()) {
+  if (password_request.has_value()) {
+    if (PasswordManagerDelegate* password_delegate =
+            client().GetPasswordManagerDelegate(field_id)) {
 #if !BUILDFLAG(IS_ANDROID)
-    client().GetPasswordManagerDelegate()->ShowSuggestions(
-        password_request->field);
+      password_delegate->ShowSuggestions(password_request->field);
 #else
-    client().GetPasswordManagerDelegate()->ShowKeyboardReplacingSurface(
-        password_request.value());
+      password_delegate->ShowKeyboardReplacingSurface(password_request.value());
 #endif  // !BUILDFLAG(IS_ANDROID)
-    return;
+      return;
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {

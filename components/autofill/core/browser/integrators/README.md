@@ -15,6 +15,15 @@ Eventually, the `PasswordAutofillManager` shouldn't need to implement the
 `AutofillSuggestionDelegate` because the BrowserAutofillManager will request and
 dispatch suggestions through the delegate.
 
+
+## Creation of a delegate for the BrowserAutofillManager
+
+As shown in the diagram below, a new delegate is created when the underlying
+feature is initialized. The integrator allows the `BrowserAutofillManager` to
+request a delegate when it's required instead of needing to inject it early on.
+
+![image](README_seq_create.png)
+
 ## BrowserAutofillManager composes suggestions from delegates
 
 As shown in the diagram below, the `BrowserAutofillManager` will request for

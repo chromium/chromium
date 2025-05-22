@@ -194,7 +194,8 @@ class TestAutofillClientTemplate : public T {
     return identity_credential_delegate_.get();
   }
 
-  PasswordManagerDelegate* GetPasswordManagerDelegate() override {
+  PasswordManagerDelegate* GetPasswordManagerDelegate(
+      const autofill::FieldGlobalId& field_id) override {
     return password_manager_delegate_.get();
   }
 

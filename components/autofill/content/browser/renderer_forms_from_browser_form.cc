@@ -11,10 +11,25 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill {
+
+content::RenderFrameHost* FindRenderFrameHostByToken(
+    content::WebContents& web_contents,
+    const LocalFrameToken& frame_token) {
+  content::RenderFrameHost* render_frame_host = nullptr;
+  web_contents.ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    if (rfh->GetFrameToken().value() == frame_token.value()) {
+      render_frame_host = rfh;
+    }
+  });
+  return render_frame_host;
+}
 
 std::optional<RendererForms> RendererFormsFromBrowserForm(
     AutofillManager& manager,
@@ -43,15 +58,10 @@ std::optional<RendererForms> RendererFormsFromBrowserForm(
         it != token_rfh_map.end()) {
       rfh_id = it->second;
     } else {
-      // Attempt to find the RFH with `form.host_frame` as a local frame
-      // token.
-      client.GetWebContents().ForEachRenderFrameHost(
-          [&rfh_id, &form](content::RenderFrameHost* host) {
-            if (LocalFrameToken(host->GetFrameToken().value()) ==
-                form.host_frame()) {
-              rfh_id = host->GetGlobalId();
-            }
-          });
+      if (content::RenderFrameHost* host = FindRenderFrameHostByToken(
+              client.GetWebContents(), form.host_frame())) {
+        rfh_id = host->GetGlobalId();
+      }
       token_rfh_map.insert({form.host_frame(), rfh_id});
     }
     if (!rfh_id) {
