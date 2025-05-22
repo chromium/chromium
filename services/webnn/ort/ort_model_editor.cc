@@ -11,6 +11,7 @@
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/mojom/features.mojom.h"
+#include "services/webnn/webnn_constant_operand.h"
 
 namespace webnn {
 
@@ -109,12 +110,32 @@ void OrtModelEditor::AddOutput(std::string_view name,
 
 [[nodiscard]] ScopedOrtStatus OrtModelEditor::AddInitializer(
     std::string_view name,
+    std::unique_ptr<WebNNConstantOperand> constant_operand) {
+  bool use_external_data =
+      constant_operand->ByteSpan().size() >= kMinExternalDataSize;
+  const OperandDescriptor& descriptor = constant_operand->descriptor();
+  std::vector<int64_t> int64_shape(descriptor.shape().begin(),
+                                   descriptor.shape().end());
+  ONNXTensorElementDataType data_type =
+      OperandTypeToONNXTensorElementDataType(descriptor.data_type());
+  if (use_external_data) {
+    return AddInitializerAsExternalData(
+        name, int64_shape, constant_operand->TakeData(), data_type);
+  } else {
+    return AddInitializerAsRawData(name, int64_shape,
+                                   constant_operand->ByteSpan(), data_type);
+  }
+}
+
+[[nodiscard]] ScopedOrtStatus OrtModelEditor::AddInitializer(
+    std::string_view name,
     base::span<const int64_t> shape,
     base::span<const uint8_t> data,
     ONNXTensorElementDataType data_type) {
   bool data_is_external = data.size() >= kMinExternalDataSize;
   if (data_is_external) {
-    return AddInitializerAsExternalData(name, shape, data, data_type);
+    return AddInitializerAsExternalData(
+        name, shape, base::HeapArray<uint8_t>::CopiedFrom(data), data_type);
   } else {
     return AddInitializerAsRawData(name, shape, data, data_type);
   }
@@ -156,13 +177,9 @@ void OrtModelEditor::AddOutput(std::string_view name,
 [[nodiscard]] ScopedOrtStatus OrtModelEditor::AddInitializerAsExternalData(
     std::string_view name,
     base::span<const int64_t> shape,
-    base::span<const uint8_t> data,
+    base::HeapArray<uint8_t> weight,
     ONNXTensorElementDataType data_type) {
   ScopedOrtValue initializer;
-
-  // TODO(https://github.com/shiyi9801/chromium/issues/49): Consider reusing
-  // constant operands instead of copying them.
-  auto weight = base::HeapArray<uint8_t>::CopiedFrom(data);
 
   RETURN_STATUS_IF_FAILED(GetOrtApi()->CreateTensorWithDataAndDeleterAsOrtValue(
       model_info_->weights_deleter.get(), weight.data(), weight.size(),

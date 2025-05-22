@@ -1632,22 +1632,22 @@ void GraphBuilderOrt::AddOutput(uint64_t output_id) {
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
-  const WebNNConstantOperand& operand = *constant_operands_.at(constant_id);
   std::string name = GetOperandNameById(constant_id);
-
-  std::vector<int64_t> int64_shape(operand.descriptor().shape().begin(),
-                                   operand.descriptor().shape().end());
-  ONNXTensorElementDataType onnx_data_type =
-      OperandTypeToONNXTensorElementDataType(operand.descriptor().data_type());
   ScopedOrtStatus status;
   // TODO(https://github.com/shiyi9801/chromium/issues/70,
   // https://github.com/shiyi9801/chromium/issues/209): Remove this workaround
   // for OpenVINO and DML EP once the invalid external data issue is fixed.
   if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino) &&
       !base::FeatureList::IsEnabled(mojom::features::kWebNNOrtWebGPU)) {
-    status = model_editor_.AddInitializer(name, int64_shape, operand.ByteSpan(),
-                                          onnx_data_type);
+    status = model_editor_.AddInitializer(
+        name, std::move(constant_operands_.at(constant_id)));
   } else {
+    const WebNNConstantOperand& operand = *constant_operands_.at(constant_id);
+    std::vector<int64_t> int64_shape(operand.descriptor().shape().begin(),
+                                     operand.descriptor().shape().end());
+    ONNXTensorElementDataType onnx_data_type =
+        OperandTypeToONNXTensorElementDataType(
+            operand.descriptor().data_type());
     status = model_editor_.AddInitializerAsRawData(
         name, int64_shape, operand.ByteSpan(), onnx_data_type);
   }
@@ -4240,6 +4240,7 @@ GraphBuilderOrt::BuildModel() {
   for (const auto& [constant_id, _] : constant_operands_) {
     RETURN_IF_ERROR(AddInitializer(constant_id));
   }
+  constant_operands_.clear();
 
   // Find all the bool operands.
   FindBoolOperands();

@@ -16,6 +16,8 @@
 
 namespace webnn {
 
+class WebNNConstantOperand;
+
 namespace ort {
 
 // Domains
@@ -89,6 +91,10 @@ class OrtModelEditor {
                  base::span<const int64_t> shape,
                  ONNXTensorElementDataType data_type);
 
+  [[nodiscard]] ScopedOrtStatus AddInitializer(
+      std::string_view name,
+      std::unique_ptr<WebNNConstantOperand> constant_operand);
+
   // Add an initializer to the graph. It will use raw data if byte size
   // of the data is less than 128.
   [[nodiscard]] ScopedOrtStatus AddInitializer(
@@ -106,7 +112,7 @@ class OrtModelEditor {
   [[nodiscard]] ScopedOrtStatus AddInitializerAsExternalData(
       std::string_view name,
       base::span<const int64_t> shape,
-      base::span<const uint8_t> data,
+      base::HeapArray<uint8_t> weight,
       ONNXTensorElementDataType data_type);
 
   using OrtOpAttrData = absl::variant<int64_t,
