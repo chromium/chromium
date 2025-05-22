@@ -2,14 +2,24 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Tests for gold_utils."""
+"""Tests for gold_utils.
+
+Example usage:
+  vpython3 gold_utils_test.py
+"""
 
 #pylint: disable=protected-access
 
 import contextlib
 import os
+from pathlib import Path
+import sys
 import tempfile
 import unittest
+from unittest import mock
+
+path_root = Path(__file__).parents[2]
+sys.path.append(str(path_root))
 
 from pylib.constants import host_paths
 from pylib.utils import gold_utils
@@ -17,7 +27,6 @@ from pylib.utils import gold_utils
 with host_paths.SysPath(host_paths.BUILD_PATH):
   from skia_gold_common import unittest_utils
 
-import mock  # pylint: disable=import-error
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 createSkiaGoldArgs = unittest_utils.createSkiaGoldArgs

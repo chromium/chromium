@@ -7,7 +7,6 @@ import re
 import sys
 
 import json
-import logging
 import math
 
 from lib.common import perf_result_data_type

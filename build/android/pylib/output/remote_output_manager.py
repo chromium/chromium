@@ -8,7 +8,7 @@ import os
 from pylib.base import output_manager
 from pylib.output import noop_output_manager
 from pylib.utils import logdog_helper
-from pylib.utils import google_storage_helper
+from lib.common import google_storage_helper
 
 
 class RemoteOutputManager(output_manager.OutputManager):

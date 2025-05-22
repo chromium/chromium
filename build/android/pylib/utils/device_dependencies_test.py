@@ -2,9 +2,20 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Unit tests for device_dependencies.py.
+
+Example usage:
+  vpython3 device_dependencies_test.py
+"""
 
 import os
 import unittest
+
+from pathlib import Path
+import sys
+
+build_android_path = Path(__file__).parents[2]
+sys.path.append(str(build_android_path))
 
 from pylib import constants
 from pylib.utils import device_dependencies
