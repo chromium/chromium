@@ -27,6 +27,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/resources/grit/views_resources.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
@@ -39,7 +40,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
-#include "ui/gfx/system_fonts_win.h"
 #endif
 
 namespace views {
@@ -299,7 +299,9 @@ int CustomFrameView::IconSize() const {
 #else
   // The icon never shrinks below 16 px on a side.
   constexpr int kIconMinimumSize = 16;
-  return std::max(GetWindowTitleFontList().GetHeight(), kIconMinimumSize);
+  return std::max(
+      TypographyProvider::Get().GetWindowTitleFontList().GetHeight(),
+      kIconMinimumSize);
 #endif
 }
 
@@ -387,7 +389,8 @@ void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
   gfx::Rect rect = title_bounds_;
   rect.set_x(GetMirroredXForRect(title_bounds_));
   canvas->DrawStringRect(
-      delegate->GetWindowTitle(), GetWindowTitleFontList(),
+      delegate->GetWindowTitle(),
+      TypographyProvider::Get().GetWindowTitleFontList(),
       GetColorProvider()->GetColor(ui::kColorCustomFrameCaptionForeground),
       rect);
 }
@@ -537,7 +540,8 @@ void CustomFrameView::LayoutTitleBar() {
   // The offset between the window left edge and the title text.
   int title_x = show_window_icon ? icon_bounds.right() + kTitleIconOffsetX
                                  : icon_bounds.x();
-  int title_height = GetWindowTitleFontList().GetHeight();
+  int title_height =
+      TypographyProvider::Get().GetWindowTitleFontList().GetHeight();
   // We bias the title position so that when the difference between the icon and
   // title heights is odd, the extra pixel of the title is above the vertical
   // midline rather than below.  This compensates for how the icon is already
@@ -623,15 +627,6 @@ ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
     }
   }
   return button;
-}
-
-// static
-gfx::FontList CustomFrameView::GetWindowTitleFontList() {
-#if BUILDFLAG(IS_WIN)
-  return gfx::FontList(gfx::win::GetSystemFont(gfx::win::SystemFont::kCaption));
-#else
-  return gfx::FontList();
-#endif
 }
 
 }  // namespace views
