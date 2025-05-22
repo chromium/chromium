@@ -63,9 +63,10 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    settings_service_.Shutdown();
+    // Order of shutdown must follow reverse order of dependencies.
     supervised_user_metrics_service_->Shutdown();
     supervised_user_service_->Shutdown();
+    settings_service_.Shutdown();
   }
 
  protected:
