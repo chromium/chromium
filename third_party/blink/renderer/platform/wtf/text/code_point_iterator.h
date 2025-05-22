@@ -13,6 +13,7 @@
 #include <unicode/utf16.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/to_address.h"
@@ -39,9 +40,18 @@ class CodePointIterator {
     STACK_ALLOCATED();
 
    public:
-    Utf16(base::span<const uint16_t> span) : Utf16(span.data(), span.size()) {}
-    static Utf16 End(base::span<const uint16_t> span) {
-      return Utf16{base::to_address(span.end()), 0};
+    // Constructor for creating a 'begin' iterator from a span of 16-bit
+    // characters.
+    template <typename CharT>
+      requires(std::is_integral_v<CharT> && sizeof(CharT) == 2)
+    explicit Utf16(base::span<const CharT> span)
+        : Utf16(reinterpret_cast<const UChar*>(span.data()), span.size()) {}
+
+    template <typename CharT>
+      requires(std::is_integral_v<CharT> && sizeof(CharT) == 2)
+    static Utf16 End(base::span<const CharT> span) {
+      return Utf16{reinterpret_cast<const UChar*>(base::to_address(span.end())),
+                   0};
     }
 
     bool operator==(const Utf16& other) const { return data_ == other.data_; }
@@ -53,10 +63,10 @@ class CodePointIterator {
    private:
     friend class CodePointIterator;
 
-    Utf16(const uint16_t* data, wtf_size_t length)
+    Utf16(const UChar* data, wtf_size_t length)
         : data_(data), length_(length) {}
 
-    const uint16_t* data_;
+    const UChar* data_;
     wtf_size_t length_;
     // Caches the length of the current code point, in the number of code units.
     mutable wtf_size_t code_point_length_ = 0;
@@ -92,7 +102,7 @@ class CodePointIterator {
 
  private:
   CodePointIterator(bool is_8bit, const void* data, wtf_size_t len)
-      : utf16_(static_cast<const uint16_t*>(data), len), is_8bit_(is_8bit) {}
+      : utf16_(static_cast<const UChar*>(data), len), is_8bit_(is_8bit) {}
 
   // The 8bit string shares the `data_` and `length_` with `Utf16`.
   const uint8_t* Data() const {
