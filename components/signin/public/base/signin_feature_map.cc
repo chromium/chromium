@@ -29,6 +29,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSyncEnableBookmarksInTransportMode,
     &switches::kHistoryOptInEducationalTip,
     &switches::kMakeAccountsAvailableInIdentityManager,
+    &switches::kFullscreenSignInPromoUseDate,
 };
 
 // static
