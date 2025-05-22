@@ -293,7 +293,7 @@ class ServiceWorkerIdTrackingBrowserTest
 // ServiceWorkerVersionTest.StallInStopping_DetachThenStart to more closely
 // simulate a worker thread delayed in stopping. This will also allow testing
 // when the delay causes ProcessManager::RenderProcessExited() to be called
-// before ServiceWorkerTaskQueue::OnStopped().
+// before ServiceWorkerState::OnStopped().
 
 // Tests that when:
 //   1) something, other than a worker, keeps the extension renderer process
@@ -381,11 +381,10 @@ IN_PROC_BROWSER_TEST_F(
   const content::ServiceWorkerRunningInfo& sw_info =
       sw_context->GetRunningServiceWorkerInfos().at(
           previous_service_worker_id->version_id);
-
-  // Remove the task queue as an observer of `ServiceWorkerContext` so that
+  // Remove the worker state as an observer of `ServiceWorkerContext` so that
   // the browser stop notification will not run immediately.
-  ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
-      sw_context);
+  ServiceWorkerState* worker_state = GetWorkerState();
+  worker_state->StopObservingContextForTest();
 
   TestServiceWorkerTaskQueueObserver worker_id_removed_observer;
 
@@ -405,8 +404,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Run the browser stop notification after the renderer stop notification, and
   // it should do nothing.
-  ServiceWorkerTaskQueue::Get(profile())->OnStopped(
-      previous_service_worker_id->version_id, sw_info);
+  worker_state->OnStopped(previous_service_worker_id->version_id, sw_info);
 
   // Confirm after the browser stop notification that we are still no longer
   // tracking the worker.
@@ -525,6 +523,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 
+  // Confirm the worker has been untracked from ProcessManager.
+  std::vector<WorkerId> workers_for_extension =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension()->id());
+  EXPECT_EQ(workers_for_extension.size(), 0ul);
+
   // Simulate the render stop notification arriving afterwards.
   task_queue->DidStopServiceWorkerContext(
       stopped_service_worker_id->render_process_id,
@@ -568,10 +572,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(worker_state->browser_state(),
             ServiceWorkerState::BrowserState::kReady);
 
-  // Remove the task queue as an observer of `ServiceWorkerContext` so that
+  // Remove the worker state as an observer of `ServiceWorkerContext` so that
   // the browser stop notification will not run immediately.
-  ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
-      sw_context);
+  worker_state->StopObservingContextForTest();
 
   // Stop the service worker.
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
@@ -587,8 +590,7 @@ IN_PROC_BROWSER_TEST_F(
             ServiceWorkerState::RendererState::kNotActive);
 
   // Simulate browser stop notification after the render stop notification.
-  ServiceWorkerTaskQueue::Get(profile())->OnStopped(
-      stopped_service_worker_id->version_id, sw_info);
+  worker_state->OnStopped(stopped_service_worker_id->version_id, sw_info);
 
   // Confirm the worker state still exists, and browser and renderer state
   // remain not ready.
@@ -596,13 +598,18 @@ IN_PROC_BROWSER_TEST_F(
             ServiceWorkerState::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
+
+  // Confirm the worker has been untracked from ProcessManager.
+  std::vector<WorkerId> workers_for_extension =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension()->id());
+  EXPECT_EQ(workers_for_extension.size(), 0ul);
 }
 
-// Test that if a browser stop notification is received after a worker is
-// deactivated (since they can be triggered independently) we don't update the
-// worker's browser readiness information.
+// Test that if an extension and its worker are deactivated, the worker is
+// untracked from both ServiceWorkerTaskQueue and ProcessManager.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
-                       OnStoppedRunsAfterDeactivatingWorker) {
+                       DisablingExtensionUntracksWorker) {
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
 
   // Get information about worker for extension that will be deactivated soon.
@@ -616,9 +623,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   ASSERT_TRUE(sw_context);
   ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
                              deactivated_service_worker_id->version_id));
-  const content::ServiceWorkerRunningInfo& sw_info =
-      sw_context->GetRunningServiceWorkerInfos().at(
-          deactivated_service_worker_id->version_id);
 
   // Confirm the worker is browser state ready.
   ASSERT_EQ(worker_state->browser_state(),
@@ -633,12 +637,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   worker_state = GetWorkerState();
   ASSERT_FALSE(worker_state);
 
-  // Simulate browser stop notification after deactivating the extension.
-  ServiceWorkerTaskQueue::Get(profile())->OnStopped(
-      deactivated_service_worker_id->version_id, sw_info);
-
-  // Confirm the worker state still does not exist.
-  EXPECT_FALSE(worker_state);
+  // Confirm the worker has been untracked from ProcessManager.
+  std::vector<WorkerId> workers_for_extension =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension()->id());
+  EXPECT_EQ(workers_for_extension.size(), 0ul);
 }
 
 // Test that if a renderer process exit notification is received before
@@ -666,10 +669,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   ASSERT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kActive);
 
-  // Remove the task queue as an observer of `ServiceWorkerContext` so that
+  // Remove the worker state as an observer of `ServiceWorkerContext` so that
   // the browser stop notification will not run immediately.
-  ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
-      sw_context);
+  worker_state->StopObservingContextForTest();
   // Setup intercept of `ServiceWorkerHost::DidStopServiceWorkerContext()`.
   // This simulates the worker renderer thread never informing that the worker
   // context terminated.
