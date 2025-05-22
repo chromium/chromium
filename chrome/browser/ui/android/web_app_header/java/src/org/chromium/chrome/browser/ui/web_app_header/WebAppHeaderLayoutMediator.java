@@ -269,6 +269,13 @@ class WebAppHeaderLayoutMediator
         }
     }
 
+    /**
+     * @return true when header is visible, false otherwise.
+     */
+    public boolean isVisible() {
+        return mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE);
+    }
+
     private int getDefaultMinHeight() {
         if (sMinHeaderHeightForTesting != null) return sMinHeaderHeightForTesting;
         return mWebAppMinHeaderHeight;

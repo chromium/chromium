@@ -1021,4 +1021,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     /* package */ SearchActivityClient getCustomTabSearchClient() {
         return mCustomTabSearchClient;
     }
+
+    @VisibleForTesting
+    public WebAppHeaderLayoutCoordinator getWebAppHeaderLayoutCoordinator() {
+        return mWebAppHeaderLayoutCoordinator;
+    }
 }

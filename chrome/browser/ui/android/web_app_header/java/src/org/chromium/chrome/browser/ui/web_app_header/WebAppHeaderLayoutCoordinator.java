@@ -245,6 +245,13 @@ public class WebAppHeaderLayoutCoordinator
         }
     }
 
+    /**
+     * @return true when header is visible, false otherwise.
+     */
+    public boolean isVisible() {
+        return mMediator != null && mMediator.isVisible();
+    }
+
     @Override
     public int disableControlsAndClearOldToken(int token) {
         int newToken = mDisabledControlsHolder.acquireToken();
