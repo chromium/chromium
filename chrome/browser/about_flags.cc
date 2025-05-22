@@ -3795,12 +3795,25 @@ const FeatureEntry::FeatureParam kShowNewTabAnimationsBounce[] = {
 const FeatureEntry::FeatureParam kShowNewTabAnimationsDecelerate[] = {
     {"version", "2"},
     {"new-duration", "true"}};
+const FeatureEntry::FeatureParam kShowNewTabAnimationsBounceDecelerate[] = {
+    {"version", "3"},
+    {"new-duration", "true"}};
+const FeatureEntry::FeatureParam
+    kShowNewTabAnimationsBounceDecelerateWithDelay[] = {
+        {"version", "4"},
+        {"new-duration", "true"}};
 const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
     {"- Use new duration only", kShowNewTabAnimationsNewDurationOnly,
      std::size(kShowNewTabAnimationsNewDurationOnly), nullptr},
-    {"- Bounce version", kShowNewTabAnimationsBounce,
+    {"- Bouncy GTS icon with delay", kShowNewTabAnimationsBounce,
      std::size(kShowNewTabAnimationsBounce), nullptr},
-    {"- Decelerate version", kShowNewTabAnimationsDecelerate,
+    {"- Bouncy GTS icon with decelerate arc",
+     kShowNewTabAnimationsBounceDecelerate,
+     std::size(kShowNewTabAnimationsBounceDecelerate), nullptr},
+    {"- Bouncy GTS icon with decelerate arc and delay",
+     kShowNewTabAnimationsBounceDecelerateWithDelay,
+     std::size(kShowNewTabAnimationsBounceDecelerateWithDelay), nullptr},
+    {"- Decelerate arc", kShowNewTabAnimationsDecelerate,
      std::size(kShowNewTabAnimationsDecelerate), nullptr},
 };
 

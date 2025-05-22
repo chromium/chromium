@@ -109,11 +109,15 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             fakeTabSwitcherAnimator =
                     mFakeTabSwitcherButton.getShrinkAnimator(/* incrementCount= */ true);
 
-            if (version == NewTabAnim.BOUNCE) {
+            if (version == NewTabAnim.BOUNCE
+                    || version == NewTabAnim.BOUNCE_DECELERATE_WITH_DELAY) {
                 fakeTabSwitcherAnimator.setInterpolator(
                         Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
                 fakeTabSwitcherAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
                 transitionAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
+            } else if (version == NewTabAnim.BOUNCE_DECELERATE) {
+                fakeTabSwitcherAnimator.setInterpolator(
+                        Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
             } else {
                 fakeTabSwitcherAnimator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
             }
@@ -230,7 +234,10 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
                 switch (version) {
                     case NewTabAnim.BOUNCE -> Interpolators
                             .NEW_BACKGROUND_TAB_ANIMATION_SECOND_PATH_INTERPOLATOR;
-                    case NewTabAnim.DECELERATE -> Interpolators.EMPHASIZED_DECELERATE;
+                    case NewTabAnim.DECELERATE,
+                            NewTabAnim.BOUNCE_DECELERATE,
+                            NewTabAnim.BOUNCE_DECELERATE_WITH_DELAY -> Interpolators
+                            .EMPHASIZED_DECELERATE;
                     default -> Interpolators.NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR;
                 };
         animator.setInterpolator(pathInterpolator);

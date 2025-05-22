@@ -47,12 +47,19 @@ public class NewTabAnimationUtils {
      *
      * <p>These numbers match with the "version" feature param for ShowNewTabAnimations.
      */
-    @IntDef({NewTabAnim.BOUNCE, NewTabAnim.DECELERATE})
+    @IntDef({
+        NewTabAnim.BOUNCE,
+        NewTabAnim.DECELERATE,
+        NewTabAnim.BOUNCE_DECELERATE,
+        NewTabAnim.BOUNCE_DECELERATE_WITH_DELAY
+    })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface NewTabAnim {
         int BOUNCE = 1;
         int DECELERATE = 2;
+        int BOUNCE_DECELERATE = 3;
+        int BOUNCE_DECELERATE_WITH_DELAY = 4;
     }
 
     private static final float INITIAL_SCALE = 0.2f;
