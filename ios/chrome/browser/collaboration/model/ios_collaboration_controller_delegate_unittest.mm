@@ -407,7 +407,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
       mock_callback;
 
   EXPECT_CALL(mock_callback,
-              Run(CollaborationControllerDelegate::Outcome::kFailure));
+              Run(CollaborationControllerDelegate::Outcome::kCancel));
 
   OCMExpect([application_commands_mock_
               showSignin:[OCMArg checkWithBlock:^BOOL(

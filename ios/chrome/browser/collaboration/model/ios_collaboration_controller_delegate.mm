@@ -493,6 +493,11 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinatorResult sign_in_result,
     id<SystemIdentity> completion_info) {
+  if (sign_in_result == SigninCoordinatorResultCanceledByUser) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kCancel);
+    return;
+  }
+
   if (sign_in_result != SigninCoordinatorResultSuccess) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
