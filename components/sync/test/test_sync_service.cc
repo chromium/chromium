@@ -17,6 +17,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -246,7 +247,11 @@ bool TestSyncService::HasSyncConsent() const {
 }
 
 GoogleServiceAuthError TestSyncService::GetAuthError() const {
-  return GoogleServiceAuthError();
+  return has_persistent_auth_error_
+             ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                   GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                       CREDENTIALS_REJECTED_BY_SERVER)
+             : GoogleServiceAuthError::AuthErrorNone();
 }
 
 bool TestSyncService::HasCachedPersistentAuthErrorForMetrics() const {
