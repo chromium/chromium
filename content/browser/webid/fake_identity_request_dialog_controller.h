@@ -40,7 +40,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       AccountSelectionCallback on_selected,
@@ -70,6 +69,14 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,
                          DismissCallback dismiss_callback) override;
+
+  bool ShowVerifyingDialog(
+      const content::RelyingPartyData& rp_data,
+      const IdentityProviderDataPtr& idp_data,
+      const IdentityRequestAccountPtr& account,
+      content::IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
+      AccountsDisplayedCallback accounts_displayed_callback) override;
 
   std::string GetTitle() const override;
 

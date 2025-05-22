@@ -243,7 +243,6 @@ bool AccountSelectionViewAndroid::Show(
     const content::RelyingPartyData& rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
-    Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::vector<IdentityRequestAccountPtr>& new_accounts) {
   if (!MaybeCreateJavaObject(rp_mode)) {
@@ -275,8 +274,7 @@ bool AccountSelectionViewAndroid::Show(
 
   return Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_data.rp_for_display, accounts_obj,
-      identity_providers_list, sign_in_mode == Account::SignInMode::kAuto,
-      new_accounts_obj);
+      identity_providers_list, new_accounts_obj);
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(
@@ -346,6 +344,31 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
   return Java_AccountSelectionBridge_showLoadingDialog(
       env, java_object_internal_, rp_data.rp_for_display, idp_for_display,
       static_cast<jint>(rp_context));
+}
+
+bool AccountSelectionViewAndroid::ShowVerifyingDialog(
+    const content::RelyingPartyData& rp_data,
+    const IdentityProviderDataPtr& idp_data,
+    const IdentityRequestAccountPtr& account,
+    Account::SignInMode sign_in_mode,
+    blink::mojom::RpMode rp_mode) {
+  if (!MaybeCreateJavaObject(rp_mode)) {
+    // It's possible that the constructor cannot access the bottom sheet clank
+    // component.
+    return false;
+  }
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> idp_obj =
+      ConvertToJavaIdentityProviderData(env, idp_data.get(), rp_mode);
+
+  ScopedJavaLocalRef<jobject> account_obj =
+      ConvertToJavaAccount(env, account.get(),
+                           /*is_multi_idp=*/false, idp_obj);
+
+  return Java_AccountSelectionBridge_showVerifyingDialog(
+      env, java_object_internal_, account_obj,
+      sign_in_mode == Account::SignInMode::kAuto);
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {

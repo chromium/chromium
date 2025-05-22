@@ -62,7 +62,6 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });

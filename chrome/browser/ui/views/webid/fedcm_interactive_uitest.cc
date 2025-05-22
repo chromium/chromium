@@ -54,7 +54,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
       account_selection_view_->Show(
           content::RelyingPartyData(u"rp-example.com",
                                     /*iframe_for_display=*/u""),
-          idps_, accounts_, Account::SignInMode::kExplicit, mode,
+          idps_, accounts_, mode,
           /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
     });
   }

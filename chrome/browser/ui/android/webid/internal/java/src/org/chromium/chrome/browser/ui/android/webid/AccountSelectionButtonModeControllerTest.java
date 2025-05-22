@@ -57,7 +57,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     mTestEtldPlusOne,
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
-                    /* isAutoReauthn= */ false,
                     /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
 
@@ -77,13 +76,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mIdpData.setRpContext(rpContext);
-            // showVerifySheet is called in showAccounts when isAutoReauthn is true
-            mMediator.showAccounts(
-                    mTestEtldPlusOne,
-                    Arrays.asList(mAnaAccount),
-                    Arrays.asList(mIdpData),
-                    /* isAutoReauthn= */ true,
-                    /* newAccounts= */ Collections.EMPTY_LIST);
+            mMediator.showVerifyingDialog(mAnaAccount, /* isAutoReauthn= */ true);
 
             // There is no account shown on the loading dialog in active mode.
             assertEquals(0, mSheetAccountItems.size());
@@ -112,7 +105,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(mAnaAccount, mBobAccount),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
@@ -129,7 +121,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(mNewUserAccount),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
         mMediator.showRequestPermissionModalSheet(mNewUserAccount);
 
@@ -152,7 +143,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(mAnaAccount),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNotNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
@@ -164,7 +154,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
-                /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
@@ -181,7 +170,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 mNewAccountsSingleNewAccount);
 
         // Request permission modal dialog is NOT skipped for a single newly signed-in new account.
@@ -200,7 +188,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 mNewAccountsSingleNewAccount);
 
         // Account chooser dialog is shown for a single newly signed-in new account where request
@@ -218,7 +205,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
 
         // Account chooser dialog is shown for a single newly signed-in returning account. Although
@@ -237,7 +223,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(
                 mTestEtldPlusOne,
@@ -274,7 +259,6 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                /* isAutoReauthn= */ false,
                 mNewAccountsSingleReturningAccount);
         mMediator.showErrorDialog(
                 mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, RpContext.SIGN_IN, mTokenError);

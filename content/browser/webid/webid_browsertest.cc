@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
 
   // Expects the account chooser to be opened. Selects the first account.
   EXPECT_CALL(*controller, ShowAccountsDialog)
-      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
+      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",
@@ -2059,7 +2059,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   auto configURL = BaseIdpUrl();
   EXPECT_CALL(*controller, ShowAccountsDialog)
       .WillOnce(
-          ::testing::WithArg<6>([&modal_loop, &configURL](auto on_selected) {
+          ::testing::WithArg<5>([&modal_loop, &configURL](auto on_selected) {
             std::move(on_selected)
                 .Run(GURL(configURL),
                      /*account_id=*/"not_real_account",

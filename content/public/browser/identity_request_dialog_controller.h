@@ -211,17 +211,17 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Shows and accounts selections for the given IDP. The `on_selected` callback
   // is called with the selected account id or empty string otherwise.
-  // `sign_in_mode` represents whether this is an auto re-authn flow.
   // `new_accounts` are the accounts that were just logged in, which should
-  // be prioritized in the UI. Returns true if the method successfully showed
-  // UI. When false, the caller should assume that the API invocation was
+  // be prioritized in the UI. The `accounts_display_callback` is called when
+  // the dialog is successfully shown so that the backend can record the time of
+  // display for metrics purposes. Returns true if the method successfully
+  // showed UI. When false, the caller should assume that the API invocation was
   // terminated and the cleanup methods invoked. `rp_data` may be modified by
   // this method, such as by setting the RP icon.
   virtual bool ShowAccountsDialog(
       RelyingPartyData rp_data,
       const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
       const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
-      IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<scoped_refptr<IdentityRequestAccount>>& new_accounts,
       AccountSelectionCallback on_selected,
@@ -265,6 +265,20 @@ class CONTENT_EXPORT IdentityRequestDialogController {
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode,
                                  DismissCallback dismiss_callback);
+
+  // Shows a verifying dialog to the user. This is called after an account is
+  // selected, either by the user in the explicit authentication flow or by the
+  // browser in the auto re-authentication flow. The `accounts_display_callback`
+  // is called when the dialog is successfully shown so that the backend can
+  // record the time of display for metrics purposes. Returns true if it was
+  // possible to show UI.
+  virtual bool ShowVerifyingDialog(
+      const content::RelyingPartyData& rp_data,
+      const scoped_refptr<IdentityProviderData>& idp_data,
+      const scoped_refptr<IdentityRequestAccount>& account,
+      IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
+      AccountsDisplayedCallback accounts_displayed_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;

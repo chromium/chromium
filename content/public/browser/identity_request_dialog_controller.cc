@@ -69,7 +69,6 @@ bool IdentityRequestDialogController::ShowAccountsDialog(
     content::RelyingPartyData rp_data,
     const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>& accounts,
-    content::IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
         new_accounts,
@@ -123,6 +122,19 @@ bool IdentityRequestDialogController::ShowLoadingDialog(
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
+    return false;
+  }
+  return true;
+}
+
+bool IdentityRequestDialogController::ShowVerifyingDialog(
+    const content::RelyingPartyData& rp_data,
+    const scoped_refptr<IdentityProviderData>& idp_data,
+    const scoped_refptr<content::IdentityRequestAccount>& account,
+    content::IdentityRequestAccount::SignInMode sign_in_mode,
+    blink::mojom::RpMode rp_mode,
+    AccountsDisplayedCallback accounts_displayed_callback) {
+  if (!is_interception_enabled_) {
     return false;
   }
   return true;

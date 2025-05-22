@@ -41,7 +41,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override { ShowAccounts(); }
 
-  void ShowAccounts(Account::SignInMode mode = Account::SignInMode::kExplicit) {
+  void Initialize() {
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
@@ -55,11 +55,23 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         /*domain_hints=*/std::vector<std::string>(),
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
+  }
+
+  void ShowAccounts() {
+    Initialize();
     account_selection_view()->Show(
         content::RelyingPartyData(u"rp-example.com",
                                   /*iframe_for_display=*/u""),
-        idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
+        idps_, accounts_, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
+  }
+
+  void ShowVerifyingDialog(Account::SignInMode sign_in_mode) {
+    Initialize();
+    account_selection_view()->ShowVerifyingDialog(
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        idps_[0], accounts_[0], sign_in_mode, blink::mojom::RpMode::kPassive);
   }
 
   void Show() {
@@ -163,15 +175,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   delegate_->SetAccountSelectedCallback(base::BindOnce(
       &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
       base::Unretained(this)));
-  account_selection_view_->ShowModalDialog(GURL("https://example.test/"),
+  account_selection_view_->ShowModalDialog(GURL("https://rp-example.com"),
                                            blink::mojom::RpMode::kPassive);
   // Because a modal dialog is up, this should save the accounts for later.
-  ShowAccounts(Account::SignInMode::kAuto);
+  ShowVerifyingDialog(Account::SignInMode::kAuto);
   // This should trigger auto re-authn without crashing or UAF.
   account_selection_view_->CloseModalDialog();
-  // The account selected callback should have been called, thus the view
-  // should be null now.
-  EXPECT_EQ(nullptr, account_selection_view_);
+  EXPECT_EQ(account_selection_view_->state_,
+            FedCmAccountSelectionView::State::AUTO_REAUTHN);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
@@ -314,7 +325,6 @@ class FedCmMixin {
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
         delegate_.get(), browser->GetActiveTabInterface());
 
-    Account::SignInMode mode = Account::SignInMode::kExplicit;
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
@@ -331,7 +341,7 @@ class FedCmMixin {
     account_selection_view_->Show(
         content::RelyingPartyData(u"rp-example.com",
                                   /*iframe_for_display=*/u""),
-        idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
+        idps_, accounts_, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 

@@ -196,10 +196,8 @@ public class AccountSelectionCoordinator
             String rpEtldPlusOne,
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
-            boolean isAutoReauthn,
             List<Account> newAccounts) {
-        return mMediator.showAccounts(
-                rpEtldPlusOne, accounts, idpDataList, isAutoReauthn, newAccounts);
+        return mMediator.showAccounts(rpEtldPlusOne, accounts, idpDataList, newAccounts);
     }
 
     @Override
@@ -226,6 +224,11 @@ public class AccountSelectionCoordinator
     public boolean showLoadingDialog(
             String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
         return mMediator.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+    }
+
+    @Override
+    public boolean showVerifyingDialog(Account account, boolean isAutoReauthn) {
+        return mMediator.showVerifyingDialog(account, isAutoReauthn);
     }
 
     @Override

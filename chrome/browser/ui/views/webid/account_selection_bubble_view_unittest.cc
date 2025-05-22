@@ -183,8 +183,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     }
     account_selection_view_->Show(
         content::RelyingPartyData(kTopFrameEtldPlusOne, iframe_for_display),
-        idp_list, accounts_, Account::SignInMode::kExplicit,
-        blink::mojom::RpMode::kPassive, new_accounts);
+        idp_list, accounts_, blink::mojom::RpMode::kPassive, new_accounts);
     dialog_ = static_cast<AccountSelectionBubbleView*>(
         account_selection_view_->account_selection_view());
   }

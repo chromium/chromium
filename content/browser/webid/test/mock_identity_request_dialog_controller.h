@@ -32,7 +32,6 @@ class MockIdentityRequestDialogController
               (content::RelyingPartyData,
                const std::vector<IdentityProviderDataPtr>&,
                const std::vector<IdentityRequestAccountPtr>&,
-               IdentityRequestAccount::SignInMode,
                blink::mojom::RpMode,
                const std::vector<IdentityRequestAccountPtr>&,
                AccountSelectionCallback,
@@ -69,6 +68,15 @@ class MockIdentityRequestDialogController
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
                DismissCallback),
+              (override));
+  MOCK_METHOD(bool,
+              ShowVerifyingDialog,
+              (const content::RelyingPartyData&,
+               const IdentityProviderDataPtr&,
+               const IdentityRequestAccountPtr&,
+               IdentityRequestAccount::SignInMode,
+               blink::mojom::RpMode,
+               AccountsDisplayedCallback),
               (override));
   MOCK_METHOD(WebContents*,
               ShowModalDialog,

@@ -68,7 +68,6 @@ class IdentityDialogController
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      content::IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       AccountSelectionCallback on_selected,
@@ -95,6 +94,13 @@ class IdentityDialogController
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,
                          DismissCallback dismiss_callback) override;
+  bool ShowVerifyingDialog(
+      const content::RelyingPartyData& rp_data,
+      const IdentityProviderDataPtr& idp_data,
+      const IdentityRequestAccountPtr& account,
+      Account::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
+      AccountsDisplayedCallback accounts_displayed_callback) override;
 
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
@@ -139,7 +145,6 @@ class IdentityDialogController
       const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       const segmentation_platform::ClassificationResult&

@@ -77,7 +77,6 @@ class AccountSelectionView {
       const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts) = 0;
 
@@ -111,6 +110,16 @@ class AccountSelectionView {
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode) = 0;
+
+  // Shows a verifying dialog to the user. This is called after an account is
+  // selected, either by the user in the explicit authentication flow or by the
+  // browser in the auto re-authentication flow. Returns true if it was possible
+  // to show UI.
+  virtual bool ShowVerifyingDialog(const content::RelyingPartyData& rp_data,
+                                   const IdentityProviderDataPtr& idp_list,
+                                   const IdentityRequestAccountPtr& account,
+                                   Account::SignInMode sign_in_mode,
+                                   blink::mojom::RpMode rp_mode) = 0;
 
   virtual std::string GetTitle() const = 0;
   virtual std::optional<std::string> GetSubtitle() const = 0;

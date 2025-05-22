@@ -83,7 +83,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts) override;
   bool ShowFailureDialog(
@@ -102,6 +101,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;
+  bool ShowVerifyingDialog(const content::RelyingPartyData& rp_data,
+                           const IdentityProviderDataPtr& idp_data,
+                           const IdentityRequestAccountPtr& account,
+                           Account::SignInMode sign_in_mode,
+                           blink::mojom::RpMode rp_mode) override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
@@ -234,6 +238,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   virtual std::unique_ptr<FedCmModalDialogView> CreatePopupWindow();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewBrowserTest,
+                           ModalDialogThenShowThenCloseModalDialog);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            MismatchDialogDismissedByCloseIconMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,

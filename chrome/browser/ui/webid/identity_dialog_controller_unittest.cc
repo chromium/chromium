@@ -65,7 +65,6 @@ class MockAccountSelectionView : public AccountSelectionView {
       (const content::RelyingPartyData& rp_data,
        const std::vector<IdentityProviderDataPtr>& identity_provider_data,
        const std::vector<IdentityRequestAccountPtr>& accounts,
-       Account::SignInMode sign_in_mode,
        blink::mojom::RpMode rp_mode,
        const std::vector<IdentityRequestAccountPtr>& new_accounts),
       (override));
@@ -95,6 +94,15 @@ class MockAccountSelectionView : public AccountSelectionView {
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode),
+              (override));
+
+  MOCK_METHOD(bool,
+              ShowVerifyingDialog,
+              (const content::RelyingPartyData&,
+               const IdentityProviderDataPtr&,
+               const IdentityRequestAccountPtr&,
+               Account::SignInMode sign_in_mode,
+               blink::mojom::RpMode),
               (override));
 
   MOCK_METHOD(std::string, GetTitle, (), (const, override));
@@ -188,8 +196,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     controller.ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts_,
-        content::IdentityRequestAccount::SignInMode::kExplicit, rp_mode,
+        {idp_data}, accounts_, rp_mode,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
         /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
         std::move(dismiss_callback),
@@ -440,7 +447,7 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
   // Show should be called.
   std::unique_ptr<MockAccountSelectionView> account_selection_view =
       std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _, _)).Times(1);
+  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(1);
   controller.SetAccountSelectionViewForTesting(
       std::move(account_selection_view));
 
@@ -463,7 +470,7 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
   // Show should not be called.
   std::unique_ptr<MockAccountSelectionView> account_selection_view =
       std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(0);
   controller.SetAccountSelectionViewForTesting(
       std::move(account_selection_view));
 

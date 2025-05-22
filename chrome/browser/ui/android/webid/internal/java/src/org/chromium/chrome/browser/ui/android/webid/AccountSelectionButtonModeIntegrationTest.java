@@ -82,7 +82,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -103,7 +102,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         Arrays.asList(
                                                 mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
-                                        /* isAutoReauthn= */ false,
                                         mNewAccountsReturningAna);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
@@ -135,7 +133,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -156,7 +153,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         Arrays.asList(
                                                 mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
-                                        /* isAutoReauthn= */ false,
                                         mNewAccountsNewBob);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
@@ -217,7 +213,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -237,7 +232,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         EXAMPLE_ETLD_PLUS_ONE,
                                         Arrays.asList(account, mReturningAnaWithAddAccount),
                                         Arrays.asList(mIdpDataWithAddAccount),
-                                        /* isAutoReauthn= */ false,
                                         Arrays.asList(account));
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
@@ -277,7 +271,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -321,7 +314,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -349,7 +341,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -379,7 +370,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -449,7 +439,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -482,7 +471,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -510,7 +498,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -537,7 +524,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -568,7 +554,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -604,7 +589,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -645,7 +629,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -693,7 +676,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -718,7 +700,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -750,7 +731,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -778,7 +758,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -803,7 +782,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -833,7 +811,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -863,7 +840,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -912,7 +888,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -937,7 +912,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
@@ -1048,7 +1022,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -1078,7 +1051,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -1108,7 +1080,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -1134,7 +1105,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
@@ -1166,7 +1136,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             EXAMPLE_ETLD_PLUS_ONE,
                             Arrays.asList(mNewBobWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
-                            /* isAutoReauthn= */ false,
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });

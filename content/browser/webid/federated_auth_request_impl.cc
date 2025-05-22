@@ -1120,27 +1120,31 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     request_dialog_controller_->SetIsInterceptionEnabled(intercept);
   }
 
-  // TODO(crbug.com/40245853): Handle UI where some IDPs are successful and some
-  // IDPs are failing in the multi IDP case.
-  // Note that ShowAccountsDialog() may result in the request being completed
-  // immediately (for instance on Android when we cannot create a BottomSheet),
-  // so invocations after this method should assume that the members may have
-  // been cleaned up.
-  if (!request_dialog_controller_->ShowAccountsDialog(
-          CreateRpData(), idp_data_for_display_, accounts_,
-          identity_selection_type_ == kExplicit ? SignInMode::kExplicit
-                                                : SignInMode::kAuto,
-          rp_mode_, new_accounts_,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              /*can_append_hints=*/false),
-          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
-    return;
+  if (identity_selection_type_ != kExplicit) {
+    OnAccountSelected(accounts_[0]->identity_provider->idp_metadata.config_url,
+                      accounts_[0]->id, /*is_sign_in=*/true);
+    if (!request_dialog_controller_->ShowVerifyingDialog(
+            CreateRpData(), auto_reauthn_idp, accounts_[0], SignInMode::kAuto,
+            rp_mode_,
+            base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      return;
+    }
+  } else {
+    if (!request_dialog_controller_->ShowAccountsDialog(
+            CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
+            new_accounts_,
+            base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                /*can_append_hints=*/false),
+            base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      return;
+    }
   }
   did_show_ui_ = true;
 
@@ -1214,7 +1218,7 @@ void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
   // probably refactor the API to support this use case, rather than overload
   // an unintended use.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          CreateRpData(), idp_data_for_display_, {}, SignInMode::kExplicit,
+          CreateRpData(), idp_data_for_display_, {},
           blink::mojom::RpMode::kActive, selected,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),

@@ -57,7 +57,6 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     mTestEtldPlusOne,
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
-                    /* isAutoReauthn= */ false,
                     /* newAccounts= */ Collections.EMPTY_LIST);
             mMediator.showVerifySheet(mAnaAccount);
 
@@ -75,18 +74,11 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mIdpData.setRpContext(rpContext);
-            // showVerifySheet is called in showAccounts when isAutoReauthn is true
-            mMediator.showAccounts(
-                    mTestEtldPlusOne,
-                    Arrays.asList(mAnaAccount),
-                    Arrays.asList(mIdpData),
-                    /* isAutoReauthn= */ true,
-                    /* newAccounts= */ Collections.EMPTY_LIST);
+            mMediator.showVerifyingDialog(mAnaAccount, /* isAutoReauthn= */ true);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
                     HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate).onAccountsDisplayed();
             assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
             assertFalse(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         }
@@ -98,7 +90,6 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
-                /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));

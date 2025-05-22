@@ -629,7 +629,6 @@ class TestDialogController
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
@@ -642,7 +641,8 @@ class TestDialogController
     }
     state_->all_accounts_for_display.clear();
 
-    state_->sign_in_mode = sign_in_mode;
+    // Auto reauthn should not call ShowAccountsDialog.
+    state_->sign_in_mode = SignInMode::kExplicit;
     state_->rp_context = idp_list[0]->rp_context;
 
     state_->new_accounts = new_accounts;
@@ -788,6 +788,23 @@ class TestDialogController
       case LoadingDialogAction::kNone:
         break;
     }
+    return true;
+  }
+
+  bool ShowVerifyingDialog(
+      const content::RelyingPartyData& rp_data,
+      const scoped_refptr<IdentityProviderData>& idp_data,
+      const scoped_refptr<content::IdentityRequestAccount>& account,
+      content::IdentityRequestAccount::SignInMode sign_in_mode,
+      blink::mojom::RpMode rp_mode,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
+    if (!state_) {
+      return false;
+    }
+
+    state_->sign_in_mode = sign_in_mode;
+    state_->all_accounts_for_display = {account};
     return true;
   }
 
@@ -3555,7 +3572,6 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
@@ -3569,8 +3585,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     return TestDialogController::ShowAccountsDialog(
-        std::move(rp_data), idp_list, accounts, sign_in_mode, rp_mode,
-        new_accounts, std::move(on_selected), std::move(on_add_account),
+        std::move(rp_data), idp_list, accounts, rp_mode, new_accounts,
+        std::move(on_selected), std::move(on_add_account),
         std::move(dismiss_callback), std::move(accounts_displayed_callback));
   }
 
@@ -7593,7 +7609,6 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
-      IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,

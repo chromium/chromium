@@ -119,7 +119,6 @@ bool FedCmAccountSelectionView::Show(
     const content::RelyingPartyData& rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
-    Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::vector<IdentityRequestAccountPtr>& new_accounts) {
   if (!tab_) {
@@ -137,7 +136,7 @@ bool FedCmAccountSelectionView::Show(
     show_accounts_dialog_callback_ =
         base::BindOnce(base::IgnoreResult(&FedCmAccountSelectionView::Show),
                        weak_ptr_factory_.GetWeakPtr(), rp_data, idp_list,
-                       accounts, sign_in_mode, rp_mode, new_accounts);
+                       accounts, rp_mode, new_accounts);
     // This is considered successful since we are intentionally delaying showing
     // the UI.
     return true;
@@ -202,26 +201,7 @@ bool FedCmAccountSelectionView::Show(
                         has_modal_support);
   }
 
-  if (sign_in_mode == Account::SignInMode::kAuto) {
-    state_ = State::AUTO_REAUTHN;
-
-    // When auto re-authn flow is triggered, the parameter
-    // `idp_list_` would only include the single returning
-    // account and its IDP.
-    DCHECK_EQ(idp_list_.size(), 1u);
-    DCHECK_EQ(accounts.size(), 1u);
-    if (!NotifyDelegateOfAccountSelection(*accounts[0], *idp_list_[0])) {
-      // `this` has been deleted.
-      return false;
-    }
-
-    // Auto re-authn in active mode does not update the loading UI.
-    if (dialog_type_ == DialogType::MODAL) {
-      modal_loading_dialog_state_ = webid::LoadingDialogResult::kProceed;
-      return false;
-    }
-    ShowVerifyingSheet(accounts[0]);
-  } else if (!new_accounts.empty()) {
+  if (!new_accounts.empty()) {
     // When we just logged in to an account that   not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
     // show only the new accounts.
@@ -446,6 +426,64 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   return true;
 }
 
+bool FedCmAccountSelectionView::ShowVerifyingDialog(
+    const content::RelyingPartyData& rp_data,
+    const IdentityProviderDataPtr& idp_data,
+    const IdentityRequestAccountPtr& account,
+    Account::SignInMode sign_in_mode,
+    blink::mojom::RpMode rp_mode) {
+  if (!tab_) {
+    return false;
+  }
+
+  // If IDP sign-in pop-up is open, we delay the showing of the accounts dialog
+  // until the pop-up is destroyed.
+  // TODO(crbug.com/419535307): move the control logic to the backend.
+  if (IsIdpSigninPopupOpen()) {
+    popup_window_state_ =
+        PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
+    // We need to use base::IgnoreResult here because it is not allowed to bind
+    // WeakPtrs to methods with return values.
+    show_accounts_dialog_callback_ = base::BindOnce(
+        base::IgnoreResult(&FedCmAccountSelectionView::ShowVerifyingDialog),
+        weak_ptr_factory_.GetWeakPtr(), rp_data, idp_data, account,
+        sign_in_mode, rp_mode);
+    // This is considered successful since we are intentionally delaying showing
+    // the UI.
+    return true;
+  }
+
+  ResetDialogWidgetStateOnAnyShow();
+  accounts_widget_shown_callback_ =
+      base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  bool create_view = !account_selection_view_;
+  if (create_view) {
+    // While the verifying UI may not need to show RP and IdP data in case of
+    // auto reauthn, we need them anyway to prepare for potential error UI
+    // afterwards.
+    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_data->idp_for_display),
+                        idp_data->rp_context, rp_mode,
+                        /*has_modal_support=*/true);
+  }
+
+  if (sign_in_mode == Account::SignInMode::kAuto) {
+    state_ = State::AUTO_REAUTHN;
+  }
+
+  // Auto re-authn in active mode does not update the loading UI.
+  if (dialog_type_ == DialogType::MODAL) {
+    modal_loading_dialog_state_ = webid::LoadingDialogResult::kProceed;
+    return false;
+  }
+
+  ShowVerifyingSheet(account);
+  UpdateDialogVisibilityAndPosition();
+
+  return true;
+}
+
 void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
   Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -537,6 +575,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
       // `this` was deleted.
       return;
     }
+    // TODO(crbug.com/418214600): hand the control to show verifying UI over to
+    // the backend.
     ShowVerifyingSheet(account);
     UpdateDialogPosition();
     return;

@@ -102,7 +102,6 @@ class AccountSelectionMediator {
     private Bitmap mHeaderIcon;
     // The RP brand icon provided by the IDP. Used only in active mode.
     private Bitmap mRpBrandIcon;
-    private boolean mIsAutoReauthn;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private UkmRecorder mUkmRecorder;
@@ -567,9 +566,15 @@ class AccountSelectionMediator {
             }
             updateBackPressBehavior();
         } else {
-            // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
-            // not invoke updateSheet() as that would cause a loop and isn't needed.
             assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
+            // Auto reauthn is triggered without showAccounts so we need to update the sheet
+            // explicitly.
+            if (!updateSheet(
+                    Arrays.asList(account),
+                    /* identityProviders= */ Collections.emptyList(),
+                    /* areAccountsClickable= */ false)) {
+                return false;
+            }
         }
         return true;
     }
@@ -595,7 +600,6 @@ class AccountSelectionMediator {
             String rpForDisplay,
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
-            boolean isAutoReauthn,
             List<Account> newAccounts) {
         if (mWasDismissed) {
             return false;
@@ -605,7 +609,6 @@ class AccountSelectionMediator {
         mIdpDataListForShowAccounts = idpDataList;
         mIdpMetadataForLoginOrError = null;
         setIsMultipleIdps(mIdpDataListForShowAccounts.size() > 1);
-        mIsAutoReauthn = isAutoReauthn;
         mRpContext = mIdpDataListForShowAccounts.get(0).getRpContext();
         mSelectedAccount = null;
         mLoadingDialogState =
@@ -615,22 +618,15 @@ class AccountSelectionMediator {
         maybeRecordLoadingDialogResult();
 
         if (accounts.size() == 1) {
-            // An account is automatically 'selected' if auto reauthenticating or if that is the
+            // An account is automatically 'selected' if that is the
             // only option.
-            if (isAutoReauthn
-                    || (!mIsMultipleIdps
-                            && !mIdpDataListForShowAccounts
-                                    .get(0)
-                                    .getIdpMetadata()
-                                    .showUseDifferentAccountButton())) {
+            if (!mIsMultipleIdps
+                    && !mIdpDataListForShowAccounts
+                            .get(0)
+                            .getIdpMetadata()
+                            .showUseDifferentAccountButton()) {
                 mSelectedAccount = accounts.get(0);
             }
-        }
-
-        // Auto re-authn in active mode does not update the loading UI.
-        if (mRpMode == RpMode.ACTIVE && isAutoReauthn) {
-            mDelegate.onAccountSelected(mSelectedAccount);
-            return true;
         }
 
         if (!showAccountsInternal(newAccounts)) {
@@ -755,6 +751,19 @@ class AccountSelectionMediator {
         return true;
     }
 
+    boolean showVerifyingDialog(Account account, boolean isAutoReauthn) {
+        mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.VERIFY;
+        mSelectedAccount = account;
+
+        // Auto re-authn in active mode does not update the loading UI.
+        if (mRpMode == RpMode.ACTIVE && isAutoReauthn) {
+            return true;
+        }
+
+        showVerifySheet(mSelectedAccount);
+        return true;
+    }
+
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
         switch (linkType) {
             case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:
@@ -798,7 +807,7 @@ class AccountSelectionMediator {
                         ? newAccounts.get(0)
                         : null;
 
-        if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.ACTIVE) {
+        if (newlySignedInAccount != null && mRpMode == RpMode.ACTIVE) {
             mSelectedAccount = newlySignedInAccount;
 
             // The browser trusted login state controls whether we'd skip the next
@@ -834,7 +843,7 @@ class AccountSelectionMediator {
             // request permission UI without disclosure text.
         }
 
-        mHeaderType = mIsAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
+        mHeaderType = HeaderType.SIGN_IN;
         // Show the selected account's IDP or only show the IDP if there is just one.
         if (mSelectedAccount != null) {
             mIdpForDisplay = mSelectedAccount.getIdentityProviderData().getIdpForDisplay();
@@ -863,7 +872,7 @@ class AccountSelectionMediator {
         // other account button or swiped down. If we do not receive any of these actions by time
         // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
         // closed the tab.
-        if (mRpMode == RpMode.ACTIVE && !mIsAutoReauthn) {
+        if (mRpMode == RpMode.ACTIVE) {
             // If there was already an account chooser state from a previously shown account
             // chooser, record the outcome and reset the state.
             if (mAccountChooserState != null) {
@@ -949,7 +958,6 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
             assert mSelectedAccount != null;
             assert mSelectedAccount.isSignIn();
-            onAccountSelected(new ButtonData(mSelectedAccount, /* idpMetadata= */ null));
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
