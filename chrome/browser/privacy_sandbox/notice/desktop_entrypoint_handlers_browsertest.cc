@@ -131,5 +131,22 @@ INSTANTIATE_TEST_SUITE_P(
                     GURL(chrome::kChromeUISettingsURL),
                     GURL(chrome::kChromeUIHistoryURL)));
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Check when profile setup is in progress, that no prompt is shown.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
+                       NoPromptProfileSetup) {
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
+  // Show the profile customization dialog.
+  browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
+      /*is_local_profile_creation=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  Mock::VerifyAndClearExpectations(mock_view_manager());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 }  // namespace
 }  // namespace privacy_sandbox

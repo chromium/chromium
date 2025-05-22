@@ -7,7 +7,9 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -74,6 +76,22 @@ void NavigationHandler::HandleNewNavigation(
       browser_window_interface->GetWebContentsModalDialogHostForWindow();
   if (!web_contents || web_contents->GetMaximumDialogSize().height() <
                            kMinRequiredDialogHeight) {
+    return;
+  }
+
+  // If a sign-in dialog is being currently displayed or is about to be
+  // displayed, the prompt should not be shown to avoid conflict.
+  // TODO(crbug.com/370806609): When we add sign in notice to queue, put this
+  // behind flag / remove.
+  auto* browser = browser_window_interface->GetBrowserForMigrationOnly();
+  bool signin_dialog_showing =
+      browser->signin_view_controller()->ShowsModalDialog();
+#if !BUILDFLAG(IS_CHROMEOS)
+  signin_dialog_showing =
+      signin_dialog_showing ||
+      IsProfileCustomizationBubbleSyncControllerRunning(browser);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  if (signin_dialog_showing) {
     return;
   }
 

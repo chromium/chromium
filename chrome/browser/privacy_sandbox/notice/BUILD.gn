@@ -101,6 +101,7 @@ if (!is_android) {
       ":notice_mojom",
       "//base",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui",
       "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/privacy_sandbox:privacy_sandbox",
       "//chrome/common",
