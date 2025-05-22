@@ -207,8 +207,7 @@ class AvatarToolbarButtonBaseBrowserTest {
   // behavior while the delay is happening. In order to stop the delay, use
   // `AvatarToolbarButton::TriggerTimeoutForTesting()` at any point.
   void SetInfiniteAvatarDelay(AvatarDelayType delay_type) {
-    delay_type_resets_.insert_or_assign(
-        delay_type,
+    delay_resets_.push_back(
         AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
             delay_type));
   }
@@ -219,8 +218,7 @@ class AvatarToolbarButtonBaseBrowserTest {
   // behavior where the delay is elapsed and then opening a new browser (while
   // no browser existed already).
   void SetZeroAvatarDelayForSigninPendingText() {
-    delay_type_resets_.insert_or_assign(
-        AvatarDelayType::kSigninPendingText,
+    delay_resets_.push_back(
         AvatarToolbarButton::
             CreateScopedZeroDelayOverrideSigninPendingTextForTesting());
   }
@@ -331,13 +329,18 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   // Sign in with the full account information that triggers the name greeting
   // followed by the history sync opt-in promo (if enabled and not syncing), but
-  // force timing both out right away to clear the animation.
+  // force timing both out right away to clear the animation (in all windows).
   AccountInfo SigninWithImageAndClearGreetingAndSyncPromo(
       AvatarToolbarButton* avatar,
       const std::u16string& email,
       const std::u16string& name = u"account_name") {
     AccountInfo account_info = SigninWithImage(email, name);
     avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+    // Make sure the cross window animation replay is not triggered. This is
+    // needed to clear the animation in all windows.
+    delay_resets_.push_back(
+        signin_ui_util::
+            CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
     ClearHistorySyncOptinPromoIfEnabled(avatar);
     return account_info;
   }
@@ -404,11 +407,17 @@ class AvatarToolbarButtonBaseBrowserTest {
   }
 
   // Enables sync with the full account information that triggers the name
-  // greeting, but force timing it out right away to clear the animation.
+  // greeting, but force timing it out right away to clear the animation (in all
+  // windows).
   AccountInfo EnableSyncWithImageAndClearGreeting(AvatarToolbarButton* avatar,
                                                   const std::u16string& email) {
     AccountInfo account_info = EnableSyncWithImage(email);
     avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+    // Make sure the cross window animation replay is not triggered. This is
+    // needed to clear the animation in all windows.
+    delay_resets_.push_back(
+        signin_ui_util::
+            CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
     return account_info;
   }
 
@@ -512,8 +521,7 @@ class AvatarToolbarButtonBaseBrowserTest {
   }
 
   base::CallbackListSubscription dependency_manager_subscription_;
-  std::map<AvatarDelayType, base::AutoReset<std::optional<base::TimeDelta>>>
-      delay_type_resets_;
+  std::vector<base::AutoReset<std::optional<base::TimeDelta>>> delay_resets_;
 };
 
 class AvatarToolbarButtonBrowserTest
@@ -713,9 +721,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 
   std::u16string name(u"TestName");
   AccountInfo account_info = Signin(u"test@gmail.com", name);
-  // Make a second account available so that the name is shown on browser
-  // startup.
-  signin::MakeAccountAvailable(GetIdentityManager(), "test2@gmail.com");
 
   // The button is in a waiting for image state, the name is not yet displayed.
   EXPECT_EQ(avatar->GetText(), std::u16string());
@@ -736,45 +741,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
   EXPECT_EQ(new_avatar_button->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-}
-
-// TODO(b/331746545): Check flaky test issue on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing \
-  DISABLED_ShowNameDoesNotAppearOnNewBrowserIfNotShowing
-#else
-#define MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing \
-  ShowNameDoesNotAppearOnNewBrowserIfNotShowing
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Name is shown and force clearing.
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
-                                              u"account_name");
-  ASSERT_EQ(avatar->GetText(), std::u16string());
-
-  Browser* new_browser = CreateBrowser(browser()->profile());
-  AvatarToolbarButton* new_avatar_button = GetAvatarToolbarButton(new_browser);
-
-  // During test setup, number of profiles may differ per platform.
-  size_t number_of_profiles =
-      g_browser_process->profile_manager()->GetNumberOfProfiles();
-#if BUILDFLAG(IS_CHROMEOS)
-  // In Ash tests setup creates more than 1 profile. When there is more than 1
-  // profile (not Ash specific logic), the name is always shown on browser that
-  // are signed in to show the greenting by default.
-  ASSERT_GT(number_of_profiles, 1u);
-  EXPECT_EQ(
-      new_avatar_button->GetText(),
-      l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, u"account_name"));
-
-#else
-  ASSERT_EQ(number_of_profiles, 1u);
-  // Name is not expected to be shown since it was already shown and cleared on
-  // the first browser.
-  EXPECT_EQ(new_avatar_button->GetText(), std::u16string());
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
@@ -1330,6 +1296,51 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_ShowsOnBrowserRestart DISABLED_PRE_ShowsOnBrowserRestart
+#define MAYBE_ShowsOnBrowserRestart DISABLED_ShowsOnBrowserRestart
+#else
+#define MAYBE_PRE_ShowsOnBrowserRestart PRE_ShowsOnBrowserRestart
+#define MAYBE_ShowsOnBrowserRestart ShowsOnBrowserRestart
+#endif
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
+                       MAYBE_PRE_ShowsOnBrowserRestart) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string email(u"test@gmail.com");
+  const std::u16string account_name(u"Account name");
+  const AccountInfo account_info = SigninWithImage(email, account_name);
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  // The button should return to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
+                       MAYBE_ShowsOnBrowserRestart) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // The greeting is shown after the restart.
+  ASSERT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, u"Account name"));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  // The button should return to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_HistorySyncOptinShowsAfterGreetingAndOnInactivity \
   DISABLED_HistorySyncOptinShowsAfterGreetingAndOnInactivity
 #else
@@ -1730,6 +1741,10 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
     MAYBE_TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers) {
+  // Make the delay for cross window animation replay zero to avoid flakiness.
+  base::AutoReset<std::optional<base::TimeDelta>> delay_override_reset =
+      signin_ui_util::
+          CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting();
   base::HistogramTester histogram_tester;
   Profile* profile = browser()->profile();
   Browser* browser_1 = browser();
@@ -2324,11 +2339,24 @@ IN_PROC_BROWSER_TEST_P(
     AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
     MAYBE_SignedInWithNewSessionKeepWorkBadge) {
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // The greetings are shown due to the management service override (unaware of
+  // the management acceptance after restart).
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, u"TestName"));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  if (IsParamFeatureEnabled()) {
+    // The greeting is followed by the history sync opt-in.
+    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+    avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+  }
+
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
                                                     false);
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
 
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   EXPECT_EQ(avatar->GetText(), u"Custom Label");
   EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
                 ->GetEnterpriseProfileLabel(),
@@ -2481,7 +2509,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
+  const std::u16string name(u"new_profile_name");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com", name);
 
   SimulateSigninError(/*web_sign_out=*/true);
   ASSERT_EQ(avatar->GetText(), std::u16string());
@@ -2495,6 +2524,11 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   Profile* loaded_profile = ProfileLoader().LoadFirstAndOnlyProfile();
   Browser* new_browser = CreateBrowser(loaded_profile);
   AvatarToolbarButton* new_avatar = GetAvatarToolbarButton(new_browser);
+  // The greetings are shown after the restart.
+  EXPECT_EQ(new_avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+  new_avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+
   // The error text is expected to be shown even if the error delay has not
   // reached yet.
   EXPECT_EQ(new_avatar->GetText(),

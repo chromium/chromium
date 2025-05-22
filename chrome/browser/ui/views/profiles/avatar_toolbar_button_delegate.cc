@@ -360,7 +360,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
     refresh_tokens_loaded_ = true;
     if (!signin_ui_util::ShouldShowAnimatedIdentityOnOpeningWindow(
-            GetProfileAttributesStorage(), &profile_.get())) {
+            profile_.get())) {
       return;
     }
 

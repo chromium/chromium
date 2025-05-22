@@ -50,8 +50,6 @@ namespace signin_ui_util {
 namespace {
 const char kMainEmail[] = "main_email@example.com";
 const GaiaId::Literal kMainGaiaID("main_gaia_id");
-const char kSecondaryEmail[] = "secondary_email@example.com";
-const GaiaId::Literal kSecondaryGaiaID("secondary_gaia_id");
 }  // namespace
 
 using testing::_;
@@ -618,55 +616,6 @@ TEST_F(SigninUiUtilTest, ShowReauthTab) {
       testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 
-TEST_F(SigninUiUtilTest,
-       ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiProfiles) {
-  const char kSecondProfile[] = "SecondProfile";
-  const char16_t kSecondProfile16[] = u"SecondProfile";
-  const base::FilePath profile_path =
-      profile_manager()->profiles_dir().AppendASCII(kSecondProfile);
-  ProfileAttributesInitParams params;
-  params.profile_path = profile_path;
-  params.profile_name = kSecondProfile16;
-  profile_manager()->profile_attributes_storage()->AddProfile(
-      std::move(params));
-
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager()->profile_attributes_storage(), profile()));
-}
-
-TEST_F(SigninUiUtilTest,
-       ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiSignin) {
-  GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      kMainGaiaID, kMainEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager()->profile_attributes_storage(), profile()));
-
-  // The identity can be shown again immediately (which is what happens if there
-  // is multiple windows at startup).
-  RecordAnimatedIdentityTriggered(profile());
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager()->profile_attributes_storage(), profile()));
-}
-
-TEST_F(
-    SigninUiUtilTest,
-    ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsFalseForSingleProfileSingleSignin) {
-  GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-      kMainGaiaID, kMainEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-  EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager()->profile_attributes_storage(), profile()));
-}
-
 TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   const GURL add_account_url = GaiaUrls::GetInstance()->add_account_url();
   const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
@@ -883,6 +832,16 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+TEST_F(SigninUiUtilTest,
+       ShouldShowAnimatedIdentityOnOpeningWindowIfMultipleWindowsAtStartup) {
+  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile()));
+  // Record that the identity was shown.
+  RecordAnimatedIdentityTriggered(profile());
+  // The identity can be shown again immediately (which is what happens if there
+  // is multiple windows at startup).
+  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile()));
+}
+
 // This test does not use the SigninUiUtilTest test fixture, because it
 // needs a mock time environment, and BrowserWithTestWindowTest may be flaky
 // when used with mock time (see https://crbug.com/1014790).
@@ -901,19 +860,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
 
-  // Setup accounts.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      kMainGaiaID, kMainEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
-      signin_metrics::AccessPoint::kUnknown,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager.profile_attributes_storage(), profile));
+  EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
 
   // Animation is shown once.
   RecordAnimatedIdentityTriggered(profile);
@@ -922,8 +869,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   task_environment.FastForwardBy(base::Seconds(6));
 
   // Animation is not shown again in a new window.
-  EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
-      *profile_manager.profile_attributes_storage(), profile));
+  EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile));
 }
 
 }  // namespace signin_ui_util

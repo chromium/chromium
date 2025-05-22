@@ -73,6 +73,8 @@ const char kAnimatedIdentityKeyName[] = "animated_identity_user_data";
 
 constexpr base::TimeDelta kDelayForCrossWindowAnimationReplay =
     base::Seconds(5);
+std::optional<base::TimeDelta>
+    g_delay_for_cross_window_animation_replay_for_testing;
 
 // UserData attached to the user profile, keeping track of the last time the
 // animation was shown to the user.
@@ -552,32 +554,26 @@ std::string GetAllowedDomain(std::string signin_pattern) {
   return domain;
 }
 
-bool ShouldShowAnimatedIdentityOnOpeningWindow(
-    const ProfileAttributesStorage& profile_attributes_storage,
-    Profile* profile) {
-  DCHECK(profile);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  DCHECK(identity_manager->AreRefreshTokensLoaded());
-
-  base::TimeTicks animation_last_shown =
-      AvatarButtonUserData::GetAnimatedIdentityLastShown(profile);
+bool ShouldShowAnimatedIdentityOnOpeningWindow(Profile& profile) {
+  const base::TimeTicks animation_last_shown =
+      AvatarButtonUserData::GetAnimatedIdentityLastShown(&profile);
   // When a new window is created, only show the animation if it was never shown
   // for this profile, or if it was shown in another window in the last few
   // seconds (because the user may have missed it).
   if (!animation_last_shown.is_null() &&
       base::TimeTicks::Now() - animation_last_shown >
-          kDelayForCrossWindowAnimationReplay) {
+          g_delay_for_cross_window_animation_replay_for_testing.value_or(
+              kDelayForCrossWindowAnimationReplay)) {
     return false;
   }
+  return true;
+}
 
-  // Show the user identity for users with multiple profiles.
-  if (profile_attributes_storage.GetNumberOfProfiles() > 1) {
-    return true;
-  }
-
-  // Show the user identity for users with multiple signed-in accounts.
-  return identity_manager->GetAccountsWithRefreshTokens().size() > 1;
+base::AutoReset<std::optional<base::TimeDelta>>
+CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting() {
+  return base::AutoReset<std::optional<base::TimeDelta>>(
+      &g_delay_for_cross_window_animation_replay_for_testing,
+      base::TimeDelta());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
