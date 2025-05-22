@@ -50,6 +50,7 @@ generate_grd("build_grdp") {
   if (!is_ios) {
     input_files += [
       "chrome_logo_dark.svg",
+      "icon_arrow_back.svg",
       "icon_edit.svg",
     ]
   }
@@ -63,7 +64,6 @@ generate_grd("build_grdp") {
       "chevron_down.svg",
       "dark/arrow_down.svg",
       "dark/chevron_down.svg",
-      "icon_arrow_back.svg",
       "icon_arrow_drop_down_cr23.svg",
       "icon_arrow_drop_up_cr23.svg",
       "icon_bookmark.svg",
