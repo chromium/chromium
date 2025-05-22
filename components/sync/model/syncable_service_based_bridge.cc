@@ -331,6 +331,13 @@ std::string SyncableServiceBasedBridge::GetStorageKey(
   NOTREACHED();
 }
 
+bool SyncableServiceBasedBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  // Implementation is trivial as this bridge is meant to cache locally a copy
+  // of the server-side data in proto format as-is.
+  return true;
+}
+
 bool SyncableServiceBasedBridge::SupportsGetClientTag() const {
   return false;
 }

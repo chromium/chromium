@@ -63,6 +63,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   std::unique_ptr<DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const EntityData& entity_data) const override;
   std::string GetStorageKey(const EntityData& entity_data) const override;
+  bool IsEntityDataValid(const EntityData& entity_data) const override;
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   ConflictResolution ResolveConflict(
