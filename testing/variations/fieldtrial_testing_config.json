@@ -14106,6 +14106,21 @@
             ]
         }
     ],
+    "MakeAccountsAvailableInIdentityManager": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MakeAccountsAvailableInIdentityManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "MaliciousApkDownloadCheck": [
         {
             "platforms": [
