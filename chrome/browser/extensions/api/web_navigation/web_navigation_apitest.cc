@@ -34,6 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -49,6 +50,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
@@ -103,25 +105,32 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
+    if (change.type() != TabStripModelChange::kInserted) {
       return;
+    }
 
     content::WebContentsObserver::Observe(
         change.GetInsert()->contents[0].contents);
     tab_strip_model->RemoveObserver(this);
+
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            web_contents(),
+            base::BindRepeating(
+                &DelayLoadStartAndExecuteJavascript::InsertThrottle,
+                base::Unretained(this)));
   }
 
-  // WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL() != delay_url_ || !render_frame_host_) {
+  void InsertThrottle(content::NavigationThrottleRegistry& registry) {
+    auto& navigation_handle = registry.GetNavigationHandle();
+    if (navigation_handle.GetURL() != delay_url_ || !render_frame_host_) {
       return;
     }
 
     auto throttle =
-        std::make_unique<WillStartRequestObserverThrottle>(navigation_handle);
+        std::make_unique<WillStartRequestObserverThrottle>(registry);
     throttle_ = throttle->AsWeakPtr();
-    navigation_handle->RegisterThrottleForTesting(std::move(throttle));
+    registry.AddThrottle(std::move(throttle));
 
     if (has_user_gesture_) {
       render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(
@@ -135,21 +144,26 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     script_was_executed_ = true;
   }
 
+  // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage())
+    if (!navigation_handle->HasCommitted() ||
+        navigation_handle->IsErrorPage()) {
       return;
+    }
 
     if (script_was_executed_ &&
         base::EndsWith(navigation_handle->GetURL().spec(), until_url_suffix_,
                        base::CompareCase::SENSITIVE)) {
       content::WebContentsObserver::Observe(nullptr);
-      if (throttle_)
+      if (throttle_) {
         throttle_->Unblock();
+      }
     }
 
-    if (navigation_handle->IsInMainFrame())
+    if (navigation_handle->IsInMainFrame()) {
       render_frame_host_ = navigation_handle->GetRenderFrameHost();
+    }
   }
 
   void set_has_user_gesture(bool has_user_gesture) {
@@ -159,8 +173,9 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
  private:
   class WillStartRequestObserverThrottle : public content::NavigationThrottle {
    public:
-    explicit WillStartRequestObserverThrottle(content::NavigationHandle* handle)
-        : NavigationThrottle(handle) {}
+    explicit WillStartRequestObserverThrottle(
+        content::NavigationThrottleRegistry& registry)
+        : NavigationThrottle(registry) {}
     ~WillStartRequestObserverThrottle() override = default;
 
     const char* GetNameForLogging() override {
@@ -197,6 +212,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   bool script_was_executed_ = false;
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
       render_frame_host_ = nullptr;
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so
@@ -362,9 +378,7 @@ class WebNavigationApiPrerenderTestWithServiceWorker
   WebNavigationApiPrerenderTestWithServiceWorker()
       // This test uses chrome.tabs.executeScript, which is not available in
       // MV3 or later. See crbug.com/332328868.
-      : WebNavigationApiTest(ContextType::kServiceWorkerMV2) {
-
-  }
+      : WebNavigationApiTest(ContextType::kServiceWorkerMV2) {}
   ~WebNavigationApiPrerenderTestWithServiceWorker() override = default;
   WebNavigationApiPrerenderTestWithServiceWorker(
       const WebNavigationApiPrerenderTestWithServiceWorker&) = delete;

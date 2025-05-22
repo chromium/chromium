@@ -34,9 +34,11 @@
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -53,20 +55,11 @@ const char kGenericLoginURLText[] = "its login page";
 const char kBrokenSSL[] = "https://broken.ssl";
 const char kWiFiSSID[] = "WiFiSSID";
 
-enum ExpectWiFi {
-  EXPECT_WIFI_NO,
-  EXPECT_WIFI_YES
-};
+enum ExpectWiFi { EXPECT_WIFI_NO, EXPECT_WIFI_YES };
 
-enum ExpectWiFiSSID {
-  EXPECT_WIFI_SSID_NO,
-  EXPECT_WIFI_SSID_YES
-};
+enum ExpectWiFiSSID { EXPECT_WIFI_SSID_NO, EXPECT_WIFI_SSID_YES };
 
-enum ExpectLoginURL {
-  EXPECT_LOGIN_URL_NO,
-  EXPECT_LOGIN_URL_YES
-};
+enum ExpectLoginURL { EXPECT_LOGIN_URL_NO, EXPECT_LOGIN_URL_YES };
 
 // A NavigationThrottle that observes failed requests and shows a captive portal
 // interstitial.
@@ -74,7 +67,7 @@ class CaptivePortalTestingNavigationThrottle
     : public content::NavigationThrottle {
  public:
   CaptivePortalTestingNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       const GURL& login_url,
       bool is_wifi_connection,
       const std::string& wifi_ssid);
@@ -95,11 +88,11 @@ class CaptivePortalTestingNavigationThrottle
 };
 
 CaptivePortalTestingNavigationThrottle::CaptivePortalTestingNavigationThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     const GURL& login_url,
     bool is_wifi_connection,
     const std::string& wifi_ssid)
-    : content::NavigationThrottle(handle),
+    : content::NavigationThrottle(registry),
       login_url_(login_url),
       is_wifi_connection_(is_wifi_connection),
       wifi_ssid_(wifi_ssid) {}
@@ -125,43 +118,6 @@ CaptivePortalTestingNavigationThrottle::WillFailRequest() {
   return {CANCEL, net::ERR_CERT_COMMON_NAME_INVALID, html};
 }
 
-// A WebContentsObserver which installs a navigation throttle that creates
-// CaptivePortalBlockingPages.
-class TestingThrottleInstaller : public content::WebContentsObserver {
- public:
-  TestingThrottleInstaller(content::WebContents* web_contents,
-                           const GURL& login_url,
-                           bool is_wifi_connection,
-                           const std::string& wifi_ssid);
-  ~TestingThrottleInstaller() override = default;
-
-  // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
- private:
-  const GURL login_url_;
-  bool is_wifi_connection_;
-  std::string wifi_ssid_;
-};
-
-TestingThrottleInstaller::TestingThrottleInstaller(
-    content::WebContents* web_contents,
-    const GURL& login_url,
-    bool is_wifi_connection,
-    const std::string& wifi_ssid)
-    : content::WebContentsObserver(web_contents),
-      login_url_(login_url),
-      is_wifi_connection_(is_wifi_connection),
-      wifi_ssid_(wifi_ssid) {}
-
-void TestingThrottleInstaller::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  navigation_handle->RegisterThrottleForTesting(
-      std::make_unique<CaptivePortalTestingNavigationThrottle>(
-          navigation_handle, login_url_, is_wifi_connection_, wifi_ssid_));
-}
-
 }  // namespace
 
 class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
@@ -182,7 +138,12 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
                         ExpectLoginURL expect_login_url);
 
  private:
-  std::unique_ptr<TestingThrottleInstaller> testing_throttle_installer_;
+  void InsertThrottle(const GURL& login_url,
+                      bool is_wifi_connection,
+                      const std::string& wifi_ssid,
+                      content::NavigationThrottleRegistry& registry);
+
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -198,8 +159,12 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents();
   DCHECK(contents);
 
-  testing_throttle_installer_ = std::make_unique<TestingThrottleInstaller>(
-      contents, login_url, is_wifi_connection, wifi_ssid);
+  throttle_inserter_ =
+      std::make_unique<content::TestNavigationThrottleInserter>(
+          contents,
+          base::BindRepeating(&CaptivePortalBlockingPageTest::InsertThrottle,
+                              base::Unretained(this), login_url,
+                              is_wifi_connection, wifi_ssid));
   // We cancel the navigation with ERR_BLOCKED_BY_CLIENT so it doesn't get
   // handled by the normal SSLErrorNavigationThrotttle since this test only
   // checks the behavior of the Blocking Page, not the integration with that
@@ -234,6 +199,15 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
     ExpectLoginURL expect_login_url) {
   TestInterstitial(is_wifi_connection, wifi_ssid, login_url, expect_wifi,
                    expect_wifi_ssid, expect_login_url, login_url.host());
+}
+
+void CaptivePortalBlockingPageTest::InsertThrottle(
+    const GURL& login_url,
+    bool is_wifi_connection,
+    const std::string& wifi_ssid,
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(std::make_unique<CaptivePortalTestingNavigationThrottle>(
+      registry, login_url, is_wifi_connection, wifi_ssid));
 }
 
 // If the connection is not a Wi-Fi connection, the wired network version of the
@@ -303,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest,
 IN_PROC_BROWSER_TEST_F(CaptivePortalBlockingPageTest,
                        MAYBE_WiFi_SSID_NoLoginURL) {
   const GURL kLandingUrl(captive_portal::CaptivePortalDetector::kDefaultURL);
-  TestInterstitial(true, kWiFiSSID, kLandingUrl,
-                   EXPECT_WIFI_YES, EXPECT_WIFI_SSID_YES, EXPECT_LOGIN_URL_NO);
+  TestInterstitial(true, kWiFiSSID, kLandingUrl, EXPECT_WIFI_YES,
+                   EXPECT_WIFI_SSID_YES, EXPECT_LOGIN_URL_NO);
 }
 
 // Same as above, with no SSID and no login URL.
