@@ -10,8 +10,8 @@
 #closeFeedbackToastButton {
   margin-block-end: 8px;
   margin-block-start: 8px;
-  margin-inline-end: 0;
-  margin-inline-start: 0;
+  margin-inline-end: 2px;
+  margin-inline-start: 2px;
 }
 
 #feedbackButtonContainer {
@@ -26,11 +26,12 @@
   --color-toast-button: #1558D6;
   --color-toast-foreground: #474747;
   --cr-icon-button-fill-color: #5E5E5E;
+  border-radius: 12px;
   box-shadow: 0px 2px 6px 0px rgba(23, 23, 23, 0.32);
   display: flex;
   height: 48px;
   left: 0;
-  margin: auto auto 16px;
+  margin: auto auto 12px;
   min-height: 48px;
   padding: 0;
   right: 0;
@@ -50,6 +51,7 @@
 }
 
 #sendFeedbackButton {
+  --cr-hover-background-color: transparent;
   background-color: transparent;
   border: none;
   margin-block-end: 6px;
