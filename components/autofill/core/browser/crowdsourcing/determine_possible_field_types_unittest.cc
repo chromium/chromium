@@ -698,6 +698,8 @@ class PreProcessStateMatchingTypesTest : public testing::Test {
 TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   const char* const kValidMatches[] = {"by", "Bavaria", "Bayern",
                                        "BY", "B.Y",     "B-Y"};
+  std::vector<const AutofillProfile*> profiles = {&profile()};
+
   for (const char* valid_match : kValidMatches) {
     SCOPED_TRACE(valid_match);
     FormData form;
@@ -713,7 +715,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
     ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-    EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
                                              client().GetAppLocale()),
                 ElementsAre(form_structure.field(1)->global_id()));
   }
@@ -731,7 +733,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
                                              client().GetAppLocale()),
                 IsEmpty());
   }
@@ -758,7 +760,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
   ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-  EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
+  EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure,
                                            client().GetAppLocale()),
               ElementsAre(form_structure.field(1)->global_id()));
 }

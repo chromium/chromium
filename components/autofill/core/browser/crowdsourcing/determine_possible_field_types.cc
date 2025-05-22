@@ -236,21 +236,21 @@ std::vector<std::u16string> GetMatchingCompleteDateFormats(
 }  // namespace
 
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
-    base::span<const AutofillProfile> profiles,
+    base::span<const AutofillProfile*> profiles,
     const FormStructure& form_structure,
     const std::string& app_locale) {
   std::set<FieldGlobalId> fields_that_match_state;
-  for (const auto& profile : profiles) {
+  for (const auto* profile : profiles) {
     std::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =
-            profile.GetAddress().GetCanonicalizedStateName();
+            profile->GetAddress().GetCanonicalizedStateName();
 
     if (!canonical_state_name_from_profile) {
       continue;
     }
 
     const std::u16string& country_code =
-        profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
+        profile->GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale);
 
     for (auto& field : form_structure) {
       if (fields_that_match_state.contains(field->global_id())) {

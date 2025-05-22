@@ -223,13 +223,6 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     return false;
   }
 
-  // Copy the profile and credit card data, so that it can be accessed on a
-  // separate thread.
-  std::vector<AutofillProfile> copied_profiles = base::ToVector(
-      profiles, [](const AutofillProfile* profile) { return *profile; });
-  std::vector<CreditCard> copied_credit_cards = base::ToVector(
-      credit_cards, [](const CreditCard* card) { return *card; });
-
   FormStructure::FormAssociations form_associations;
   if (form->IsAutofillable()) {
     form_associations = client_->GetFormDataImporter()->GetFormAssociations(
@@ -243,8 +236,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   std::set<FieldGlobalId> fields_that_match_state =
-      PreProcessStateMatchingTypes(copied_profiles, *form,
-                                   client_->GetAppLocale());
+      PreProcessStateMatchingTypes(profiles, *form, client_->GetAppLocale());
 
   task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -291,7 +283,10 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                 EncodeUploadRequest(*form, options);
             return std::pair(std::move(form), std::move(upload_contents));
           },
-          std::move(copied_profiles), std::move(copied_credit_cards),
+          // Beware not to bind std::vector<T*> or base::span<T> because this
+          // function is called asynchronously.
+          base::ToVector(profiles, [](const auto* ptr) { return *ptr; }),
+          base::ToVector(credit_cards, [](const auto* ptr) { return *ptr; }),
           std::move(loyalty_cards), last_unlocked_credit_card_cvc,
           client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),

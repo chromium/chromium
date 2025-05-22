@@ -28,7 +28,7 @@ class LoyaltyCard;
 // This function is intended to run on the UI thread and its result can be
 // passed to DeterminePossibleFieldTypesForUpload().
 [[nodiscard]] std::set<FieldGlobalId> PreProcessStateMatchingTypes(
-    base::span<const AutofillProfile> profiles,
+    base::span<const AutofillProfile*> profiles,
     const FormStructure& form_structure,
     const std::string& app_locale);
 
