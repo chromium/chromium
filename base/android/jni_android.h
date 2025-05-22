@@ -63,8 +63,10 @@ inline void DetachFromVM() {
 // Initializes the global JVM.
 BASE_EXPORT void InitVM(JavaVM* vm);
 
-// Returns true if the global JVM has been initialized.
-inline bool IsVMInitialized() {
+// Returns true if the global JVM has been initialized. This happens
+// immediately on native library load, so this is still correct even very
+// early in startup.
+inline bool IsJavaAvailable() {
   return jni_zero::IsVMInitialized();
 }
 

@@ -288,7 +288,7 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
     // be in a process where the base::android::ApplicationStatusListener::New
     // impl is unavailable.
     // (See https://crbug.com/881572)
-  } else if (base::android::IsVMInitialized()) {
+  } else if (base::android::IsJavaAvailable()) {
     owned_app_status_listener_ = base::android::ApplicationStatusListener::New(
         base::BindRepeating(&SimpleIndex::OnApplicationStateChange,
                             weak_ptr_factory_.GetWeakPtr()));
