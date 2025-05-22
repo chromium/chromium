@@ -123,6 +123,9 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 // The parameter key for gen204 request.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 
+// The test time.
+constexpr base::Time kTestTime = base::Time::FromSecondsSinceUnixEpoch(1000);
+
 // kFakeContentBytes and kNewFakeContentBytes needs to outlive the query
 // controller, so initialize it here.
 const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
@@ -732,9 +735,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
 
   // Wait for the access token request for the interaction request to be sent.
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -849,9 +852,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
 
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
@@ -911,9 +914,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(25, 50, 30, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
 
   // Wait for async flows to complete.
   ASSERT_TRUE(url_response_future.Wait());
@@ -1047,9 +1050,9 @@ TEST_F(LensOverlayQueryControllerTest,
   region->box = gfx::RectF(30, 40, 50, 60);
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
 
@@ -1116,7 +1119,8 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendRegionSearch(
-      std::move(region), lens::REGION_SEARCH, additional_search_query_params,
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params,
       std::make_optional<SkBitmap>(region_bitmap));
 
   ASSERT_TRUE(url_response_future.Wait());
@@ -1242,7 +1246,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -1349,7 +1353,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.Wait());
 
   query_controller.SendTextOnlyQuery(
-      "", lens::LensOverlaySelectionType::SELECT_TEXT_HIGHLIGHT,
+      kTestTime, "", lens::LensOverlaySelectionType::SELECT_TEXT_HIGHLIGHT,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
@@ -1426,7 +1430,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.Wait());
 
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -1561,7 +1566,8 @@ TEST_F(LensOverlayQueryControllerTest,
       base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -1696,7 +1702,8 @@ TEST_F(LensOverlayQueryControllerTest,
       base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -1840,7 +1847,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send the contextual text query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
 
   // Verify the query controller did not issue the search request yet.
@@ -1908,7 +1916,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send the contextual text query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
 
   // Verify the query controller did not issue the search request yet.
@@ -2032,7 +2041,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send the contextual text query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
 
   // Verify the query controller did issue the search request.
@@ -2156,7 +2166,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send a contextual search query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
 
   ASSERT_TRUE(base::test::RunUntil(
@@ -2242,7 +2253,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send a query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
 
@@ -2278,7 +2290,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send another contextual search query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
 
@@ -2309,7 +2322,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send another contextual search query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
 
@@ -2452,7 +2466,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send a contextual search query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
 
@@ -2608,7 +2623,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send a contextual search query.
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
 
@@ -3033,9 +3049,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(full_image_response_future.IsReady());
   std::string first_analytics_id =
       query_controller.sent_full_image_request_id().analytics_id();
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
   query_controller.EndQuery();
@@ -3108,7 +3124,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
 
   // Verify the interaction request id sequence was incremented.
@@ -3255,7 +3271,7 @@ TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
 
   ASSERT_TRUE(url_response_future.Wait());
@@ -3341,7 +3357,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
@@ -3408,7 +3424,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
@@ -3476,7 +3492,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(
-      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      kTestTime, std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
       additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
@@ -3667,9 +3683,9 @@ TEST_F(LensOverlayQueryControllerTest,
       /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
 
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
 
@@ -3719,7 +3735,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
   ASSERT_TRUE(full_image_response_future.Wait());
 
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -3866,7 +3883,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF_SmallPdf) {
   ASSERT_TRUE(full_image_response_future.Wait());
 
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -3940,7 +3958,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
       base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -4081,7 +4100,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDFWithNewContentPayload) {
   ASSERT_TRUE(full_image_response_future.Wait());
 
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -4245,7 +4265,8 @@ TEST_F(LensOverlayQueryControllerTest,
       lens::MimeType::kHtml, std::nullopt, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
-      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
       additional_search_query_params);
   ASSERT_TRUE(url_response_future.Wait());
   WaitForSuggestInputsWithEncodedImageSignals();
@@ -4423,9 +4444,9 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   full_image_response_future.Clear();
 
   task_environment_->FastForwardBy(base::TimeDelta(base::Minutes(60)));
-  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
-                                    additional_search_query_params,
-                                    std::nullopt);
+  query_controller.SendRegionSearch(
+      kTestTime, std::move(region), lens::REGION_SEARCH,
+      additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
   query_controller.EndQuery();
 

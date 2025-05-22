@@ -347,6 +347,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Testing function to issue a searchbox request.
   void IssueSearchBoxRequestForTesting(
+      base::Time query_start_time,
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
@@ -514,18 +515,21 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Makes a Lens request and updates all state related to the Lens request. If
   // region_bitmap is provided, it will use those bytes to send to the Lens
   // server instead of cropping the region from the full page screenshot.
-  void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region,
+  void IssueLensRequest(base::Time query_start_time,
+                        lens::mojom::CenterRotatedBoxPtr region,
                         lens::LensOverlaySelectionType selection_type,
                         std::optional<SkBitmap> region_bitmap);
 
   // Issues a multimodal request to the query controller.
-  void IssueMultimodalRequest(lens::mojom::CenterRotatedBoxPtr region,
+  void IssueMultimodalRequest(base::Time query_start_time,
+                              lens::mojom::CenterRotatedBoxPtr region,
                               const std::string& text_query,
                               lens::LensOverlaySelectionType selection_type,
                               std::optional<SkBitmap> region_bitmap);
 
   // Tries to update the page content and then issues a searchbox request.
   void IssueSearchBoxRequest(
+      base::Time query_start_time,
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
@@ -533,6 +537,7 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Issues a contextual text request to the query controller.
   void IssueContextualTextRequest(
+      base::Time query_start_time,
       const std::string& text_query,
       lens::LensOverlaySelectionType selection_type);
 
@@ -910,13 +915,15 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().
-  void IssueTextSelectionRequestInner(const std::string& text_query,
+  void IssueTextSelectionRequestInner(base::Time query_start_time,
+                                      const std::string& text_query,
                                       int selection_start_index,
                                       int selection_end_index);
 
   // Handles a request (either region or multimodal) trigger by sending
   // the request to the query controller.
   void IssueSearchBoxRequestPart2(
+      base::Time query_start_time,
       const std::string& search_box_text,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,

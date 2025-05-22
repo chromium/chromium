@@ -160,6 +160,7 @@ class LensOverlayQueryController {
   // the region out of the screenshot. This should be used to provide a higher
   // definition image than image cropping would provide.
   virtual void SendRegionSearch(
+      base::Time query_start_time,
       lens::mojom::CenterRotatedBoxPtr region,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
@@ -167,6 +168,7 @@ class LensOverlayQueryController {
 
   // Sends a text-only interaction. Expected to be called multiple times.
   virtual void SendTextOnlyQuery(
+      base::Time query_start_time,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
@@ -174,12 +176,14 @@ class LensOverlayQueryController {
   // Sends a text query interaction contextualized to the current page. Expected
   // to be called multiple times.
   virtual void SendContextualTextQuery(
+      base::Time query_start_time,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
 
   // Sends a multimodal interaction. Expected to be called multiple times.
   virtual void SendMultimodalRequest(
+      base::Time query_start_time,
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
@@ -483,6 +487,7 @@ class LensOverlayQueryController {
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
+      base::Time query_start_time,
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
@@ -536,6 +541,7 @@ class LensOverlayQueryController {
 
   // Creates the URL to load in the side panel and sends it to the callback.
   void CreateSearchUrlAndSendToCallback(
+      base::Time query_start_time,
       std::optional<std::string> query_text,
       std::map<std::string, std::string> additional_search_query_params,
       lens::LensOverlaySelectionType selection_type,

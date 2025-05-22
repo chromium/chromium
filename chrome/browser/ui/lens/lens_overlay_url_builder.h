@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
@@ -38,6 +39,7 @@ GURL AppendInvocationSourceParamToURL(
     lens::LensOverlayInvocationSource invocation_source);
 
 GURL BuildTextOnlySearchURL(
+    base::Time query_start_time,
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
@@ -47,6 +49,7 @@ GURL BuildTextOnlySearchURL(
     bool use_dark_mode);
 
 GURL BuildLensSearchURL(
+    base::Time query_start_time,
     std::optional<std::string> text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,

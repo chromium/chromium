@@ -105,6 +105,7 @@ void TestLensOverlayQueryController::StartQueryFlow(
 }
 
 void TestLensOverlayQueryController::SendRegionSearch(
+    base::Time query_start_time,
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType selection_type,
     std::map<std::string, std::string> additional_search_query_params,
@@ -114,22 +115,25 @@ void TestLensOverlayQueryController::SendRegionSearch(
   last_lens_selection_type_ = selection_type;
 
   LensOverlayQueryController::SendRegionSearch(
-      std::move(region), selection_type, additional_search_query_params,
-      region_bytes);
+      query_start_time, std::move(region), selection_type,
+      additional_search_query_params, region_bytes);
 }
 
 void TestLensOverlayQueryController::SendTextOnlyQuery(
+    base::Time query_start_time,
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
   last_queried_text_ = query_text;
   last_lens_selection_type_ = lens_selection_type;
 
-  LensOverlayQueryController::SendTextOnlyQuery(query_text, lens_selection_type,
+  LensOverlayQueryController::SendTextOnlyQuery(query_start_time, query_text,
+                                                lens_selection_type,
                                                 additional_search_query_params);
 }
 
 void TestLensOverlayQueryController::SendMultimodalRequest(
+    base::Time query_start_time,
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& query_text,
     lens::LensOverlaySelectionType multimodal_selection_type,
@@ -141,11 +145,12 @@ void TestLensOverlayQueryController::SendMultimodalRequest(
   last_lens_selection_type_ = multimodal_selection_type;
 
   LensOverlayQueryController::SendMultimodalRequest(
-      std::move(region), query_text, multimodal_selection_type,
-      additional_search_query_params, region_bitmap);
+      query_start_time, std::move(region), query_text,
+      multimodal_selection_type, additional_search_query_params, region_bitmap);
 }
 
 void TestLensOverlayQueryController::SendContextualTextQuery(
+    base::Time query_start_time,
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
@@ -153,7 +158,8 @@ void TestLensOverlayQueryController::SendContextualTextQuery(
   last_lens_selection_type_ = lens_selection_type;
 
   LensOverlayQueryController::SendContextualTextQuery(
-      query_text, lens_selection_type, additional_search_query_params);
+      query_start_time, query_text, lens_selection_type,
+      additional_search_query_params);
 }
 
 void TestLensOverlayQueryController::ResetTestingState() {

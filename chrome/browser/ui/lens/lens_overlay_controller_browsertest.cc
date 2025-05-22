@@ -274,6 +274,9 @@ constexpr char kLensRequestQueryParameter[] = "vsrid";
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
+// The test time.
+constexpr base::Time kTestTime = base::Time::FromSecondsSinceUnixEpoch(1000);
+
 std::string EncodeRequestId(const lens::LensOverlayRequestId& request_id) {
   std::string serialized_request_id;
   CHECK(request_id.SerializeToString(&serialized_request_id));
@@ -2610,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -2683,7 +2686,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   int tabs = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -2788,7 +2791,7 @@ IN_PROC_BROWSER_TEST_F(
   int tabs = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -2883,7 +2886,7 @@ IN_PROC_BROWSER_TEST_F(
   int tabs = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -3185,7 +3188,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -3300,7 +3303,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
   controller->IssueSearchBoxRequestForTesting(
-      "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -3346,7 +3349,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Issue a regular searchbox request.
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -3367,7 +3370,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver second_searchbox_query_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
   // We can't use content::WaitForLoadStop here since the last navigation is
@@ -3386,7 +3389,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver third_searchbox_query_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueSearchBoxRequestForTesting(
-      "blue", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "blue", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -4026,7 +4029,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver first_searchbox_query_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   first_searchbox_query_observer.Wait();
@@ -4056,7 +4059,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver second_searchbox_query_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
   second_searchbox_query_observer.Wait();
 
@@ -5836,7 +5839,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -5859,7 +5862,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -5979,7 +5982,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Issue a query.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
   // Verify transitions to live page.
@@ -6027,7 +6030,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Simulate a zero suggest suggestion being chosen.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
   // Issuing a search from the overlay state can only be done through the
@@ -6165,7 +6168,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -6187,7 +6190,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -6241,7 +6244,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   int tab_count = browser()->tab_strip_model()->count();
 
   controller->IssueSearchBoxRequestForTesting(
-      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -6737,7 +6740,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -6759,7 +6762,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -6822,7 +6825,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -7084,7 +7087,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Simulate a zero suggest suggestion being chosen.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
   // Issuing a search from the overlay state can only be done through the
@@ -7221,7 +7224,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Simulate a manual typed suggestion being entered.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -7417,7 +7420,7 @@ IN_PROC_BROWSER_TEST_F(
   // Show ZPS and issue a query.
   controller->OnZeroSuggestShownForTesting();
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
@@ -7457,7 +7460,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Issue a search query before ZPS is shown.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
@@ -7472,7 +7475,7 @@ IN_PROC_BROWSER_TEST_F(
 
   controller->OnZeroSuggestShownForTesting();
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -7518,7 +7521,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Issue a search query.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
@@ -7534,7 +7537,7 @@ IN_PROC_BROWSER_TEST_F(
   follow_up_query_issued_count =
       test_side_panel_coordinator->side_panel_loading_set_to_true_;
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -7577,7 +7580,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -7595,7 +7598,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueSearchBoxRequestForTesting(
-      "apples", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "apples", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -7662,7 +7665,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Make a searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -7684,7 +7687,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -7728,7 +7731,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -8003,7 +8006,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
 
   // Simulate a zero suggest suggestion being chosen.
   controller->IssueSearchBoxRequestForTesting(
-      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      kTestTime, "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
 
   // Issuing a search from the overlay state can only be done through the
@@ -8208,7 +8211,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
 
   // Make a searchbox query to open the live page and side panel.
   controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
@@ -8776,7 +8779,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
   controller->IssueSearchBoxRequestForTesting(
-      "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 
@@ -8807,7 +8810,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
   controller->IssueSearchBoxRequestForTesting(
-      "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      kTestTime, "hello", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
 

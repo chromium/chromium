@@ -194,8 +194,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return it == latency_gen_204_counter_.end() ? 0 : it->second;
   }
 
-  const std::optional<lens::LensOverlayRequestId>& last_latency_gen204_request_id()
-      const {
+  const std::optional<lens::LensOverlayRequestId>&
+  last_latency_gen204_request_id() const {
     return last_latency_gen204_request_id_;
   }
 
@@ -230,17 +230,20 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       base::TimeTicks invocation_time) override;
 
   void SendRegionSearch(
+      base::Time query_start_time,
       lens::mojom::CenterRotatedBoxPtr region,
       lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes) override;
 
-  void SendTextOnlyQuery(const std::string& query_text,
+  void SendTextOnlyQuery(base::Time query_start_time,
+                         const std::string& query_text,
                          lens::LensOverlaySelectionType lens_selection_type,
                          std::map<std::string, std::string>
                              additional_search_query_params) override;
 
   void SendMultimodalRequest(
+      base::Time query_start_time,
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
       lens::LensOverlaySelectionType multimodal_selection_type,
@@ -248,6 +251,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       std::optional<SkBitmap> region_bitmap) override;
 
   void SendContextualTextQuery(
+      base::Time query_start_time,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params)

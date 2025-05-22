@@ -310,6 +310,7 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   if (initialization_data_->search_query_history_stack_.empty()) {
     return;
   }
+  base::Time query_start_time = base::Time::Now();
 
   // Get the query that should be loaded in the results frame and then pop it
   // from the list.
@@ -376,15 +377,16 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
     // If the query also has text, we should send it as a multimodal query.
     if (query.search_query_text_.empty()) {
       GetLensOverlayController()->IssueLensRequest(
-          query.selected_region_->Clone(), query.lens_selection_type_,
-          selected_region_bitmap);
+          query_start_time, query.selected_region_->Clone(),
+          query.lens_selection_type_, selected_region_bitmap);
     } else {
       // TODO(crbug.com/404941800): It might be better to send the multimodal
       // request directly to the query controller once the query controller is
       // owned by the search controller.
       GetLensOverlayController()->IssueMultimodalRequest(
-          query.selected_region_->Clone(), query.search_query_text_,
-          query.lens_selection_type_, selected_region_bitmap);
+          query_start_time, query.selected_region_->Clone(),
+          query.search_query_text_, query.lens_selection_type_,
+          selected_region_bitmap);
     }
     return;
   }
@@ -396,7 +398,7 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
     // request directly to the query controller once the query controller is
     // owned by the search controller.
     GetLensOverlayController()->IssueContextualTextRequest(
-        query.search_query_text_, query.lens_selection_type_);
+        query_start_time, query.search_query_text_, query.lens_selection_type_);
     return;
   }
 

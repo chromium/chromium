@@ -81,7 +81,8 @@ void LensSearchboxController::SetSearchboxInputText(const std::string& text) {
 
 void LensSearchboxController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
-  // Init data can be empty if overlay is opened in a normal tab by navigating to the WebUI url in the omnibox.
+  // Init data can be empty if overlay is opened in a normal tab by navigating
+  // to the WebUI url in the omnibox.
   if (!init_data_) {
     return;
   }
@@ -242,6 +243,7 @@ void LensSearchboxController::OnSuggestionAccepted(
     const GURL& destination_url,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
+  base::Time query_start_time = base::Time::Now();
   std::string query_text = "";
   std::map<std::string, std::string> additional_query_parameters;
 
@@ -261,7 +263,7 @@ void LensSearchboxController::OnSuggestionAccepted(
   // TODO(crbug.com/413138792): Move the logic to issue a searchbox query to
   // this class.
   lens_search_controller_->lens_overlay_controller()->IssueSearchBoxRequest(
-      query_text, match_type, is_zero_prefix_suggestion,
+      query_start_time, query_text, match_type, is_zero_prefix_suggestion,
       additional_query_parameters);
 }
 

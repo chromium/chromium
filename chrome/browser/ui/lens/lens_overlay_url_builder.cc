@@ -124,6 +124,9 @@ inline constexpr char kClientIdQueryParameter[] = "client";
 // supported translate languages.
 inline constexpr char kClientIdQueryParameterValue[] = "lens-overlay";
 
+// Query parameter for the start time.
+inline constexpr char kStartTimeQueryParameter[] = "qsubts";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -268,6 +271,7 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
 }
 
 GURL BuildTextOnlySearchURL(
+    base::Time query_start_time,
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
@@ -304,10 +308,14 @@ GURL BuildTextOnlySearchURL(
     url_with_query_params =
         AppendVideoContextParamToURL(url_with_query_params, page_url);
   }
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kStartTimeQueryParameter,
+      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
   return url_with_query_params;
 }
 
 GURL BuildLensSearchURL(
+    base::Time query_start_time,
     std::optional<std::string> text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
@@ -365,6 +373,9 @@ GURL BuildLensSearchURL(
                         &encoded_request_id);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kRequestIdParameterKey, encoded_request_id);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kStartTimeQueryParameter,
+      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
 
   return url_with_query_params;
 }

@@ -611,12 +611,13 @@ void LensOverlayController::RecordSemanticEventForTesting(
 }
 
 void LensOverlayController::IssueSearchBoxRequestForTesting(
+    base::Time query_start_time,
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params) {
-  IssueSearchBoxRequest(search_box_text, match_type, is_zero_prefix_suggestion,
-                        additional_query_params);
+  IssueSearchBoxRequest(query_start_time, search_box_text, match_type,
+                        is_zero_prefix_suggestion, additional_query_params);
 }
 
 void LensOverlayController::IssueTranslateSelectionRequestForTesting(
@@ -693,7 +694,8 @@ void LensOverlayController::NotifyOverlayInitialized() {
   if (pending_region_) {
     // If there is a pending region (i.e. for image right click)
     // use INJECTED_IMAGE as the selection type.
-    IssueLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
+    IssueLensRequest(/*query_start_time=*/invocation_time_since_epoch_,
+                     std::move(pending_region_), lens::INJECTED_IMAGE,
                      pending_region_bitmap_);
     pending_region_bitmap_.reset();
   }
@@ -1183,6 +1185,7 @@ void LensOverlayController::OnZeroSuggestShown() {
 }
 
 void LensOverlayController::IssueLensRequest(
+    base::Time query_start_time,
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bytes) {
@@ -1201,7 +1204,7 @@ void LensOverlayController::IssueLensRequest(
 
   if (is_page_context_eligible_) {
     lens_overlay_query_controller_->SendRegionSearch(
-        region.Clone(), selection_type,
+        query_start_time, region.Clone(), selection_type,
         initialization_data_->additional_search_query_params_, region_bytes);
   }
   MaybeOpenSidePanel();
@@ -1212,18 +1215,20 @@ void LensOverlayController::IssueLensRequest(
 }
 
 void LensOverlayController::IssueMultimodalRequest(
+    base::Time query_start_time,
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
   if (is_page_context_eligible_) {
     lens_overlay_query_controller_->SendMultimodalRequest(
-        std::move(region), text_query, selection_type,
+        query_start_time, std::move(region), text_query, selection_type,
         initialization_data_->additional_search_query_params_, region_bitmap);
   }
 }
 
 void LensOverlayController::IssueSearchBoxRequest(
+    base::Time query_start_time,
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
@@ -1242,7 +1247,7 @@ void LensOverlayController::IssueSearchBoxRequest(
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
       !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
       state() != State::kLivePageAndResults || !IsContextualSearchbox()) {
-    IssueSearchBoxRequestPart2(search_box_text, match_type,
+    IssueSearchBoxRequestPart2(query_start_time, search_box_text, match_type,
                                is_zero_prefix_suggestion,
                                additional_query_params);
     return;
@@ -1255,16 +1260,17 @@ void LensOverlayController::IssueSearchBoxRequest(
                      weak_factory_.GetWeakPtr())
           .Then(base::BindOnce(
               &LensOverlayController::IssueSearchBoxRequestPart2,
-              weak_factory_.GetWeakPtr(), search_box_text, match_type,
-              is_zero_prefix_suggestion, additional_query_params)));
+              weak_factory_.GetWeakPtr(), query_start_time, search_box_text,
+              match_type, is_zero_prefix_suggestion, additional_query_params)));
 }
 
 void LensOverlayController::IssueContextualTextRequest(
+    base::Time query_start_time,
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
   if (is_page_context_eligible_) {
     lens_overlay_query_controller_->SendContextualTextQuery(
-        text_query, selection_type,
+        query_start_time, text_query, selection_type,
         initialization_data_->additional_search_query_params_);
   }
 }
@@ -2057,8 +2063,8 @@ void LensOverlayController::InitializeOverlay(
   if (pending_region_) {
     // If there is a pending region (i.e. for image right click)
     // use INJECTED_IMAGE as the selection type.
-    IssueLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
-                     pending_region_bitmap_);
+    IssueLensRequest(invocation_time_since_epoch_, std::move(pending_region_),
+                     lens::INJECTED_IMAGE, pending_region_bitmap_);
     pending_region_bitmap_.reset();
   }
 
@@ -2499,7 +2505,7 @@ void LensOverlayController::InfoRequestedByOverlay(
 void LensOverlayController::IssueLensRegionRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
-  IssueLensRequest(std::move(region),
+  IssueLensRequest(/*query_start_time=*/base::Time::Now(), std::move(region),
                    is_click ? lens::TAP_ON_EMPTY : lens::REGION_SEARCH,
                    std::nullopt);
 }
@@ -2508,7 +2514,7 @@ void LensOverlayController::IssueLensObjectRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_mask_click) {
   IssueLensRequest(
-      std::move(region),
+      /*query_start_time=*/base::Time::Now(), std::move(region),
       is_mask_click ? lens::TAP_ON_REGION_GLEAM : lens::TAP_ON_OBJECT,
       std::nullopt);
 }
@@ -2521,8 +2527,8 @@ void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
   lens_selection_type_ =
       is_translate ? lens::SELECT_TRANSLATED_TEXT : lens::SELECT_TEXT_HIGHLIGHT;
 
-  IssueTextSelectionRequestInner(query, selection_start_index,
-                                 selection_end_index);
+  IssueTextSelectionRequestInner(/*query_start_time=*/base::Time::Now(), query,
+                                 selection_start_index, selection_end_index);
 }
 
 void LensOverlayController::IssueTranslateSelectionRequest(
@@ -2535,8 +2541,8 @@ void LensOverlayController::IssueTranslateSelectionRequest(
       initialization_data_->additional_search_query_params_, query, "auto");
   lens_selection_type_ = lens::TRANSLATE_CHIP;
 
-  IssueTextSelectionRequestInner(query, selection_start_index,
-                                 selection_end_index);
+  IssueTextSelectionRequestInner(/*query_start_time=*/base::Time::Now(), query,
+                                 selection_start_index, selection_end_index);
 }
 
 void LensOverlayController::IssueMathSelectionRequest(
@@ -2549,11 +2555,12 @@ void LensOverlayController::IssueMathSelectionRequest(
       initialization_data_->additional_search_query_params_, formula);
   lens_selection_type_ = lens::SYMBOLIC_MATH_OBJECT;
 
-  IssueTextSelectionRequestInner(query, selection_start_index,
-                                 selection_end_index);
+  IssueTextSelectionRequestInner(/*query_start_time=*/base::Time::Now(), query,
+                                 selection_start_index, selection_end_index);
 }
 
 void LensOverlayController::IssueTextSelectionRequestInner(
+    base::Time query_start_time,
     const std::string& query,
     int selection_start_index,
     int selection_end_index) {
@@ -2566,7 +2573,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
 
   lens_overlay_query_controller_->SendTextOnlyQuery(
-      query, lens_selection_type_,
+      query_start_time, query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
   MaybeOpenSidePanel();
   GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
@@ -2686,6 +2693,7 @@ void LensOverlayController::HidePreselectionBubble() {
 }
 
 void LensOverlayController::IssueSearchBoxRequestPart2(
+    base::Time query_start_time,
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion,
@@ -2717,14 +2725,14 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   } else if (initialization_data_->selected_region_.is_null() &&
              IsContextualSearchbox()) {
     lens_overlay_query_controller_->SendContextualTextQuery(
-        search_box_text, lens_selection_type_,
+        query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
     GetLensSessionMetricsLogger()->OnContextualSearchboxQueryIssued(
         is_zero_prefix_suggestion,
         /*is_initial_query=*/state_ == State::kOverlay);
   } else if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
-        search_box_text, lens_selection_type_,
+        query_start_time, search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
   } else {
     std::optional<SkBitmap> selected_region_bitmap =
@@ -2733,8 +2741,8 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
             : std::make_optional<SkBitmap>(
                   initialization_data_->selected_region_bitmap_);
     lens_overlay_query_controller_->SendMultimodalRequest(
-        initialization_data_->selected_region_.Clone(), search_box_text,
-        lens_selection_type_,
+        query_start_time, initialization_data_->selected_region_.Clone(),
+        search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_,
         selected_region_bitmap);
   }
