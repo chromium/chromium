@@ -59,9 +59,7 @@ BASE_EXPORT void RecordLibraryLoaderRendererHistograms();
 // Note: this can't use base::{Once, Repeating}Callback because there is no
 // way of initializing the default callback without using static objects, which
 // we forbid.
-typedef bool LibraryLoadedHook(JNIEnv* env,
-                               jclass clazz,
-                               LibraryProcessType library_process_type);
+typedef bool LibraryLoadedHook(LibraryProcessType library_process_type);
 
 // Set the hook function to be called (from Java) once the libraries are loaded.
 // SetLibraryLoadedHook may only be called from JNI_OnLoad. The hook function

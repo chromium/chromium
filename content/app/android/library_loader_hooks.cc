@@ -15,9 +15,7 @@
 
 namespace content {
 
-bool LibraryLoaded(JNIEnv* env,
-                   jclass clazz,
-                   base::android::LibraryProcessType library_process_type) {
+bool LibraryLoaded(base::android::LibraryProcessType library_process_type) {
   // Android's main browser loop is custom so we set the browser name here as
   // early as possible if this is the browser process or main webview process.
   if (library_process_type ==
