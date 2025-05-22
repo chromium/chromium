@@ -291,6 +291,25 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   // Record metrics for ARC status based on device affiliation
   RecordArcStatusBasedOnDeviceAffiliationUMA(profile);
 
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
+
+  // Profile set up for the test is no properly initialized, so AccountId is not
+  // annotated. If the user is a guest, OTR profile is passed, which does not
+  // have annotated account id. The OnPrimaryUserSessionStarted function must
+  // run before the profile check below. On boards with the arcvm_dlc flag
+  // (e.g., reven board), the ARCVM image installs from DLC at runtime. Before
+  // this completes, the arc_session_manager profile is nullptr, causing the
+  // profile check to fail. Moving OnPrimaryUserSessionStarted earlier ensures
+  // the notification manager can send notifications before ARCVM image
+  // installation is complete. This logic will be removed once the profile
+  // dependency for ARC DLC install notifications is eliminated.
+  // TODO(b/406349559): Remove dependency on profile for ARC DLC install
+  // notifications.
+  // TODO(b/418815526): Create a browser test for ARCVM_DLC notification.
+  if (account_id) {
+    arc_dlc_installer_->OnPrimaryUserSessionStarted(*account_id);
+  }
+
   if (arc_session_manager_->profile() != profile) {
     // Profile is not matched, so the given |profile| is not allowed to use
     // ARC.
@@ -299,16 +318,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 
   std::string user_id_hash =
       ash::ProfileHelper::GetUserIdHashFromProfile(profile);
-
-  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
-
-  // Profile set up for the test is no properly initialized, so AccountId is not
-  // annotated.
-  if (account_id) {
-    arc_dlc_installer_->OnPrimaryUserSessionStarted(*account_id);
-  } else {
-    CHECK_IS_TEST();
-  }
 
   // Instantiate ARC related BrowserContextKeyedService classes which need
   // to be running at the beginning of the container run.
