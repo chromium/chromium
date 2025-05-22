@@ -7,9 +7,11 @@
   @keyframes --a {
     from {
       scale: calc(1.5 + sign(1em - 10px));
+      rotate: calc(1.5deg + sign(1em - 10px) * 1deg);
     }
     to {
       scale: 1;
+      rotate: 1deg;
     }
   }
   #target {
@@ -26,10 +28,12 @@
 <script>
   test(() => {
     assert_equals(getComputedStyle(target).scale, "0.75");
+    assert_equals(getComputedStyle(target).rotate, "0.75deg");
   }, "Initially, the font-size is 8px for #target, so the result is 0.75");
 
   test(() => {
     target.style.fontSize = "16px";
     assert_equals(getComputedStyle(target).scale, "1.75");
+    assert_equals(getComputedStyle(target).rotate, "1.75deg");
   }, "Changing the font-size of #target changes the start point, so the result should be 1.75");
 </script>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
@@ -220,26 +221,29 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
   const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
   const CSSValueList& list = To<CSSValueList>(value);
   bool needs_tree_counting_checker = false;
+  CSSPrimitiveValue::LengthTypeFlags types;
   if (list.length() == 2) {
     for (const CSSValue* axis_component :
          To<cssvalue::CSSAxisValue>(list.Item(0))) {
-      if (To<CSSPrimitiveValue>(axis_component)->IsElementDependent()) {
+      const auto* primitive_value = To<CSSPrimitiveValue>(axis_component);
+      primitive_value->AccumulateLengthUnitTypes(types);
+      if (primitive_value->IsElementDependent()) {
         needs_tree_counting_checker = true;
         break;
       }
     }
   }
-  if (needs_tree_counting_checker ||
-      To<CSSPrimitiveValue>(list.Item(list.length() - 1))
-          .IsElementDependent()) {
+  const auto& primitive_value =
+      To<CSSPrimitiveValue>(list.Item(list.length() - 1));
+  primitive_value.AccumulateLengthUnitTypes(types);
+  if (needs_tree_counting_checker || primitive_value.IsElementDependent()) {
     conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
   }
+  if (InterpolationType::ConversionChecker* length_units_checker =
+          LengthUnitsChecker::MaybeCreate(types, state)) {
+    conversion_checkers.push_back(length_units_checker);
+  }
 
-  // TODO(crbug.com/328182246): we should not use the resolved angle
-  // here, but doing it for now, since proper fix would require
-  // rewriting Quaternion and Rotation to have unresolved versions.
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
   return ConvertRotation(OptionalRotation(
       StyleBuilderConverter::ConvertRotation(length_resolver, value)));
 }
