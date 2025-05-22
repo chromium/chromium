@@ -84,6 +84,7 @@ ALIGNMENT_ORDER = [
     'Length',
     'UnzoomedLength',
     'TextSizeAdjust',
+    'FitText',
     'TabSize',
     'float',
     # Aligns like int

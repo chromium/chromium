@@ -3913,4 +3913,46 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
   return PositionArea(span[0], span[1], span[2], span[3]);
 }
 
+FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
+                                              const CSSValue& value) {
+  const auto& list = To<CSSValueList>(value);
+  const auto target_id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
+  FitTextTarget target = target_id == CSSValueID::kNone ? FitTextTarget::kNone
+                         : target_id == CSSValueID::kPerLine
+                             ? FitTextTarget::kPerLine
+                             : FitTextTarget::kConsistent;
+  std::optional<FitTextMethod> method;
+  wtf_size_t next_index = 1;
+  if (list.length() > next_index && list.Item(next_index).IsIdentifierValue()) {
+    const auto method_id =
+        To<CSSIdentifierValue>(list.Item(next_index)).GetValueID();
+    switch (method_id) {
+      case CSSValueID::kScale:
+        method.emplace(FitTextMethod::kScale);
+        break;
+      case CSSValueID::kFontSize:
+        method.emplace(FitTextMethod::kFontSize);
+        break;
+      case CSSValueID::kScaleInline:
+        method.emplace(FitTextMethod::kScaleInline);
+        break;
+      case CSSValueID::kLetterSpacing:
+        method.emplace(FitTextMethod::kLetterSpacing);
+        break;
+      default:
+        NOTREACHED();
+    }
+    ++next_index;
+  }
+  std::optional<float> size_limit;
+  if (list.length() > next_index) {
+    FontDescription::Size parent_size(FontSizeFunctions::InitialKeywordSize(),
+                                      std::numeric_limits<float>::max(), true);
+    size_limit.emplace(ComputeFontSize(
+        state.CssToLengthConversionData(),
+        To<CSSPrimitiveValue>(list.Item(next_index)), parent_size));
+  }
+  return FitText(target, method, size_limit);
+}
+
 }  // namespace blink

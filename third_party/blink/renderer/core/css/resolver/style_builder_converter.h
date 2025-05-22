@@ -421,6 +421,7 @@ class StyleBuilderConverter {
                                                  const CSSValue&);
 
   static PositionArea ConvertPositionArea(StyleResolverState&, const CSSValue&);
+  static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
 };
 
 template <typename T>

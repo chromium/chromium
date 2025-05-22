@@ -4727,4 +4727,42 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
   return fallback_list;
 }
 
+CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
+                                              const FitText& fit_text) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  CSSValueID target_id;
+  switch (fit_text.Target()) {
+    case FitTextTarget::kNone:
+      target_id = CSSValueID::kNone;
+      break;
+    case FitTextTarget::kPerLine:
+      target_id = CSSValueID::kPerLine;
+      break;
+    case FitTextTarget::kConsistent:
+      target_id = CSSValueID::kConsistent;
+      break;
+  }
+  list->Append(*CSSIdentifierValue::Create(target_id));
+
+  switch (fit_text.Method()) {
+    case FitTextMethod::kScale:
+      // The default value.
+      break;
+    case FitTextMethod::kFontSize:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kFontSize));
+      break;
+    case FitTextMethod::kScaleInline:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kScaleInline));
+      break;
+    case FitTextMethod::kLetterSpacing:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kLetterSpacing));
+      break;
+  }
+
+  if (auto size = fit_text.SizeLimit()) {
+    list->Append(*ZoomAdjustedPixelValue(*size, style));
+  }
+  return list;
+}
+
 }  // namespace blink

@@ -424,6 +424,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                        const ScrollStartData&);
   static CSSValue* ValueForPositionArea(const blink::PositionArea&);
   static CSSValue* ValueForPositionTryFallbacks(const PositionTryFallbacks&);
+  static CSSValue* ValueForFitText(const ComputedStyle&, const FitText&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

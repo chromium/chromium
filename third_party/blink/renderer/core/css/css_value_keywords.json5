@@ -1976,6 +1976,14 @@
     "context-fill",
     "context-stroke",
 
+    // text-grow / text-shrink
+    "per-line",
+    "consistent",
+    // "scale",
+    "font-size",
+    "scale-inline",
+    "letter-spacing",
+
     // media-progress()
     "media-progress",
 

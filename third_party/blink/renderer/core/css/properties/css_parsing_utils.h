@@ -804,6 +804,8 @@ CORE_EXPORT CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream&,
 CORE_EXPORT CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
                                                   const CSSParserContext&);
 
+CSSValue* ConsumeFitText(CSSParserTokenStream&, const CSSParserContext&);
+
 // If the stream starts with “!important”, consumes it and returns true.
 // If the stream is at EOF, returns false.
 // If parse error, also returns false, but the stream position is unchanged

@@ -422,11 +422,13 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis-color
     text-emphasis-position
     text-emphasis-style
+    text-grow
     text-indent
     text-orientation
     text-overflow
     text-rendering
     text-shadow
+    text-shrink
     text-size-adjust
     text-spacing-trim
     text-transform

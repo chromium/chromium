@@ -8733,6 +8733,38 @@ CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,
                                    context);
 }
 
+CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
+                         const CSSParserContext& context) {
+  CSSValue* target = ConsumeIdent<CSSValueID::kNone, CSSValueID::kPerLine,
+                                  CSSValueID::kConsistent>(stream);
+  if (!target) {
+    return nullptr;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*target);
+
+  if (CSSValue* method =
+          ConsumeIdent<CSSValueID::kScale, CSSValueID::kFontSize,
+                       CSSValueID::kScaleInline, CSSValueID::kLetterSpacing>(
+              stream)) {
+    if (To<CSSIdentifierValue>(method)->GetValueID() != CSSValueID::kScale) {
+      list->Append(*method);
+    }
+  }
+
+  if (CSSValue* size = ConsumeLength(
+          stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
+    list->Append(*size);
+  }
+
+  // The list is either:
+  // - [target]
+  // - [target, method]
+  // - [target, size], or
+  // - [target, method, size]
+  return list;
+}
+
 namespace {
 
 struct PositionAreaKeyword {

@@ -500,11 +500,13 @@ textEmphasis
 textEmphasisColor
 textEmphasisPosition
 textEmphasisStyle
+textGrow
 textIndent
 textOrientation
 textOverflow
 textRendering
 textShadow
+textShrink
 textSizeAdjust
 textSpacingTrim
 textTransform

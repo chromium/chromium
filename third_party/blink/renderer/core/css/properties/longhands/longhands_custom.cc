@@ -9646,6 +9646,20 @@ const CSSValue* TextDecorationThickness::CSSValueFromComputedStyleInternal(
       style.GetTextDecorationThickness().Thickness(), style);
 }
 
+const CSSValue* TextGrow::ParseSingleValue(CSSParserTokenStream& stream,
+                                           const CSSParserContext& context,
+                                           const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeFitText(stream, context);
+}
+
+const CSSValue* TextGrow::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForFitText(style, style.TextGrow());
+}
+
 const CSSValue* TextIndent::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -9754,6 +9768,21 @@ const CSSValue* TextShadow::CSSValueFromComputedStyleInternal(
 
 bool TextShadow::IsAffectedByCurrentColor(const ComputedStyle& style) const {
   return style.ShadowListHasCurrentColor(style.TextShadow());
+}
+
+const CSSValue* TextShrink::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeFitText(stream, context);
+}
+
+const CSSValue* TextShrink::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForFitText(style, style.TextShrink());
 }
 
 const CSSValue* TextSizeAdjust::ParseSingleValue(
