@@ -71,6 +71,10 @@
 #include "chrome/browser/printing/xps_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/win/conflicts/module_database.h"
+#endif
+
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 #endif
@@ -187,6 +191,22 @@ PrintViewManagerBase::~PrintViewManagerBase() {
   ReleasePrinterQuery();
   DisconnectFromCurrentPrintJob();
 }
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(crbug.com/41419019):  Remove `DisableThirdPartyBlocking()` once OOP
+// printing is always enabled for Windows.
+// static
+void PrintViewManagerBase::DisableThirdPartyBlocking() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING) && BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  const bool loads_print_drivers_in_browser_process = !ShouldPrintJobOop();
+#else
+  constexpr bool loads_print_drivers_in_browser_process = true;
+#endif
+  if (loads_print_drivers_in_browser_process) {
+    ModuleDatabase::DisableThirdPartyBlocking();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   if (!StartPrintCommon(rfh)) {
@@ -1290,6 +1310,10 @@ void PrintViewManagerBase::CompleteScriptedPrint(
   auto callback_wrapper = base::BindOnce(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), render_process_host->GetDeprecatedID());
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  DisableThirdPartyBlocking();
+#endif
+
   std::unique_ptr<PrinterQuery> printer_query =
       queue()->PopPrinterQuery(params->cookie);
   if (!printer_query)

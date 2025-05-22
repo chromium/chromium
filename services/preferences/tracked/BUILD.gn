@@ -57,7 +57,6 @@ source_set("tracked") {
 
   deps = [
     "//base",
-    "//build:branding_buildflags",
     "//components/os_crypt/async/common",
     "//components/pref_registry",
     "//components/prefs",

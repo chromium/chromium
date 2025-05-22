@@ -60,6 +60,11 @@ class StartupTabProvider {
   virtual StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line,
                                         Profile* profile) const = 0;
 
+  // Returns the Incompatible Applications settings subpage if any incompatible
+  // applications exist.
+  virtual StartupTabs GetPostCrashTabs(
+      bool has_incompatible_applications) const = 0;
+
   // Returns the URLs given via the command line arguments to be opened at
   // launching.
   virtual StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
@@ -129,6 +134,11 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // explicitly specified. Session Restore does not expect the NTP to be passed.
   static StartupTabs GetNewTabPageTabsForState(const SessionStartupPref& pref);
 
+  // Determines if the Incompatible Applications settings subpage should be
+  // shown.
+  static StartupTabs GetPostCrashTabsForState(
+      bool has_incompatible_applications);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Determines if the what's new page should be shown.
   static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
@@ -160,6 +170,8 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                  Profile* profile) const override;
   StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line,
                                 Profile* profile) const override;
+  StartupTabs GetPostCrashTabs(
+      bool has_incompatible_applications) const override;
   StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
                                  const base::FilePath& cur_dir,
                                  Profile* profile) const override;

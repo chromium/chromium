@@ -1,0 +1,12 @@
+    <style include="settings-shared">
+      :host {
+        display: block;
+      }
+    </style>
+    <div class="list-item">
+      <div class="start">[[applicationName]]</div>
+      <div class="separator"></div>
+      <cr-button class="action-button" on-click="onActionClick_">
+        [[getActionName_(actionType)]]
+      </cr-button>
+    </div>

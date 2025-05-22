@@ -1,0 +1,44 @@
+    <style include="cr-shared-style settings-shared">
+      #is-done-section > cr-icon {
+        --iron-icon-fill-color: var(--cr-checked-color);
+      }
+    </style>
+
+    <div hidden$="[[!isDone_]]" id="is-done-section" class="cr-row first">
+      <cr-icon icon="cr:check-circle"></cr-icon>
+      <div class="flex no-min-width">
+        $i18n{incompatibleApplicationsDone}
+      </div>
+    </div>
+
+    <template is="dom-if" if="[[!isDone_]]">
+      <div class="cr-row first">
+        <cr-icon icon="cr:security"></cr-icon>
+        <div class="flex no-min-width">
+          <div hidden$="[[!hasAdminRights_]]">
+            [[subtitleText_]] $i18nRaw{incompatibleApplicationsSubpageLearnHow}
+          </div>
+          <div hidden$="[[hasAdminRights_]]">
+            [[subtitleNoAdminRightsText_]]
+          </div>
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <h2 class="secondary">[[listTitleText_]]</h2>
+      </div>
+      <div id="incompatible-applications-list" class="list-frame vertical-list">
+        <template is="dom-repeat" items="[[applications_]]" as="application">
+          <incompatible-application-item
+              hidden$="[[!hasAdminRights_]]"
+              class="incompatible-application"
+              application-name="[[application.name]]"
+              action-type="[[application.type]]"
+              action-url="[[application.url]]">
+          </incompatible-application-item>
+          <div hidden$="[[hasAdminRights_]]"
+              class="list-item incompatible-application">
+            [[application.name]]
+          </div>
+        </template>
+      </div>
+    </template>

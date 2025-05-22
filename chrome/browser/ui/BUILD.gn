@@ -3528,7 +3528,11 @@ static_library("ui") {
     libs += [ "crypt32.lib" ]
 
     if (is_chrome_branded) {
-      sources += [ "webui/help/version_updater_win.cc" ]
+      sources += [
+        "webui/help/version_updater_win.cc",
+        "webui/settings/incompatible_applications_handler_win.cc",
+        "webui/settings/incompatible_applications_handler_win.h",
+      ]
       deps += [
         "//chrome/browser/win/installer_downloader:prefs",
         "//chrome/updater/app/server/win:updater_legacy_idl",

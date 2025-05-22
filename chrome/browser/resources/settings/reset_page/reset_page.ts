@@ -11,12 +11,19 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
 import './reset_profile_dialog.js';
+// <if expr="_google_chrome and is_win">
+import '../incompatible_applications_page/incompatible_applications_page.js';
+
+// </if>
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+// <if expr="_google_chrome and is_win">
+import {loadTimeData} from '../i18n_setup.js';
+// </if>
 
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
@@ -43,6 +50,21 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   static get template() {
     return getTemplate();
   }
+
+  // <if expr="_google_chrome and is_win">
+  static get properties() {
+    return {
+      showIncompatibleApplications_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showIncompatibleApplications');
+        },
+      },
+    };
+  }
+
+  declare private showIncompatibleApplications_: boolean;
+  // </if>
 
   /**
    * RouteObserverMixin
@@ -74,6 +96,10 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   // <if expr="_google_chrome and is_win">
   private onChromeCleanupClick_() {
     Router.getInstance().navigateTo(routes.CHROME_CLEANUP);
+  }
+
+  private onIncompatibleApplicationsClick_() {
+    Router.getInstance().navigateTo(routes.INCOMPATIBLE_APPLICATIONS);
   }
   // </if>
 }
