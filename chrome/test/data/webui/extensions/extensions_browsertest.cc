@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
+#include "build/buildflag.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ExtensionsBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -64,6 +69,8 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
 #define MAYBE(test) test
 #endif
 
+// V2 is not supported on desktop android, so tests are disabled.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
                        MAYBE(ExtensionsMV2DeprecationPanelWarningStage)) {
   RunTest("extensions/mv2_deprecation_panel_warning_test.js", "mocha.run()");
@@ -79,6 +86,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
   RunTest("extensions/mv2_deprecation_panel_unsupported_test.js",
           "mocha.run()");
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SafetyCheckReviewPanel) {
   RunTest("extensions/review_panel_test.js", "mocha.run()");
@@ -100,9 +108,12 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsList) {
   RunTest("extensions/site_permissions_list_test.js", "mocha.run()");
 }
 
+// TODO(crbug.com/392777363): Enable this test on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, UrlUtil) {
   RunTest("extensions/url_util_test.js", "mocha.run()");
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsEditPermissionsDialog) {
   RunTest("extensions/site_permissions_edit_permissions_dialog_test.js",
@@ -408,9 +419,13 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SectionsVisibility) {
   RunTestCase("SectionsVisibility");
 }
 
+// TODO(crbug.com/392777363): Enable this test on desktop android which fails
+// due to missing value for browserManagedByOrg.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
   RunTestCase("LoadTimeData");
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        SafetyCheckPanel_EnabledSafetyCheck) {
@@ -532,6 +547,8 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
   RunTestCase("CheckDrawerSitePermissionsVisibility");
 }
 
+// TODO(crbug.com/392777363): Enable tests on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
     : public ExtensionSettingsTestBase {
  protected:
@@ -876,3 +893,5 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, PushAndReplaceState) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, SupportedRoutes) {
   RunTestCase("SupportedRoutes");
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

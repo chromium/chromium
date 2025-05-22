@@ -90,7 +90,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [ "extensions/extensions_browsertest.cc" ]
   }
 
