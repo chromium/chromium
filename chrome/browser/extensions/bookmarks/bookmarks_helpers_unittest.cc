@@ -414,20 +414,20 @@ TEST_F(ExtensionBookmarksTest, PopulateBookmarkTreeNodeIndexConsistency) {
   // Verify each node's visible_index matches GetAPIIndexOf.
   auto url1_it = find_node(children, "URL1");
   ASSERT_NE(url1_it, children.end());
-  EXPECT_EQ(GetAPIIndexOf(*model_, *url1), url1_it->index);
+  EXPECT_EQ(GetAPIIndexOf(*url1), url1_it->index);
 
   auto url2_it = find_node(children, "URL2");
   ASSERT_NE(url2_it, children.end());
-  EXPECT_EQ(GetAPIIndexOf(*model_, *url2), url2_it->index);
+  EXPECT_EQ(GetAPIIndexOf(*url2), url2_it->index);
 
   auto subfolder_it = find_node(children, "Subfolder");
   ASSERT_NE(subfolder_it, children.end());
-  EXPECT_EQ(GetAPIIndexOf(*model_, *subfolder), subfolder_it->index);
+  EXPECT_EQ(GetAPIIndexOf(*subfolder), subfolder_it->index);
 
   ASSERT_TRUE(subfolder_it->children.has_value());
   auto url3_it = find_node(*subfolder_it->children, "URL3");
   ASSERT_NE(url3_it, subfolder_it->children->end());
-  EXPECT_EQ(GetAPIIndexOf(*model_, *url3), url3_it->index);
+  EXPECT_EQ(GetAPIIndexOf(*url3), url3_it->index);
 
   // Verify indexes reflect the node order.
   EXPECT_EQ(0U, url1_it->index);
@@ -440,18 +440,17 @@ TEST_F(ExtensionBookmarksTest, PopulateBookmarkTreeNodeIndexConsistency) {
   PopulateBookmarkTreeNode(model_, managed_, url1,
                            /*recurse=*/false, /*only_folders=*/false,
                            std::nullopt, &populated_node);
-  EXPECT_EQ(GetAPIIndexOf(*model_, *url1), populated_node.index);
+  EXPECT_EQ(GetAPIIndexOf(*url1), populated_node.index);
 
   // Test recursive population.
   api::bookmarks::BookmarkTreeNode recursive_node;
   PopulateBookmarkTreeNode(model_, managed_, subfolder,
                            /*recurse=*/true, /*only_folders=*/false,
                            std::nullopt, &recursive_node);
-  EXPECT_EQ(GetAPIIndexOf(*model_, *subfolder), recursive_node.index);
+  EXPECT_EQ(GetAPIIndexOf(*subfolder), recursive_node.index);
   ASSERT_TRUE(recursive_node.children.has_value());
   ASSERT_EQ(1U, recursive_node.children->size());
-  EXPECT_EQ(GetAPIIndexOf(*model_, *url3),
-            recursive_node.children->at(0).index);
+  EXPECT_EQ(GetAPIIndexOf(*url3), recursive_node.children->at(0).index);
 
   // Test only_folders with recursion.
   api::bookmarks::BookmarkTreeNode folders_node;
@@ -460,8 +459,7 @@ TEST_F(ExtensionBookmarksTest, PopulateBookmarkTreeNodeIndexConsistency) {
                            std::nullopt, &folders_node);
   ASSERT_TRUE(folders_node.children.has_value());
   ASSERT_EQ(1U, folders_node.children->size());  // Only the subfolder.
-  EXPECT_EQ(GetAPIIndexOf(*model_, *subfolder),
-            folders_node.children->at(0).index);
+  EXPECT_EQ(GetAPIIndexOf(*subfolder), folders_node.children->at(0).index);
 }
 
 }  // namespace bookmarks_helpers

@@ -5,10 +5,12 @@
 #include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -52,11 +54,6 @@ BookmarkTreeNode GetBookmarkTreeNode(bookmarks::BookmarkModel* model,
                                      bool recurse,
                                      bool only_folders,
                                      std::optional<size_t> visible_index) {
-  // The calling code should have checked this.
-  CHECK(!base::FeatureList::IsEnabled(
-            kEnforceBookmarkVisibilityOnExtensionsAPI) ||
-        model->IsNodeVisible(*node));
-
   BookmarkTreeNode bookmark_tree_node;
   PopulateBookmarkTreeNode(model, managed, node, recurse, only_folders,
                            visible_index, &bookmark_tree_node);
@@ -78,12 +75,16 @@ void PopulateBookmarkTreeNode(
   const BookmarkNode* parent = node->parent();
   if (parent) {
     out_bookmark_tree_node->parent_id = base::NumberToString(parent->id());
-    size_t index =
-        visible_index ? *visible_index : GetAPIIndexOf(*model, *node);
-    out_bookmark_tree_node->index =
-        base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI)
-            ? index
-            : static_cast<int>(parent->GetIndexOf(node).value());
+
+    if (visible_index.has_value()) {
+      out_bookmark_tree_node->index = *visible_index;
+    } else if (!base::FeatureList::IsEnabled(
+                   kEnforceBookmarkVisibilityOnExtensionsAPI)) {
+      out_bookmark_tree_node->index =
+          base::checked_cast<int>(parent->GetIndexOf(node).value());
+    } else {
+      out_bookmark_tree_node->index = GetAPIIndexOf(*node);
+    }
   }
 
   if (!node->is_folder()) {
@@ -209,22 +210,31 @@ void GetMetaInfo(const BookmarkNode& node,
   }
 }
 
-size_t GetAPIIndexOf(const bookmarks::BookmarkModel& model,
-                     const BookmarkNode& node) {
+size_t GetAPIIndexOf(const BookmarkNode& node) {
   CHECK(node.parent());
-  CHECK(model.IsNodeVisible(node));
 
   size_t api_index = 0;
   for (const auto& child : node.parent()->children()) {
     if (child.get() == &node) {
       return api_index;
     }
-    if (model.IsNodeVisible(*child)) {
+    if (child->IsVisible()) {
       ++api_index;
     }
   }
 
   NOTREACHED() << "node is not a child of its parent.";
+}
+
+size_t GetAPIIndexOf(const BookmarkNode& parent, size_t previous_model_index) {
+  size_t api_index = 0;
+  for (size_t ix = 0;
+       ix < std::min(parent.children().size(), previous_model_index); ++ix) {
+    if (parent.children()[ix]->IsVisible()) {
+      ++api_index;
+    }
+  }
+  return api_index;
 }
 
 }  // namespace bookmarks_helpers

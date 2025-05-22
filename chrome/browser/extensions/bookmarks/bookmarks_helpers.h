@@ -84,8 +84,13 @@ void GetMetaInfo(const bookmarks::BookmarkNode& node,
 // - Root
 //   - [0] A
 //   - [1] C
-size_t GetAPIIndexOf(const bookmarks::BookmarkModel& model,
-                     const bookmarks::BookmarkNode& node);
+size_t GetAPIIndexOf(const bookmarks::BookmarkNode& node);
+
+// Similar to GetAPIIndexOf(node), but for the case where the node has already
+// been removed from its parent.
+// The parent and previous model index of the node are provided.
+size_t GetAPIIndexOf(const bookmarks::BookmarkNode& parent,
+                     size_t previous_model_index);
 
 }  // namespace bookmarks_helpers
 }  // namespace extensions

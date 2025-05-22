@@ -1567,6 +1567,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions/api/bookmarks/test:test_support",
       "//chrome/browser/sync",
       "//components/bookmarks/managed",
       "//components/embedder_support",
@@ -9048,6 +9049,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions/api/bookmarks/test:test_support",
       "//chrome/browser/resources:component_extension_resources_grit",
       "//components/crx_file",
       "//components/value_store:test_support",

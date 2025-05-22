@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <utility>
@@ -45,6 +46,7 @@
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+using bookmarks::BookmarkPermanentNode;
 using bookmarks::ManagedBookmarkService;
 
 namespace extensions {
@@ -143,6 +145,7 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
+  CHECK(parent);
   if (base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI) &&
       !model_->IsNodeVisible(*node)) {
     return;
@@ -151,17 +154,13 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
   api::bookmarks::OnRemoved::RemoveInfo remove_info;
   remove_info.parent_id = base::NumberToString(parent->id());
 
-  // TODO(crbug.com/395071423): Calculate the API index correctly (account for
-  // visibility of sibling nodes). This is not trivial, because a single
-  // operation may trigger an update of the visibility of multiple permanent
-  // nodes (and this code therefore can't know what the visibility that was
-  // last reported on the API was).
-  //
-  // This will require some changes to the BookmarkModel implementation.
-  remove_info.index = static_cast<int>(index);
+  // Calculate the API index of this node, prior to it being removed.
+  remove_info.index = bookmarks_helpers::GetAPIIndexOf(*parent, index);
 
   bookmarks_helpers::PopulateBookmarkTreeNode(
-      model_, managed_, node, true, false, std::nullopt, &remove_info.node);
+      model_, managed_, node, /*recurse=*/true,
+      /*only_folders=*/false, /*visible_index=*/std::nullopt,
+      &remove_info.node);
 
   DispatchEvent(events::BOOKMARKS_ON_REMOVED,
                 api::bookmarks::OnRemoved::kEventName,
@@ -210,6 +209,55 @@ void BookmarkEventRouter::BookmarkNodeChildrenReordered(
                 api::bookmarks::OnChildrenReordered::kEventName,
                 api::bookmarks::OnChildrenReordered::Create(
                     base::NumberToString(node->id()), reorder_info));
+}
+
+void BookmarkEventRouter::BookmarkPermanentNodeVisibilityChanged(
+    const BookmarkPermanentNode* node) {
+  if (!base::FeatureList::IsEnabled(
+          kEnforceBookmarkVisibilityOnExtensionsAPI)) {
+    return;
+  }
+
+  // Currently visibility can only change for permanent nodes. The
+  // implementation of this method assumes this for now, as a simplification.
+  CHECK(node->is_permanent_node());
+
+  if (node->IsVisible()) {
+    BookmarkTreeNode tree_node = bookmarks_helpers::GetBookmarkTreeNode(
+        model_, managed_, node, /*recurse=*/false, /*only_folders=*/false);
+
+    // Convert the index to be the index as seen by extensions.
+    tree_node.index = bookmarks_helpers::GetAPIIndexOf(*node);
+
+    DispatchEvent(events::BOOKMARKS_ON_CREATED,
+                  api::bookmarks::OnCreated::kEventName,
+                  api::bookmarks::OnCreated::Create(
+                      base::NumberToString(node->id()), tree_node));
+  } else {
+    // There are currently no scenarios where a node that has children is
+    // hidden.
+    CHECK(node->children().empty());
+
+    // Notify the API user that the node was removed.
+    api::bookmarks::OnRemoved::RemoveInfo remove_info;
+    remove_info.parent_id = base::NumberToString(node->parent()->id());
+    remove_info.index = bookmarks_helpers::GetAPIIndexOf(*node);
+
+    bookmarks_helpers::PopulateBookmarkTreeNode(
+        model_, managed_, node, /*recurse=*/true,
+        /*only_folders=*/false, /*visible_index=*/std::nullopt,
+        &remove_info.node);
+
+    // For consistency with OnRemoved events triggered by an individual node
+    // removal, do not populate the index, or parent_id fields.
+    remove_info.node.index = std::nullopt;
+    remove_info.node.parent_id = std::nullopt;
+
+    DispatchEvent(events::BOOKMARKS_ON_REMOVED,
+                  api::bookmarks::OnRemoved::kEventName,
+                  api::bookmarks::OnRemoved::Create(
+                      base::NumberToString(node->id()), remove_info));
+  }
 }
 
 void BookmarkEventRouter::ExtensiveBookmarkChangesBeginning() {
