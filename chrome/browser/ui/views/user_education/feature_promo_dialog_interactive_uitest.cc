@@ -50,10 +50,6 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "ui/base/pointer/touch_ui_controller.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::NiceMock;
@@ -233,31 +229,3 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
   set_baseline("3253618");
   ShowAndVerifyUi();
 }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-// Need a separate fixture to override the feature flag.
-class FeaturePromoDialogWebUITabStripTest : public FeaturePromoDialogTest {
- public:
-  FeaturePromoDialogWebUITabStripTest() {
-    feature_list_.InitAndEnableFeature(features::kWebUITabStrip);
-  }
-
-  ~FeaturePromoDialogWebUITabStripTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Being deleted in a followup CL:
-// https://chromium-review.googlesource.com/c/chromium/src/+/6576285
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogWebUITabStripTest,
-                       DISABLED_InvokeUi_IPH_WebUITabStrip) {
-  ui::TouchUiController::TouchUiScoperForTesting touch_override(true);
-  RunScheduledLayouts();
-
-  set_baseline("2473537");
-  ShowAndVerifyUi();
-}
-
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

@@ -648,9 +648,6 @@ void WebUITabStripContainerView::EndDragToOpen(
 
   if (opening) {
     RecordTabStripUIOpenHistogram(TabStripUIOpenAction::kToolbarDrag);
-  } else {
-    browser_view_->AbortFeaturePromo(
-        feature_engagement::kIPHWebUITabStripFeature);
   }
 
   animation_.Reset(open_proportion);
@@ -708,10 +705,6 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     web_view_->RequestFocus();
 
     time_at_open_ = base::TimeTicks::Now();
-
-    browser_view_->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHWebUITabStripFeature,
-        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -

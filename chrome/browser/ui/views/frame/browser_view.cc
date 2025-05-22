@@ -3312,14 +3312,6 @@ void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
 
 void BrowserView::TouchModeChanged() {
   MaybeInitializeWebUITabStrip();
-  MaybeShowWebUITabStripIPH();
-}
-
-void BrowserView::MaybeShowWebUITabStripIPH() {
-  if (!webui_tab_strip_) {
-    return;
-  }
-  MaybeShowStartupFeaturePromo(feature_engagement::kIPHWebUITabStripFeature);
 }
 
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
@@ -5374,7 +5366,6 @@ void BrowserView::AddedToWidget() {
   using_native_frame_ = frame_->ShouldUseNativeFrame();
 
   MaybeInitializeWebUITabStrip();
-  MaybeShowWebUITabStripIPH();
   MaybeShowTabStripToolbarButtonIPH();
 
   // Want to show this promo, but not right at startup.

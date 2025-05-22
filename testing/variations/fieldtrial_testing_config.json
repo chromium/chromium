@@ -26015,7 +26015,6 @@
                         "session_rate": "any"
                     },
                     "enable_features": [
-                        "IPH_WebUITabStrip",
                         "WebUITabStrip"
                     ]
                 }

@@ -319,8 +319,6 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        "crbug.com/1443078"},
       {&feature_engagement::kIPHTabSearchFeature, std::nullopt,
        "crbug.com/1443079"},
-      {&feature_engagement::kIPHWebUITabStripFeature, std::nullopt,
-       "crbug.com/1443082"},
   });
 
   // Fetch the list of known IPH from the Feature Engagement system; it is an

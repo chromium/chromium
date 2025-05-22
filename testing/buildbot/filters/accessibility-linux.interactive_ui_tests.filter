@@ -7,7 +7,6 @@
 # The reason why is that WebUITabStripContainerView::UseTouchableTabStrip()
 # returns false when a screen reader is active. Until that changes, these
 # tests are irrelevant on this bot.
--FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
 -WebUITabStripInteractiveTest.CanTypeInOmniboxAfterTabStripClose
 -WebUITabStripInteractiveTest.EventInContainerDoesNotClose
 -WebUITabStripInteractiveTest.EventInTabContentClosesContainer

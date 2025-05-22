@@ -11508,9 +11508,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
 
       <!-- WebUI Tab Strip -->
       <if expr="enable_webui_tab_strip">
-        <message name="IDS_WEBUI_TAB_STRIP_PROMO" desc="Promotional UI shown next to the tab counter button to encourage its use">
-          Find your tabs here
-        </message>
         <message name="IDS_TOOLTIP_WEBUI_TAB_STRIP_TAB_COUNTER" desc="The tooltip for the button which toggles the tab strip. It counts the number of open tabs. [ICU Syntax]">
           {NUM_OPEN_TABS, plural, =1 {# open tab, press to toggle tab strip} other {# open tabs, press to toggle tab strip}}
         </message>

@@ -101,7 +101,6 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
           "IPH_ReadingListDiscovery",
           "IPH_ReadingListInSidePanel",
           "IPH_TabSearch",
-          "IPH_WebUITabStrip",
       });
   return kAllowedPromoNames.contains(promo_feature.name);
 }

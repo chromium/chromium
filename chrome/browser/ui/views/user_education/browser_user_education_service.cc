@@ -1093,16 +1093,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetPromoSubtype(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // kIPHWebUITabStripFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForLegacyPromo(
-          &feature_engagement::kIPHWebUITabStripFeature,
-          kToolbarTabCounterButtonElementId, IDS_WEBUI_TAB_STRIP_PROMO)
-          .SetMetadata(81, "dpenning@chromium.org",
-                       "Triggered when touch mode changed.")));
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
   // kIPHDesktopSharedHighlightingFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForLegacyPromo(

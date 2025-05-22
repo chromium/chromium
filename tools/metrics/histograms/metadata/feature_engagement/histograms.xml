@@ -678,7 +678,6 @@ chromium-metrics-reviews@google.com.
       summary="Web Feed successful follow operations with UI update"/>
   <variant name="IPH_WebUiHelpBubbleTest"
       summary="testing the WebUI help bubble"/>
-  <variant name="IPH_WebUITabStrip" summary="opening the WebUI tab strip"/>
   <variant name="IPH_WhatsNewUpdated"
       summary="educating user that what's new has new content"/>
 </variants>

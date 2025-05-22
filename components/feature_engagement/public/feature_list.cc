@@ -254,7 +254,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabOrganizationSuccessFeature,
     &kIPHTabSearchFeature,
     &kIPHTabSearchToolbarButtonFeature,
-    &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,
     &kIPHDesktopSharedHighlightingFeature,
