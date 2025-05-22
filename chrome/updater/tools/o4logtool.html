@@ -70,7 +70,7 @@
           let crashHandlers = {};
           let notCrashHandlers = {};
           for (let l of lines) {
-            if (l.location.indexOf("updater.cc") == 0 && l.text.indexOf("command line:") > 0) {
+            if (l.location.indexOf("updater.cc") >= 0 && l.text.indexOf("command line:") > 0) {
               if (l.text.indexOf("--crash-handler") >= 0) {
                 crashHandlers[l.fpid] = true;
               } else {
@@ -130,19 +130,19 @@
 
       function makeRows(grid) {
         let colors_hints = [
-          {"hint": "--windows-service --service=update-internal ", "color": [168, 218, 181]},
-          {"hint": "--windows-service --service=update ",          "color": [138, 180, 248]},
-          {"hint": "--server --service=update-internal ",          "color": [168, 218, 181]},
-          {"hint": "--server --service=update ",                   "color": [138, 180, 248]},
-          {"hint": "--crash-handler",                              "color": [240, 240, 240]},
-          {"hint": "--install",                                    "color": [255, 255, 200]},
-          {"hint": "--update",                                     "color": [200, 255, 200]},
-          {"hint": "--uninstall",                                  "color": [255, 120, 120]},
-          {"hint": "--uninstall-self",                             "color": [255, 180, 180]},
-          {"hint": "--uninstall-if-unused",                        "color": [255, 150, 150]},
-          {"hint": "--wake ",                                      "color": [254, 239, 195]},
-          {"hint": "--wake-all",                                   "color": [255, 235, 215]},
-          {"hint": "--test",                                       "color": [220, 220, 220]},
+          {"hint": "--windows-service --service=update-internal", "color": [168, 218, 181]},
+          {"hint": "--windows-service --service=update",          "color": [138, 180, 248]},
+          {"hint": "--server --service=update-internal",          "color": [168, 218, 181]},
+          {"hint": "--server --service=update",                   "color": [138, 180, 248]},
+          {"hint": "--crash-handler",                             "color": [240, 240, 240]},
+          {"hint": "--install",                                   "color": [235, 235, 235]},
+          {"hint": "--update",                                    "color": [200, 255, 200]},
+          {"hint": "--uninstall",                                 "color": [255, 120, 120]},
+          {"hint": "--uninstall-self",                            "color": [255, 180, 180]},
+          {"hint": "--uninstall-if-unused",                       "color": [255, 150, 150]},
+          {"hint": "--wake",                                      "color": [254, 239, 195]},
+          {"hint": "--wake-all",                                  "color": [255, 235, 215]},
+          {"hint": "--test",                                      "color": [220, 220, 220]},
         ];
 
         let colorBaseMap = {};
@@ -157,7 +157,7 @@
             if (c.type == "line") {
               for (let l of c.lines) {
                 if (colorBaseMap.hasOwnProperty(l.fpid)) break;
-                if (l.location.indexOf("updater.cc") == 0) {
+                if (l.location.indexOf("updater.cc") >= 0) {
                   for (let ch of colors_hints) {
                     if (l.text.indexOf(ch.hint) > 0) {
                       colorBaseMap[l.fpid] = ch.color;
