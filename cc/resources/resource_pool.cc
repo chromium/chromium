@@ -421,11 +421,8 @@ bool ResourcePool::PrepareForExport(
     return false;
   }
 
-  viz::TransferableResource::MetadataOverride overrides;
-  overrides.alpha_type = kPremul_SkAlphaType;
-  transferable =
-      viz::TransferableResource::Make(backing->shared_image(), resource_source,
-                                      backing->mailbox_sync_token, overrides);
+  transferable = viz::TransferableResource::Make(
+      backing->shared_image(), resource_source, backing->mailbox_sync_token);
   if (backing->wait_on_fence_required) {
     transferable.synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
