@@ -164,6 +164,7 @@ extern crate proc_macro;
 use std::collections::HashSet;
 
 use syn::parse::{ParseStream, Parser};
+use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 use syn::{
     braced, punctuated, token, Attribute, Data, DeriveInput, Error, Expr, Field, Fields,
@@ -324,10 +325,10 @@ where
 /// `quote!` macro. It expands to a reference to the matched field.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct BindingInfo<'a> {
-    /// The name which this BindingInfo will bind to.
+    /// The name which this `BindingInfo` will bind to.
     pub binding: Ident,
 
-    /// The type of binding which this BindingInfo will create.
+    /// The type of binding which this `BindingInfo` will create.
     pub style: BindStyle,
 
     field: &'a Field,
@@ -340,7 +341,7 @@ pub struct BindingInfo<'a> {
     index: usize,
 }
 
-impl<'a> ToTokens for BindingInfo<'a> {
+impl ToTokens for BindingInfo<'_> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         self.binding.to_tokens(tokens);
     }
@@ -488,10 +489,12 @@ impl<'a> VariantInfo<'a> {
                     .into_iter()
                     .enumerate()
                     .map(|(i, field)| {
+                        // XXX: binding_span has to be call_site to avoid privacy
+                        // when deriving on private fields, but be located at the field
+                        // span for nicer diagnostics.
+                        let binding_span = Span::call_site().located_at(field.span());
                         BindingInfo {
-                            // XXX: This has to be call_site to avoid privacy
-                            // when deriving on private fields.
-                            binding: format_ident!("__binding_{}", i),
+                            binding: format_ident!("__binding_{}", i, span = binding_span),
                             style: BindStyle::Ref,
                             field,
                             generics,

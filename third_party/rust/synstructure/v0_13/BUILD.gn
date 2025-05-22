@@ -24,7 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Nika Layzell <nika@thelayzells.com>"
   cargo_pkg_name = "synstructure"
   cargo_pkg_description = "Helper methods and macros for custom derives"
-  cargo_pkg_version = "0.13.1"
+  cargo_pkg_version = "0.13.2"
 
   allow_unsafe = false
 

@@ -1,6 +1,6 @@
 [package]
 name = "synstructure"
-version = "0.13.1"
+version = "0.13.2"
 authors = ["Nika Layzell <nika@thelayzells.com>"]
 edition = "2018"
 

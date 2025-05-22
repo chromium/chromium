@@ -4,8 +4,8 @@
 
 // Re-exports used by the decl_derive! and test_derive!
 pub use proc_macro2::TokenStream as TokenStream2;
-pub use syn::{parse2, parse_str, DeriveInput};
 pub use quote::quote;
+pub use syn::{parse2, parse_str, DeriveInput};
 
 #[cfg(all(
     not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "wasi"))),

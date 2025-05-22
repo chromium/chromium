@@ -12,14 +12,20 @@
 [package]
 edition = "2018"
 name = "synstructure"
-version = "0.13.1"
+version = "0.13.2"
 authors = ["Nika Layzell <nika@thelayzells.com>"]
+build = false
 include = [
     "src/**/*",
     "Cargo.toml",
     "README.md",
     "LICENSE",
 ]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Helper methods and macros for custom derives"
 documentation = "https://docs.rs/synstructure"
 readme = "README.md"
@@ -32,6 +38,10 @@ keywords = [
 ]
 license = "MIT"
 repository = "https://github.com/mystor/synstructure"
+
+[lib]
+name = "synstructure"
+path = "src/lib.rs"
 
 [dependencies.proc-macro2]
 version = "1.0.60"

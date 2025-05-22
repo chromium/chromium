@@ -714,7 +714,6 @@ third_party/rust/chromium_crates_io/vendor/strum-v0_27 1 1
 third_party/rust/chromium_crates_io/vendor/strum-v0_27/src 1 1
 third_party/rust/chromium_crates_io/vendor/subtle-v2 1 1
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src 1 1
-third_party/rust/chromium_crates_io/vendor/synstructure-v0_13 1 1
 third_party/rust/chromium_crates_io/vendor/syn-v2 1 1
 third_party/rust/chromium_crates_io/vendor/syn-v2/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-v1/.github/workflows 3 1
