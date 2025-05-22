@@ -8425,20 +8425,19 @@ CSSValue* ParseSpacing(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
-  if (stream.Peek().GetType() != kIdentToken) {
-    return nullptr;
-  }
-  if (stream.Peek().Id() == CSSValueID::kNone) {
-    return nullptr;
-  }
-  if (EqualIgnoringASCIICase(stream.Peek().Value(), "not")) {
-    return nullptr;
-  }
-  if (EqualIgnoringASCIICase(stream.Peek().Value(), "and")) {
-    return nullptr;
-  }
-  if (EqualIgnoringASCIICase(stream.Peek().Value(), "or")) {
-    return nullptr;
+  if (stream.Peek().GetType() == kIdentToken) {
+    if (stream.Peek().Id() == CSSValueID::kNone) {
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(stream.Peek().Value(), "not")) {
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(stream.Peek().Value(), "and")) {
+      return nullptr;
+    }
+    if (EqualIgnoringASCIICase(stream.Peek().Value(), "or")) {
+      return nullptr;
+    }
   }
   return ConsumeCustomIdent(stream, context);
 }
