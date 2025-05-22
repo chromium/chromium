@@ -185,6 +185,12 @@ std::string SharingMessageBridgeImpl::GetStorageKey(
   return entity_data.specifics.sharing_message().message_id();
 }
 
+bool SharingMessageBridgeImpl::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // SHARING_MESSAGE is a commit only data type so this method is not called.
+  NOTREACHED();
+}
+
 void SharingMessageBridgeImpl::OnCommitAttemptErrors(
     const syncer::FailedCommitResponseDataList& error_response_list) {
   for (const syncer::FailedCommitResponseData& response : error_response_list) {
