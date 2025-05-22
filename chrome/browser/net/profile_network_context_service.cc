@@ -1447,27 +1447,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   if (user_manager) {
     const user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-    // No need to initialize NSS for users with empty username hash:
-    // Getters for a user's NSS slots always return NULL slot if the user's
-    // username hash is empty, even when the NSS is not initialized for the
-    // user.
     if (user && !user->username_hash().empty()) {
-      // Populating `username_hash` and `nss_path` will make cert verifier load
-      // and use the corresponding NSS public slot. Kiosk sessions don't have
-      // the UI that could result in interactions with the public slot. Kiosk
-      // users are also not owner users and can't have the owner key in the
-      // public slot. Leaving them empty will make cert verifier ignore the
-      // public slot. This is done mainly because Chrome sometimes fails to load
-      // the public slot and has to crash because of that. If the
-      // kEnableCertManagementUIV2Write flag is enabled, then NSS certs will be
-      // migrated to the chrome user certificate database, and the NSS user cert
-      // database should no longer be used by the verifier.
-      if (!base::FeatureList::IsEnabled(
-              features::kEnableCertManagementUIV2Write) &&
-          !chromeos::IsKioskSession()) {
-        cert_verifier_creation_params->username_hash = user->username_hash();
-        cert_verifier_creation_params->nss_path = profile_->GetPath();
-      }
       profile_supports_policy_certs = true;
     }
   }

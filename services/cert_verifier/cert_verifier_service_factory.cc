@@ -98,8 +98,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 #endif
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
-      CreateCertVerifier(creation_params.get(), cert_net_fetcher, impl_params,
-                         instance_params);
+      CreateCertVerifier(cert_net_fetcher, impl_params, instance_params);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
   // shut it down immediately.

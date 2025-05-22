@@ -29,11 +29,6 @@
 #include "net/cert/internal/system_trust_store.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "crypto/nss_util_internal.h"
-#include "net/cert/internal/system_trust_store_nss.h"
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/internal/system_trust_store.h"
@@ -44,31 +39,8 @@ namespace cert_verifier {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
-    mojom::CertVerifierCreationParams* creation_params) {
-  crypto::ScopedPK11Slot public_slot;
-  if (creation_params && !creation_params->username_hash.empty()) {
-    // Make sure NSS is initialized for the user.
-    crypto::InitializeNSSForChromeOSUser(creation_params->username_hash,
-                                         creation_params->nss_path.value());
-    public_slot =
-        crypto::GetPublicSlotForChromeOSUser(creation_params->username_hash);
-  }
-  return public_slot;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
  public:
-  explicit CertVerifyProcFactoryImpl(
-      mojom::CertVerifierCreationParams* creation_params) {
-#if BUILDFLAG(IS_CHROMEOS)
-    user_slot_restriction_ =
-        GetUserSlotRestrictionForChromeOSParams(creation_params);
-#endif
-  }
-
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       const net::CertVerifyProc::ImplParams& impl_params,
@@ -156,18 +128,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)
-    if (user_slot_restriction_) {
-      // TODO(crbug.com/390333881): Remove this (and dependencies/dependants)
-      // once ServerCertificateDatabase has fully launched and NSS is not used
-      // for cert verification related certs on ChromeOS.
-      trust_store =
-          net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-              std::move(chrome_root), crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                                          user_slot_restriction_.get())));
-    } else {
-      trust_store =
-          net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
-    }
+    trust_store = net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
 #else
     if (instance_params.include_system_trust_store) {
       trust_store =
@@ -198,10 +159,6 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
         std::move(time_tracker));
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  crypto::ScopedPK11Slot user_slot_restriction_;
-#endif
 };
 
 std::vector<net::CertVerifyProc::CertificateWithConstraints>
@@ -247,14 +204,13 @@ bool IsUsingCertNetFetcher() {
 }
 
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
-    mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::CertVerifyProc::ImplParams& impl_params,
     const net::CertVerifyProc::InstanceParams& instance_params) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
 
   scoped_refptr<net::CertVerifyProcFactory> proc_factory =
-      base::MakeRefCounted<CertVerifyProcFactoryImpl>(creation_params);
+      base::MakeRefCounted<CertVerifyProcFactoryImpl>();
   return std::make_unique<net::MultiThreadedCertVerifier>(
       proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params,
                                          instance_params),

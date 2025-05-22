@@ -20,16 +20,6 @@ import "services/network/public/mojom/ct_log_info.mojom";
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
 struct CertVerifierCreationParams {
-  // Specifies the path to the directory where NSS will store its database.
-  // Example: /home/chronos/u-<hash>
-  [EnableIf=is_chromeos]
-  mojo_base.mojom.FilePath? nss_path;
-
-  // This is used in combination with nss_path, to ensure that the NSS database
-  // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos]
-  string username_hash;
-
   // Initial additional certificates that will be used for certificate
   // validation.
   AdditionalCertificates? initial_additional_certificates;

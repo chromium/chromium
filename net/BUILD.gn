@@ -1541,7 +1541,6 @@ component("net") {
 
   if (use_nss_certs) {
     sources += [
-      "cert/internal/system_trust_store_nss.h",
       "cert/internal/trust_store_nss.cc",
       "cert/internal/trust_store_nss.h",
       "cert/nss_cert_database.cc",
@@ -3253,7 +3252,6 @@ target(_test_target_type, "net_unittests") {
 
   if (use_nss_certs) {
     sources += [
-      "cert/internal/system_trust_store_nss_unittest.cc",
       "cert/internal/trust_store_nss_unittest.cc",
       "cert/nss_cert_database_unittest.cc",
       "cert/x509_util_nss_unittest.cc",
