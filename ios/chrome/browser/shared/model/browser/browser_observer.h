@@ -15,6 +15,8 @@ class BrowserObserver : public base::CheckedObserver {
   BrowserObserver(const BrowserObserver&) = delete;
   BrowserObserver& operator=(const BrowserObserver&) = delete;
 
+  ~BrowserObserver() override;
+
   // Invoked when the Browser is being destroyed. Gives subclasses a chance
   // to cleanup.
   virtual void BrowserDestroyed(Browser* browser) {}

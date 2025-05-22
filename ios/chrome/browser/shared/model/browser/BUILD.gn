@@ -16,6 +16,7 @@ source_set("browser") {
     "browser_list_observer_bridge.h",
     "browser_list_observer_bridge.mm",
     "browser_observer.h",
+    "browser_observer.mm",
     "browser_observer_bridge.h",
     "browser_observer_bridge.mm",
     "browser_provider.h",
