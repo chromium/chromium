@@ -38,7 +38,16 @@ source_set("impl") {
   deps = [
     ":infobar_internals",
     ":mojo_bindings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/resources/infobar_internals:resources",
     "//content/public/browser",
   ]
+
+  if (is_win && is_chrome_branded) {
+    deps += [
+      "//chrome/browser/win/installer_downloader:controller",
+      "//chrome/browser/win/installer_downloader:prefs",
+    ]
+  }
 }

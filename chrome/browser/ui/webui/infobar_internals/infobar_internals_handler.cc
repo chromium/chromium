@@ -9,8 +9,17 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
+#endif
 
 using InfoBarType = infobar_internals::mojom::InfoBarType;
 using InfoBarEntry = infobar_internals::mojom::InfoBarEntry;
@@ -42,10 +51,28 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
   switch (type) {
     case InfoBarType::kInstallerDownloader: {
-      // TODO(htpts://crbug.com/417727976): Trigger manually installer
-      // downloader infobar.
-      //
-      // Not implemented yet.
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (auto* controller = g_browser_process->GetFeatures()
+                                 ->installer_downloader_controller()) {
+        PrefService* prefs = g_browser_process->local_state();
+
+        // This manual triggering from the debug page will reset the state of
+        // the installer downloader.
+        prefs->SetInteger(
+            installer_downloader::prefs::kInstallerDownloaderInfobarShowCount,
+            0);
+
+        // Set bypass flag to instruct to the controller to skip/ignore
+        // eligibility check result since it may failed.
+        prefs->SetBoolean(installer_downloader::prefs::
+                              kInstallerDownloaderBypassEligibilityCheck,
+                          true);
+
+        controller->MaybeShowInfoBar();
+
+        return true;
+      }
+#endif
       return false;
     }
   }
