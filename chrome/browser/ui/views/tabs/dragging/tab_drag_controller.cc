@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -1373,7 +1374,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
         selection_model_before_attach_.active().value() <
             static_cast<size_t>(attached_model->count())) {
       // Restore the selection.
-      attached_model->SetSelectionFromModel(selection_model_before_attach_);
+      UpdateSelectionModel(attached_model, selection_model_before_attach_);
     } else if (attached_context_ == source_context_ &&
                !initial_selection_model_.empty()) {
       RestoreInitialSelection();
@@ -1766,8 +1767,8 @@ void TabDragController::RevertDrag() {
   if (initial_selection_model_.empty()) {
     ResetSelection(source_context_->GetTabStripModel());
   } else {
-    source_context_->GetTabStripModel()->SetSelectionFromModel(
-        initial_selection_model_);
+    UpdateSelectionModel(source_context_->GetTabStripModel(),
+                         initial_selection_model_);
   }
 
   source_context_->GetWidget()->Activate();
@@ -1804,7 +1805,7 @@ void TabDragController::ResetSelection(TabStripModel* model) {
     return;
   }
 
-  model->SetSelectionFromModel(selection_model);
+  UpdateSelectionModel(model, selection_model);
 }
 
 void TabDragController::RestoreInitialSelection() {
@@ -1840,7 +1841,7 @@ void TabDragController::RestoreInitialSelection() {
   if (!selection_model.active().has_value()) {
     selection_model.set_active(*selection_model.selected_indices().begin());
   }
-  source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
+  UpdateSelectionModel(source_context_->GetTabStripModel(), selection_model);
 }
 
 void TabDragController::RevertGroupAt(size_t drag_index) {
@@ -2073,7 +2074,7 @@ void TabDragController::CompleteDrag() {
       selection.AddIndexToSelection(static_cast<size_t>(index));
       selection.set_active(static_cast<size_t>(index));
       selection.set_anchor(static_cast<size_t>(index));
-      model->SetSelectionFromModel(selection);
+      UpdateSelectionModel(model, selection);
     }
   }
 
@@ -2622,6 +2623,30 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
   }
 
   observation_pauser_.reset();
+}
+
+void TabDragController::UpdateSelectionModel(
+    TabStripModel* tab_strip_model,
+    ui::ListSelectionModel selection_model) {
+  if (selection_model.active().has_value()) {
+    std::optional<split_tabs::SplitTabId> split_id =
+        tab_strip_model->GetSplitForTab(selection_model.active().value());
+    if (split_id.has_value()) {
+      selection_model.set_active(split_tabs::GetIndexOfLastActiveTab(
+          tab_strip_model, split_id.value()));
+    }
+  }
+
+  if (selection_model.anchor().has_value()) {
+    std::optional<split_tabs::SplitTabId> split_id =
+        tab_strip_model->GetSplitForTab(selection_model.anchor().value());
+    if (split_id.has_value()) {
+      selection_model.set_anchor(split_tabs::GetIndexOfLastActiveTab(
+          tab_strip_model, split_id.value()));
+    }
+  }
+
+  tab_strip_model->SetSelectionFromModel(selection_model);
 }
 
 void TabDragController::StartDraggingTabsSession(

@@ -507,6 +507,11 @@ class TabDragController : public views::WidgetObserver
   void StartDraggingTabsSession(bool initial_move,
                                 gfx::Point start_point_in_screen);
 
+  // Calls `SetSelectionFromModel` in the `tab_strip_model`. This centralizes
+  // the logic for retaining previous active and anchor tabs for split.
+  void UpdateSelectionModel(TabStripModel* tab_strip_model,
+                            ui::ListSelectionModel selection_model);
+
 #if defined(USE_AURA)
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
