@@ -16,20 +16,11 @@ namespace autofill {
 
 // Generates loyalty card suggestions for given `origin`. Loyalty cards are
 // extracted from the `valuables_manager`.
-//
-// The suggestions are generated in the extracted order of cards. If any of
-// loyalty card merchant domains match the given `url`, the respective
-// suggestions are moved to the top.
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
     const GURL& url);
 
-// Extends `email_suggestions` with loyalty cards suggestions placed in a
-// submenu.
-//
-// Loyalty cards suggestions are retrieved and follow the same logic as
-// `GetLoyaltyCardSuggestions()`. The passed `email_suggestions` must be at
-// least 3 suggestions long (email, separator and 'manage' suggestion).
+// Extends `email_suggestions` with loyalty cards suggestions.
 void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,

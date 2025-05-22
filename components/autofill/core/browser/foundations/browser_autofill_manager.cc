@@ -3122,9 +3122,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
               EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
         if (ValuablesDataManager* valuables_manager =
                 client().GetValuablesDataManager()) {
-          ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
-              suggestions, *valuables_manager,
-              client().GetLastCommittedPrimaryMainFrameURL());
+          if (suggestions.empty()) {
+            suggestions = GetLoyaltyCardSuggestions(
+                *valuables_manager,
+                client().GetLastCommittedPrimaryMainFrameURL());
+          } else {
+            ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
+                suggestions, *valuables_manager,
+                client().GetLastCommittedPrimaryMainFrameURL());
+          }
         }
       }
       break;
