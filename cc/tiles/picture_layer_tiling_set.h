@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <deque>
 #include <memory>
 #include <set>
 #include <vector>
@@ -227,8 +226,8 @@ class CC_EXPORT PictureLayerTilingSet {
   raw_ptr<PictureLayerTilingClient> client_;
   const float max_preraster_distance_;
   // State saved for computing velocities based on finite differences.
-  // .front() of the deque refers to the most recent FrameVisibleRect.
-  std::deque<FrameVisibleRect> visible_rect_history_;
+  // .back() of the vector refers to the most recent FrameVisibleRect.
+  std::vector<FrameVisibleRect> visible_rect_history_;
   StateSinceLastTilePriorityUpdate state_since_last_tile_priority_update_;
 
   scoped_refptr<RasterSource> raster_source_;

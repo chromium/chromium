@@ -417,7 +417,7 @@ bool PictureLayerTilingSet::TilingsNeedUpdate(
 
   // Finally, if some state changed (either frame time or visible rect), then we
   // need to inform the tilings of the change.
-  const auto& last_frame = visible_rect_history_.front();
+  const auto& last_frame = visible_rect_history_.back();
   if (current_frame_time_in_seconds != last_frame.frame_time_in_seconds)
     return true;
 
@@ -440,7 +440,7 @@ gfx::Rect PictureLayerTilingSet::ComputeSkewport(
     return skewport;
 
   // Use the oldest recorded history to get a stable skewport.
-  const auto& historical_frame = visible_rect_history_.back();
+  const auto& historical_frame = visible_rect_history_.front();
   double time_delta =
       current_frame_time_in_seconds - historical_frame.frame_time_in_seconds;
   if (time_delta == 0.)
@@ -541,10 +541,15 @@ void PictureLayerTilingSet::UpdatePriorityRects(
   // Finally, update our visible rect history. Note that we use the original
   // visible rect here, since we want as accurate of a history as possible for
   // stable skewports.
-  if (visible_rect_history_.size() == 2)
-    visible_rect_history_.pop_back();
-  visible_rect_history_.push_front(FrameVisibleRect(
-      visible_rect_in_layer_space_, current_frame_time_in_seconds));
+  const auto frame_visible_rect = FrameVisibleRect(
+      visible_rect_in_layer_space_, current_frame_time_in_seconds);
+  if (visible_rect_history_.size() < 2) {
+    visible_rect_history_.reserve(2);
+    visible_rect_history_.push_back(frame_visible_rect);
+  } else {
+    DCHECK_EQ(visible_rect_history_.size(), 2u);
+    visible_rect_history_ = {visible_rect_history_[1], frame_visible_rect};
+  }
 }
 
 bool PictureLayerTilingSet::UpdateTilePriorities(
