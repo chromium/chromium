@@ -3844,7 +3844,7 @@
     {
       // ChromeStatus: https://chromestatus.com/feature/6194847180128256
       name: "QuotaExceededErrorUpdate",
-      status: "experimental",
+      status: "stable",
     },
     {
      // crbug.com/323953913

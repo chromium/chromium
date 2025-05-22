@@ -6671,6 +6671,11 @@ interface ProtectedAudience
     attribute @@toStringTag
     method constructor
     method queryFeatureSupport
+interface QuotaExceededError : DOMException
+    attribute @@toStringTag
+    getter quota
+    getter requested
+    method constructor
 interface RTCCertificate
     attribute @@toStringTag
     getter expires

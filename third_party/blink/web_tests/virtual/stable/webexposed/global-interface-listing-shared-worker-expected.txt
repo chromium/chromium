@@ -1440,6 +1440,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter applicationServerKey
 [Worker]     getter userVisibleOnly
 [Worker]     method constructor
+[Worker] interface QuotaExceededError : DOMException
+[Worker]     attribute @@toStringTag
+[Worker]     getter quota
+[Worker]     getter requested
+[Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
 [Worker]     getter byobRequest

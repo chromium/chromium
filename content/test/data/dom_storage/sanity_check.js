@@ -66,15 +66,19 @@ function sanityCheck(storage) {
     storage.setItem("tooLarge", tooLarge);
     throw "failed to throw exception for very large value";
   } catch(ex) {
-    checkEqual(ex.code, 22,
-               "ex.code != 22 for attempt to store a very large value");
+    checkEqual(
+        ex.name, 'QuotaExceededError',
+        'ex.name != \'QuotaExceededError\' for attempt to store a very large '
+        + 'value');
   }
   try {
     storage.setItem(tooLarge, "key is too large");
     throw "failed to throw exception for very large key";
   } catch(ex) {
-    checkEqual(ex.code, 22,
-               "ex.code != 22 for attempt to store a very large key");
+    checkEqual(
+        ex.name, 'QuotaExceededError',
+        'ex.name != \'QuotaExceededError\' for attempt to store a very large '
+        + 'key');
   }
 }
 

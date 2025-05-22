@@ -326,6 +326,11 @@ CONSOLE MESSAGE:     method moveTo
 CONSOLE MESSAGE:     method quadraticCurveTo
 CONSOLE MESSAGE:     method rect
 CONSOLE MESSAGE:     method roundRect
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest
@@ -780,6 +785,11 @@ CONSOLE MESSAGE:     method moveTo
 CONSOLE MESSAGE:     method quadraticCurveTo
 CONSOLE MESSAGE:     method rect
 CONSOLE MESSAGE:     method roundRect
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest

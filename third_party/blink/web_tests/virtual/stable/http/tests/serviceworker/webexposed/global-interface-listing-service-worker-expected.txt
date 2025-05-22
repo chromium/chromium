@@ -1521,6 +1521,11 @@ interface PushSubscriptionOptions
     getter applicationServerKey
     getter userVisibleOnly
     method constructor
+interface QuotaExceededError : DOMException
+    attribute @@toStringTag
+    getter quota
+    getter requested
+    method constructor
 interface ReadableByteStreamController
     attribute @@toStringTag
     getter byobRequest
