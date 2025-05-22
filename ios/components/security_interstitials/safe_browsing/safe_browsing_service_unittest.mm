@@ -146,6 +146,59 @@ class TestUrlCheckerClient {
   raw_ptr<SafeBrowsingClient> safe_browsing_client_;
 };
 
+class TestRealtimeUrlLookupService
+    : public safe_browsing::RealTimeUrlLookupService {
+ public:
+  TestRealtimeUrlLookupService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      safe_browsing::VerdictCacheManager* cache_manager,
+      base::RepeatingCallback<safe_browsing::ChromeUserPopulation()>
+          get_user_population_callback,
+      PrefService* pref_service,
+      std::unique_ptr<safe_browsing::SafeBrowsingTokenFetcher> token_fetcher,
+      const ClientConfiguredForTokenFetchesCallback&
+          client_token_config_callback,
+      bool is_off_the_record,
+      base::RepeatingCallback<variations::VariationsService*()>
+          variations_service_getter,
+      base::RepeatingCallback<base::Time()>
+          min_allowed_timestamp_for_referrer_chains_getter,
+      safe_browsing::ReferrerChainProvider* referrer_chain_provider,
+      WebUIDelegate* delegate)
+      : safe_browsing::RealTimeUrlLookupService(
+            url_loader_factory,
+            cache_manager,
+            get_user_population_callback,
+            pref_service,
+            std::move(token_fetcher),
+            client_token_config_callback,
+            is_off_the_record,
+            variations_service_getter,
+            min_allowed_timestamp_for_referrer_chains_getter,
+            referrer_chain_provider,
+            delegate) {}
+
+  bool CanCheckSafeBrowsingDb() const override {
+    return can_check_safe_browsing_db_;
+  }
+
+  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
+    return can_check_hc_allow_list_;
+  }
+
+  void set_can_check_safe_browsing_db(bool value) {
+    can_check_safe_browsing_db_ = value;
+  }
+
+  void set_can_check_high_confidence_allow_list(bool value) {
+    can_check_hc_allow_list_ = value;
+  }
+
+ private:
+  bool can_check_safe_browsing_db_ = true;
+  bool can_check_hc_allow_list_ = true;
+};
+
 }  // namespace
 
 class SafeBrowsingServiceTest : public PlatformTest {
@@ -238,6 +291,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
       apply_branding_;
   base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
+  std::unique_ptr<TestRealtimeUrlLookupService> lookup_service_;
 
  private:
   void MarkUrlAsMalwareOnUIThread(const GURL& bad_url) {
@@ -270,7 +324,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
         std::make_unique<safe_browsing::VerdictCacheManager>(
             /*history_service=*/nullptr, host_content_settings_map_.get(),
             &pref_service_, /*sync_observer=*/nullptr);
-    lookup_service_ = std::make_unique<safe_browsing::RealTimeUrlLookupService>(
+    lookup_service_ = std::make_unique<TestRealtimeUrlLookupService>(
         safe_browsing_service_->GetURLLoaderFactory(),
         verdict_cache_manager_.get(), base::BindRepeating([] {
           safe_browsing::ChromeUserPopulation population;
@@ -302,7 +356,6 @@ class SafeBrowsingServiceTest : public PlatformTest {
   raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
-  std::unique_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
@@ -432,6 +485,58 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
+}
+
+// Verifies that real time url checks do not query the high confidence allow
+// list when disabled.
+TEST_F(SafeBrowsingServiceTest, RealTimeSkipsHighConfidenceAllowList) {
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(),
+                              safe_browsing_client_.get());
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrl(safe_url);
+  client.WaitForResult();
+
+  // Opt into real-time checks.
+  pref_service_.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  // Cache an unsafe result for a real time check of `safe_url`.
+  MarkUrlAsRealTimeUnsafe(safe_url);
+  // Set the url as safe in the high confidence allow list.
+  MarkUrlAsRealTimeSafe(safe_url);
+
+  // Checking the url should return a safe result coming from the high
+  // confidence allow list.
+  client.CheckUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  // Disabling access to the allow list will make subsequent checks returning
+  // unsafe results from the cached real time veredict.
+  lookup_service_->set_can_check_safe_browsing_db(false);
+  lookup_service_->set_can_check_high_confidence_allow_list(true);
+
+  client.CheckUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  lookup_service_->set_can_check_safe_browsing_db(true);
+  lookup_service_->set_can_check_high_confidence_allow_list(false);
+
+  client.CheckUrl(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
 }
 
 // Verifies that safe and unsafe URLs are identified correctly for when a sync
