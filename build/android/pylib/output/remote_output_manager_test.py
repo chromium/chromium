@@ -4,8 +4,21 @@
 # found in the LICENSE file.
 
 # pylint: disable=protected-access
+"""Unit tests for remote_output_manager.py.
 
+Example usage:
+  vpython3 remote_output_manager_test.py
+"""
+
+from pathlib import Path
+import sys
 import unittest
+
+build_android_path = Path(__file__).parents[2]
+sys.path.append(str(build_android_path))
+
+lib_path_root = Path(__file__).parents[3] / 'lib'
+sys.path.append(str(lib_path_root))
 
 from pylib.base import output_manager
 from pylib.base import output_manager_test_case
@@ -14,7 +27,7 @@ from pylib.output import remote_output_manager
 import mock  # pylint: disable=import-error
 
 
-@mock.patch('pylib.utils.google_storage_helper')
+@mock.patch('lib.common.google_storage_helper')
 class RemoteOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
 
   def setUp(self):

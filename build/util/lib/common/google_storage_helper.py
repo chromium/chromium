@@ -1,7 +1,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Helper functions to upload data to Google Storage.
 
 Text data should be streamed to logdog using |logdog_helper| module.
@@ -11,29 +10,51 @@ to Google Storage directly using this module.
 
 import logging
 import os
+import platform
 import sys
 import time
+
+lib_path_root = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(str(lib_path_root))
+from common import decorators
+
 try:
   from urllib.parse import urlparse
 except ImportError:
   from urlparse import urlparse
 
-from pylib.constants import host_paths
-from pylib.utils import decorators
+DIR_SOURCE_ROOT = os.environ.get(
+    'CHECKOUT_SOURCE_ROOT',
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
+                     os.pardir)))
+DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
 
-if host_paths.DEVIL_PATH not in sys.path:
-  sys.path.append(host_paths.DEVIL_PATH)
+if DEVIL_PATH not in sys.path:
+  sys.path.append(DEVIL_PATH)
 from devil.utils import cmd_helper
 
-_GSUTIL_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
-                            'catapult', 'third_party', 'gsutil', 'gsutil')
 _PUBLIC_URL = 'https://storage.googleapis.com/%s/'
 _AUTHENTICATED_URL = 'https://storage.cloud.google.com/%s/'
+_GSUTIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
+                            'third_party', 'gsutil')
 
 
-@decorators.NoRaiseException(default_return_value='')
-def upload(name, filepath, bucket, gs_args=None, command_args=None,
-           content_type=None, authenticated_link=True):
+def get_gsutil_script_path() -> str:
+  script_name = 'gsutil'
+  if platform.system() == 'Windows':
+    script_name = 'gsutil.bat'
+  return os.path.join(_GSUTIL_PATH, script_name)
+
+
+@decorators.NoRaiseException(default_return_value='', exception_type=ValueError)
+def upload(name,
+           filepath,
+           bucket,
+           gs_args=None,
+           command_args=None,
+           content_type=None,
+           authenticated_link=True):
   """Uploads data to Google Storage.
 
   Args:
@@ -54,7 +75,7 @@ def upload(name, filepath, bucket, gs_args=None, command_args=None,
   gs_path = 'gs://%s/%s' % (bucket, name)
   logging.info('Uploading %s to %s', filepath, gs_path)
 
-  cmd = [_GSUTIL_PATH, '-q']
+  cmd = [get_gsutil_script_path(), '-q']
   cmd.extend(gs_args or [])
   if content_type:
     cmd.extend(['-h', 'Content-Type:%s' % content_type])
@@ -65,21 +86,23 @@ def upload(name, filepath, bucket, gs_args=None, command_args=None,
   return get_url_link(name, bucket, authenticated_link)
 
 
-@decorators.NoRaiseException(default_return_value='')
+@decorators.NoRaiseException(default_return_value='', exception_type=ValueError)
 def read_from_link(link):
   # Note that urlparse returns the path with an initial '/', so we only need to
   # add one more after the 'gs;'
-  gs_path = 'gs:/%s' % urlparse(link).path
-  cmd = [_GSUTIL_PATH, '-q', 'cat', gs_path]
+  parsed_path = urlparse(link).path
+  gs_path = 'gs://%s' % parsed_path.removeprefix('/')
+  cmd = [get_gsutil_script_path(), '-q', 'cat', gs_path]
   return cmd_helper.GetCmdOutput(cmd)
 
 
-@decorators.NoRaiseException(default_return_value=False)
+@decorators.NoRaiseException(default_return_value=False,
+                             exception_type=ValueError)
 def exists(name, bucket):
   bucket = _format_bucket_name(bucket)
   gs_path = 'gs://%s/%s' % (bucket, name)
 
-  cmd = [_GSUTIL_PATH, '-q', 'stat', gs_path]
+  cmd = [get_gsutil_script_path(), '-q', 'stat', gs_path]
   return_code = cmd_helper.RunCmd(cmd)
   return return_code == 0
 
@@ -95,11 +118,8 @@ def unique_name(basename, suffix='', timestamp=True, device=None):
     device: Device to add device serial of to name.
   """
   return '%s%s%s%s' % (
-      basename,
-      '_%s' % time.strftime('%Y_%m_%d_T%H_%M_%S-UTC', time.gmtime())
-          if timestamp else '',
-      '_%s' % device.serial if device else '',
-      suffix)
+      basename, '_%s' % time.strftime('%Y_%m_%d_T%H_%M_%S-UTC', time.gmtime())
+      if timestamp else '', '_%s' % device.serial if device else '', suffix)
 
 
 def get_url_link(name, bucket, authenticated_link=True):

@@ -36,9 +36,10 @@ logging.basicConfig(
            '  %(module)s.%(funcName)s:%(lineno)d  %(message)s')
 
 path_util.AddAndroidPylibToPath()
+path_util.AddBuildUtilToPath()
 
 try:
-  from pylib.utils import google_storage_helper  # pylint: disable=import-error
+  from lib.common import google_storage_helper  # pylint: disable=import-error
   from pylib.utils import logdog_helper
 except ImportError:
   pass

@@ -4,9 +4,11 @@
 ../../build/android/pylib/constants/__init__.py
 ../../build/android/pylib/constants/host_paths.py
 ../../build/android/pylib/utils/__init__.py
-../../build/android/pylib/utils/decorators.py
-../../build/android/pylib/utils/google_storage_helper.py
 ../../build/android/pylib/utils/logdog_helper.py
+../../build/util/lib/__init__.py
+../../build/util/lib/common/__init__.py
+../../build/util/lib/common/decorators.py
+../../build/util/lib/common/google_storage_helper.py
 ../../components/variations/service/generate_ui_string_overrider.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/__init__.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event.py

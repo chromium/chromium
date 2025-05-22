@@ -2,12 +2,11 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Unit tests for decorators.py."""
 
 import unittest
 
-from pylib.utils import decorators
+import decorators
 
 
 class NoRaiseExceptionDecoratorTest(unittest.TestCase):
@@ -38,6 +37,34 @@ class NoRaiseExceptionDecoratorTest(unittest.TestCase):
     self.assertEqual(raiseException(), 111)
     self.assertEqual(doesNotRaiseException(), 999)
 
+  def testFunctionReturnsCorrectValuesWithExceptionType(self):
+    """Tests that the |NoRaiseException| decorator returns correct values."""
+
+    @decorators.NoRaiseException(default_return_value=111,
+                                 exception_type=OSError)
+    def raiseException():
+      raise OSError('test')
+
+    @decorators.NoRaiseException(default_return_value=111,
+                                 exception_type=OSError)
+    def doesNotRaiseException():
+      return 999
+
+    @decorators.NoRaiseException(default_return_value=111,
+                                 exception_type=OSError)
+    def raiseOtherException():
+      raise ValueError('test')
+
+    @decorators.NoRaiseException(default_return_value=111)
+    def raiseDefaultException():
+      raise Exception('test')
+
+    self.assertEqual(raiseException(), 111)
+    self.assertEqual(doesNotRaiseException(), 999)
+    self.assertEqual(raiseDefaultException(), 111)
+    with self.assertRaises(ValueError):
+      raiseOtherException()
+
 
 class MemoizeDecoratorTest(unittest.TestCase):
 
@@ -58,6 +85,7 @@ class MemoizeDecoratorTest(unittest.TestCase):
 
       if raiseExceptions.count == 1:
         raise ExceptionType2()
+
     raiseExceptions.count = 0
 
     with self.assertRaises(ExceptionType1):
@@ -72,11 +100,13 @@ class MemoizeDecoratorTest(unittest.TestCase):
     def memoized():
       memoized.count += 1
       return memoized.count
+
     memoized.count = 0
 
     def notMemoized():
       notMemoized.count += 1
       return notMemoized.count
+
     notMemoized.count = 0
 
     self.assertEqual(memoized(), 1)

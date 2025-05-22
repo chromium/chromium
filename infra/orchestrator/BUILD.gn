@@ -94,6 +94,7 @@ python_library("process_perf_results_py") {
     # them, build/print_python_deps.py doesn't detect them. So to appease
     # telemetry, just add the needed dirs directly.
     "//third_party/catapult/telemetry/third_party/",
+    "//third_party/catapult/third_party/gsutil/",
     "//third_party/catapult/third_party/polymer/",
     "//third_party/catapult/third_party/six/",
     "//third_party/catapult/third_party/vinn/",
