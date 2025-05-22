@@ -135,17 +135,13 @@ ResourceId CreateGpuResource(
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
   auto client_shared_image = sii->CreateSharedImage(
-      {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+      {format, size, color_space, origin, alpha_type,
        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"},
       pixels);
-  gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  TransferableResource gl_resource = TransferableResource::MakeGpu(
-      client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
-      false /* is_overlay_candidate */);
-  gl_resource.color_space = std::move(color_space);
-  gl_resource.origin = origin;
-  gl_resource.alpha_type = alpha_type;
+  TransferableResource gl_resource = TransferableResource::Make(
+      client_shared_image, TransferableResource::ResourceSource::kTest,
+      client_shared_image->creation_sync_token());
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
