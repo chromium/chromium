@@ -409,8 +409,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
 
     crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
-    expected_hjson = crossbench_test.ANDROID_HJSON % (
-        'org.foo.bar', run_performance_tests.ADB_TOOL)
+    expected_hjson = crossbench_test.ANDROID_HJSON % 'org.foo.bar'
     expected_browser = crossbench_test.CHROME_BROWSER % expected_hjson
     self.assertEqual(crossbench_test.browser, expected_browser)
 

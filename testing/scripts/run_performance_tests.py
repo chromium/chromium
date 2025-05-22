@@ -95,6 +95,7 @@ else:
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
 ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+BUNDLETOOL = THIRD_PARTY_DIR / 'android_build_tools/bundletool/cipd/bundletool.jar'  # pylint: disable=line-too-long
 GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
@@ -726,7 +727,10 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
-  ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
+  ANDROID_HJSON = ('{browser:"%s", driver:{type:"Android", '
+                   f'adb_bin:"{ADB_TOOL}", '
+                   f'bundletool:"{BUNDLETOOL}'
+                   '"}}')
   STORY_LABEL = 'default'
   BENCHMARK_FILESERVERS = {
       'speedometer_3.1': 'third_party/speedometer/v3.1',
@@ -842,9 +846,10 @@ class CrossbenchTest(object):
     ]
     if self.cb_options.official_browser:
       if self.is_android:
-        raise RuntimeError(
-            'Running official build not yet supported on Android')
-      self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
+        android_json = self.ANDROID_HJSON % self.cb_options.official_browser
+        self.browser = self.CHROME_BROWSER % android_json
+      else:
+        self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
       self.driver_path_arg = []
       return
     self.driver_path_arg = self._find_chromedriver()
@@ -863,7 +868,7 @@ class CrossbenchTest(object):
       # Check for an arg with embedder package name to override browser (WV)
       browser_app = (self._check_for_embedder_arg()
                      or possible_browser.settings.package)
-      android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
+      android_json = self.ANDROID_HJSON % browser_app
       self.browser = self.CHROME_BROWSER % android_json
     else:
       assert hasattr(possible_browser, 'local_executable')
