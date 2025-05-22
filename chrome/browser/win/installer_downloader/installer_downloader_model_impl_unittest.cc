@@ -84,6 +84,34 @@ TEST_F(InstallerDownloaderModelTest, MaxShowCountAboveLimit) {
   EXPECT_TRUE(model_->IsMaxShowCountReached());
 }
 
+TEST_F(InstallerDownloaderModelTest,
+       IncrementShowCountPersistsAndStopsAtLimit) {
+  // Start from a clean slate.
+  GetLocalState().SetInteger(prefs::kInstallerDownloaderInfobarShowCount, 0);
+
+  // Increment (kMaxShowCount-1) times and verify we have NOT hit the ceiling.
+  for (int i = 0; i < InstallerDownloaderModelImpl::kMaxShowCount - 1; ++i) {
+    model_->IncrementShowCount();
+    EXPECT_FALSE(model_->IsMaxShowCountReached());
+    EXPECT_EQ(i + 1, GetLocalState().GetInteger(
+                         prefs::kInstallerDownloaderInfobarShowCount));
+  }
+
+  // One more increment reaches the exact limit.
+  model_->IncrementShowCount();
+  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_EQ(
+      InstallerDownloaderModelImpl::kMaxShowCount,
+      GetLocalState().GetInteger(prefs::kInstallerDownloaderInfobarShowCount));
+
+  // Extra increments keep the model in "limit reached" state.
+  model_->IncrementShowCount();
+  EXPECT_TRUE(model_->IsMaxShowCountReached());
+  EXPECT_EQ(
+      InstallerDownloaderModelImpl::kMaxShowCount + 1,
+      GetLocalState().GetInteger(prefs::kInstallerDownloaderInfobarShowCount));
+}
+
 // This test verifies that when the Os version is ineligible, no additional
 // check or call should be done. The destination path should be empty.
 TEST_F(InstallerDownloaderModelTest, NotEligibleWhenOsIneligible) {

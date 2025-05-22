@@ -61,6 +61,7 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
               (override));
   MOCK_METHOD(void, CheckEligibility, (EligibilityCheckCallback), (override));
   MOCK_METHOD(bool, IsMaxShowCountReached, (), (const, override));
+  MOCK_METHOD(void, IncrementShowCount, (), (override));
   MOCK_METHOD(bool, ShouldByPassEligibilityCheck, (), (const, override));
 };
 
@@ -131,6 +132,7 @@ TEST_F(InstallerDownloaderControllerTest, ShowsInfobarWhenEligible) {
       .WillOnce(base::test::RunOnceCallback<0>(
           std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
   EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+  EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
 
   controller_->MaybeShowInfoBar();
 }
@@ -252,6 +254,18 @@ TEST_F(InstallerDownloaderControllerTest,
       .WillOnce(RunOnceCallback<0>(std::nullopt));
 
   // When bypass is enabled we still expect the infobar to be shown.
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+
+  controller_->MaybeShowInfoBar();
+}
+
+TEST_F(InstallerDownloaderControllerTest, IncrementOnlyOncePerShow) {
+  EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
+  EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
+
   EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
 
   controller_->MaybeShowInfoBar();

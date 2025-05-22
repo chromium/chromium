@@ -140,6 +140,7 @@ void InstallerDownloaderController::OnEligibilityReady(
                      base::Unretained(this), destination.value()),
       base::BindOnce(&InstallerDownloaderController::OnInfoBarDismissed,
                      base::Unretained(this)));
+  model_->IncrementShowCount();
 }
 
 void InstallerDownloaderController::OnDownloadRequestAccepted(

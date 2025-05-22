@@ -47,6 +47,10 @@ class InstallerDownloaderModel {
   // false otherwise.
   virtual bool IsMaxShowCountReached() const = 0;
 
+  // Increments the "show" counter. Called exactly once whenever the
+  // controller actually displays the infobar.
+  virtual void IncrementShowCount() = 0;
+
   // Returns true if eligibility check should be overridden for manual testing
   // purpose.
   virtual bool ShouldByPassEligibilityCheck() const = 0;

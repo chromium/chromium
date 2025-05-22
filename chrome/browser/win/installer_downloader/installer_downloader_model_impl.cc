@@ -151,6 +151,13 @@ bool InstallerDownloaderModelImpl::IsMaxShowCountReached() const {
              prefs::kInstallerDownloaderInfobarShowCount) >= kMaxShowCount;
 }
 
+void InstallerDownloaderModelImpl::IncrementShowCount() {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(
+      prefs::kInstallerDownloaderInfobarShowCount,
+      local_state->GetInteger(prefs::kInstallerDownloaderInfobarShowCount) + 1);
+}
+
 bool InstallerDownloaderModelImpl::ShouldByPassEligibilityCheck() const {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kInstallerDownloaderBypassEligibilityCheck);

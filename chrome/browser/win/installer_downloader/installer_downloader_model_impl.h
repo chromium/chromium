@@ -62,6 +62,7 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
                      content::DownloadManager& download_manager,
                      CompletionCallback completion_callback) override;
   bool IsMaxShowCountReached() const override;
+  void IncrementShowCount() override;
   bool ShouldByPassEligibilityCheck() const override;
 
  private:
