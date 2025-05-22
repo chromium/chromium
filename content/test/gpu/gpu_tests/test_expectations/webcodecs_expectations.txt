@@ -143,6 +143,19 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
+# Graphite failures
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-software [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp09.00.10.08_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_Encode_capture_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp8_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_Encode_capture_vp8_prefer-hardware [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
+crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
+
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ angle-opengl bigsur graphite-disabled no-asan nvidia-0xfe9 ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
