@@ -164,6 +164,12 @@ std::string UserEventSyncBridge::GetStorageKey(
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_event());
 }
 
+bool UserEventSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  // USER_EVENTS is a commit only data type so this method is not called.
+  NOTREACHED();
+}
+
 void UserEventSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
   CHECK(store_);
