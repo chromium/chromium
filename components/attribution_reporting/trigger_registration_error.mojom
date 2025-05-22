@@ -47,7 +47,7 @@ enum TriggerRegistrationError {
   kTriggerContextIdInvalidValue = 27,
   kTriggerContextIdInvalidSourceRegistrationTimeConfig = 28,
 
-  kEventValueInvalid = 29,
+  // Deprecated: kEventValueInvalid = 29,
 
   kAggregatableFilteringIdMaxBytesInvalidValue = 30,
   kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig = 31,
