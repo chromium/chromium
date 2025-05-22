@@ -86,6 +86,8 @@ if (enable_vulkan) {
     sources = [
       "semaphore_handle.cc",
       "semaphore_handle.h",
+      "skia_vk_memory_allocator_impl.cc",
+      "skia_vk_memory_allocator_impl.h",
       "vulkan_command_buffer.cc",
       "vulkan_command_buffer.h",
       "vulkan_command_pool.cc",
@@ -127,6 +129,7 @@ if (enable_vulkan) {
       "//build:android_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
+      "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
       "//ui/gl",

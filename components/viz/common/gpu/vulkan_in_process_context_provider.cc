@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "gpu/vulkan/buildflags.h"
-#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
+#include "gpu/vulkan/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"

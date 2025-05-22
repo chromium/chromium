@@ -293,7 +293,6 @@ shared_library_with_jni("libstandalonelibwebviewchromium") {
     "//content/public/test/android:content_native_test_support",
     "//gpu/vulkan",
     "//gpu/vulkan/init",
-    "//gpu/vulkan/init:skia",
     "//ui/gl",
   ]
   libs = [ "android" ]

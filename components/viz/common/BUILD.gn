@@ -109,7 +109,6 @@ if (enable_vulkan) {
       "//base",
       "//gpu/vulkan",
       "//gpu/vulkan:buildflags",
-      "//gpu/vulkan/init:skia",
       "//ui/gfx",
     ]
   }
