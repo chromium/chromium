@@ -692,7 +692,7 @@ export class AppElement extends AppElementBase implements
   }
 
   protected updateImages_() {
-    if (!this.shadowRoot) {
+    if (!this.shadowRoot || !chrome.readingMode.imagesFeatureEnabled) {
       return;
     }
 
