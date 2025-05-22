@@ -411,7 +411,7 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
-    public static final String KEYBOARD_ESC_BACK_NAVIGAION = "KeyboardEscBackNavigation";
+    public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
@@ -795,7 +795,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
             newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
-            newCachedFlag(KEYBOARD_ESC_BACK_NAVIGAION, false);
+            newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLegacyTabStateDeprecation =
             newCachedFlag(
                     LEGACY_TAB_STATE_DEPRECATION,
