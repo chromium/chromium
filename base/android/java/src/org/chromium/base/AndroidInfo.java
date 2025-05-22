@@ -65,6 +65,9 @@ public final class AndroidInfo {
      * API {@code Build.IS_DEBUGGABLE}.
      */
     public static boolean isDebugAndroid() {
+        // Note - this is called very early in WebView startup, before the command line is
+        // initialized or our application context is ready. Do not change this implementation to
+        // rely on anything beyond what the Android system provides.
         return "eng".equals(Build.TYPE) || "userdebug".equals(Build.TYPE);
     }
 

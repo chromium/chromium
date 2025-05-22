@@ -316,6 +316,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         mInitInfo.mStartTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent e1 =
                 ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initialize")) {
+            ThreadUtils.setWillOverrideUiThread();
             PackageInfo packageInfo;
             try (ScopedSysTraceEvent e2 =
                     ScopedSysTraceEvent.scoped(
@@ -395,6 +396,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
             ContextUtils.initApplicationContext(ctx);
+
+            // Ensuring we set this before we might read it in any future calls to BuildInfo.
+            // BuildInfo requires ContextUtils' application context, so this has to happen after.
+            BuildInfo.setBrowserPackageInfo(packageInfo);
+            // Trigger the creation of the BuildInfo singleton to avoid potential issues reading
+            // the command line if this happens on another thread.
+            BuildInfo.getInstance();
 
             // Find the package ID for the package that WebView's resources come from.
             // This will be the donor package if there is one, not our main package.
@@ -488,11 +496,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
             }
 
-            ThreadUtils.setWillOverrideUiThread();
-            BuildInfo.setBrowserPackageInfo(packageInfo);
-            // Trigger the creation of the BuildInfo singleton to avoid potential issues reading
-            // the command line if this happens on another thread.
-            BuildInfo.getInstance();
             AndroidXProcessGlobalConfig androidXConfig = AndroidXProcessGlobalConfig.getConfig();
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 try (ScopedSysTraceEvent e2 =
