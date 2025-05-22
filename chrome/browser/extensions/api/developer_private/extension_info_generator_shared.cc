@@ -571,9 +571,27 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
     info.blocklist_text = l10n_util::GetStringUTF8(blocklist_text);
   }
 
+  // TODO(crbug.com/419419534): Add back show_safe_browsing_allowlist_warning.
+  // TODO(crbug.com/419419534): Get extension_management here.
+
+  // TODO(crbug.com/419419534): Add back ControlledInfo.
+
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   bool is_enabled = state == developer::ExtensionState::kEnabled;
+
+  // Commands.
+  if (is_enabled) {
+    ConstructCommands(command_service_, extension.id(), &info.commands);
+  }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  info.is_command_registration_handled_externally =
+      ui::GlobalAcceleratorListener::GetInstance() &&
+      ui::GlobalAcceleratorListener::GetInstance()
+          ->IsRegistrationHandledExternally();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // TODO(crbug.com/419419534): Add back dependent extensions.
 
   info.description = extension.description();
 
@@ -594,6 +612,7 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
       disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   info.disable_reasons.custodian_approval_required =
       custodian_approval_required;
+  // TODO(crbug.com/419419534): Add back parent_disabled_permissions.
   info.disable_reasons.published_in_store_required = disable_reasons.contains(
       disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY);
   info.disable_reasons.unsupported_manifest_version = disable_reasons.contains(
@@ -686,6 +705,7 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   if (info.location == developer::Location::kNone) {
     info.location = developer::Location::kUnknown;
   }
+  // TODO(crbug.com/419419534): Add back Location.
 
   // Location text.
   int location_text = -1;
@@ -725,6 +745,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
     }
   }
 
+  // TODO(crbug.com/419419534): Add back must_remain_installed.
+
   info.name = extension.name();
   info.offline_enabled = OfflineEnabledInfo::IsOfflineEnabled(&extension);
 
@@ -756,6 +778,9 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   info.type = GetExtensionType(extension.manifest()->type());
 
+  // TODO(crbug.com/419419534): Add back update_url and user_may_modify in this
+  // order.
+
   info.version = extension.GetVersionForDisplay();
 
   if (state != developer::ExtensionState::kTerminated) {
@@ -763,16 +788,13 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
         extension, is_enabled);
   }
 
-  // Commands.
-  if (is_enabled) {
-    ConstructCommands(command_service_, extension.id(), &info.commands);
-  }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  info.is_command_registration_handled_externally =
-      ui::GlobalAcceleratorListener::GetInstance() &&
-      ui::GlobalAcceleratorListener::GetInstance()
-          ->IsRegistrationHandledExternally();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/419419534): Add back show_access_requests_in_toolbar and
+  // pinned_to_toolbar.
+
+  // TODO(crbug.com/419419534): Add back MV2 deprecation if needed, so that
+  // extension_info_generator_desktop can be removed.
+
+  // TODO(crbug.com/419419534): Add back can_upload_as_account_extension.
 
   // The icon. This section must come last as it moves `info`.
   ExtensionResource icon = IconsInfo::GetIconResource(
