@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(DeviceLockSource) -->
 
 <histogram name="Android.Automotive.DeviceLockDialogAction.{Source}"
-    enum="DeviceLockDialogAction" expires_after="2025-07-01">
+    enum="DeviceLockDialogAction" expires_after="2026-07-01">
   <owner>clhager@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -685,7 +685,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/browser_ui/device_lock/android/java/src/org/chromium/components/browser_ui/device_lock/DeviceLockActivityLauncher.java:DeviceLockSource) -->
 
 <histogram name="Android.Automotive.DeviceLockOutcome" enum="Boolean"
-    expires_after="2025-07-01">
+    expires_after="2026-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <summary>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockRemovalDialogEvent"
-    enum="MissingDeviceLockDialogEvent" expires_after="2025-07-01">
+    enum="MissingDeviceLockDialogEvent" expires_after="2026-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <summary>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Automotive.DeviceLockSet" enum="Boolean"
-    expires_after="2025-07-01">
+    expires_after="2026-07-01">
   <owner>twellington@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <summary>
