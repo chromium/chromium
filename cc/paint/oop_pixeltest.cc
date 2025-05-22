@@ -218,7 +218,9 @@ class OopPixelTest : public testing::Test,
          options.target_color_params.color_space, flags, "TestLabel"},
         gpu::kNullSurfaceHandle);
     EXPECT_TRUE(client_shared_image->mailbox().Verify());
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        client_shared_image->BeginRasterAccess(
+            ri, client_shared_image->creation_sync_token(), /*readonly=*/false);
 
     // Assume legacy MSAA if sample count is positive.
     gpu::raster::MsaaMode msaa_mode = options.msaa_sample_count > 0
@@ -270,8 +272,8 @@ class OopPixelTest : public testing::Test,
 
     SkBitmap result = ReadbackMailbox(ri, client_shared_image->mailbox(),
                                       options.resource_size);
-    gpu::SyncToken sync_token;
-    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    gpu::SyncToken sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
     sii->DestroySharedImage(sync_token, std::move(client_shared_image));
     return result;
   }
