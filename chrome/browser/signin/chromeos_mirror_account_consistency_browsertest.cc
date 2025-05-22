@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
@@ -21,7 +20,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -125,21 +124,14 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   signin::WaitForRefreshTokensLoaded(
       IdentityManagerFactory::GetForProfile(profile));
 
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              profile->GetProfileKey());
-  supervised_user_settings_service->SetActive(true);
-
-  // Incognito is always disabled for child accounts.
-  PrefService* prefs = profile->GetPrefs();
-  prefs->SetInteger(
-      policy::policy_prefs::kIncognitoModeAvailability,
-      static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  // EnableParentalControls is called when the browser discovers a child
+  // account. Among other thins, this disables the incognito mode.
+  supervised_user::EnableParentalControls(*profile->GetPrefs());
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 
   // TODO(http://crbug.com/1134144): This test seems to test supervised profiles
-  // instead of child accounts. With the current implementation,
+  // instead of child accounts (but the EnableParentalControls call closely
+  // simulates child account). With the current implementation,
   // X-Chrome-Connected header gets a supervised=true argument only for child
   // profiles. Verify if these tests needs to be updated to use child accounts
   // or whether supervised profiles need to be supported as well.
