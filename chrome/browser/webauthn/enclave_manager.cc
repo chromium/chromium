@@ -53,13 +53,14 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -3609,21 +3610,44 @@ void EnclaveManager::Act() {
     }
 
     loading_ = true;
+
+    if (!encryptor_.has_value()) {
+      os_crypt_subscription_ =
+          g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+              &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
+    base::OnceCallback<void(std::optional<std::string>)> decryption_callback =
+        base::BindOnce(
+            [](base::WeakPtr<EnclaveManager> manager,
+               std::optional<std::string> contents) {
+              if (!manager) {
+                return;
+              }
+              std::string decrypted;
+              if (!contents.has_value() ||
+                  !manager->encryptor_->DecryptString(*contents, &decrypted)) {
+                manager->LoadComplete(std::nullopt);
+                return;
+              }
+              manager->LoadComplete(std::move(decrypted));
+            },
+            weak_ptr_factory_.GetWeakPtr());
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
         base::BindOnce(
             [](base::FilePath path) -> std::optional<std::string> {
-              std::string contents, decrypted;
-              if (!base::ReadFileToString(path, &contents) ||
-                  !OSCrypt::DecryptString(contents, &decrypted)) {
+              std::string contents;
+              if (!base::ReadFileToString(path, &contents)) {
                 return std::nullopt;
               }
 
-              return std::move(decrypted);
+              return std::move(contents);
             },
             file_path_),
-        base::BindOnce(&EnclaveManager::LoadComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
+        std::move(decryption_callback));
     return;
   }
 
@@ -3817,18 +3841,23 @@ void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
 
 void EnclaveManager::DoWriteState(std::string serialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(encryptor_.has_value());
 
   currently_writing_ = true;
+
+  std::string encrypted;
+  if (!encryptor_->EncryptString(serialized, &encrypted)) {
+    WriteStateComplete(false);
+    return;
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          [](base::FilePath path, std::string contents) -> bool {
-            std::string encrypted;
-            return OSCrypt::EncryptString(contents, &encrypted) &&
-                   base::ImportantFileWriter::WriteFileAtomically(path,
+          [](base::FilePath path, std::string encrypted) -> bool {
+            return base::ImportantFileWriter::WriteFileAtomically(path,
                                                                   encrypted);
           },
-          file_path_, std::move(serialized)),
+          file_path_, std::move(encrypted)),
       base::BindOnce(&EnclaveManager::WriteStateComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -3982,6 +4011,14 @@ bool EnclaveManager::IsSecurityDomainReset(
          (!state.key_version.has_value() ||
           user_->wrapped_security_domain_secrets().find(*state.key_version) ==
               user_->wrapped_security_domain_secrets().end());
+}
+
+void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor,
+                                    bool result) {
+  CHECK(!encryptor_.has_value());
+  encryptor_.emplace(std::move(encryptor));
+  loading_ = false;
+  Act();
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

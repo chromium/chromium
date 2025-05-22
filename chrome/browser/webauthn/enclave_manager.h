@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -19,10 +20,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
@@ -416,6 +419,9 @@ class EnclaveManager : public EnclaveManagerInterface {
       const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
           state);
 
+  // Called when the OSCrypt encryptor is available.
+  void OnOsCryptReady(os_crypt_async::Encryptor encryptor, bool result);
+
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   device::NetworkContextFactory network_context_factory_;
@@ -465,7 +471,13 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   base::ObserverList<Observer> observer_list_;
 
+  std::optional<os_crypt_async::Encryptor> encryptor_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::CallbackListSubscription os_crypt_subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::WeakPtrFactory<EnclaveManager> weak_ptr_factory_{this};
 };
 
