@@ -1545,6 +1545,9 @@ const std::vector<raw_ptr<AXNode, VectorExperimental>>*
 AXNode::GetExtraMacNodes() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   // Should only be available on the table node itself, not any of its children.
+  if (!IsTable() || IsInvisibleOrIgnored()) {
+    return nullptr;
+  }
   const AXTableInfo* table_info = tree_->GetTableInfo(this);
   if (!table_info)
     return nullptr;
@@ -1831,11 +1834,13 @@ bool AXNode::IsCellOrHeaderOfAriaGrid() const {
 
 AXTableInfo* AXNode::GetAncestorTableInfo() const {
   const AXNode* node = this;
-  while (node && !node->IsTable())
-    node = node->GetParent();
-  if (node)
-    return tree_->GetTableInfo(node);
-  return nullptr;
+  while (node && !node->IsTable()) {
+    node = node->GetUnignoredParent();
+  }
+  if (!node || node->IsInvisibleOrIgnored()) {
+    return nullptr;
+  }
+  return tree_->GetTableInfo(node);
 }
 
 void AXNode::IdVectorToNodeVector(const std::vector<AXNodeID>& ids,

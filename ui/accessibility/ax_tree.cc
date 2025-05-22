@@ -1600,6 +1600,13 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
 
 AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   DCHECK(!GetTreeUpdateInProgressState());
+
+  DCHECK(const_table_node);
+  if (!const_table_node->IsTable() ||
+      const_table_node->IsInvisibleOrIgnored()) {
+    return nullptr;
+  }
+
   // Note: the const_casts are here because we want this function to be able
   // to be called from a const virtual function on AXNode. AXTableInfo is
   // computed on demand and cached, but that's an implementation detail
@@ -1607,7 +1614,6 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   AXNode* table_node = const_cast<AXNode*>(const_table_node);
   AXTree* tree = const_cast<AXTree*>(this);
 
-  DCHECK(table_node);
   const auto& cached = table_info_map_.find(table_node->id());
   if (cached != table_info_map_.end()) {
     // Get existing table info, and update if invalid because the
@@ -1625,8 +1631,7 @@ AXTableInfo* AXTree::GetTableInfo(const AXNode* const_table_node) const {
   }
 
   AXTableInfo* table_info = AXTableInfo::Create(tree, table_node);
-  if (!table_info)
-    return nullptr;
+  DCHECK(table_info);
 
   table_info_map_[table_node->id()] = base::WrapUnique<AXTableInfo>(table_info);
   return table_info;

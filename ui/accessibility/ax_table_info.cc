@@ -175,10 +175,13 @@ size_t GetSizeTAttribute(const AXNode& node, IntAttribute attribute) {
 
 // static
 AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
+#if DCHECK_IS_ON()
   DCHECK(tree);
   DCHECK(table_node);
 
-#if DCHECK_IS_ON()
+  DCHECK(table_node->IsTable());
+  DCHECK(!table_node->IsInvisibleOrIgnored());
+
   // Confidence check, make sure the node is in the tree.
   AXNode* node = table_node;
   while (node && node != tree->root()) {
@@ -186,10 +189,6 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   }
   DCHECK_EQ(node, tree->root());
 #endif
-
-  if (!IsTableLike(table_node->GetRole()) || table_node->IsIgnored()) {
-    return nullptr;
-  }
 
   AXTableInfo* info = new AXTableInfo(tree, table_node);
   bool success = info->Update();
@@ -199,9 +198,8 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
 }
 
 bool AXTableInfo::Update() {
-  if (!table_node_->IsTable()) {
-    return false;
-  }
+  DCHECK(table_node_->IsTable());
+  DCHECK(!table_node_->IsInvisibleOrIgnored());
 
   ClearVectors();
 
