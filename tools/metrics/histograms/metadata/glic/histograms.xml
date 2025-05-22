@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.PanelPresentationTime.{InputMode}" units="ms"
-    expires_after="2025-04-30">
+    expires_after="2026-04-30">
   <owner>dewittj@google.com</owner>
   <owner>iwells@google.com</owner>
   <summary>
