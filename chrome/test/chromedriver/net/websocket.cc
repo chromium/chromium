@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354307328): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/net/websocket.h"
 
 #include <stddef.h>
@@ -50,8 +45,7 @@ namespace {
 bool ResolveHost(const std::string& host,
                  uint16_t port,
                  net::AddressList* address_list) {
-  struct addrinfo hints;
-  memset(&hints, 0, sizeof(hints));
+  struct addrinfo hints = {};
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
@@ -265,10 +259,13 @@ void WebSocket::OnRead(bool read_again, int code) {
     return;
   }
 
-  if (state_ == CONNECTING)
-    OnReadDuringHandshake(read_buffer_->data(), code);
-  else if (state_ == OPEN)
-    OnReadDuringOpen(read_buffer_->data(), code);
+  if (state_ == CONNECTING) {
+    OnReadDuringHandshake(
+        read_buffer_->span().first(base::checked_cast<size_t>(code)));
+  } else if (state_ == OPEN) {
+    OnReadDuringOpen(
+        read_buffer_->span().first(base::checked_cast<size_t>(code)));
+  }
 
   // If we were called by the event loop due to arrival of data, call Read()
   // again to read more data. If we were called by Read(), however, simply
@@ -280,9 +277,10 @@ void WebSocket::OnRead(bool read_again, int code) {
     Read();
 }
 
-void WebSocket::OnReadDuringHandshake(const char* data, int len) {
-  VLOG(4) << "WebSocket::OnReadDuringHandshake\n" << std::string(data, len);
-  handshake_response_ += std::string(data, len);
+void WebSocket::OnReadDuringHandshake(base::span<const uint8_t> data_span) {
+  VLOG(4) << "WebSocket::OnReadDuringHandshake\n"
+          << base::as_string_view(data_span);
+  handshake_response_ += base::as_string_view(data_span);
   size_t headers_end = net::HttpUtil::LocateEndOfHeaders(
       base::as_byte_span(handshake_response_), 0);
   if (headers_end == std::string::npos)
@@ -306,18 +304,13 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
   sec_key_.clear();
   state_ = OPEN;
   InvokeConnectCallback(net::OK);
-  if (!leftover_message.empty())
-    OnReadDuringOpen(leftover_message.data(), leftover_message.length());
+  if (!leftover_message.empty()) {
+    OnReadDuringOpen(base::as_writable_byte_span(leftover_message));
+  }
 }
 
-void WebSocket::OnReadDuringOpen(char* data, int len) {
+void WebSocket::OnReadDuringOpen(base::span<uint8_t> data_span) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
-
-  // TODO(crbug.com/354307328): It's not possible to construct
-  // this span soundedly here. OnReadDuringOpen() should
-  // receive a span instead of a pointer and length.
-  auto data_span = UNSAFE_BUFFERS(base::as_writable_byte_span(
-      base::span(data, base::checked_cast<size_t>(len))));
 
   // Call the parser's Decode method
   CHECK(parser_.Decode(data_span, &frame_chunks));

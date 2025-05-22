@@ -60,8 +60,8 @@ class WebSocket {
 
   void Read();
   void OnRead(bool read_again, int code);
-  void OnReadDuringHandshake(const char* data, int len);
-  void OnReadDuringOpen(char* data, int len);
+  void OnReadDuringHandshake(base::span<const uint8_t> data_span);
+  void OnReadDuringOpen(base::span<uint8_t> data_span);
 
   void InvokeConnectCallback(int code);
   void Close(int code);
