@@ -739,6 +739,7 @@ static_library("test_support") {
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
       "//chrome/browser/password_manager/android/access_loss:public",
+      "//chrome/browser/ui/android/tab_model",
       "//components/feed/core/v2:feed_core_stubs",
     ]
 
@@ -1475,7 +1476,10 @@ source_set("platform_browser_tests") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/test:test_support_ui_android" ]
+    deps += [
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/test:test_support_ui_android",
+    ]
   } else {
     deps += [ "//chrome/test:test_support_ui" ]
     public_deps +=
@@ -1859,6 +1863,8 @@ if (is_android) {
     ]
 
     deps += [
+      "//chrome/browser/ui/android/tab_model",
+
       # TODO(crbug.com/40626932): This is needed for ShellManager which is what
       # the ChromeBrowserTestsActivity is using to build the java UI. It's
       # likely we want to replace it with something new that uses ChromeWindow
@@ -2036,6 +2042,7 @@ if (is_android) {
     deps = [
       "//chrome/browser",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/android/tab_model",
       "//content/public/browser",
     ]
   }
@@ -7598,6 +7605,8 @@ test("unit_tests") {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:unit_tests",
       "//chrome/browser/translate/android:unit_tests",
       "//chrome/browser/ui/android/hats:unit_tests",
+      "//chrome/browser/ui/android/hats/test:test_support",
+      "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/autofill/payments:test_support",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:unit_tests",
@@ -12127,6 +12136,7 @@ source_set("sync_integration_test_support") {
       ":sync_integration_test_support_jni_headers",
       ":test_support_jni_headers",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/ui/android/tab_model",
       "//components/saved_tab_groups/public:conversion_utils",
     ]
     if (enable_extensions_core) {

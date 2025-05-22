@@ -68,6 +68,7 @@ source_set("impl") {
     ]
   } else {  # !is_android
     deps += [
+      "//chrome/browser/ui/android/tab_model",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
     ]

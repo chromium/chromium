@@ -853,22 +853,6 @@ static_library("ui") {
       "android/status_tray_android.cc",
       "android/tab_contents/chrome_web_contents_view_delegate_android.cc",
       "android/tab_contents/chrome_web_contents_view_delegate_android.h",
-      "android/tab_model/android_live_tab_context.cc",
-      "android/tab_model/android_live_tab_context.h",
-      "android/tab_model/android_live_tab_context_wrapper.cc",
-      "android/tab_model/android_live_tab_context_wrapper.h",
-      "android/tab_model/tab_list_interface.h",
-      "android/tab_model/tab_model.cc",
-      "android/tab_model/tab_model.h",
-      "android/tab_model/tab_model_jni_bridge.cc",
-      "android/tab_model/tab_model_jni_bridge.h",
-      "android/tab_model/tab_model_list.cc",
-      "android/tab_model/tab_model_list.h",
-      "android/tab_model/tab_model_list_observer.h",
-      "android/tab_model/tab_model_observer.cc",
-      "android/tab_model/tab_model_observer.h",
-      "android/tab_model/tab_model_observer_jni_bridge.cc",
-      "android/tab_model/tab_model_observer_jni_bridge.h",
       "android/toolbar/adaptive_toolbar_bridge.cc",
       "android/toolbar/adaptive_toolbar_bridge.h",
       "android/toolbar/adaptive_toolbar_enums.h",
@@ -908,6 +892,8 @@ static_library("ui") {
       "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/hats",
       "//chrome/browser/ui/android/hats:impl",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:impl",
       "//chrome/browser/ui/android/toolbar:jni_headers",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:impl",
@@ -5966,12 +5952,15 @@ static_library("test_support") {
   }
 
   if (is_android) {
+    # TODO(crbug.com/413572035): Move to c/b/ui/android/tab_model build file.
     sources += [
       "android/tab_model/tab_model_test_helper.cc",
       "android/tab_model/tab_model_test_helper.h",
     ]
-
-    deps += [ "//chrome/browser/flags:flags_android" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [
       "browser_window/test/mock_browser_window_interface.cc",

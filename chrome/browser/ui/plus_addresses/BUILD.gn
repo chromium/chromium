@@ -104,6 +104,7 @@ source_set("impl") {
       ":plus_addresses",
       "//chrome/browser/plus_addresses",
       "//chrome/browser/profiles",
+      "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/plus_addresses/android:jni_headers",
       "//components/autofill/content/browser",
       "//components/plus_addresses",

@@ -532,7 +532,10 @@ source_set("extensions") {
       "external_install_error_android.cc",
       "external_install_error_android.h",
     ]
-    deps += [ "//chrome/browser/android:keyboard_shortcuts" ]
+    deps += [
+      "//chrome/browser/android:keyboard_shortcuts",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [ "api/chrome_extensions_api_client_non_android.cc" ]
   }

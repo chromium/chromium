@@ -45,7 +45,10 @@ source_set("impl") {
 
   if (is_android) {
     sources += [ "javascript_tab_modal_dialog_manager_delegate_android.cc" ]
-    deps += [ "//chrome/browser/ui:tab_model_enums_java" ]
+    deps += [
+      "//chrome/browser/ui:tab_model_enums_java",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.cc" ]
     deps += [ "//chrome/browser/ui/tabs:tab_strip" ]

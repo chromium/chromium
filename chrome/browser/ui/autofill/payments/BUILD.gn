@@ -115,6 +115,7 @@ source_set("impl") {
       "//chrome/browser/mandatory_reauth/android/internal:jni",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/touch_to_fill/autofill/android",
+      "//chrome/browser/ui/android/tab_model",
       "//components/infobars/core",
       "//components/signin/public/identity_manager",
       "//components/webauthn/android",

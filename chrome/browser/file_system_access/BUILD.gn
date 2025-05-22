@@ -56,6 +56,11 @@ source_set("impl") {
     "//components/guest_view/buildflags",
     "//components/pdf/common:util",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  }
+
   if (safe_browsing_mode != 0) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }

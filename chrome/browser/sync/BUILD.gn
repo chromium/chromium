@@ -155,7 +155,10 @@ source_set("sync") {
       "glue/web_contents_state_synced_tab_delegate.cc",
       "glue/web_contents_state_synced_tab_delegate.h",
     ]
-    deps += [ "//chrome/browser/sync/android:jni_headers" ]
+    deps += [
+      "//chrome/browser/sync/android:jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+    ]
   } else {
     sources += [
       "glue/extension_data_type_controller.cc",

@@ -37,4 +37,8 @@ source_set("runtime") {
   if (is_chromeos) {
     deps += [ "//chromeos/components/kiosk" ]
   }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  }
 }

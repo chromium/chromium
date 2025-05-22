@@ -208,6 +208,8 @@ static_library("devtools") {
       "protocol/target_handler_android.cc",
       "protocol/target_handler_android.h",
     ]
+
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
     public_deps += [
       "//chrome/browser/ui:browser_list",

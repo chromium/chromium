@@ -3558,6 +3558,12 @@ static_library("browser") {
       "//chrome/browser/ui/interventions",
     ]
 
+    deps += [
+      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:impl",
+    ]
+
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
@@ -3577,6 +3583,9 @@ static_library("browser") {
       "//chrome/browser/android:tabs_impl",
 
       "//chrome/browser/ui/android/hats:impl",
+
+      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
+      "//chrome/browser/ui/android/tab_model:impl",
     ]
 
     if (safe_browsing_mode == 2) {
