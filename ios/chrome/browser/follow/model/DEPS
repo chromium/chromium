@@ -2,7 +2,6 @@ include_rules = [
   "+ios/chrome/browser/discover_feed/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/history/model",
-  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model",

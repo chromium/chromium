@@ -24,7 +24,6 @@ include_rules = [
   "+ios/chrome/browser/language/model/language_model_manager_factory.h",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/net/model/crurl.h",
-  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/omaha/model/omaha_service.h",
   "+ios/chrome/browser/parcel_tracking",

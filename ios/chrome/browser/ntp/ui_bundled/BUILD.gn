@@ -237,7 +237,6 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/location_bar/ui_bundled:fakebox_buttons_snapshot",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",

@@ -7,9 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -41,13 +38,6 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-
-  // Don't show follow option when feed is hidden due to DSE choice.
-  if (ShouldHideFeedWithSearchChoice(
-          ios::TemplateURLServiceFactory::GetForProfile(profile),
-          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile))) {
-    return FollowActionStateHidden;
-  }
 
   // Don't show follow option when following feed is disabled by enterprise
   // policy.

@@ -143,7 +143,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

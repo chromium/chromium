@@ -33,10 +33,3 @@ bool IsNTPWithoutHistory(web::WebState* web_state) {
          !web_state->GetNavigationManager()->CanGoBack() &&
          !web_state->GetNavigationManager()->CanGoForward();
 }
-
-bool ShouldHideFeedWithSearchChoice(
-    TemplateURLService* template_url_service,
-    regional_capabilities::RegionalCapabilitiesService* regional_capabilities) {
-  return !search::DefaultSearchProviderIsGoogle(template_url_service) &&
-         regional_capabilities->IsInEeaCountry();
-}
