@@ -61,7 +61,10 @@ namespace {
 // The amount of time used to determine if Lens was opened recently.
 const base::TimeDelta kLensOpenedRecency = base::Days(30);
 // The amount of time used to determine if the CPE promo was displayed recently.
-const base::TimeDelta kCPEPromoRecency = base::Days(30);
+const base::TimeDelta kCPEPromoRecency = base::Days(7);
+// The amount of time used to determine if the user successfully logged in
+// recently.
+const base::TimeDelta kSuccessfullLoginRecency = base::Days(30);
 // The amount of time used to determine if the user should be classified.
 const base::TimeDelta kClassifyUserRecency = base::Hours(2);
 
@@ -591,9 +594,9 @@ bool TipsNotificationClient::ShouldSendCPE(ProfileIOS* profile) {
   if (IsRecent(promo_display_time, kCPEPromoRecency)) {
     return false;
   }
-  // TODO(crbug.com/417940156): Refine CPE trigger criteria to include:
-  //   * have used autofill in the last 30 days.
-  return true;
+  base::Time login_time =
+      local_state_->GetTime(prefs::kIosSuccessfulLoginWithExistingPassword);
+  return IsRecent(login_time, kSuccessfullLoginRecency);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {

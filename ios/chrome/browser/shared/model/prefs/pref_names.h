@@ -211,6 +211,11 @@ inline constexpr char kIosCredentialProviderPromoLastActionTaken[] =
 inline constexpr char kIosCredentialProviderPromoDisplayTime[] =
     "ios.credential_provider_promo_display_time";
 
+// The timestamp of the last time the user had a successful login with an
+// existing saved password.
+inline constexpr char kIosSuccessfulLoginWithExistingPassword[] =
+    "ios.successful_login_with_existing_password";
+
 // Boolean that is true when the CredentialProviderPromoEnabled policy is
 // enabled.
 inline constexpr char kIosCredentialProviderPromoPolicyEnabled[] =

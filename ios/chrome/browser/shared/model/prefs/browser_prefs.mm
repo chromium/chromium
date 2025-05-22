@@ -516,6 +516,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
                                 true);
 
+  registry->RegisterTimePref(prefs::kIosSuccessfulLoginWithExistingPassword,
+                             base::Time());
+
   registry->RegisterTimePref(prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay,
                              base::Time());
 

@@ -779,7 +779,7 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
 }
 
 // Tests that the client can register a CPE Promo notification, only when the
-// CPE promo was displayed more than 30 days ago.
+// CPE promo was displayed more than 7 days ago.
 TEST_F(TipsNotificationClientTest, CPERequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSExpandedTips);
@@ -797,6 +797,8 @@ TEST_F(TipsNotificationClientTest, CPERequest) {
   });
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
+                       base::Time::Now() - base::Days(6));
+  local_state->SetTime(prefs::kIosSuccessfulLoginWithExistingPassword,
                        base::Time::Now() - base::Days(29));
 
   // A notification should not be requested yet because promo display time is
@@ -809,7 +811,7 @@ TEST_F(TipsNotificationClientTest, CPERequest) {
 
   // Simulate that the CPE promo was displayed more than 30 days ago.
   local_state->SetTime(prefs::kIosCredentialProviderPromoDisplayTime,
-                       base::Time::Now() - base::Days(31));
+                       base::Time::Now() - base::Days(8));
   SetupMockNotificationCenter();
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kCPE);
