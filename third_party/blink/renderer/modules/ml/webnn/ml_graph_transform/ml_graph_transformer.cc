@@ -51,6 +51,25 @@ void MLGraphTransformer::Connect(MLOperand* from,
 }
 
 // static
+void MLGraphTransformer::SwapInput(MLOperator* op,
+                                   OperandIndex input_index,
+                                   MLOperand* new_input) {
+  MLOperand* old_input = op->inputs_[input_index].Get();
+  CHECK(old_input);
+
+  Disconnect(old_input, op, input_index);
+  Connect(new_input, op, input_index);
+}
+
+// static
+void MLGraphTransformer::SwapInput(MLOperator* op,
+                                   MLOperand* old_input,
+                                   MLOperand* new_input) {
+  int index = Disconnect(old_input, op);
+  Connect(new_input, op, index);
+}
+
+// static
 MLOperand* MLGraphTransformer::CloneOperandAndResetShape(
     const MLOperand* operand,
     const Vector<uint32_t>& shape) {

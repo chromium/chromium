@@ -35,6 +35,14 @@ class MODULES_EXPORT MLGraphTransformer
                       MLOperator* to,
                       OperandIndex input_index);
 
+  static void SwapInput(MLOperator* op,
+                        OperandIndex input_index,
+                        MLOperand* new_input);
+
+  static void SwapInput(MLOperator* op,
+                        MLOperand* old_input,
+                        MLOperand* new_input);
+
   // The reshaped operand should have the same number of elements as the
   // original operand
   static MLOperand* ReplaceOperandWithNewShape(

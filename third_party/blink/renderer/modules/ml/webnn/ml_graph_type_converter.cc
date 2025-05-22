@@ -223,56 +223,6 @@ webnn::OperandId GetOperatorOutputId(const MLOperator* op,
   return operand_to_id_map.at(output);
 }
 
-webnn::OperandId InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
-                                        webnn::OperandDescriptor descriptor,
-                                        blink_mojom::GraphInfo* graph_info) {
-
-  auto mojo_operand = blink_mojom::Operand::New();
-  mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
-  mojo_operand->descriptor = std::move(descriptor);
-  return AddOperand(*graph_info, std::move(mojo_operand));
-}
-
-Vector<uint32_t> PermuteShape(base::span<const uint32_t> shape,
-                              base::span<const uint32_t> permutation) {
-  wtf_size_t shape_size = base::checked_cast<wtf_size_t>(shape.size());
-  Vector<uint32_t> permuted_array(shape_size);
-
-  CHECK_EQ(shape_size, permutation.size());
-  for (wtf_size_t i = 0; i < shape_size; ++i) {
-    permuted_array[i] = shape[permutation[i]];
-  }
-
-  return permuted_array;
-}
-
-// Insert a transpose operation after the given operand. Returns the ID of the
-// operand holding the transposed result.
-webnn::OperandId InsertInputTranspose(
-    const webnn::ContextProperties& context_properties,
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperand* operand,
-    base::span<const uint32_t> permutation,
-    blink_mojom::GraphInfo* graph_info,
-    const String& label) {
-  webnn::OperandId operand_id = InsertTemporaryOperand(
-      operand_to_id_map,
-      *webnn::OperandDescriptor::Create(
-          context_properties, operand->DataType(),
-          PermuteShape(operand->Shape(), permutation), label.Utf8()),
-      graph_info);
-
-  auto transpose = blink_mojom::Transpose::New();
-  transpose->input_operand_id = operand_to_id_map.at(operand);
-  transpose->output_operand_id = operand_id;
-  transpose->permutation = Vector<uint32_t>(permutation);
-  transpose->label = label;
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewTranspose(std::move(transpose)));
-
-  return operand_id;
-}
-
 blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* clamp) {
   const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
@@ -359,210 +309,6 @@ OperationPtr CreateSoftplus(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewSoftplus(std::move(softplus_mojo));
 }
 
-webnn::InputOperandLayout BlinkInputOperandLayoutToNative(
-    blink::V8MLInputOperandLayout::Enum type) {
-  switch (type) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      return webnn::InputOperandLayout::kNchw;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      return webnn::InputOperandLayout::kNhwc;
-  }
-}
-
-constexpr std::array<uint32_t, 4> kNchwToNhwcPermutation = {0u, 2u, 3u, 1u};
-constexpr std::array<uint32_t, 4> kNhwcToNchwPermutation = {0u, 3u, 1u, 2u};
-
-std::optional<base::span<const uint32_t>> GetInputOperandPermutation(
-    blink::V8MLInputOperandLayout::Enum input_layout,
-    const webnn::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToNative(input_layout) ==
-      context_properties.input_operand_layout) {
-    return std::nullopt;
-  }
-
-  switch (input_layout) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.input_operand_layout,
-               webnn::InputOperandLayout::kNhwc);
-      return kNchwToNhwcPermutation;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.input_operand_layout,
-               webnn::InputOperandLayout::kNchw);
-      return kNhwcToNchwPermutation;
-  }
-}
-
-std::optional<base::span<const uint32_t>> GetOutputOperandPermutation(
-    blink::V8MLInputOperandLayout::Enum input_layout,
-    const webnn::ContextProperties& context_properties) {
-  if (BlinkInputOperandLayoutToNative(input_layout) ==
-      context_properties.input_operand_layout) {
-    return std::nullopt;
-  }
-
-  // The output layout is the same as the input layout and so the output
-  // needs to have the inverse of the permutation returned by
-  // `GetInputOperandPermutation()` applied.
-  switch (input_layout) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.input_operand_layout,
-               webnn::InputOperandLayout::kNhwc);
-      return kNhwcToNchwPermutation;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.input_operand_layout,
-               webnn::InputOperandLayout::kNchw);
-      return kNchwToNhwcPermutation;
-  }
-}
-
-std::optional<std::array<uint32_t, 4>> GetConv2DFilterPermutation(
-    webnn::InputOperandLayout input_layout,
-    bool depthwise,
-    blink::V8MLConv2dFilterOperandLayout filter_layout) {
-  switch (input_layout) {
-    case webnn::InputOperandLayout::kNchw:
-      // Mojo expects the OIHW layout.
-      switch (filter_layout.AsEnum()) {
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
-          return std::nullopt;
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
-          return std::to_array<uint32_t>({3u, 2u, 0u, 1u});
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
-          return std::to_array<uint32_t>({0u, 3u, 1u, 2u});
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
-          return std::to_array<uint32_t>({3u, 0u, 1u, 2u});
-      }
-      break;
-    case webnn::InputOperandLayout::kNhwc:
-      if (depthwise) {
-        // Mojo expects the IHWO layout.
-        switch (filter_layout.AsEnum()) {
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
-            return std::to_array<uint32_t>({1u, 2u, 3u, 0u});
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
-            return std::to_array<uint32_t>({2u, 0u, 1u, 3u});
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
-            return std::to_array<uint32_t>({3u, 1u, 2u, 0u});
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
-            return std::nullopt;
-        }
-      } else {
-        switch (filter_layout.AsEnum()) {
-          // Mojo expects the OHWI layout.
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
-            return std::to_array<uint32_t>({0u, 2u, 3u, 1u});
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
-            return std::to_array<uint32_t>({3u, 0u, 1u, 2u});
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
-            return std::nullopt;
-          case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
-            return std::to_array<uint32_t>({3u, 1u, 2u, 0u});
-        }
-      }
-      break;
-  }
-}
-
-std::optional<std::array<uint32_t, 4>> GetConvTranspose2DFilterPermutation(
-    webnn::InputOperandLayout input_layout,
-    blink::V8MLConvTranspose2dFilterOperandLayout filter_layout) {
-  switch (input_layout) {
-    case webnn::InputOperandLayout::kNchw:
-      // Mojo expects IOHW layout.
-      switch (filter_layout.AsEnum()) {
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
-          return std::nullopt;
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
-          return std::to_array<uint32_t>({3, 2, 0, 1});
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
-          return std::to_array<uint32_t>({3u, 0u, 1u, 2u});
-      }
-      break;
-    case webnn::InputOperandLayout::kNhwc:
-      // Mojo expects OHWI layout.
-      switch (filter_layout.AsEnum()) {
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
-          return std::to_array<uint32_t>({1u, 2u, 3u, 0u});
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
-          return std::to_array<uint32_t>({2u, 0u, 1u, 3u});
-        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
-          return std::nullopt;
-      }
-      break;
-  }
-}
-
-constexpr std::array<uint32_t, 2> kResample2dChannelFirstAxes{2u, 3u};
-constexpr std::array<uint32_t, 2> kResample2dChannelLastAxes{1u, 2u};
-std::optional<std::vector<uint32_t>> GetResample2DPermutation(
-    const Vector<uint32_t>& from_axes,
-    const webnn::ContextProperties& context_properties) {
-  if (context_properties.resample_2d_axes == webnn::Resample2DAxes::kAny) {
-    return std::nullopt;
-  }
-
-  base::span<const uint32_t> to_axes =
-      context_properties.resample_2d_axes ==
-              webnn::Resample2DAxes::kChannelsFirst
-          ? kResample2dChannelFirstAxes
-          : kResample2dChannelLastAxes;
-
-  CHECK_EQ(from_axes.size(), 2u);
-  CHECK(std::ranges::is_sorted(from_axes));
-  if (from_axes == to_axes) {
-    return std::nullopt;
-  }
-
-  std::vector<uint32_t> permutation{0u, 1u, 2u, 3u};
-
-  // Move each axis from from_axes to to_axes.
-  for (size_t i = 0; i < from_axes.size(); ++i) {
-    uint32_t from_axis = from_axes[static_cast<wtf_size_t>(i)];
-    uint32_t to_axis = to_axes[i];
-    // Find the current index of the from_axis as it could have been moved from
-    // previous iteration.
-    auto it = std::ranges::find(permutation, from_axis);
-    CHECK(it != permutation.end());
-    size_t from_axis_index = std::distance(permutation.begin(), it);
-    std::swap(permutation[to_axis], permutation[from_axis_index]);
-  }
-  return permutation;
-}
-
-constexpr uint32_t kBatchNormalizationChannelFirstAxis = 1u;
-std::optional<std::vector<uint32_t>> GetBatchNormalizationPermutation(
-    const uint32_t from_axis,
-    const uint32_t input_rank,
-    const webnn::ContextProperties& context_properties) {
-  if (context_properties.batch_normalization_axis ==
-      webnn::BatchNormalizationAxis::kAny) {
-    return std::nullopt;
-  }
-
-  const uint32_t to_axis = kBatchNormalizationChannelFirstAxis;
-
-  if (from_axis == to_axis) {
-    return std::nullopt;
-  }
-
-  std::vector<uint32_t> permutation(input_rank);
-  std::iota(permutation.begin(), permutation.end(), 0);
-  CHECK_LT(to_axis, input_rank);
-  std::swap(permutation[to_axis], permutation[from_axis]);
-
-  return permutation;
-}
-
-std::vector<uint32_t> GetInversePermutation(
-    base::span<const uint32_t> permutation) {
-  std::vector<uint32_t> inverse_perm(permutation.size());
-  for (size_t i = 0; i < permutation.size(); ++i) {
-    CHECK(permutation[i] < inverse_perm.size());
-    inverse_perm[permutation[i]] = base::checked_cast<uint32_t>(i);
-  }
-  return inverse_perm;
-}
-
 OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* op,
                                       blink_mojom::ArgMinMax::Kind kind) {
@@ -578,11 +324,9 @@ OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }
 
-void SerializeBatchNormalizationOperation(
+OperationPtr CreateBatchNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
-    const webnn::ContextProperties& context_properties,
-    const MLOperator* batch_normalization,
-    blink_mojom::GraphInfo* graph_info) {
+    const MLOperator* batch_normalization) {
   auto batch_normalization_mojo =
       webnn::mojom::blink::BatchNormalization::New();
 
@@ -604,33 +348,7 @@ void SerializeBatchNormalizationOperation(
   const MLOperand* output_operand = batch_normalization->Outputs()[0];
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
-  uint32_t axis = options->axis();
-  const std::optional<std::vector<uint32_t>> input_permutation =
-      GetBatchNormalizationPermutation(axis, input_operand->shape().size(),
-                                       context_properties);
-  if (input_permutation.has_value()) {
-    switch (context_properties.batch_normalization_axis) {
-      case webnn::BatchNormalizationAxis::kChannelsFirst:
-        axis = kBatchNormalizationChannelFirstAxis;
-        break;
-      case webnn::BatchNormalizationAxis::kAny:
-        NOTREACHED();
-    }
-
-    input_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, input_operand,
-        *input_permutation, graph_info, options->label());
-
-    output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map,
-        *webnn::OperandDescriptor::Create(
-            context_properties, output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation),
-            options->label().Utf8()),
-        graph_info);
-  }
-
-  batch_normalization_mojo->axis = axis;
+  batch_normalization_mojo->axis = options->axis();
   batch_normalization_mojo->epsilon = options->epsilon();
   batch_normalization_mojo->label = options->label();
   batch_normalization_mojo->input_operand_id = input_operand_id;
@@ -639,23 +357,8 @@ void SerializeBatchNormalizationOperation(
   batch_normalization_mojo->variance_operand_id =
       GetOperatorInputId(batch_normalization, operand_to_id_map, 2);
   batch_normalization_mojo->output_operand_id = output_operand_id;
-
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewBatchNormalization(
-          std::move(batch_normalization_mojo)));
-
-  if (input_permutation.has_value()) {
-    std::vector<uint32_t> output_permutation =
-        GetInversePermutation(*input_permutation);
-    auto output_transpose = blink_mojom::Transpose::New();
-    output_transpose->input_operand_id = output_operand_id;
-    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
-    output_transpose->permutation = Vector<uint32_t>(output_permutation);
-    output_transpose->label = options->label();
-
-    graph_info->operations.push_back(
-        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
-  }
+  return blink_mojom::Operation::NewBatchNormalization(
+      std::move(batch_normalization_mojo));
 }
 
 OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
@@ -679,41 +382,9 @@ OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewConcat(std::move(concat_mojo));
 }
 
-bool IsDepthwiseConv2d(const MLOperator* conv2d) {
-  const auto* options = static_cast<const MLConv2dOptions*>(conv2d->Options());
-  CHECK(options);
-
-  const MLOperand* input = conv2d->Inputs()[0];
-  CHECK(input);
-  const std::vector<uint32_t>& input_shape = input->Shape();
-  CHECK_EQ(input_shape.size(), 4u);
-  const MLOperand* output = conv2d->Outputs()[0].Get();
-  CHECK(output);
-  const std::vector<uint32_t>& output_shape = output->Shape();
-  CHECK_EQ(output_shape.size(), 4u);
-
-  uint32_t input_channels, output_channels;
-  switch (options->inputLayout().AsEnum()) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      input_channels = input_shape[1];
-      output_channels = output_shape[1];
-      break;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      input_channels = input_shape[3];
-      output_channels = output_shape[3];
-      break;
-  }
-
-  const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
-  return webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
-}
-
 template <typename MLConv2dOptionsType>
-void SerializeConv2dOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const webnn::ContextProperties& context_properties,
-    const MLOperator* conv2d,
-    blink_mojom::GraphInfo* graph_info) {
+OperationPtr CreateConv2dOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* conv2d) {
   auto conv2d_mojo = blink_mojom::Conv2d::New();
 
   const auto* options =
@@ -738,53 +409,21 @@ void SerializeConv2dOperation(
   const MLOperand* output_operand = conv2d->Outputs()[0];
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
-  const std::optional<base::span<const uint32_t>> input_permutation =
-      GetInputOperandPermutation(options->inputLayout().AsEnum(),
-                                 context_properties);
-  if (input_permutation.has_value()) {
-    conv2d_mojo->input_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, input_operand,
-        *input_permutation, graph_info, options->label());
-
-    output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map,
-        *webnn::OperandDescriptor::Create(
-            context_properties, output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation),
-            options->label().Utf8()),
-        graph_info);
-  } else {
-    conv2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
-  }
+  conv2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
   conv2d_mojo->output_operand_id = output_operand_id;
 
   const MLOperand* filter_operand = conv2d->Inputs()[1];
-  std::optional<std::array<uint32_t, 4>> filter_permutation;
 
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kDirect;
-
-    bool depthwise = IsDepthwiseConv2d(conv2d);
-    filter_permutation =
-        GetConv2DFilterPermutation(context_properties.input_operand_layout,
-                                   depthwise, options->filterLayout());
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kTransposed;
-
-    filter_permutation = GetConvTranspose2DFilterPermutation(
-        context_properties.input_operand_layout, options->filterLayout());
   } else {
     NOTREACHED();
   }
 
-  if (filter_permutation) {
-    conv2d_mojo->filter_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, filter_operand,
-        *filter_permutation, graph_info, options->label());
-  } else {
-    conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
-  }
+  conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
 
   // Set the padding from WebNN explicit padding that is in
   // [beginning_height, ending_height, beginning_width, ending_width],
@@ -796,23 +435,7 @@ void SerializeConv2dOperation(
       /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
 
   conv2d_mojo->label = options->label();
-
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));
-
-  const std::optional<base::span<const uint32_t>> output_permutation =
-      GetOutputOperandPermutation(options->inputLayout().AsEnum(),
-                                  context_properties);
-  if (output_permutation) {
-    auto output_transpose = blink_mojom::Transpose::New();
-    output_transpose->input_operand_id = output_operand_id;
-    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
-    output_transpose->permutation = Vector<uint32_t>(*output_permutation);
-    output_transpose->label = options->label();
-
-    graph_info->operations.push_back(
-        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
-  }
+  return blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo));
 }
 
 OperationPtr CreateCumulativeSumOperation(
@@ -1113,11 +736,9 @@ OperationPtr CreateLayerNormalizationOperation(
       std::move(layer_normalization_mojo));
 }
 
-void SerializeInstanceNormalizationOperation(
+OperationPtr CreateInstanceNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
-    const webnn::ContextProperties& context_properties,
-    const MLOperator* instance_normalization,
-    blink_mojom::GraphInfo* graph_info) {
+    const MLOperator* instance_normalization) {
   auto instance_normalization_mojo =
       webnn::mojom::blink::InstanceNormalization::New();
   const MLOperand* input_operand = instance_normalization->Inputs()[0];
@@ -1127,25 +748,10 @@ void SerializeInstanceNormalizationOperation(
   const auto* options = static_cast<const MLInstanceNormalizationOptions*>(
       instance_normalization->Options());
   CHECK(options);
-  const std::optional<base::span<const uint32_t>> input_permutation =
-      GetInputOperandPermutation(options->layout().AsEnum(),
-                                 context_properties);
-  if (input_permutation.has_value()) {
-    instance_normalization_mojo->input_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, input_operand,
-        *input_permutation, graph_info, options->label());
 
-    output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map,
-        *webnn::OperandDescriptor::Create(
-            context_properties, output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation),
-            options->label().Utf8()),
-        graph_info);
-  } else {
-    instance_normalization_mojo->input_operand_id =
-        operand_to_id_map.at(input_operand);
-  }
+  instance_normalization_mojo->input_operand_id =
+      operand_to_id_map.at(input_operand);
+
   instance_normalization_mojo->output_operand_id = output_operand_id;
 
   if (options->hasScale()) {
@@ -1159,23 +765,8 @@ void SerializeInstanceNormalizationOperation(
   instance_normalization_mojo->epsilon = options->epsilon();
   instance_normalization_mojo->label = options->label();
 
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewInstanceNormalization(
-          std::move(instance_normalization_mojo)));
-
-  const std::optional<base::span<const uint32_t>> output_permutation =
-      GetOutputOperandPermutation(options->layout().AsEnum(),
-                                  context_properties);
-  if (output_permutation) {
-    auto output_transpose = blink_mojom::Transpose::New();
-    output_transpose->input_operand_id = output_operand_id;
-    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
-    output_transpose->permutation = Vector<uint32_t>(*output_permutation);
-    output_transpose->label = options->label();
-
-    graph_info->operations.push_back(
-        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
-  }
+  return blink_mojom::Operation::NewInstanceNormalization(
+      std::move(instance_normalization_mojo));
 }
 
 OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
@@ -1343,12 +934,9 @@ OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPad(std::move(pad_mojo));
 }
 
-void SerializePool2dOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const webnn::ContextProperties& context_properties,
-    const MLOperator* pool2d,
-    const blink_mojom::Pool2d::Kind& kind,
-    blink_mojom::GraphInfo* graph_info) {
+OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* pool2d,
+                                   const blink_mojom::Pool2d::Kind& kind) {
   auto pool2d_mojo = blink_mojom::Pool2d::New();
   pool2d_mojo->kind = kind;
   const MLOperand* input_operand = pool2d->Inputs()[0];
@@ -1357,24 +945,8 @@ void SerializePool2dOperation(
   const auto* options =
       static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
   CHECK(options);
-  const std::optional<base::span<const uint32_t>> input_permutation =
-      GetInputOperandPermutation(options->layout().AsEnum(),
-                                 context_properties);
-  if (input_permutation.has_value()) {
-    pool2d_mojo->input_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, input_operand,
-        *input_permutation, graph_info, options->label());
 
-    output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map,
-        *webnn::OperandDescriptor::Create(
-            context_properties, output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation),
-            options->label().Utf8()),
-        graph_info);
-  } else {
-    pool2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
-  }
+  pool2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
   pool2d_mojo->output_operand_id = output_operand_id;
 
   // If strides is not present, the values are assumed to be [1,1].
@@ -1400,6 +972,7 @@ void SerializePool2dOperation(
     window_height = window_dimensions[0];
     window_width = window_dimensions[1];
   }
+
   pool2d_mojo->window_dimensions = Size2d::New(window_height, window_width);
 
   // Set the padding from WebNN explicit padding that is in
@@ -1412,22 +985,7 @@ void SerializePool2dOperation(
       /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
   pool2d_mojo->label = options->label();
 
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo)));
-
-  const std::optional<base::span<const uint32_t>> output_permutation =
-      GetOutputOperandPermutation(options->layout().AsEnum(),
-                                  context_properties);
-  if (output_permutation) {
-    auto output_transpose = blink_mojom::Transpose::New();
-    output_transpose->input_operand_id = output_operand_id;
-    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
-    output_transpose->permutation = Vector<uint32_t>(*output_permutation);
-    output_transpose->label = options->label();
-
-    graph_info->operations.push_back(
-        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
-  }
+  return blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo));
 }
 
 OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
@@ -1481,11 +1039,8 @@ OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReduce(std::move(reduce_mojo));
 }
 
-void SerializeResample2dOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const webnn::ContextProperties& context_properties,
-    const MLOperator* resample2d,
-    blink_mojom::GraphInfo* graph_info) {
+OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
+                                       const MLOperator* resample2d) {
   auto resample2d_mojo = blink_mojom::Resample2d::New();
 
   const auto* options =
@@ -1502,84 +1057,31 @@ void SerializeResample2dOperation(
       break;
   }
 
-  // If axes are not present, the values are assumed to be channels first [2,
-  // 3].
-  auto axes = options->getAxesOr(
-      {kResample2dChannelFirstAxes[0], kResample2dChannelFirstAxes[1]});
-  CHECK_EQ(axes.size(), 2u);
-
   // When the target sizes are specified, the scales argument is ignored.
   if (!options->hasSizes()) {
-    // If scales are not present, the values are assumed to be [1.0, 1.0].
-    auto scales = options->getScalesOr({1.0, 1.0});
+    // scales must be present and valid,  it's already updated and set
+    // in layout transformer.
+    auto scales = options->scales();
     CHECK_EQ(scales.size(), 2u);
-    // If axes are not sorted, and backends are expecting sorted axes, sort the
-    // corresponding scales too.
-    if (context_properties.resample_2d_axes != webnn::Resample2DAxes::kAny &&
-        axes[0] > axes[1]) {
-      std::swap(scales[0], scales[1]);
-    }
     resample2d_mojo->scales = scales;
   }
-
 
   const MLOperand* input_operand = resample2d->Inputs()[0];
   const MLOperand* output_operand = resample2d->Outputs()[0];
   webnn::OperandId input_operand_id = operand_to_id_map.at(input_operand);
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
-  std::ranges::sort(axes);
-  const std::optional<std::vector<uint32_t>> input_permutation =
-      GetResample2DPermutation(axes, context_properties);
-  if (input_permutation.has_value()) {
-    switch (context_properties.resample_2d_axes) {
-      case webnn::Resample2DAxes::kChannelsFirst:
-        axes = {kResample2dChannelFirstAxes[0], kResample2dChannelFirstAxes[1]};
-        break;
-      case webnn::Resample2DAxes::kChannelsLast:
-        axes = {kResample2dChannelLastAxes[0], kResample2dChannelLastAxes[1]};
-        break;
-      case webnn::Resample2DAxes::kAny:
-        NOTREACHED();
-    }
-
-    input_operand_id = InsertInputTranspose(
-        context_properties, operand_to_id_map, input_operand,
-        *input_permutation, graph_info, options->label());
-
-    output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map,
-        *webnn::OperandDescriptor::Create(
-            context_properties, output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation),
-            options->label().Utf8()),
-        graph_info);
-  }
-
   resample2d_mojo->input_operand_id = input_operand_id;
   resample2d_mojo->output_operand_id = output_operand_id;
 
-  resample2d_mojo->axes = {axes[0], axes[1]};
+  // axes must be present and valid,  it's already updated and set in
+  // layout transformer .
+  auto axes = options->axes();
+  CHECK_EQ(axes.size(), 2u);
+  resample2d_mojo->axes = axes;
   resample2d_mojo->label = options->label();
 
-  graph_info->operations.push_back(
-      blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo)));
-
-  if (input_permutation) {
-    const std::optional<std::vector<uint32_t>> output_permutation =
-        GetInversePermutation(*input_permutation);
-    if (output_permutation) {
-      auto output_transpose = blink_mojom::Transpose::New();
-      output_transpose->input_operand_id = output_operand_id;
-      output_transpose->output_operand_id =
-          operand_to_id_map.at(output_operand);
-      output_transpose->permutation = Vector<uint32_t>(*output_permutation);
-      output_transpose->label = options->label();
-
-      graph_info->operations.push_back(
-          blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
-    }
-  }
+  return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
 }
 
 OperationPtr CreateReluOperation(const OperandToIdMap& operand_to_id_map,
@@ -1807,8 +1309,8 @@ void SerializeMojoOperation(
           operand_to_id_map, op, op->SubKind<blink_mojom::ArgMinMax::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kBatchNormalization:
-      SerializeBatchNormalizationOperation(operand_to_id_map,
-                                           context_properties, op, graph_info);
+      graph_info->operations.push_back(
+          CreateBatchNormalizationOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kClamp:
       graph_info->operations.push_back(
@@ -1821,16 +1323,18 @@ void SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kConv2d: {
       switch (op->SubKind<blink_mojom::Conv2d::Kind>()) {
         case blink_mojom::Conv2d::Kind::kDirect: {
-          SerializeConv2dOperation<MLConv2dOptions>(
-              operand_to_id_map, context_properties, op, graph_info);
+          graph_info->operations.push_back(
+              CreateConv2dOperation<MLConv2dOptions>(operand_to_id_map, op));
           break;
         }
         case blink_mojom::Conv2d::Kind::kTransposed: {
-          SerializeConv2dOperation<MLConvTranspose2dOptions>(
-              operand_to_id_map, context_properties, op, graph_info);
+          graph_info->operations.push_back(
+              CreateConv2dOperation<MLConvTranspose2dOptions>(operand_to_id_map,
+                                                              op));
           break;
         }
       }
+
       break;
     }
     case blink_mojom::Operation::Tag::kCumulativeSum:
@@ -1896,8 +1400,8 @@ void SerializeMojoOperation(
           CreateHardSwishOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kInstanceNormalization:
-      SerializeInstanceNormalizationOperation(
-          operand_to_id_map, context_properties, op, graph_info);
+      graph_info->operations.push_back(
+          CreateInstanceNormalizationOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kLayerNormalization:
       graph_info->operations.push_back(
@@ -1929,9 +1433,8 @@ void SerializeMojoOperation(
           CreatePadOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kPool2d:
-      SerializePool2dOperation(operand_to_id_map, context_properties, op,
-                               op->SubKind<blink_mojom::Pool2d::Kind>(),
-                               graph_info);
+      graph_info->operations.push_back(CreatePool2dOperation(
+          operand_to_id_map, op, op->SubKind<blink_mojom::Pool2d::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kPrelu:
       graph_info->operations.push_back(
@@ -1946,8 +1449,8 @@ void SerializeMojoOperation(
           operand_to_id_map, op, op->SubKind<blink_mojom::Reduce::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kResample2d:
-      SerializeResample2dOperation(operand_to_id_map, context_properties, op,
-                                   graph_info);
+      graph_info->operations.push_back(
+          CreateResample2dOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kRelu:
       graph_info->operations.push_back(
