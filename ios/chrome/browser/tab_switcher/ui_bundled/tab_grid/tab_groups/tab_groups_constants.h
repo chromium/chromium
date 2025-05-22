@@ -22,6 +22,9 @@ extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
 extern NSString* const kTabGroupCloseButtonIdentifier;
 extern NSString* const kTabGroupFacePileButtonIdentifier;
 
+// Color for the button background.
+UIColor* TabGroupViewButtonBackgroundColor();
+
 // Accessibility identifiers for the Recent Activity view.
 extern NSString* const kTabGroupRecentActivityIdentifier;
 

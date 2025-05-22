@@ -89,7 +89,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   background_configuration.visualEffect = [UIBlurEffect
       effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
   background_configuration.backgroundColor =
-      [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.35];
+      TabGroupViewButtonBackgroundColor();
 
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];

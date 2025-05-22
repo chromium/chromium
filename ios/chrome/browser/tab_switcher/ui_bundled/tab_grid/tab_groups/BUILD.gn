@@ -265,6 +265,8 @@ source_set("tab_groups_constant") {
     "tab_groups_constants.h",
     "tab_groups_constants.mm",
   ]
+
+  deps = [ "//ios/chrome/common/ui/colors" ]
 }
 
 source_set("tab_group_mutator") {
