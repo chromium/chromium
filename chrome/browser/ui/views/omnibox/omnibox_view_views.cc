@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
@@ -1540,7 +1541,7 @@ OmniboxPopupView* OmniboxViewViews::GetPopupViewForTesting() const {
 }
 
 std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
-  return SanitizeTextForPaste(Textfield::GetSelectionClipboardText());
+  return omnibox::SanitizeTextForPaste(Textfield::GetSelectionClipboardText());
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
@@ -2048,10 +2049,10 @@ void OmniboxViewViews::PerformDrop(
   if (std::optional<ui::OSExchangeData::UrlInfo> url_result =
           data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
       url_result.has_value()) {
-    text = StripJavascriptSchemas(base::UTF8ToUTF16(url_result->url.spec()));
+    text = omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(url_result->url.spec()));
   } else if (const std::optional<std::u16string> text_result = data.GetString();
              text_result.has_value()) {
-    text = StripJavascriptSchemas(base::CollapseWhitespace(*text_result, true));
+    text = omnibox::StripJavascriptSchemas(base::CollapseWhitespace(*text_result, true));
   } else {
     output_drag_op = DragOperation::kNone;
     return;

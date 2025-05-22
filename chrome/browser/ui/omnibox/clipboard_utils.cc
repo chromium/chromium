@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -52,7 +53,7 @@ std::u16string GetClipboardText(bool notify_if_restricted) {
     std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
     text = text.substr(0, kMaxClipboardTextLength);
-    return OmniboxView::SanitizeTextForPaste(text);
+    return omnibox::SanitizeTextForPaste(text);
   }
 
   // Try bookmark format.
@@ -70,7 +71,7 @@ std::u16string GetClipboardText(bool notify_if_restricted) {
     // pass resulting url string through GURL to normalize
     GURL url(url_str);
     if (url.is_valid()) {
-      return OmniboxView::StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
+      return omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
     }
   }
 

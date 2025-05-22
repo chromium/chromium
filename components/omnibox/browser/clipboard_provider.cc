@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
@@ -518,7 +519,7 @@ void ClipboardProvider::UpdateClipboardURLContent(const GURL& url,
   DCHECK(match);
 
   std::u16string text_plain = base::ASCIIToUTF16(url.spec());
-  std::u16string text_sanitized = OmniboxView::SanitizeTextForPaste(text_plain);
+  std::u16string text_sanitized = omnibox::SanitizeTextForPaste(text_plain);
   if (text_plain != text_sanitized) {
     UpdateClipboardTextContent(text_sanitized, match);
     return;
@@ -548,7 +549,7 @@ bool ClipboardProvider::UpdateClipboardTextContent(
     AutocompleteMatch* match) {
   DCHECK(match);
 
-  std::u16string text = OmniboxView::SanitizeTextForPaste(raw_text);
+  std::u16string text = omnibox::SanitizeTextForPaste(raw_text);
 
   // The text in the clipboard is a url. We don't want to prompt the user to
   // search for a url.

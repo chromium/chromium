@@ -97,6 +97,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -1608,7 +1609,7 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
     std::u16string text;
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr, &text);
-    text = OmniboxView::SanitizeTextForPaste(text);
+    text = omnibox::SanitizeTextForPaste(text);
 
     if (!GetOmniboxView()->model()->CanPasteAndGo(text)) {
       return;

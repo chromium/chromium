@@ -21,6 +21,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_popup_view.h"
@@ -145,7 +146,7 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
 
   for (size_t i = 0; i < std::size(urls); i++) {
     EXPECT_EQ(ASCIIToUTF16(expecteds[i]),
-              OmniboxView::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
+              omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
   }
 }
 
@@ -203,8 +204,7 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
   };
 
   for (const auto& testcase : kTestcases) {
-    EXPECT_EQ(testcase.output,
-              OmniboxView::SanitizeTextForPaste(testcase.input));
+    EXPECT_EQ(testcase.output, omnibox::SanitizeTextForPaste(testcase.input));
   }
 }
 

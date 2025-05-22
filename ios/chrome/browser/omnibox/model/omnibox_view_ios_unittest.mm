@@ -20,6 +20,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_text_util.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_data.h"
@@ -142,9 +143,8 @@ TEST_F(OmniboxViewIOSTest, TestStripSchemasUnsafeForPaste) {
   });
 
   for (size_t i = 0; i < std::size(urls); i++) {
-    EXPECT_EQ(
-        ASCIIToUTF16(expecteds[i]),
-        OmniboxViewIOS::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
+    EXPECT_EQ(ASCIIToUTF16(expecteds[i]),
+              omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
   }
 }
 
@@ -202,8 +202,7 @@ TEST_F(OmniboxViewIOSTest, SanitizeTextForPaste) {
   };
 
   for (const auto& testcase : kTestcases) {
-    EXPECT_EQ(testcase.output,
-              OmniboxViewIOS::SanitizeTextForPaste(testcase.input));
+    EXPECT_EQ(testcase.output, omnibox::SanitizeTextForPaste(testcase.input));
   }
 }
 
