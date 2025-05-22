@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/mojom/synced_scroll_offset_type_traits.h"
+#include "cc/mojom/synced_scroll_offset_mojom_traits.h"
 
 #include <utility>
 

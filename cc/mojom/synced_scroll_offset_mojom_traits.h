@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_MOJOM_SYNCED_SCROLL_OFFSET_TYPE_TRAITS_H_
-#define CC_MOJOM_SYNCED_SCROLL_OFFSET_TYPE_TRAITS_H_
+#ifndef CC_MOJOM_SYNCED_SCROLL_OFFSET_MOJOM_TRAITS_H_
+#define CC_MOJOM_SYNCED_SCROLL_OFFSET_MOJOM_TRAITS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "cc/mojom/synced_scroll_offset.mojom-shared.h"
@@ -33,4 +33,4 @@ struct StructTraits<cc::mojom::SyncedScrollOffsetDataView,
 
 }  // namespace mojo
 
-#endif  // CC_MOJOM_SYNCED_SCROLL_OFFSET_TYPE_TRAITS_H_
+#endif  // CC_MOJOM_SYNCED_SCROLL_OFFSET_MOJOM_TRAITS_H_
