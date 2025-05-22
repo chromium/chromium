@@ -199,6 +199,8 @@ source_set("grid_ui") {
     "grid_theme.h",
     "group_grid_cell.h",
     "group_grid_cell.mm",
+    "group_grid_cell_dot_view.h",
+    "group_grid_cell_dot_view.mm",
     "incognito_grid_commands.h",
   ]
 
