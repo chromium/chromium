@@ -152,6 +152,9 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
     // The limit below is the max size that a mojo BigBuffer can handle via
     // directly using the bytes rather than shared memory.
     if (fileData.size >= 128 * 1048576) {
+      // Clear value so that file select change will retrigger for the same
+      // file.
+      fileInput.value = '';
       return;
     }
     const fileDataView = new Uint8Array(await fileData.arrayBuffer());
@@ -166,6 +169,8 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
     if (status.success) {
       this.dispatchSavedEvent_();
     }
+    // Clear value so that file select change will retrigger for the same file.
+    fileInput.value = '';
   }
 
   // Returns true if this entry is a locally added entry.
