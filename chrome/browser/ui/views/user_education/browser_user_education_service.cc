@@ -634,6 +634,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_GLIC_PROMO_BODY)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
+          // Since this can appear randomly, we do not want to steal focus from
+          // the user; see https://crbug.com/418579754
+          .OverrideFocusOnShow(false)
           .SetMetadata(
               133, "dfried@chromium.org",
               "Attempts to trigger when the user is on a supported page.")));
