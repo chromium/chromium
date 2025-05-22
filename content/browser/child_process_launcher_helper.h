@@ -242,7 +242,8 @@ class ChildProcessLauncherHelper
   void OnChildProcessStarted(pid_t process_id,
                              std::unique_ptr<LaunchResult> launch_result);
   void ClearProcessStorage();
-  void SetNormalTermination();
+  void SetExitCode(int exit_code);
+  std::optional<int> GetExitCode();
 
 #if defined(__OBJC__)
   NSObject* GetProcess();
@@ -356,7 +357,7 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_IOS)
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
-  bool normal_termination_ = false;
+  std::optional<int> exit_code_;
 #endif
 
   // Histogram shared memory region. Ownership of the memory region object is

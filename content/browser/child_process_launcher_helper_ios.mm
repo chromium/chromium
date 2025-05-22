@@ -53,24 +53,6 @@ void OnChildProcessTerminatedOnAnyThread(pid_t process_id) {
   }
 }
 
-bool TerminateNow(pid_t process_id) {
-  NSObject* process = nullptr;
-  {
-    base::AutoLock guard(*g_process_table_lock_);
-    auto it = g_process_table_->find(process_id);
-    if (it != g_process_table_->end()) {
-      it->second->SetNormalTermination();
-      process = it->second->GetProcess();
-    }
-  }
-
-  if (!process) {
-    return false;
-  }
-  InvalidateProcess(process);
-  return true;
-}
-
 bool WaitForExit(pid_t process_id, int* exit_code, base::TimeDelta timeout) {
   base::TimeTicks wakeup_time = base::TimeTicks::Now() + timeout;
   constexpr uint32_t kMaxSleepInMicroseconds = 1 << 18;  // ~256 ms.
@@ -84,7 +66,7 @@ bool WaitForExit(pid_t process_id, int* exit_code, base::TimeDelta timeout) {
       if (it != g_process_table_->end()) {
         if (it->second->GetProcess() == nullptr) {
           if (exit_code) {
-            *exit_code = 0;
+            *exit_code = it->second->GetExitCode().value_or(0);
           }
           return true;
         }
@@ -106,6 +88,27 @@ bool WaitForExit(pid_t process_id, int* exit_code, base::TimeDelta timeout) {
       max_sleep_time_usecs *= 2;
     }
   }
+}
+
+bool TerminateNow(pid_t process_id, int exit_code, bool wait) {
+  NSObject* process = nullptr;
+  {
+    base::AutoLock guard(*g_process_table_lock_);
+    auto it = g_process_table_->find(process_id);
+    if (it != g_process_table_->end()) {
+      it->second->SetExitCode(exit_code);
+      process = it->second->GetProcess();
+    }
+  }
+
+  if (!process) {
+    return false;
+  }
+  InvalidateProcess(process);
+  if (wait) {
+    return WaitForExit(process_id, nullptr, base::Seconds(60));
+  }
+  return true;
 }
 
 // Object used to pass the result of the launch from the async
@@ -415,9 +418,15 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
     info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   } else if (static_cast<ProcessStorage*>(process_storage_.get())->Process() ==
              nullptr) {
-    info.status = normal_termination_
-                      ? base::TERMINATION_STATUS_NORMAL_TERMINATION
-                      : base::TERMINATION_STATUS_PROCESS_CRASHED;
+    if (exit_code_.has_value()) {
+      if (exit_code_.value() == RESULT_CODE_NORMAL_EXIT) {
+        info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+      } else {
+        info.status = base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
+      }
+    } else {
+      info.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
+    }
   } else {
     info.status = base::TERMINATION_STATUS_STILL_RUNNING;
   }
@@ -430,8 +439,12 @@ void ChildProcessLauncherHelper::ClearProcessStorage() {
   }
 }
 
-void ChildProcessLauncherHelper::SetNormalTermination() {
-  normal_termination_ = true;
+void ChildProcessLauncherHelper::SetExitCode(int exit_code) {
+  exit_code_ = exit_code;
+}
+
+std::optional<int> ChildProcessLauncherHelper::GetExitCode() {
+  return exit_code_;
 }
 
 NSObject* ChildProcessLauncherHelper::GetProcess() {

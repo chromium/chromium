@@ -49,7 +49,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
   }
 #endif
   CHECK(g_terminate_callback);
-  return (*g_terminate_callback)(process_);
+  return (*g_terminate_callback)(process_, exit_code, wait);
 }
 
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
