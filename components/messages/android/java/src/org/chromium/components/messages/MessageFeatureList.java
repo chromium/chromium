@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.messages.MessageFeatureMap.AccessibilityEventInvestigationGroup;
 
 /**
  * Lists base::Features that can be accessed through {@link MessageFeatureMap}.
@@ -21,11 +22,12 @@ public abstract class MessageFeatureList {
     public static final String MESSAGES_ANDROID_EXTRA_HISTOGRAMS = "MessagesAndroidExtraHistograms";
     public static final String MESSAGES_CLOSE_BUTTON = "MessagesCloseButton";
 
-    public static int getMessagesAccessibilityEventInvestigationsParam() {
+    public static @AccessibilityEventInvestigationGroup int
+            getMessagesAccessibilityEventInvestigationsParam() {
         return getFieldTrialParamByFeatureAsInt(
                 MESSAGES_ACCESSIBILITY_EVENT_INVESTIGATIONS,
                 "messages_accessibility_events_investigations_param",
-                0);
+                AccessibilityEventInvestigationGroup.DEFAULT);
     }
 
     public static boolean isMessagesAccessibilityEventInvestigationsEnabled() {
