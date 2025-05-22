@@ -10,5 +10,6 @@ include_rules = [
   "+ios/chrome/browser/prerender/model/prerender_service.h",
   "+ios/chrome/browser/prerender/model/prerender_service_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
-  "+ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+  "+ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h",
+  "+third_party/omnibox_proto",
 ]

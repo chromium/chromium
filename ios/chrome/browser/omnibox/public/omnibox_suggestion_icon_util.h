@@ -22,6 +22,7 @@ enum class OmniboxSuggestionIconType {
   kWhenIs,
   kTranslation,
   kSearchTrend,
+  kSearchWithSparkle,
   // The FALLBACK_ANSWER icon is used for all answers that don't have special
   // icons above.
   kFallbackAnswer,

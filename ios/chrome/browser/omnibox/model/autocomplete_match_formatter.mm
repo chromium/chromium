@@ -132,7 +132,11 @@ UIColor* DimColorIncognito() {
     // suggestions. For non-search suggestions (URLs), a highlight color is used
     // instead.
     UIColor* suggestionDetailTextColor = nil;
-    if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+
+    if (_match.suggest_template &&
+        _match.suggest_template->has_secondary_text()) {
+      suggestionDetailTextColor = SuggestionDetailTextColor();
+    } else if (_match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       suggestionDetailTextColor = SuggestionDetailTextColor();
     } else {
       suggestionDetailTextColor = SuggestionTextColor();
@@ -350,6 +354,10 @@ UIColor* DimColorIncognito() {
 /// the omnibox would be a noop. However, this list also omits other types that
 /// are deprecated or not launched on iOS.
 - (BOOL)isAppendable {
+  if (_match.suggest_template) {
+    return YES;
+  }
+
   return _match.type == AutocompleteMatchType::BOOKMARK_TITLE ||
          _match.type == AutocompleteMatchType::CALCULATOR ||
          _match.type == AutocompleteMatchType::HISTORY_BODY ||
@@ -377,6 +385,11 @@ UIColor* DimColorIncognito() {
 }
 
 - (UIImage*)matchTypeIcon {
+  if (_match.suggest_template && _match.suggest_template->has_type_icon()) {
+    return GetOmniboxSuggestionIconForSuggestTemplateInfoIconType(
+        _match.suggest_template->type_icon());
+  }
+
   return GetOmniboxSuggestionIconForAutocompleteMatchType(_match.type);
 }
 
@@ -389,8 +402,9 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isWrapping {
-  return self.isMatchTypeSearch && !self.hasAnswer &&
-         _match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+  BOOL isEntity = _match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
+                  _match.suggest_template;
+  return self.isMatchTypeSearch && !self.hasAnswer && !isEntity;
 }
 
 - (CrURL*)destinationUrl {

@@ -53,6 +53,11 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
       symbol_name = kUpTrendSymbol;
       default_symbol = false;
       break;
+    case OmniboxSuggestionIconType::kSearchWithSparkle:
+      // TODO(crbug.com/419475358): Replace with new symbol when available.
+      symbol_name = kUpTrendSymbol;
+      default_symbol = false;
+      break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
   }

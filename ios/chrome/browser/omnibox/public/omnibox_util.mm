@@ -84,6 +84,33 @@ UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
   return GetOmniboxSuggestionIcon(iconType);
 }
 
+OmniboxSuggestionIconType
+GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
+    omnibox::SuggestTemplateInfo::IconType type) {
+  // Update this assertion and the switch below whenever values are added.
+  static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
+                omnibox::SuggestTemplateInfo::TRENDING);
+  switch (type) {
+    case omnibox::SuggestTemplateInfo_IconType_HISTORY:
+      return OmniboxSuggestionIconType::kSearchHistory;
+    case omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP:
+      return OmniboxSuggestionIconType::kSearch;
+    case omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE:
+      return OmniboxSuggestionIconType::kSearchWithSparkle;
+    case omnibox::SuggestTemplateInfo_IconType_TRENDING:
+      return OmniboxSuggestionIconType::kSearchTrend;
+    default:
+      return OmniboxSuggestionIconType::kSearch;
+  }
+}
+
+UIImage* GetOmniboxSuggestionIconForSuggestTemplateInfoIconType(
+    omnibox::SuggestTemplateInfo::IconType type) {
+  OmniboxSuggestionIconType iconType =
+      GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(type);
+  return GetOmniboxSuggestionIcon(iconType);
+}
+
 #pragma mark - Security icons.
 
 // Returns the asset with "always template" rendering mode.

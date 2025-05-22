@@ -11,6 +11,7 @@
 #include "components/security_state/core/security_state.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_icon_type.h"
 #include "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 #pragma mark - Suggestion icons.
 
@@ -22,6 +23,10 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
 // Converts `type` to the appropriate icon for this type to show in the omnibox.
 UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
     AutocompleteMatchType::Type type);
+
+// Converts Suggest proto icon `type` into the appropriate asset.
+UIImage* GetOmniboxSuggestionIconForSuggestTemplateInfoIconType(
+    omnibox::SuggestTemplateInfo::IconType type);
 
 #pragma mark - Security icons.
 
