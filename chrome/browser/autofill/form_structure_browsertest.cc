@@ -220,8 +220,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // renderer side and disabled to avoid too many differences between
           // the expectations.
           features::kAutofillBetterLocalHeuristicPlaceholderSupport,
-          // TODO(crbug.com/40285735): Remove when launched.
-          features::kAutofillEnableEmailHeuristicOutsideForms,
           // TODO(crbug.com/395831853): Remove once launched.
           features::kAutofillEnableLoyaltyCardsFilling,
           // TODO(crbug.com/360322019): kAutofillPageLanguageDetection needs to
