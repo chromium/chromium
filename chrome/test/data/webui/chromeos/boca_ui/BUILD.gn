@@ -21,6 +21,7 @@ build_webui_tests("build_webui_tests") {
     "client_delegate_impl_test.ts",
     "consumer_main_page_test.ts",
     "producer_main_page_test.ts",
+    "feature_flag_test.ts",
   ]
 
   ts_definitions = []

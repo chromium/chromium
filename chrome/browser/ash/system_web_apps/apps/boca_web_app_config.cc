@@ -40,10 +40,13 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
                            channel == version_info::Channel::UNKNOWN);
     source->AddBoolean("isProducer", ash::boca_util::IsProducer(user));
     source->AddBoolean("isConsumer", ash::boca_util::IsConsumer(user));
+    // Do not honor sub-feature flag for student as there is no way to config
+    // it for consumer.
     source->AddBoolean(
         "spotlightEnabled",
-        pref_service->GetBoolean(
-            prefs::kClassManagementToolsViewScreenEligibilitySetting));
+        ash::boca_util::IsConsumer(user) ||
+            pref_service->GetBoolean(
+                prefs::kClassManagementToolsViewScreenEligibilitySetting));
     source->AddString("appLocale", g_browser_process->GetApplicationLocale());
     source->AddBoolean(
         "classroomEnabled",
@@ -51,8 +54,9 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
             prefs::kClassManagementToolsClassroomEligibilitySetting));
     source->AddBoolean(
         "captionEnabled",
-        pref_service->GetBoolean(
-            prefs::kClassManagementToolsCaptionEligibilitySetting));
+        ash::boca_util::IsConsumer(user) ||
+            pref_service->GetBoolean(
+                prefs::kClassManagementToolsCaptionEligibilitySetting));
     if (features::IsBocaSpotlightEnabled()) {
       source->AddString("spotlightUrlTemplate",
                         features::kBocaSpotlightUrlTemplate.Get());

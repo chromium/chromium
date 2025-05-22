@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/manta/features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 
@@ -53,5 +57,14 @@ class BocaAppBrowserConsumerTest : public WebUIMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(BocaAppBrowserConsumerTest, TestMainPageLoaded) {
   RunTestWithoutTestLoader("chromeos/boca_ui/consumer_main_page_test.js",
+                           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserConsumerTest, TestFeatureFlagNotHonored) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kClassManagementToolsCaptionEligibilitySetting, false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, false);
+  RunTestWithoutTestLoader("chromeos/boca_ui/feature_flag_test.js",
                            "mocha.run()");
 }
