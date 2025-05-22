@@ -23,7 +23,7 @@ const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
 const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
     "loopbackWithoutChrome";
 const char AudioDeviceDescription::kLoopbackAllDevicesId[] =
-    "loopbackAllDevicesId";
+    "loopbackAllDevices";
 const char AudioDeviceDescription::kApplicationLoopbackDeviceId[] =
     "applicationLoopback";
 
