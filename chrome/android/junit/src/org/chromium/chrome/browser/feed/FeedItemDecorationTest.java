@@ -62,6 +62,7 @@ public final class FeedItemDecorationTest {
     @Mock private Drawable mBottomLeftRoundedDrawable;
     @Mock private Drawable mBottomRightRoundedDrawable;
     @Mock private Drawable mNotRoundedDrawable;
+    @Mock private Drawable mAllRoundedDrawable;
     private Activity mActivity;
     private final ArrayList<View> mViewList = new ArrayList<>();
     private final ArrayList<Rect> mBoundsList = new ArrayList<>();
@@ -128,6 +129,8 @@ public final class FeedItemDecorationTest {
                 .thenReturn(mBottomRightRoundedDrawable);
         when(mDrawableProvider.getDrawable(R.drawable.home_surface_ui_background_not_rounded))
                 .thenReturn(mNotRoundedDrawable);
+        when(mDrawableProvider.getDrawable(R.drawable.home_surface_ui_background_rounded))
+                .thenReturn(mAllRoundedDrawable);
     }
 
     @Test
@@ -171,6 +174,50 @@ public final class FeedItemDecorationTest {
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
         verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
+    }
+
+    @Test
+    public void testDrawForStandardLayout_singleCardInContainment() {
+        // *****************
+        // *     view0     * NTP header view
+        // *****************
+        // *     view1     * NTP header view
+        // *****************
+        // *     view2     * NTP header view
+        // *****************
+        // *     view3     * NTP header view
+        // *****************
+        // *     view4     * NTP header view
+        // *****************
+        // *     view5     * <- all rounded
+        // *****************
+        // *     view6     * special bottom view
+        // *****************
+        when(mCoordinator.useStaggeredLayout()).thenReturn(false);
+        int top = 0;
+        for (int i = 0; i < mViewList.size(); ++i) {
+            mBoundsList.get(i).set(0, top, 500, top + 100);
+            top += 100;
+        }
+
+        int kHeaderSize = 5;
+        when(mCoordinator.getHeaderPosition()).thenReturn(kHeaderSize);
+
+        FeedItemDecoration feedItemDecoration =
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
+        feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
+
+        for (int i = 0; i < mViewList.size(); ++i) {
+            if (i >= kHeaderSize && i < mViewList.size() - 1) continue;
+            verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(i)));
+            verify(mNotRoundedDrawable, never()).setBounds(eq(mBoundsList.get(i)));
+            verify(mBottomRoundedDrawable, never()).setBounds(eq(mBoundsList.get(i)));
+            verify(mAllRoundedDrawable, never()).setBounds(eq(mBoundsList.get(i)));
+        }
+
+        Rect bounds5 = new Rect(mBoundsList.get(5));
+        bounds5.bottom += feedItemDecoration.getAdditionalBottomCardPaddingForTesting();
+        verify(mAllRoundedDrawable).setBounds(eq(bounds5));
     }
 
     @Test

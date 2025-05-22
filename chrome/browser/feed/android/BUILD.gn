@@ -175,6 +175,7 @@ android_resources("feed_java_resources") {
     "java/res/drawable/home_surface_ui_background_bottomleft_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottomright_rounded.xml",
     "java/res/drawable/home_surface_ui_background_not_rounded.xml",
+    "java/res/drawable/home_surface_ui_background_rounded.xml",
     "java/res/drawable/home_surface_ui_background_top_rounded.xml",
     "java/res/drawable/home_surface_ui_background_topleft_rounded.xml",
     "java/res/drawable/home_surface_ui_background_topright_rounded.xml",

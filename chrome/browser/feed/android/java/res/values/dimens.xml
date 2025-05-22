@@ -31,6 +31,7 @@ found in the LICENSE file.
     <!-- No content dimensions. -->
     <dimen name="no_content_padding">16dp</dimen>
     <dimen name="no_content_text_padding">8dp</dimen>
+    <dimen name="no_content_top_margin">16dp</dimen>
 
     <!-- NTP Feed dimensions -->
     <dimen name="content_suggestions_card_modern_margin">0dp</dimen>

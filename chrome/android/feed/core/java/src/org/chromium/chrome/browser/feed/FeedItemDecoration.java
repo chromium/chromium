@@ -27,6 +27,7 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private final Drawable mBottomLeftRoundedBackground;
     private final Drawable mBottomRightRoundedBackground;
     private final Drawable mNotRoundedBackground;
+    private final Drawable mAllRoundedBackground;
     private final int mGutterPadding;
     private final int mAdditionalBottomCardPadding;
 
@@ -43,6 +44,8 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_not_rounded);
         mBottomRoundedBackground =
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_bottom_rounded);
+        mAllRoundedBackground =
+                drawableProvider.getDrawable(R.drawable.home_surface_ui_background_rounded);
         if (mCoordinator.useStaggeredLayout()) {
             mTopLeftRoundedBackground =
                     drawableProvider.getDrawable(
@@ -265,7 +268,9 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable getBackgroundDrawable(int position) {
         if (position == mCoordinator.getHeaderPosition()) {
-            return mTopRoundedBackground;
+            return isLastViewInFeedContainment(position)
+                    ? mAllRoundedBackground
+                    : mTopRoundedBackground;
         } else if (isLastViewInFeedContainment(position)) {
             return mBottomRoundedBackground;
         } else {
