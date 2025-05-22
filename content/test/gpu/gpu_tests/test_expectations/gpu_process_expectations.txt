@@ -163,6 +163,7 @@ crbug.com/380269801 [ android android-sm-a137f ] GpuProcess_visibility [ Failure
 crbug.com/380269801 [ android android-sm-a236b ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-pixel-4 ] GpuProcess_visibility [ RetryOnFailure ]
 crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
+crbug.com/380269801 [ android android-corsola ] GpuProcess_visibility [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
