@@ -38,8 +38,8 @@ class DateTimeSuggestionListAdapter extends ArrayAdapter<DateTimeSuggestion> {
             LayoutInflater inflater = LayoutInflater.from(mContext);
             layout = inflater.inflate(R.layout.date_time_suggestion, parent, false);
         }
-        TextView labelView = (TextView) layout.findViewById(R.id.date_time_suggestion_value);
-        TextView sublabelView = (TextView) layout.findViewById(R.id.date_time_suggestion_label);
+        TextView labelView = layout.findViewById(R.id.date_time_suggestion_value);
+        TextView sublabelView = layout.findViewById(R.id.date_time_suggestion_label);
 
         if (position == getCount() - 1) {
             labelView.setText(mContext.getText(R.string.date_picker_dialog_other_button_label));

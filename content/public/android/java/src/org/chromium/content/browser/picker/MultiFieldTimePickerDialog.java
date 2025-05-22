@@ -79,11 +79,11 @@ public class MultiFieldTimePickerDialog extends AlertDialog implements OnClickLi
         View view = inflater.inflate(R.layout.multi_field_time_picker_dialog, null);
         setView(view);
 
-        mHourSpinner = (NumberPicker) view.findViewById(R.id.hour);
-        mMinuteSpinner = (NumberPicker) view.findViewById(R.id.minute);
-        mSecSpinner = (NumberPicker) view.findViewById(R.id.second);
-        mMilliSpinner = (NumberPicker) view.findViewById(R.id.milli);
-        mAmPmSpinner = (NumberPicker) view.findViewById(R.id.ampm);
+        mHourSpinner = view.findViewById(R.id.hour);
+        mMinuteSpinner = view.findViewById(R.id.minute);
+        mSecSpinner = view.findViewById(R.id.second);
+        mMilliSpinner = view.findViewById(R.id.milli);
+        mAmPmSpinner = view.findViewById(R.id.ampm);
 
         int minHour = min / HOUR_IN_MILLIS;
         int maxHour = max / HOUR_IN_MILLIS;

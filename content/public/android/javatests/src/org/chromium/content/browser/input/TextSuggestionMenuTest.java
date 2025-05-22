@@ -521,7 +521,7 @@ public class TextSuggestionMenuTest {
 
     private ListView getSuggestionList(WebContents webContents) {
         View contentView = getContentView(webContents);
-        return (ListView) contentView.findViewById(R.id.suggestionContainer);
+        return contentView.findViewById(R.id.suggestionContainer);
     }
 
     private View getSuggestionButton(WebContents webContents, int suggestionIndex) {

@@ -96,11 +96,11 @@ public class DateTimePickerDialog extends AlertDialog
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.date_time_picker_dialog, null);
         setView(view);
-        mDatePicker = (DatePicker) view.findViewById(R.id.date_picker);
+        mDatePicker = view.findViewById(R.id.date_picker);
         DateDialogNormalizer.normalize(
                 mDatePicker, this, year, monthOfYear, dayOfMonth, mMinTimeMillis, mMaxTimeMillis);
 
-        mTimePicker = (TimePicker) view.findViewById(R.id.time_picker);
+        mTimePicker = view.findViewById(R.id.time_picker);
         mTimePicker.setIs24HourView(is24HourView);
         setHour(mTimePicker, hourOfDay);
         setMinute(mTimePicker, minute);

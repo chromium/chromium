@@ -104,12 +104,12 @@ public abstract class TwoFieldDatePicker extends FrameLayout {
         }
 
         // month
-        mPositionInYearSpinner = (NumberPicker) findViewById(R.id.position_in_year);
+        mPositionInYearSpinner = findViewById(R.id.position_in_year);
         mPositionInYearSpinner.setOnLongPressUpdateInterval(200);
         mPositionInYearSpinner.setOnValueChangedListener(onChangeListener);
 
         // year
-        mYearSpinner = (NumberPicker) findViewById(R.id.year);
+        mYearSpinner = findViewById(R.id.year);
         mYearSpinner.setOnLongPressUpdateInterval(100);
         mYearSpinner.setOnValueChangedListener(onChangeListener);
 
@@ -125,7 +125,7 @@ public abstract class TwoFieldDatePicker extends FrameLayout {
         boolean posInserted = false;
         boolean yearInserted = false;
 
-        LinearLayout pickers = (LinearLayout) findViewById(R.id.pickers);
+        LinearLayout pickers = findViewById(R.id.pickers);
 
         pickers.removeView(mPositionInYearSpinner);
         pickers.removeView(mYearSpinner);
