@@ -35,7 +35,6 @@
 
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/audio/audio_processor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -50,7 +49,7 @@ class AudioProcessor;
 // there is no cross-channel processing.  Despite this limitation it turns out
 // to be a very common and useful type of processor.
 
-class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
+class PLATFORM_EXPORT AudioDSPKernelProcessor {
  public:
   // numberOfChannels may be later changed if object is not yet in an
   // "initialized" state
@@ -58,26 +57,39 @@ class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
                           unsigned number_of_channels,
                           unsigned render_quantum_frames);
 
+  virtual ~AudioDSPKernelProcessor();
+
   // Subclasses create the appropriate type of processing kernel here.
   // We'll call this to create a kernel for each channel.
   virtual std::unique_ptr<AudioDSPKernel> CreateKernel() = 0;
 
   // AudioProcessor methods
-  void Initialize() override;
-  void Uninitialize() override;
-  void Process(const AudioBus* source,
-               AudioBus* destination,
-               uint32_t frames_to_process) override;
-  void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
-  void Reset() override;
-  void SetNumberOfChannels(unsigned) override;
-  unsigned NumberOfChannels() const override { return number_of_channels_; }
+  virtual void Initialize();
+  virtual void Uninitialize();
+  virtual void Process(const AudioBus* source,
+                       AudioBus* destination,
+                       uint32_t frames_to_process);
+  virtual void ProcessOnlyAudioParams(uint32_t frames_to_process);
+  virtual void Reset();
+  virtual void SetNumberOfChannels(unsigned);
+  virtual unsigned NumberOfChannels() const { return number_of_channels_; }
 
-  double TailTime() const override;
-  double LatencyTime() const override;
-  bool RequiresTailProcessing() const override;
+  bool IsInitialized() const { return initialized_; }
+
+  float SampleRate() const { return sample_rate_; }
+
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+
+  virtual double TailTime() const;
+  virtual double LatencyTime() const;
+  virtual bool RequiresTailProcessing() const;
 
  protected:
+  bool initialized_ = false;
+  unsigned number_of_channels_;
+  float sample_rate_;
+  unsigned render_quantum_frames_;
+
   Vector<std::unique_ptr<AudioDSPKernel>> kernels_ GUARDED_BY(process_lock_);
   mutable base::Lock process_lock_;
 };

@@ -39,7 +39,9 @@ namespace blink {
 AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sample_rate,
                                                  unsigned number_of_channels,
                                                  unsigned render_quantum_frames)
-    : AudioProcessor(sample_rate, number_of_channels, render_quantum_frames) {}
+    : number_of_channels_(number_of_channels),
+      sample_rate_(sample_rate),
+      render_quantum_frames_(render_quantum_frames) {}
 
 void AudioDSPKernelProcessor::Initialize() {
   if (IsInitialized()) {
@@ -56,6 +58,8 @@ void AudioDSPKernelProcessor::Initialize() {
 
   initialized_ = true;
 }
+
+AudioDSPKernelProcessor::~AudioDSPKernelProcessor() = default;
 
 void AudioDSPKernelProcessor::Uninitialize() {
   if (!IsInitialized()) {
