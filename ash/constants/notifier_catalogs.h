@@ -214,7 +214,8 @@ enum class NotificationCatalogName {
   kDownloadImageFromLobster = 195,
   kBocaSpotlightStarted = 196,
   kFaceGazeActive = 197,
-  kMaxValue = kFaceGazeActive
+  kUsbPeripheralDeviceOrEndpointLimit = 198,
+  kMaxValue = kUsbPeripheralDeviceOrEndpointLimit
 };
 
 // A living catalog that registers system nudges.

@@ -8240,6 +8240,14 @@ New install
         Your device supports a higher data rate than your cable. Device performance may be limited.
       </message>
 
+      <!-- USB device limit notifications -->
+      <message name="IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_TITLE" desc="Notification title text for when a user has connected the maximum number of USB devices supported by their device.">
+        USB limit reached
+      </message>
+      <message name="IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_BODY" desc="Notification body text for when a user has connected the maximum number of USB devices supported by their device.">
+        To add any additional USB devices, try removing one and then plug in a new one
+      </message>
+
       <!-- Adaptive charging -->
       <message name="IDS_ASH_ADAPTIVE_CHARGING_EDUCATIONAL_NUDGE_TEXT" desc="The body text explaining to the user that adaptive charging is on.">
         Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.
