@@ -108,14 +108,13 @@ BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 // Enables "chunking" generated passwords by adding hyphens every 4 characters
 // to make them more readable.
 BASE_DECLARE_FEATURE(kPasswordGenerationChunking);
+// Enables triggering password suggestions through the context menu.
+BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
-
-// Enables triggering password suggestions through the context menu.
-BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 
 // Detects password reuse based on hashed password values.
 BASE_DECLARE_FEATURE(kReuseDetectionBasedOnPasswordHashes);

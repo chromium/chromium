@@ -1009,46 +1009,6 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
             params.page_url.DeprecatedGetOriginAsURL());
 }
 
-// Verify that "Show all passwords" is displayed on a password field.
-TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
-  // Set up password manager stuff.
-  autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-  ChromePasswordManagerClient::CreateForWebContents(web_contents());
-
-  NavigateAndCommit(GURL("http://www.foo.com/"));
-  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
-  auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetPrimaryMainFrame(), params);
-  menu->Init();
-
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
-}
-
-// Verify that "Show all passwords" is displayed on a password field in
-// Incognito.
-TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
-  std::unique_ptr<content::WebContents> incognito_web_contents(
-      content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
-
-  // Set up password manager stuff.
-  autofill::ChromeAutofillClient::CreateForWebContents(
-      incognito_web_contents.get());
-  ChromePasswordManagerClient::CreateForWebContents(
-      incognito_web_contents.get());
-
-  content::WebContentsTester::For(incognito_web_contents.get())
-      ->NavigateAndCommit(GURL("http://www.foo.com/"));
-  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
-  auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *incognito_web_contents->GetPrimaryMainFrame(), params);
-  menu->Init();
-
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
-}
-
 TEST_F(RenderViewContextMenuPrefsTest,
        SaveAsDisabledByDownloadRestrictionsPolicy) {
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
@@ -1213,24 +1173,6 @@ TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
       menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
 }
 
-// Verify that "Use passkey from another device" is displayed on a WebAuthn
-// field when the feature is enabled.
-TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
-       UsePasskeyFromAnotherDeviceInContextMenu) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::
-          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-  NavigateAndCommit(get_url());
-  webauthn_delegate()->OnCredentialsReceived(
-      {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
-              true));
-
-  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
-
-  EXPECT_TRUE(
-      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-}
-
 // Verify that "Use passkey from another device" is not displayed on
 // non-WebAuthn fields when the feature is enabled.
 TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
@@ -1244,27 +1186,6 @@ TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
               true));
 
   auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/false);
-
-  EXPECT_FALSE(
-      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-}
-
-// Verify that "Use passkey from another device" is not displayed when the
-// PasswordManualFallback feature is enabled.
-TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
-       UsePasskeyFromAnotherDeviceNotInContextMenuWhenPasswordsManualFallback) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {password_manager::features::
-           kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
-       password_manager::features::kPasswordManualFallbackAvailable},
-      {});
-  NavigateAndCommit(get_url());
-  webauthn_delegate()->OnCredentialsReceived(
-      {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
-              true));
-
-  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
 
   EXPECT_FALSE(
       menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
