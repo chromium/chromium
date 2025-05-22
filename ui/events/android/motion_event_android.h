@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
@@ -143,7 +144,9 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
     float tilt_x = 0;
     float tilt_y = 0;
     ToolType tool_type = ToolType::UNKNOWN;
-  } cached_pointers_[MAX_POINTERS_TO_CACHE];
+  };
+
+  std::array<CachedPointer, MAX_POINTERS_TO_CACHE> cached_pointers_;
 
   static ToolType FromAndroidToolType(int android_tool_type);
   static base::TimeTicks FromAndroidTime(base::TimeTicks time);
