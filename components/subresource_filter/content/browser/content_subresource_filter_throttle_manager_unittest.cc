@@ -131,9 +131,9 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
 class MockPageStateActivationThrottle : public content::NavigationThrottle {
  public:
   MockPageStateActivationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       PageActivationNotificationTiming activation_throttle_state)
-      : content::NavigationThrottle(navigation_handle),
+      : content::NavigationThrottle(registry),
         activation_throttle_state_(activation_throttle_state) {
     // Add some default activations.
     mojom::ActivationState enabled_state;
@@ -373,7 +373,7 @@ class ContentSubresourceFilterThrottleManagerTest
             ? GetParam()
             : WILL_PROCESS_RESPONSE;
     registry.AddThrottle(std::make_unique<MockPageStateActivationThrottle>(
-        navigation_handle, state));
+        registry, state));
 
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)

@@ -14,6 +14,10 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_throttle.h"
 
+namespace content {
+class NavigationThrottleRegistry;
+}  // namespace content
+
 namespace subresource_filter {
 
 class AsyncDocumentSubresourceFilter;
@@ -41,14 +45,14 @@ class ActivationStateComputingNavigationThrottle
   // NotifyPageActivationWithRuleset once it has been established that
   // activation computation is needed.
   static std::unique_ptr<ActivationStateComputingNavigationThrottle>
-  CreateForRoot(content::NavigationHandle* navigation_handle,
+  CreateForRoot(content::NavigationThrottleRegistry& registry,
                 std::string_view uma_tag);
 
   // It is illegal to create an activation computing throttle for frames
   // whose parents are not activated. Similarly, |ruleset_handle| should be
   // non-null.
   static std::unique_ptr<ActivationStateComputingNavigationThrottle>
-  CreateForChild(content::NavigationHandle* navigation_handle,
+  CreateForChild(content::NavigationThrottleRegistry& registry,
                  VerifiedRuleset::Handle* ruleset_handle,
                  const mojom::ActivationState& parent_activation_state,
                  std::string_view uma_tag);
@@ -105,7 +109,7 @@ class ActivationStateComputingNavigationThrottle
   void UpdateWithMoreAccurateState();
 
   ActivationStateComputingNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       const std::optional<mojom::ActivationState> parent_activation_state,
       VerifiedRuleset::Handle* ruleset_handle,
       std::string_view uma_tag);

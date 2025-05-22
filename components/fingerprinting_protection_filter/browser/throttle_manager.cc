@@ -165,12 +165,12 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
     // Attempt to create root throttles.
     registry.AddThrottle(
         std::make_unique<FingerprintingProtectionPageActivationThrottle>(
-            &navigation_handle, web_contents_helper_->content_settings(),
+            registry, web_contents_helper_->content_settings(),
             web_contents_helper_->tracking_protection_settings(),
             web_contents_helper_->pref_service(), is_incognito_));
     auto activation_throttle =
         ActivationStateComputingNavigationThrottle::CreateForRoot(
-            &navigation_handle, kFingerprintingProtectionRulesetConfig.uma_tag);
+            registry, kFingerprintingProtectionRulesetConfig.uma_tag);
     ChildActivationThrottleHandle::CreateForNavigationHandle(
         navigation_handle, activation_throttle.get());
     registry.AddThrottle(std::move(activation_throttle));
@@ -197,7 +197,7 @@ void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
       CHECK(ruleset_handle_);
       auto activation_throttle =
           ActivationStateComputingNavigationThrottle::CreateForChild(
-              &navigation_handle, ruleset_handle_.get(),
+              registry, ruleset_handle_.get(),
               parent_filter->activation_state(),
               kFingerprintingProtectionRulesetConfig.uma_tag);
       CHECK(!ChildActivationThrottleHandle::GetForNavigationHandle(

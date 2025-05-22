@@ -122,9 +122,9 @@ class FakeRendererAgent {
 class MockPageActivationThrottle : public content::NavigationThrottle {
  public:
   MockPageActivationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       PageActivationNotificationTiming activation_throttle_state)
-      : content::NavigationThrottle(navigation_handle),
+      : content::NavigationThrottle(registry),
         activation_throttle_state_(activation_throttle_state) {
     // Add some default activations.
     subresource_filter::mojom::ActivationState enabled_state;
@@ -384,7 +384,7 @@ class ThrottleManagerTest
             ? GetParam().notification_timing
             : WILL_PROCESS_RESPONSE;
     registry.AddThrottle(
-        std::make_unique<MockPageActivationThrottle>(navigation_handle, state));
+        std::make_unique<MockPageActivationThrottle>(registry, state));
 
     auto* navigation_throttle_manager =
         ThrottleManager::FromNavigationHandle(*navigation_handle);

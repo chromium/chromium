@@ -24,38 +24,38 @@ namespace subresource_filter {
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ActivationStateComputingNavigationThrottle::CreateForRoot(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::string_view uma_tag) {
-  CHECK(IsInSubresourceFilterRoot(navigation_handle),
+  CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
         base::NotFatalUntil::M129);
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, /*parent_activation_state=*/std::nullopt,
+      registry, /*parent_activation_state=*/std::nullopt,
       /*ruleset_handle*/ nullptr, uma_tag));
 }
 
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ActivationStateComputingNavigationThrottle::CreateForChild(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     VerifiedRuleset::Handle* ruleset_handle,
     const mojom::ActivationState& parent_activation_state,
     std::string_view uma_tag) {
-  CHECK(!IsInSubresourceFilterRoot(navigation_handle),
+  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
         base::NotFatalUntil::M129);
   CHECK_NE(mojom::ActivationLevel::kDisabled,
            parent_activation_state.activation_level, base::NotFatalUntil::M129);
   CHECK(ruleset_handle, base::NotFatalUntil::M129);
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, parent_activation_state, ruleset_handle, uma_tag));
+      registry, parent_activation_state, ruleset_handle, uma_tag));
 }
 
 ActivationStateComputingNavigationThrottle::
     ActivationStateComputingNavigationThrottle(
-        content::NavigationHandle* navigation_handle,
+        content::NavigationThrottleRegistry& registry,
         const std::optional<mojom::ActivationState> parent_activation_state,
         VerifiedRuleset::Handle* ruleset_handle,
         std::string_view uma_tag)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       parent_activation_state_(parent_activation_state),
       ruleset_handle_(ruleset_handle ? ruleset_handle->AsWeakPtr() : nullptr),
       uma_tag_(uma_tag) {}

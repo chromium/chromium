@@ -41,13 +41,13 @@ using ::subresource_filter::mojom::ActivationState;
 // `ProfileInteractionManager`.
 FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
-        content::NavigationHandle* handle,
+        content::NavigationThrottleRegistry& registry,
         HostContentSettingsMap* content_settings,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
         PrefService* prefs,
         bool is_incognito)
-    : NavigationThrottle(handle),
+    : NavigationThrottle(registry),
       content_settings_(content_settings),
       tracking_protection_settings_(tracking_protection_settings),
       prefs_(prefs),

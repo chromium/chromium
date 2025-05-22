@@ -272,7 +272,7 @@ class ContentSubresourceFilterThrottleManager
       content::NavigationThrottleRegistry& registry);
   std::unique_ptr<ActivationStateComputingNavigationThrottle>
   MaybeCreateActivationStateComputingThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   // Will return nullptr if the parent frame of this navigation is not
   // activated (and therefore has no subresource filter).

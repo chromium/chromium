@@ -14,9 +14,13 @@
 
 class PrefService;
 
+namespace content {
+class NavigationThrottleRegistry;
+}  // namespace content
+
 namespace privacy_sandbox {
 class TrackingProtectionSettings;
-}
+}  // namespace privacy_sandbox
 
 namespace subresource_filter {
 enum class ActivationDecision;
@@ -52,7 +56,7 @@ class FingerprintingProtectionPageActivationThrottle
     : public content::NavigationThrottle {
  public:
   FingerprintingProtectionPageActivationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       HostContentSettingsMap* content_settings,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       PrefService* prefs,

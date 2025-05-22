@@ -551,7 +551,7 @@ void ContentSubresourceFilterThrottleManager::
                         navigation_handle.GetNavigationId()),
         base::NotFatalUntil::M129);
   if (auto activation_throttle =
-          MaybeCreateActivationStateComputingThrottle(&navigation_handle)) {
+          MaybeCreateActivationStateComputingThrottle(registry)) {
     ongoing_activation_throttles_[navigation_handle.GetNavigationId()] =
         activation_throttle.get();
     registry.AddThrottle(std::move(activation_throttle));
@@ -625,11 +625,12 @@ void ContentSubresourceFilterThrottleManager::
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ContentSubresourceFilterThrottleManager::
     MaybeCreateActivationStateComputingThrottle(
-        content::NavigationHandle* navigation_handle) {
+        content::NavigationThrottleRegistry& registry) {
   // Subresource filter roots: create unconditionally.
-  if (IsInSubresourceFilterRoot(navigation_handle)) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (IsInSubresourceFilterRoot(&navigation_handle)) {
     auto throttle = ActivationStateComputingNavigationThrottle::CreateForRoot(
-        navigation_handle, kSafeBrowsingRulesetConfig.uma_tag);
+        registry, kSafeBrowsingRulesetConfig.uma_tag);
     if (base::FeatureList::IsEnabled(kAdTagging)) {
       mojom::ActivationState ad_tagging_state;
       ad_tagging_state.activation_level = mojom::ActivationLevel::kDryRun;
@@ -642,14 +643,14 @@ ContentSubresourceFilterThrottleManager::
   // Subresource filter children: create only for frames with activated
   // parents.
   AsyncDocumentSubresourceFilter* parent_filter =
-      GetParentFrameFilter(navigation_handle);
+      GetParentFrameFilter(&navigation_handle);
   if (!parent_filter) {
     return nullptr;
   }
   CHECK(ruleset_handle_, base::NotFatalUntil::M129);
   return ActivationStateComputingNavigationThrottle::CreateForChild(
-      navigation_handle, ruleset_handle_.get(),
-      parent_filter->activation_state(), kSafeBrowsingRulesetConfig.uma_tag);
+      registry, ruleset_handle_.get(), parent_filter->activation_state(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 }
 
 AsyncDocumentSubresourceFilter*
