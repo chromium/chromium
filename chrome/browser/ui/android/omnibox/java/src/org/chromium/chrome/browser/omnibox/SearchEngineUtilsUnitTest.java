@@ -350,9 +350,7 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify updated placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint_with_dse_name, "Google"),
-                    searchEngineUtils.getSearchBoxHintText());
+            assertEquals("Search Google or type URL", searchEngineUtils.getSearchBoxHintText());
         }
 
         {
@@ -369,8 +367,7 @@ public class SearchEngineUtilsUnitTest {
 
             // Verify updated placeholder text.
             assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint_with_dse_name, "Another Engine"),
-                    searchEngineUtils.getSearchBoxHintText());
+                    "Search Another Engine or type URL", searchEngineUtils.getSearchBoxHintText());
         }
 
         {
@@ -386,9 +383,7 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            assertEquals("Search or type URL", searchEngineUtils.getSearchBoxHintText());
         }
 
         {
@@ -401,9 +396,7 @@ public class SearchEngineUtilsUnitTest {
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            assertEquals(
-                    mContext.getString(R.string.omnibox_empty_hint),
-                    searchEngineUtils.getSearchBoxHintText());
+            assertEquals("Search or type URL", searchEngineUtils.getSearchBoxHintText());
         }
     }
 

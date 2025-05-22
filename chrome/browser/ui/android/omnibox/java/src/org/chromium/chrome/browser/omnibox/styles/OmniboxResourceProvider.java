@@ -66,12 +66,26 @@ public class OmniboxResourceProvider {
      * with caching. If caching is enabled, there is a single, unbounded string cache shared by all
      * contexts. When dealing with strings with format params, the raw string is cached and
      * formatted on demand using the default locale.
+     *
+     * <p>This function converts cross-platform grit string expansion placeholders to Java
+     * placeholders allowing any single string to be used both from C++ and Java. This requires all
+     * the arguments to be of String type.
+     *
+     * @param context current context used to resolve string res
+     * @param res string res to retrieve, cache, and expand
+     * @param args positional arguments expanded when `res` includes expansion placeholders
+     * @return expanded and formatted string representing
      */
-    public static String getString(Context context, @StringRes int res, Object... args) {
+    public static String getString(Context context, @StringRes int res, CharSequence... args) {
         ThreadUtils.assertOnUiThread();
         String string = sStringCache.get(res, null);
         if (string == null) {
             string = context.getString(res);
+
+            // Translate `$1`, `$2`, ... strings (found typically on other platforms)
+            // to `%1$s`, `%2$s` etc, which are appropriate for Chrome.
+            string = string.replaceAll("\\$(\\d+)", "%$1\\$s");
+
             sStringCache.put(res, string);
         }
 
@@ -80,7 +94,7 @@ public class OmniboxResourceProvider {
                 : String.format(
                         context.getResources().getConfiguration().getLocales().get(0),
                         string,
-                        args);
+                        (Object[]) args);
     }
 
     /**
