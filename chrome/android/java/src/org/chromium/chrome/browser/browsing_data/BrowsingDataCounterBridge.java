@@ -8,11 +8,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Communicates between BrowsingDataCounter (C++ backend) and ClearBrowsingDataFragment (Java UI).
  */
+@NullMarked
 public class BrowsingDataCounterBridge {
     /** Can receive a callback from a BrowsingDataCounter. */
     public interface BrowsingDataCounterCallback {

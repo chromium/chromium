@@ -16,18 +16,23 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
+import java.util.Objects;
+
 /**
  * A preference representing one browsing data type in ClearBrowsingDataFragment. This class allows
  * clickable links inside the checkbox summary.
  */
+@NullMarked
 public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPreference {
-    private View mView;
-    private Runnable mLinkClickDelegate;
+    private @Nullable View mView;
+    private @Nullable Runnable mLinkClickDelegate;
     private boolean mHasClickableSpans;
 
     /** Constructor for inflating from XML. */
@@ -94,9 +99,9 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
     }
 
     @Override
-    public void setSummary(CharSequence summary) {
+    public void setSummary(@Nullable CharSequence summary) {
         // If there is no link in the summary invoke the default behavior.
-        String summaryString = summary.toString();
+        String summaryString = Objects.requireNonNullElse(summary, "").toString();
         if (!summaryString.contains("<link>") || !summaryString.contains("</link>")) {
             super.setSummary(summary);
             return;
