@@ -8,15 +8,17 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
@@ -45,9 +47,9 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD(void, RegisterDestructor, (base::OnceClosure));
 };
 
-class CastDialogCoordinatorTest : public TestWithBrowserView {
+class CastDialogCoordinatorTest : public InProcessBrowserTest {
  public:
-  void SetUp() override { TestWithBrowserView::SetUp(); }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   NiceMock<MockCastDialogController> controller_;
   CastDialogCoordinator cast_dialog_coordinator_;
@@ -56,10 +58,10 @@ class CastDialogCoordinatorTest : public TestWithBrowserView {
 // Tests show and hide for ShowDialogCenteredForBrowserWindow. Defers
 // ShowDialogWithToolbarAction to Media Router tests (already covered) since
 // additional Media Router services setup is required.
-TEST_F(CastDialogCoordinatorTest, ShowAndHideDialog) {
+IN_PROC_BROWSER_TEST_F(CastDialogCoordinatorTest, ShowAndHideDialog) {
   EXPECT_CALL(controller_, AddObserver(_));
   cast_dialog_coordinator_.ShowDialogCenteredForBrowserWindow(
-      &controller_, browser_view()->browser(), base::Time::Now(),
+      &controller_, browser(), base::Time::Now(),
       MediaRouterDialogActivationLocation::PAGE);
   EXPECT_TRUE(cast_dialog_coordinator_.IsShowing());
   EXPECT_NE(nullptr, cast_dialog_coordinator_.GetCastDialogWidget());
