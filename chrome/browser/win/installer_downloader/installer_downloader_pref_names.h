@@ -10,7 +10,7 @@ namespace installer_downloader::prefs {
 // Int browser local state that stores how many times the installer downloader
 // inforbar has been shown.
 inline constexpr char kInstallerDownloaderInfobarShowCount[] =
-    "installer_downloader_infobar_show_count";
+    "installer_downloader.infobar_show_count";
 
 }  // namespace installer_downloader::prefs
 
