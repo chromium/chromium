@@ -65,6 +65,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     std::optional<bool> logical_surface;
     std::optional<media::mojom::CursorCaptureType> cursor;
     std::optional<bool> suppress_local_audio_playback;
+    std::optional<bool> restrict_own_audio;
 
     // Captured Surface Resolution API
     std::optional<gfx::Size> physical_frame_size;

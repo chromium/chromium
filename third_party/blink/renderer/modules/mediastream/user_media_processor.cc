@@ -702,6 +702,8 @@ void UserMediaProcessor::SetupAudioInput() {
   stream_controls->suppress_local_audio_playback =
       request->suppress_local_audio_playback();
 
+  stream_controls->restrict_own_audio = request->restrict_own_audio();
+
   TrackControls& audio_controls = stream_controls->audio;
   audio_controls.stream_type =
       (request->MediaRequestType() == UserMediaRequestType::kAllScreensMedia)

@@ -377,6 +377,7 @@ UserMediaRequest* UserMediaRequest::Create(
 
   std::string display_surface_constraint;
   std::optional<bool> suppress_local_audio_playback;
+  std::optional<bool> restrict_own_audio;
 
   if (media_type == UserMediaRequestType::kUserMedia) {
     if (audio.IsNull() && video.IsNull()) {
@@ -482,6 +483,9 @@ UserMediaRequest* UserMediaRequest::Create(
       suppress_local_audio_playback =
           audio.Basic().suppress_local_audio_playback.Ideal();
     }
+    if (!audio.IsNull() && audio.Basic().restrict_own_audio.HasIdeal()) {
+      restrict_own_audio = audio.Basic().restrict_own_audio.Ideal();
+    }
   }
 
   if (!audio.IsNull())
@@ -583,6 +587,7 @@ UserMediaRequest* UserMediaRequest::Create(
 
   result->set_suppress_local_audio_playback(
       suppress_local_audio_playback.value_or(false));
+  result->set_restrict_own_audio(restrict_own_audio.value_or(false));
   if (media_type == UserMediaRequestType::kDisplayMedia) {
     RecordSuppressLocalAudioPlaybackConstraintUma(
         suppress_local_audio_playback);

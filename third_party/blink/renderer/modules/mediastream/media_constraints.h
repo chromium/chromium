@@ -281,6 +281,7 @@ struct MediaTrackConstraintSetPlatform {
   StringConstraint device_id;
   BooleanConstraint disable_local_echo;
   BooleanConstraint suppress_local_audio_playback;
+  BooleanConstraint restrict_own_audio;
   StringConstraint group_id;
   StringConstraint display_surface;
 

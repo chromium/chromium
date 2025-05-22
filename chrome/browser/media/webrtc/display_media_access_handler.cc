@@ -384,6 +384,7 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       request, web_contents, media_id, media_id.audio_share,
       request.disable_local_echo, request.suppress_local_audio_playback,
+      request.restrict_own_audio,
       /*display_notification=*/false, GetApplicationTitle(web_contents),
       request.captured_surface_control_active, stream_devices);
   std::move(callback).Run(stream_devices_set, MediaStreamRequestResult::OK,
@@ -525,6 +526,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       pending_request.request.exclude_system_audio;
   picker_params.suppress_local_audio_playback =
       pending_request.request.suppress_local_audio_playback;
+  picker_params.restrict_own_audio = pending_request.request.restrict_own_audio;
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_params.preferred_display_surface =
@@ -603,7 +605,8 @@ void DisplayMediaAccessHandler::AcceptRequest(WebContents* web_contents,
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       pending_request.request, web_contents, media_id, media_id.audio_share,
       disable_local_echo, pending_request.request.suppress_local_audio_playback,
-      display_notification_, GetApplicationTitle(web_contents),
+      pending_request.request.restrict_own_audio, display_notification_,
+      GetApplicationTitle(web_contents),
       pending_request.request.captured_surface_control_active, stream_devices);
   UpdateTarget(pending_request.request, media_id);
 

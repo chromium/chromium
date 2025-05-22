@@ -675,6 +675,12 @@ bool ValidateAndCopyConstraintSet(
                           naked_treatment,
                           constraint_buffer.suppress_local_audio_playback);
   }
+
+  if (constraints_in->hasRestrictOwnAudio()) {
+    CopyBooleanConstraint(constraints_in->restrictOwnAudio(), naked_treatment,
+                          constraint_buffer.restrict_own_audio);
+  }
+
   return true;
 }
 
@@ -959,6 +965,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.suppress_local_audio_playback.IsUnconstrained()) {
     output->setSuppressLocalAudioPlayback(
         ConvertBoolean(input.suppress_local_audio_playback, naked_treatment));
+  }
+  if (!input.restrict_own_audio.IsUnconstrained()) {
+    output->setRestrictOwnAudio(
+        ConvertBoolean(input.restrict_own_audio, naked_treatment));
   }
   // TODO(hta): Decide the future of the nonstandard constraints.
   // If they go forward, they need to be added here.

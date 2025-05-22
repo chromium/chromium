@@ -884,6 +884,11 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
             blink::mojom::PreferredDisplaySurface::MONITOR) {
       return bad_message::MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED;
     }
+
+    if (controls.restrict_own_audio &&
+        !base::FeatureList::IsEnabled(blink::features::kRestrictOwnAudio)) {
+      return bad_message::MSDH_DISABLED_FEATURE_IS_SET;
+    }
   }
 
   return std::nullopt;

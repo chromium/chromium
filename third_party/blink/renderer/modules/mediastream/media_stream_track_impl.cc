@@ -708,6 +708,10 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
         *suppress_local_audio_playback_setting_);
   }
 
+  if (restrict_own_audio_setting_.has_value()) {
+    settings->setRestrictOwnAudio(*restrict_own_audio_setting_);
+  }
+
   return settings;
 }
 
@@ -816,6 +820,13 @@ void MediaStreamTrackImpl::SetConstraintsInternal(
       constraints_.Basic().suppress_local_audio_playback.HasIdeal()) {
     suppress_local_audio_playback_setting_ =
         constraints_.Basic().suppress_local_audio_playback.Ideal();
+  }
+
+  CHECK(!restrict_own_audio_setting_.has_value());
+  if (!constraints_.IsNull() &&
+      constraints_.Basic().restrict_own_audio.HasIdeal()) {
+    restrict_own_audio_setting_ =
+        constraints_.Basic().restrict_own_audio.Ideal();
   }
 }
 

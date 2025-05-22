@@ -194,6 +194,9 @@ class MODULES_EXPORT UserMediaRequest final
     return suppress_local_audio_playback_;
   }
 
+  void set_restrict_own_audio(bool value) { restrict_own_audio_ = value; }
+  bool restrict_own_audio() const { return restrict_own_audio_; }
+
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
   void SetTransferData(const base::UnguessableToken& session_id,
@@ -233,6 +236,7 @@ class MODULES_EXPORT UserMediaRequest final
   bool dynamic_surface_switching_requested_ = true;
   bool exclude_monitor_type_surfaces_ = false;
   bool suppress_local_audio_playback_ = false;
+  bool restrict_own_audio_ = false;
   const bool auto_select_all_screens_ = false;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;

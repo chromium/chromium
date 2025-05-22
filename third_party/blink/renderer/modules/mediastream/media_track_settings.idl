@@ -56,6 +56,7 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=GetDisplayMedia] boolean logicalSurface;
     [RuntimeEnabled=GetDisplayMedia] DOMString cursor;
     [RuntimeEnabled=GetDisplayMedia] boolean suppressLocalAudioPlayback;
+    [RuntimeEnabled=GetDisplayMedia] boolean restrictOwnAudio;
 
     // Capture Surface Resolution API
     [RuntimeEnabled=CapturedSurfaceResolution] double screenPixelRatio;

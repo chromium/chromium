@@ -373,6 +373,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                                !params.exclude_system_audio &&
                                AudioSupported(DesktopMediaList::Type::kScreen)),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
+      restrict_own_audio_(params.restrict_own_audio),
       capturer_global_id_(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()

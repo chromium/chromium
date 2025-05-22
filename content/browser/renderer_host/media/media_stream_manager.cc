@@ -654,6 +654,7 @@ class MediaStreamManager::DeviceRequest {
         captured_surface_control_active_);
     ui_request_->suppress_local_audio_playback =
         stream_controls_.suppress_local_audio_playback;
+    ui_request_->restrict_own_audio = stream_controls_.restrict_own_audio;
     ui_request_->exclude_system_audio = stream_controls_.exclude_system_audio;
     ui_request_->exclude_self_browser_surface =
         stream_controls_.exclude_self_browser_surface;
@@ -810,6 +811,7 @@ class MediaStreamManager::DeviceRequest {
     stream_controls_.hotword_enabled = false;
     stream_controls_.disable_local_echo = false;
     stream_controls_.suppress_local_audio_playback = false;
+    stream_controls_.restrict_own_audio = false;
     stream_controls_.exclude_system_audio = false;
   }
 

@@ -94,6 +94,11 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // whereas this flag hooks into a standardized option.
   bool suppress_local_audio_playback = false;
 
+  // Flag for window or screen share to indicate if audio originating from the
+  // document that called getDisplayMedia should be removed from the
+  // captured system audio.
+  bool restrict_own_audio = false;
+
   // If audio is requested, |exclude_system_audio| can indicate that
   // system-audio should nevertheless not be offered to the user.
   bool exclude_system_audio = false;

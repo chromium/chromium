@@ -491,6 +491,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="323" label="MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE"/>
   <int value="324" label="MH_MULTIPLE_MIDI_SESSIONS"/>
   <int value="325" label="RFHI_INVALID_NET_ERROR_CODE"/>
+  <int value="326" label="MSDH_DISABLED_FEATURE_IS_SET"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

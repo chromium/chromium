@@ -25,6 +25,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool capture_audio,
     bool disable_local_echo,
     bool suppress_local_audio_playback,
+    bool restrict_own_audio,
     bool display_notification,
     const std::u16string& application_title,
     bool captured_surface_control_active,

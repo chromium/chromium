@@ -237,6 +237,18 @@ std::string DeviceName(content::WebContents* web_contents,
   }
 }
 
+const char* GetDeviceId(bool disable_local_echo,
+                        bool suppress_local_audio_playback,
+                        bool restrict_own_audio) {
+  if (restrict_own_audio) {
+    return media::AudioDeviceDescription::kLoopbackWithoutChromeId;
+  } else if (disable_local_echo || suppress_local_audio_playback) {
+    return media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+  } else {
+    return media::AudioDeviceDescription::kLoopbackInputDeviceId;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
@@ -246,18 +258,12 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool capture_audio,
     bool disable_local_echo,
     bool suppress_local_audio_playback,
+    bool restrict_own_audio,
     bool display_notification,
     const std::u16string& application_title,
     bool captured_surface_control_active,
     blink::mojom::StreamDevices& out_devices) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DVLOG(2) << __func__ << ": media_id " << media_id.ToString()
-           << ", capture_audio " << capture_audio << ", disable_local_echo "
-           << disable_local_echo << ", suppress_local_audio_playback "
-           << suppress_local_audio_playback << ", display_notification "
-           << display_notification << ", application_title "
-           << application_title;
 
   // Add selected desktop source to the list.
   blink::MediaStreamDevice device(
@@ -282,12 +288,11 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
           request.audio_type, web_id.ToString(), "Tab audio");
     } else {
       // Use the special loopback device ID for system audio capture.
+      const char* device_id =
+          GetDeviceId(disable_local_echo, suppress_local_audio_playback,
+                      restrict_own_audio);
       out_devices.audio_device = blink::MediaStreamDevice(
-          request.audio_type,
-          (disable_local_echo || suppress_local_audio_playback
-               ? media::AudioDeviceDescription::kLoopbackWithMuteDeviceId
-               : media::AudioDeviceDescription::kLoopbackInputDeviceId),
-          "System Audio");
+          request.audio_type, device_id, "System Audio");
     }
     out_devices.audio_device->display_media_info =
         DesktopMediaIDToDisplayMediaInformation(

@@ -363,7 +363,7 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
           /*captured_surface_control_active=*/false),
       source, content::DesktopMediaID(media_type, /*id=*/0),
       /*capture_audio=*/false, /*disable_local_echo=*/false,
-      /*suppress_local_audio_playback=*/false,
+      /*suppress_local_audio_playback=*/false, /*restrict_own_audio=*/false,
       /*display_notification=*/false, /*application_title=*/u"",
       /*captured_surface_control_active=*/false, devices);
   ASSERT_EQ(devices.video_device->type, video_stream_type);
