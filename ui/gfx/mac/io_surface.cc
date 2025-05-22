@@ -240,7 +240,8 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool should_clear,
-    bool override_rgba_to_bgra) {
+    bool override_rgba_to_bgra,
+    bool cpu_write_only) {
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -253,6 +254,15 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
   AddIntegerValue(
       properties.get(), kIOSurfacePixelFormat,
       BufferFormatToIOSurfacePixelFormat(format, override_rgba_to_bgra));
+  if (cpu_write_only) {
+    // Use the write-combined cache mode if we're only writing to the IOSurface
+    // on the CPU like for unaccelerated canvas raster backings. Write-combined
+    // caching is optimal for CPU writes, but will perform poorly with CPU reads
+    // so we only use it if the caller guarantees it via `cpu_write_only`.
+    // See IOSurfaceTypes.h in IOSurface.framework in the macOS/iOS SDK.
+    AddIntegerValue(properties.get(), kIOSurfaceCacheMode,
+                    kIOSurfaceMapWriteCombineCache);
+  }
 
   // Don't specify plane information unless there are indeed multiple planes
   // because DisplayLink drivers do not support this.

@@ -1120,6 +1120,11 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
   AutoLock auto_lock(this);
   CHECK_LE(pixmaps.size(), 3u);
 
+  if (usage().Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
+    LOG(ERROR) << "Trying to readback from CPU_WRITE_ONLY IOSurface backing.";
+    return false;
+  }
+
   // Make sure any pending ANGLE EGLDisplays and Dawn devices are flushed.
   WaitForCommandsToBeScheduled();
 

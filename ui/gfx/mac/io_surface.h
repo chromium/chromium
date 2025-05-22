@@ -58,12 +58,8 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     const Size& size,
     BufferFormat format,
     bool should_clear = true,
-#if BUILDFLAG(IS_IOS)
-    bool override_rgba_to_bgra = false
-#else
-    bool override_rgba_to_bgra = true
-#endif
-);
+    bool override_rgba_to_bgra = !BUILDFLAG(IS_IOS),
+    bool cpu_write_only = false);
 
 // A scoper for handling Mach port names that are send rights for IOSurfaces.
 // This scoper is both copyable and assignable, which will increase the kernel

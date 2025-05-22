@@ -246,8 +246,9 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
 #else
         gr_context_type_ == GrContextType::kGL;
 #endif
+    const bool cpu_write_only = usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
     io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
-                                      override_rgba_to_bgra);
+                                      override_rgba_to_bgra, cpu_write_only);
     if (!io_surface) {
       LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
       return nullptr;
@@ -363,8 +364,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
 #else
         gr_context_type_ == GrContextType::kGL;
 #endif
+    const bool cpu_write_only = usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
     io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
-                                      override_rgba_to_bgra);
+                                      override_rgba_to_bgra, cpu_write_only);
     if (!io_surface) {
       LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
       return nullptr;
