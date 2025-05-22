@@ -36,6 +36,10 @@ std::string InvocationSourceToString(
       return "LVFGallery";
     case LensOverlayInvocationSource::kContextMenu:
       return "ContextMenu";
+    case LensOverlayInvocationSource::kOmniboxPageAction:
+      return "OmniboxPageAction";
+    case LensOverlayInvocationSource::kOmniboxContextualSuggestion:
+      return "OmniboxContextualSuggestion";
   }
 }
 
@@ -389,6 +393,13 @@ void RecordTimeToFirstInteraction(
       break;
     case lens::LensOverlayInvocationSource::kOmnibox:
       event.SetOmnibox(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
+      event.SetOmniboxPageAction(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
+      event.SetOmniboxContextualSuggestion(
+          time_to_first_interaction.InMilliseconds());
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

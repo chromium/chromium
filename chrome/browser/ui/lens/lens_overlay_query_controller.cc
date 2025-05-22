@@ -330,6 +330,10 @@ LenOverlayEntryPointFromInvocationSource(
       return lens::LensOverlayClientLogs::IMAGE_CONTEXT_MENU;
     case lens::LensOverlayInvocationSource::kOmnibox:
       return lens::LensOverlayClientLogs::OMNIBOX_BUTTON;
+    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
+      return lens::LensOverlayClientLogs::OMNIBOX_CONTEXTUAL_SUGGESTION;
+    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
+      return lens::LensOverlayClientLogs::OMNIBOX_PAGE_ACTION;
     case lens::LensOverlayInvocationSource::kToolbar:
       return lens::LensOverlayClientLogs::TOOLBAR_BUTTON;
     case lens::LensOverlayInvocationSource::kFindInPage:

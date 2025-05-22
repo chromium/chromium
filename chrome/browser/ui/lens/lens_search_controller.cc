@@ -194,22 +194,23 @@ void LensSearchController::StartContextualization(
 }
 
 void LensSearchController::IssueContextualSearchRequest(
+    lens::LensOverlayInvocationSource invocation_source,
     const GURL& destination_url,
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
-  // TODO(crbug.com/402497756): For prototyping, reusing the existing
-  // omnibox entry point. However, for production, create a new invocation
-  // source for this new entry point.
-  lens::LensOverlayInvocationSource invocation_source =
-      lens::LensOverlayInvocationSource::kOmnibox;
+  // This method should only be used by the omnibox contextual suggestion flow.
+  // There is no dependency on the omnibox, so this check is solely to ensure a
+  // new flow is not accidentally added.
+  CHECK(invocation_source ==
+        lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion);
 
   // If the eligibility checks fail, do not procced with opening any UI.
   if (!RunLensEligibilityChecks(
           invocation_source,
           /*permission_granted_callback=*/base::BindRepeating(
               &LensSearchController::IssueContextualSearchRequest,
-              weak_ptr_factory_.GetWeakPtr(), destination_url, match_type,
-              is_zero_prefix_suggestion))) {
+              weak_ptr_factory_.GetWeakPtr(), invocation_source,
+              destination_url, match_type, is_zero_prefix_suggestion))) {
     return;
   }
 

@@ -39,6 +39,8 @@ chromium-metrics-reviews@google.com.
   <variant name="LVFGallery"/>
   <variant name="LVFShutterButton"/>
   <variant name="Omnibox"/>
+  <variant name="OmniboxContextualSuggestion"/>
+  <variant name="OmniboxPageAction"/>
   <variant name="Toolbar"/>
   <variant name="Unknown"/>
 </variants>

@@ -80,6 +80,9 @@ inline constexpr char kInvocationSourceImageSearchContextMenu[] =
 inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
 inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
 inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
+inline constexpr char kInvocationSourceOmniboxPageAction[] = "chrome.cr.obpa";
+inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] =
+    "chrome.cr.obcs";
 
 // The url query param for the viewport width and height.
 inline constexpr char kViewportWidthQueryParamKey[] = "biw";
@@ -253,6 +256,12 @@ GURL AppendInvocationSourceParamToURL(
       break;
     case lens::LensOverlayInvocationSource::kOmnibox:
       param_value = kInvocationSourceOmniboxIcon;
+      break;
+    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
+      param_value = kInvocationSourceOmniboxPageAction;
+      break;
+    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
+      param_value = kInvocationSourceOmniboxContextualSuggestion;
       break;
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:

@@ -114,9 +114,11 @@ class LensSearchController {
   // is fully opened.
   // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
   // destination URL instead of the query text directly.
-  void IssueContextualSearchRequest(const GURL& destination_url,
-                                    AutocompleteMatchType::Type match_type,
-                                    bool is_zero_prefix_suggestion);
+  void IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource invocation_source,
+      const GURL& destination_url,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:

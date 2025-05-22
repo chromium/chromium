@@ -12822,6 +12822,32 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="OmniboxContextualSuggestion">
+    <summary>
+      Time to first interaction when overlay invoked through the omnibox
+      contextual suggestion.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="OmniboxPageAction">
+    <summary>
+      Time to first interaction when overlay invoked through the omnibox Lens
+      page action suggestion.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Toolbar">
     <summary>
       Time to first interaction when overlay invoked through the toolbar.

@@ -23,6 +23,8 @@ message LensOverlayClientLogs {
     OMNIBOX_BUTTON = 4;
     TOOLBAR_BUTTON = 5;
     FIND_IN_PAGE = 6;
+    OMNIBOX_PAGE_ACTION = 7;
+    OMNIBOX_CONTEXTUAL_SUGGESTION = 8;
   }
 
   // The Lens Overlay entry point used to access lens.

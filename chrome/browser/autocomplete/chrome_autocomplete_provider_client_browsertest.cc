@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
       .Times(1)
       .WillOnce(testing::Invoke(
           [](lens::LensOverlayInvocationSource invocation_source) {
-            EXPECT_EQ(lens::LensOverlayInvocationSource::kOmnibox,
+            EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
                       invocation_source);
           }));
 
