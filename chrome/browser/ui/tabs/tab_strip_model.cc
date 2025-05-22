@@ -790,12 +790,9 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
   if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(tab->GetContents());
   }
-  if (tab_detach_reason == tabs::TabInterface::DetachReason::kDelete) {
-    tab->DestroyTabFeatures();
-  }
 
   std::unique_ptr<tabs::TabModel> old_tab_model =
-      RemoveTabFromIndexImpl(index_at_time_of_removal);
+      RemoveTabFromIndexImpl(index_at_time_of_removal, tab_detach_reason);
 
   old_tab_model->OnRemovedFromModel();
   return std::make_unique<DetachedTab>(
@@ -3840,16 +3837,19 @@ void TabStripModel::InsertTabAtIndexImpl(
 }
 
 std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
-    int index) {
-  tabs::TabInterface* tab = GetTabAtIndex(index);
+    int index,
+    tabs::TabInterface::DetachReason tab_detach_reason) {
+  tabs::TabModel* const tab = GetTabModelAtIndex(index);
   const std::optional<tab_groups::TabGroupId> old_group = tab->GetGroup();
-
-  std::optional<int> next_selected_index =
-      DetermineNewSelectedIndex(GetTabAtIndex(index));
+  std::optional<int> next_selected_index = DetermineNewSelectedIndex(tab);
   const bool removed_tab_is_split = tab->IsSplit();
   if (removed_tab_is_split) {
     RemoveSplitImpl(tab->GetSplit().value(),
                     SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+  }
+
+  if (tab_detach_reason == tabs::TabInterface::DetachReason::kDelete) {
+    tab->DestroyTabFeatures();
   }
 
   // Remove the tab.
