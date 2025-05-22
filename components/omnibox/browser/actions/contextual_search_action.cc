@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -12,6 +13,23 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
+
+namespace {
+
+int GetOpenLensActionLabelId() {
+  switch (omnibox_feature_configs::ContextualSearch::Get()
+              .alternative_action_label) {
+    case 1:
+      return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT;
+    case 2:
+      return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2;
+    case 0:
+    default:
+      return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL;
+  }
+}
+
+}  // namespace
 
 ContextualSearchFulfillmentAction::ContextualSearchFulfillmentAction(
     const GURL& url,
@@ -44,8 +62,7 @@ ContextualSearchFulfillmentAction::~ContextualSearchFulfillmentAction() =
 
 ContextualSearchOpenLensAction::ContextualSearchOpenLensAction()
     : OmniboxAction(OmniboxAction::LabelStrings(
-                        l10n_util::GetStringUTF16(
-                            IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL),
+                        l10n_util::GetStringUTF16(GetOpenLensActionLabelId()),
                         u"",
                         u"",
                         u""),

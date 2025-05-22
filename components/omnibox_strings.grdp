@@ -8,10 +8,16 @@
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>
   <message name="IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION" desc="Description for search matches that open in side panel.">
-    Google Search in side panel
+    Search in side panel
   </message>
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens.">
     Ask Google about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT" desc="Alternative label text for the action match that opens lens.">
+    Ask Google Lens about this page
+  </message>
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT2" desc="Second alternative label text for the action match that opens lens.">
+    Ask Google Search about this page
   </message>
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
     &lt;Type search term&gt;
