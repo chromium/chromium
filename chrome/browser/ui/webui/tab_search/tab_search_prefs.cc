@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"

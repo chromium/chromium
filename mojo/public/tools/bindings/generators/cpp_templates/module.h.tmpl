@@ -23,14 +23,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/types/cxx23_to_underlying.h"
-
 {%- if contains_only_enums %}
 #include "mojo/public/cpp/bindings/type_converter.h"
 {%- else %}
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/equals_traits.h"
-#include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
