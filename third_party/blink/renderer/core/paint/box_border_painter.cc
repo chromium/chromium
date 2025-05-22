@@ -760,9 +760,6 @@ void DrawLineForBoxSide(GraphicsContext& context,
   style = BorderEdge::EffectiveStyle(style, thickness);
 
   switch (style) {
-    case EBorderStyle::kNone:
-    case EBorderStyle::kHidden:
-      return;
     case EBorderStyle::kDotted:
     case EBorderStyle::kDashed:
       DrawDashedOrDottedBoxSide(context, x1, y1, x2, y2, side, color, thickness,
@@ -786,6 +783,9 @@ void DrawLineForBoxSide(GraphicsContext& context,
       DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
                        adjacent_width2, auto_dark_mode);
       break;
+    case EBorderStyle::kNone:
+    case EBorderStyle::kHidden:
+      NOTREACHED();
   }
 }
 
@@ -1602,9 +1602,6 @@ void BoxBorderPainter::DrawCurvedBoxSide(int border_thickness,
             BorderEdge::EffectiveStyle(border_style, border_thickness));
 
   switch (border_style) {
-    case EBorderStyle::kNone:
-    case EBorderStyle::kHidden:
-      return;
     case EBorderStyle::kDotted:
     case EBorderStyle::kDashed:
       DrawCurvedDashedDottedBoxSide(border_thickness, stroke_thickness, color,
@@ -1624,6 +1621,9 @@ void BoxBorderPainter::DrawCurvedBoxSide(int border_thickness,
       [[fallthrough]];
     case EBorderStyle::kSolid:
       break;
+    case EBorderStyle::kNone:
+    case EBorderStyle::kHidden:
+      NOTREACHED();
   }
 
   context_.SetFillColor(color);
@@ -2328,6 +2328,9 @@ void BoxBorderPainter::DrawBoxSide(GraphicsContext& context,
                                    Color color,
                                    EBorderStyle style,
                                    const AutoDarkMode& auto_dark_mode) {
+  if (style == EBorderStyle::kNone || style == EBorderStyle::kHidden) {
+    return;
+  }
   DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
                      snapped_edge_rect.right(), snapped_edge_rect.bottom(),
                      side, color, style, 0, 0, auto_dark_mode);
