@@ -23363,6 +23363,22 @@
             ]
         }
     ],
+    "SysPkJPandVKMv3": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImeManifestV3",
+                        "SystemJapanesePhysicalTyping"
+                    ]
+                }
+            ]
+        }
+    ],
     "SysUiHoldbackStudy": [
         {
             "platforms": [
