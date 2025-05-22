@@ -52,6 +52,28 @@ TEST(AutoSpanificationHelperTest, SkBitmapGetAddr32SmartPtr) {
   EXPECT_EQ(span.size(), sk_bitmap->row_.size() - x);
 }
 
+// Minimized mock of CRYPTO_BUFFER_data and CRYPTO_BUFFER_len defined in
+// //third_party/boringssl/src/include/openssl/pool.h
+struct CRYPTO_BUFFER {
+  base::raw_ptr<uint8_t> data = nullptr;
+  size_t len = 0;
+};
+const uint8_t* CRYPTO_BUFFER_data(const CRYPTO_BUFFER* buf) {
+  return buf->data.get();
+}
+size_t CRYPTO_BUFFER_len(const CRYPTO_BUFFER* buf) {
+  return buf->len;
+}
+
+TEST(AutoSpanificationHelperTest, CryptoBufferData) {
+  std::array<uint8_t, 128> array;
+  CRYPTO_BUFFER buffer = {array.data(), array.size()};
+
+  base::span<const uint8_t> span = UNSAFE_CRYPTO_BUFFER_DATA(&buffer);
+  EXPECT_EQ(span.data(), array.data());
+  EXPECT_EQ(span.size(), array.size());
+}
+
 // Minimized mock of hb_buffer_get_glyph_infos and
 // hb_buffer_get_glyph_positions defined in
 // //third_party/harfbuzz-ng/src/src/hb-buffer.h

@@ -80,6 +80,14 @@ inline T& ToPointer(T& value) {
     return UNSAFE_TODO(base::span<uint32_t>(row, size));  \
   }(::base::spanification_internal::ToPointer(arg_self), arg_x, arg_y))
 
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/boringssl/src/include/openssl/pool.h;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b;l=81
+#define UNSAFE_CRYPTO_BUFFER_DATA(arg_buf)                    \
+  ([](const CRYPTO_BUFFER* buf) {                             \
+    const uint8_t* data = CRYPTO_BUFFER_data(buf);            \
+    size_t len = CRYPTO_BUFFER_len(buf);                      \
+    return UNSAFE_TODO(base::span<const uint8_t>(data, len)); \
+  }(arg_buf))
+
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/harfbuzz-ng/src/src/hb-buffer.h;drc=ea6a172f84f2cbcfed803b5ae71064c7afb6b5c2;l=647
 #define UNSAFE_HB_BUFFER_GET_GLYPH_INFOS(arg_buffer, arg_length)     \
   ([](hb_buffer_t* buffer, unsigned int* length) {                   \

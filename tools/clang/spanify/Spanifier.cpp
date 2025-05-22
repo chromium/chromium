@@ -185,6 +185,8 @@ std::optional<UnsafeFreeFuncToMacro> FindUnsafeFreeFuncToBeRewrittenToMacro(
   // Note that C++20 is not supported in tools/clang/spanify/ and we cannot use
   // std::to_array.
   static constexpr UnsafeFreeFuncToMacro unsafe_free_func_table[] = {
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/boringssl/src/include/openssl/pool.h;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b;l=81
+      {"CRYPTO_BUFFER_data", "UNSAFE_CRYPTO_BUFFER_DATA"},
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/harfbuzz-ng/src/src/hb-buffer.h;drc=ea6a172f84f2cbcfed803b5ae71064c7afb6b5c2;l=647
       {"hb_buffer_get_glyph_infos", "UNSAFE_HB_BUFFER_GET_GLYPH_INFOS"},
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/harfbuzz-ng/src/src/hb-buffer.h;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b;l=651
