@@ -61,6 +61,17 @@ promise_test(async t => {
                                                  : undefined;
   const win = await spawnWindow(t, { protocol: 'https', hostname: hostname });
   const nextUrl = win.getExecutorURL({ executor: 'counting-executor.py', protocol: 'https', page: 2 });
+  if (swOption === 'race-fetch-handler-modify-url') {
+    // We set:
+    // - For the race network request: 1.5 sec delay (here).
+    // - For the network request from the fetch handler: 0.5 sec delay (in
+    //   `basic-service-worker.js`).
+    // So that:
+    // - The fetch handler wins and the modified request is used for serving.
+    // - The requests return responses after both of the requests reach the
+    //   server and are recorded in the server-side request counts.
+    nextUrl.searchParams.set('delay', '1500');
+  }
 
   const swUrl = new URL('../../resources/basic-service-worker.js?sw=' + originalSwOption, location.href).href;
 
