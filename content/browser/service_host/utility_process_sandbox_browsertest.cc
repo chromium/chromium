@@ -77,14 +77,15 @@ class UtilityProcessSandboxBrowserTest
     done_closure_ =
         base::BindOnce(&UtilityProcessSandboxBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure());
-    UtilityProcessHost* host = new UtilityProcessHost();
-    host->SetSandboxType(GetParam());
-    host->SetName(u"SandboxTestProcess");
-    host->SetMetricsName(kTestProcessName);
-    EXPECT_TRUE(host->Start());
+    EXPECT_TRUE(UtilityProcessHost::Start(
+        UtilityProcessHost::Options()
+            .WithSandboxType(GetParam())
+            .WithName(u"SandboxTestProcess")
+            .WithMetricsName(kTestProcessName)
+            .WithBoundReceiverOnChildProcessForTesting(
+                service_.BindNewPipeAndPassReceiver())
+            .Pass()));
 
-    host->GetChildProcess()->BindReceiver(
-        service_.BindNewPipeAndPassReceiver());
     service_->GetSandboxStatus(
         base::BindOnce(&UtilityProcessSandboxBrowserTest::OnGotSandboxStatus,
                        base::Unretained(this)));

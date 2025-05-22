@@ -43,34 +43,32 @@ class MojoSandboxTest : public ContentBrowserTest {
   MojoSandboxTest(const MojoSandboxTest&) = delete;
   MojoSandboxTest& operator=(const MojoSandboxTest&) = delete;
 
-  using BeforeStartCallback = base::OnceCallback<void(UtilityProcessHost*)>;
+  using BeforeStartCallback = base::OnceCallback<void(UtilityProcessHost&)>;
 
-  void StartProcess(BeforeStartCallback callback = BeforeStartCallback()) {
-    host_ = std::make_unique<UtilityProcessHost>();
-    host_->SetMetricsName("mojo_sandbox_test_process");
-    if (callback)
-      std::move(callback).Run(host_.get());
-    ASSERT_TRUE(host_->Start());
-  }
+  mojo::Remote<mojom::TestService> StartProcessAndBindTestInterface(
+      bool unsandboxed = false) {
+    UtilityProcessHost::Options options;
 
-  mojo::Remote<mojom::TestService> BindTestService() {
+    options.WithMetricsName("mojo_sandbox_test_process");
+
+    if (unsandboxed) {
+      options.WithSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
+    }
     mojo::Remote<mojom::TestService> test_service;
-    host_->GetChildProcess()->BindServiceInterface(
+    options.WithBoundServiceInterfaceOnChildProcess(
         test_service.BindNewPipeAndPassReceiver());
+
+    UtilityProcessHost::Start(std::move(options));
+
     return test_service;
   }
-
-  void TearDownOnMainThread() override { host_.reset(); }
-
- protected:
-  std::unique_ptr<UtilityProcessHost> host_;
 };
 
 // Ensures that a read-only shared memory region can be created within a
 // sandboxed process.
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessReadOnlySharedMemoryRegion) {
-  StartProcess();
-  mojo::Remote<mojom::TestService> test_service = BindTestService();
+  mojo::Remote<mojom::TestService> test_service =
+      StartProcessAndBindTestInterface();
 
   bool got_response = false;
   base::RunLoop run_loop;
@@ -93,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessReadOnlySharedMemoryRegion) {
 // Ensures that a writable shared memory region can be created within a
 // sandboxed process.
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessWritableSharedMemoryRegion) {
-  StartProcess();
-  mojo::Remote<mojom::TestService> test_service = BindTestService();
+  mojo::Remote<mojom::TestService> test_service =
+      StartProcessAndBindTestInterface();
 
   bool got_response = false;
   base::RunLoop run_loop;
@@ -117,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessWritableSharedMemoryRegion) {
 // Ensures that an unsafe shared memory region can be created within a
 // sandboxed process.
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessUnsafeSharedMemoryRegion) {
-  StartProcess();
-  mojo::Remote<mojom::TestService> test_service = BindTestService();
+  mojo::Remote<mojom::TestService> test_service =
+      StartProcessAndBindTestInterface();
 
   bool got_response = false;
   base::RunLoop run_loop;
@@ -140,8 +138,8 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, SubprocessUnsafeSharedMemoryRegion) {
 
 // Test for sandbox::policy::IsProcessSandboxed().
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
-  StartProcess();
-  mojo::Remote<mojom::TestService> test_service = BindTestService();
+  mojo::Remote<mojom::TestService> test_service =
+      StartProcessAndBindTestInterface();
 
   // The browser should not be considered sandboxed.
   EXPECT_FALSE(sandbox::policy::Sandbox::IsProcessSandboxed());
@@ -167,10 +165,8 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
 #define MAYBE_NotIsProcessSandboxed NotIsProcessSandboxed
 #endif
 IN_PROC_BROWSER_TEST_F(MojoSandboxTest, MAYBE_NotIsProcessSandboxed) {
-  StartProcess(base::BindOnce([](UtilityProcessHost* host) {
-    host->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
-  }));
-  mojo::Remote<mojom::TestService> test_service = BindTestService();
+  mojo::Remote<mojom::TestService> test_service =
+      StartProcessAndBindTestInterface(/*unsandboxed=*/true);
 
   // The browser should not be considered sandboxed.
   EXPECT_FALSE(sandbox::policy::Sandbox::IsProcessSandboxed());

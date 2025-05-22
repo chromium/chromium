@@ -147,13 +147,13 @@ class PowerMonitorTest : public ContentBrowserTest {
       base::OnceClosure utility_bound_closure) {
     utility_bound_closure_ = std::move(utility_bound_closure);
 
-    UtilityProcessHost* host = new UtilityProcessHost();
-    host->SetMetricsName("test_process");
-    host->SetName(u"TestProcess");
-    EXPECT_TRUE(host->Start());
-
-    host->GetChildProcess()->BindReceiver(
-        power_monitor_test->BindNewPipeAndPassReceiver());
+    UtilityProcessHost::Start(
+        UtilityProcessHost::Options()
+            .WithMetricsName("test_process")
+            .WithName(u"TestProcess")
+            .WithBoundReceiverOnChildProcessForTesting(
+                power_monitor_test->BindNewPipeAndPassReceiver())
+            .Pass());
   }
 
   void set_renderer_bound_closure(base::OnceClosure closure) {

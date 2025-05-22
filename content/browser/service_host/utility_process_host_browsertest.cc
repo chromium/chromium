@@ -79,25 +79,22 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     BrowserChildProcessObserver::Add(this);
-
-    host_ = new UtilityProcessHost();  // Owned by a global list.
-    host_->SetName(u"TestProcess");
-    host_->SetMetricsName(kTestProcessName);
   }
 
-  void TearDownOnMainThread() override {
-    // `host_` is about to be deleted during BrowserMainRunnerImpl::Shutdown().
-    host_ = nullptr;
+  UtilityProcessHost::Options DefaultOptions() {
+    return UtilityProcessHost::Options()
+        .WithName(u"TestProcess")
+        .WithMetricsName(kTestProcessName)
+        .Pass();
   }
 
-  void SetExpectFailLaunch() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  void AddFailedLaunchOptions(UtilityProcessHost::Options& options) {
     expect_failed_launch_ = true;
 
 #if BUILDFLAG(IS_WIN)
     // The Windows sandbox does not like the child process being a different
     // process, so launch unsandboxed for the purpose of this test.
-    host_->SetSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
+    options.WithSandboxType(sandbox::mojom::Sandbox::kNoSandbox);
 #endif
     // Simulate a catastrophic launch failure for all child processes by
     // making the path to the process non-existent.
@@ -106,10 +103,9 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
         base::FilePath(FILE_PATH_LITERAL("non_existent_path")));
   }
 
-  void SetElevated() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  void AddElevatedOptions(UtilityProcessHost::Options& options) {
 #if BUILDFLAG(IS_WIN)
-    host_->SetSandboxType(
+    options.WithSandboxType(
         sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
 #else
     NOTREACHED();
@@ -118,17 +114,18 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 
   // After `service_` is bound, `run_test` is invoked, and then the RunLoop will
   // run.
-  void RunUtilityProcess(base::OnceClosure run_test) {
+  void RunUtilityProcess(UtilityProcessHost::Options options,
+                         base::OnceClosure run_test) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     base::RunLoop run_loop;
     done_closure_ =
         base::BindOnce(&UtilityProcessHostBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure());
 
-    EXPECT_TRUE(host_->Start());
-
-    host_->GetChildProcess()->BindServiceInterface(
+    options.WithBoundServiceInterfaceOnChildProcess(
         service_.BindNewPipeAndPassReceiver());
+
+    UtilityProcessHost::Start(std::move(options));
 
     std::move(run_test).Run();
     run_loop.Run();
@@ -207,7 +204,6 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
 
-  raw_ptr<UtilityProcessHost, AcrossTasksDanglingUntriaged> host_;
   mojo::Remote<mojom::TestService> service_;
   base::OnceClosure done_closure_;
   bool expect_crashed_ = false;
@@ -285,6 +281,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
   RunUtilityProcess(
+      DefaultOptions(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
                      base::Unretained(this)));
 }
@@ -301,18 +298,20 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
 #endif
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                        MAYBE_FileDescriptorStore) {
+  UtilityProcessHost::Options options = DefaultOptions();
   // Tests whether base::FileDescriptorStore works in content by passing it a
   // file descriptor for a pipe on launch. This test ensures the process is
   // launched without a zygote.
 #if BUILDFLAG(USE_ZYGOTE)
-  host_->SetZygoteForTesting(nullptr);
+  options.WithZygoteForTesting(nullptr);
 #endif
 
   base::ScopedFD read_fd;
   base::ScopedFD write_fd;
   ASSERT_TRUE(base::CreatePipe(&read_fd, &write_fd));
-  host_->AddFileToPreload(mojom::kTestPipeKey, std::move(write_fd));
   RunUtilityProcess(
+      options.WithFileToPreload(mojom::kTestPipeKey, std::move(write_fd))
+          .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunFileDescriptorStoreTest,
                      base::Unretained(this), std::move(read_fd)));
 }
@@ -324,12 +323,13 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
   // Tests whether base::FileDescriptorStore works in content by passing it a
   // file descriptor for a pipe on launch. This test ensures the process is
   // launched with the unsandboxed zygote.
-  host_->SetZygoteForTesting(GetUnsandboxedZygote());
-
   base::ScopedFD read_fd, write_fd;
   ASSERT_TRUE(base::CreatePipe(&read_fd, &write_fd));
-  host_->AddFileToPreload(mojom::kTestPipeKey, std::move(write_fd));
   RunUtilityProcess(
+      DefaultOptions()
+          .WithZygoteForTesting(GetUnsandboxedZygote())
+          .WithFileToPreload(mojom::kTestPipeKey, std::move(write_fd))
+          .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunFileDescriptorStoreTest,
                      base::Unretained(this), std::move(read_fd)));
 }
@@ -339,12 +339,13 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
   // Tests whether base::FileDescriptorStore works in content by passing it a
   // file descriptor for a pipe on launch. This test ensures the process is
   // launched with the generic zygote.
-  host_->SetZygoteForTesting(GetGenericZygote());
-
   base::ScopedFD read_fd, write_fd;
   ASSERT_TRUE(base::CreatePipe(&read_fd, &write_fd));
-  host_->AddFileToPreload(mojom::kTestPipeKey, std::move(write_fd));
   RunUtilityProcess(
+      DefaultOptions()
+          .WithZygoteForTesting(GetGenericZygote())
+          .WithFileToPreload(mojom::kTestPipeKey, std::move(write_fd))
+          .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunFileDescriptorStoreTest,
                      base::Unretained(this), std::move(read_fd)));
 }
@@ -363,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                        MAYBE_LaunchProcessAndCrash) {
   RunUtilityProcess(
+      DefaultOptions(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunCrashImmediatelyTest,
                      base::Unretained(this)));
 }
@@ -376,10 +378,12 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 // See also ServiceProcessLauncherTest.FailToLaunchProcess.
 #if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, FailToLaunchProcess) {
-  SetExpectFailLaunch();
+  UtilityProcessHost::Options options = DefaultOptions();
+  AddFailedLaunchOptions(options);
   // If the ping-pong test completes, the test will fail because that means the
   // process did not fail to launch.
   RunUtilityProcess(
+      std::move(options),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
                      base::Unretained(this)));
 }
@@ -387,8 +391,11 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, FailToLaunchProcess) {
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
-  SetElevated();
   RunUtilityProcess(
+      DefaultOptions()
+          .WithSandboxType(
+              sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges)
+          .Pass(),
       mojo::core::IsMojoIpczEnabled()
           ? base::BindOnce(
                 &UtilityProcessHostBrowserTest::RunSharedMemoryHandleTest,
@@ -400,8 +407,11 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
 // Disabled because currently this causes a WER dialog to appear.
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                        DISABLED_LaunchElevatedProcessAndCrash) {
-  SetElevated();
   RunUtilityProcess(
+      DefaultOptions()
+          .WithSandboxType(
+              sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges)
+          .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunCrashImmediatelyTest,
                      base::Unretained(this)));
 }
@@ -429,8 +439,10 @@ class NetworkServiceProcessIdentityTest : public UtilityProcessHostBrowserTest {
 IN_PROC_BROWSER_TEST_F(NetworkServiceProcessIdentityTest, LaunchService) {
   // The process requirement is applied to the network service based on its
   // sandbox type.
-  host_->SetSandboxType(sandbox::mojom::Sandbox::kNetwork);
   RunUtilityProcess(
+      DefaultOptions()
+          .WithSandboxType(sandbox::mojom::Sandbox::kNetwork)
+          .Pass(),
       base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
                      base::Unretained(this)));
 }

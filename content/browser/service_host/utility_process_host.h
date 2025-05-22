@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/environment.h"
-#include "base/memory/weak_ptr.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -43,24 +42,14 @@ class GpuClient;
 namespace content {
 class BrowserChildProcessHostImpl;
 class InProcessChildThreadParams;
-struct ChildProcessData;
 
 typedef base::Thread* (*UtilityMainThreadFactoryFunction)(
     const InProcessChildThreadParams&);
 
-// This class acts as the browser-side host to a utility child process.  A
-// utility process is a short-lived process that is created to run a specific
-// task.  This class lives solely on the UI thread.
-// If you need a single method call in the process, use StartFooBar(p).
-// If you need multiple batches of work to be done in the process, use
-// StartBatchMode(), then multiple calls to StartFooBar(p), then finish with
-// EndBatchMode().
-// If you need to bind Mojo interfaces, use Start() to start the child
-// process and then call BindInterface().
-//
-// Note: If your class keeps a ptr to an object of this type, grab a weak ptr to
-// avoid a use after free since this object is deleted synchronously but the
-// client notification is asynchronous.  See http://crbug.com/108871.
+// This class acts as the browser-side host to a utility child process hosting a
+// mojo service. This class lives solely on the UI thread. If you need to bind
+// a Mojo interface, specify it via `WithBoundServiceInterfaceOnChildProcess` on
+// the `Options` passed in.
 class CONTENT_EXPORT UtilityProcessHost
     : public BrowserChildProcessHostDelegate {
  public:
@@ -78,71 +67,136 @@ class CONTENT_EXPORT UtilityProcessHost
     virtual void OnProcessCrashed() {}
   };
 
-  // This class is self-owned. It must be instantiated using new, and shouldn't
-  // be deleted manually.
-  // TODO(crbug.com/40254698): Make it clearer the caller of the
-  // constructor do not own memory. A static method to create them + private
-  // constructor could be better.
-  UtilityProcessHost();
-  explicit UtilityProcessHost(std::unique_ptr<Client> client);
+  struct CONTENT_EXPORT Options {
+    Options();
+    ~Options();
+
+    Options(const Options&) = delete;
+    Options& operator=(const Options&) = delete;
+
+    Options(Options&&);
+    Options& operator=(Options&&);
+
+    // Makes the process run with a specific sandbox type, or unsandboxed if
+    // Sandbox::kNoSandbox is specified.
+    Options& WithSandboxType(sandbox::mojom::Sandbox sandbox_type);
+
+    // Sets the name of the process to appear in the task manager.
+    Options& WithName(const std::u16string& name);
+
+    // Sets the name used for metrics reporting. This should not be a localized
+    // name. This is recorded to metrics, so update UtilityProcessNameHash enum
+    // in enums.xml if new values are passed here.
+    Options& WithMetricsName(const std::string& metrics_name);
+
+    Options& WithChildFlags(int flags);
+
+    // Provides extra switches to append to the process's command line.
+    Options& WithExtraCommandLineSwitches(std::vector<std::string> switches);
+
+#if BUILDFLAG(IS_WIN)
+    // Specifies libraries to preload before the sandbox is locked down. Paths
+    // should be absolute.
+    Options& WithPreloadLibraries(const std::vector<base::FilePath>& preloads);
+#endif  // BUILDFLAG(IS_WIN)
+
+    // Allows the child process to bind viz.mojom.Gpu.
+    Options& WithGpuClientAllowed();
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+    // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key|
+    // -> |file| in the new process's base::FileDescriptorStore.
+    Options& WithFileToPreload(
+        std::string key,
+        std::variant<base::FilePath, base::ScopedFD> file);
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+    Options& WithEnvironment(const base::EnvironmentMap& env);
+#endif
+
+#if BUILDFLAG(USE_ZYGOTE)
+    Options& WithZygoteForTesting(ZygoteCommunication* handle);
+#endif  // BUILDFLAG(USE_ZYGOTE)
+
+    // Requests that the process bind a receiving pipe targeting the interface
+    // named by `receiver`. Calls to this method generally end up in
+    // `ChildThreadImpl::OnBindReceiver()` and the option is used for testing
+    // only.
+    Options& WithBoundReceiverOnChildProcessForTesting(
+        mojo::GenericPendingReceiver receiver);
+
+    // Requests that the utility process bind a receiving pipe targeting the
+    // service interface named by `receiver`.
+    Options& WithBoundServiceInterfaceOnChildProcess(
+        mojo::GenericPendingReceiver receiver);
+
+    // Passes the contents of this Options object to a newly returned Options
+    // value. This can be called when moving an in-line built Options object
+    // directly into a call to `Start`.
+    Options Pass();
+
+   private:
+    friend class UtilityProcessHost;
+
+    sandbox::mojom::Sandbox sandbox_type_;
+
+    // Map of environment variables to values.
+    base::EnvironmentMap env_;
+
+    // The non-localized name used for metrics reporting.
+    std::string metrics_name_;
+
+    // ChildProcessHost flags to use when starting the child process.
+    int child_flags_;
+
+    // Extra command line switches to append.
+    std::vector<std::string> extra_switches_;
+
+#if BUILDFLAG(IS_WIN)
+    // Libraries to load before sandbox lockdown. Only used on Windows.
+    std::vector<base::FilePath> preload_libraries_;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(USE_ZYGOTE)
+    std::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
+#endif  // BUILDFLAG(USE_ZYGOTE)
+
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+    // Whether or not to bind viz::mojom::Gpu to the utility process.
+    bool allowed_gpu_;
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
+
+    // A mojo receiver to bind once the process starts.
+    std::optional<mojo::GenericPendingReceiver> receiver_to_bind_;
+
+    // A mojo service interface to bind once the process starts.
+    std::optional<mojo::GenericPendingReceiver> service_interface_to_bind_;
+
+    // Extra files and file descriptors to preload in the new process.
+    std::unique_ptr<ChildProcessLauncherFileData> file_data_;
+
+    // The process name used to identify the process in task manager.
+    std::u16string name_;
+  };
+
+  // Creates and starts a new UtilityProcessHost with the specified `Options`.
+  // Pass a `client` if delegate callbacks are needed.
+  static bool Start(Options options, std::unique_ptr<Client> client = nullptr);
 
   UtilityProcessHost(const UtilityProcessHost&) = delete;
   UtilityProcessHost& operator=(const UtilityProcessHost&) = delete;
 
+ private:
+  UtilityProcessHost(Options options, std::unique_ptr<Client> client);
+
   ~UtilityProcessHost() override;
-
-  base::WeakPtr<UtilityProcessHost> AsWeakPtr();
-
-  // Makes the process run with a specific sandbox type, or unsandboxed if
-  // Sandbox::kNoSandbox is specified.
-  void SetSandboxType(sandbox::mojom::Sandbox sandbox_type);
-
-  // Returns information about the utility child process.
-  const ChildProcessData& GetData();
-#if BUILDFLAG(IS_POSIX)
-  void SetEnv(const base::EnvironmentMap& env);
-#endif
-
-  // Starts the utility process.
-  bool Start();
-
-  // Sets the name of the process to appear in the task manager.
-  void SetName(const std::u16string& name);
-
-  // Sets the name used for metrics reporting. This should not be a localized
-  // name. This is recorded to metrics, so update UtilityProcessNameHash enum in
-  // enums.xml if new values are passed here.
-  void SetMetricsName(const std::string& metrics_name);
-
-  void set_child_flags(int flags) { child_flags_ = flags; }
-
-  // Provides extra switches to append to the process's command line.
-  void SetExtraCommandLineSwitches(std::vector<std::string> switches);
-
-  // Allows the child process to bind viz.mojom.Gpu.
-  void SetAllowGpuClient();
-
-#if BUILDFLAG(IS_WIN)
-  // Specifies libraries to preload before the sandbox is locked down. Paths
-  // should be absolute.
-  void SetPreloadLibraries(const std::vector<base::FilePath>& preloads);
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key| ->
-  // |file| in the new process's base::FileDescriptorStore.
-  void AddFileToPreload(std::string key,
-                        std::variant<base::FilePath, base::ScopedFD> file);
-#endif
-
-#if BUILDFLAG(USE_ZYGOTE)
-  void SetZygoteForTesting(ZygoteCommunication* handle);
-#endif  // BUILDFLAG(USE_ZYGOTE)
 
   // Returns a control interface for the running child process.
   mojom::ChildProcess* GetChildProcess();
 
- private:
+  void MaybeBindMojoInterfaces();
+
   // Starts the child process if needed, returns true on success.
   bool StartProcess();
 
@@ -153,44 +207,13 @@ class CONTENT_EXPORT UtilityProcessHost
   std::optional<std::string> GetServiceName() override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
-  // Launch the child process with switches that will setup this sandbox type.
-  sandbox::mojom::Sandbox sandbox_type_;
-
-  // ChildProcessHost flags to use when starting the child process.
-  int child_flags_;
-
-  // Map of environment variables to values.
-  base::EnvironmentMap env_;
-
-  // True if StartProcess() has been called.
-  bool started_;
-
-  // The process name used to identify the process in task manager.
-  std::u16string name_;
-
-  // The non-localized name used for metrics reporting.
-  std::string metrics_name_;
+  Options options_;
 
   // Child process host implementation.
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
 
   // Used in single-process mode instead of |process_|.
   std::unique_ptr<base::Thread> in_process_thread_;
-
-  // Extra command line switches to append.
-  std::vector<std::string> extra_switches_;
-
-#if BUILDFLAG(IS_WIN)
-  // Libraries to load before sandbox lockdown. Only used on Windows.
-  std::vector<base::FilePath> preload_libraries_;
-#endif  // BUILDFLAG(IS_WIN)
-
-  // Extra files and file descriptors to preload in the new process.
-  std::unique_ptr<ChildProcessLauncherFileData> file_data_;
-
-#if BUILDFLAG(USE_ZYGOTE)
-  std::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
-#endif  // BUILDFLAG(USE_ZYGOTE)
 
   // Indicates whether the process has been successfully launched yet, or if
   // launch failed.
@@ -202,14 +225,10 @@ class CONTENT_EXPORT UtilityProcessHost
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
 
 #if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
-  bool allowed_gpu_;
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
   std::unique_ptr<Client> client_;
-
-  // Used to vend weak pointers, and should always be declared last.
-  base::WeakPtrFactory<UtilityProcessHost> weak_ptr_factory_{this};
 };
 
 }  // namespace content

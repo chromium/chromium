@@ -39,35 +39,42 @@ bool ShouldEnableSandbox(sandbox::mojom::Sandbox sandbox) {
 // TODO(crbug.com/40633267): Once UtilityProcessHost is used only by service
 // processes, its logic can be inlined here.
 void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
-                          ServiceProcessHost::Options options,
+                          ServiceProcessHost::Options service_options,
                           sandbox::mojom::Sandbox sandbox) {
-  UtilityProcessHost* host =
-      new UtilityProcessHost(std::make_unique<UtilityProcessClient>(
-          *receiver.interface_name(), options.site,
-          std::move(options.process_callback)));
-  host->SetName(!options.display_name.empty()
-                    ? options.display_name
-                    : base::UTF8ToUTF16(*receiver.interface_name()));
-  host->SetMetricsName(*receiver.interface_name());
   if (!ShouldEnableSandbox(sandbox)) {
     sandbox = sandbox::mojom::Sandbox::kNoSandbox;
   }
-  host->SetSandboxType(sandbox);
-  host->SetExtraCommandLineSwitches(std::move(options.extra_switches));
-  if (options.child_flags) {
-    host->set_child_flags(*options.child_flags);
+  UtilityProcessHost::Options utility_options;
+
+  const auto service_interface_name = receiver.interface_name().value();
+
+  utility_options
+      .WithName(!service_options.display_name.empty()
+                    ? service_options.display_name
+                    : base::UTF8ToUTF16(service_interface_name))
+      .WithMetricsName(service_interface_name)
+      .WithSandboxType(sandbox)
+      .WithExtraCommandLineSwitches(std::move(service_options.extra_switches));
+
+  if (service_options.child_flags) {
+    utility_options.WithChildFlags(*service_options.child_flags);
   }
 #if BUILDFLAG(IS_WIN)
-  if (!options.preload_libraries.empty()) {
-    host->SetPreloadLibraries(options.preload_libraries);
+  if (!service_options.preload_libraries.empty()) {
+    utility_options.WithPreloadLibraries(service_options.preload_libraries);
   }
 #endif  // BUILDFLAG(IS_WIN)
-  if (options.allow_gpu_client.has_value() &&
-      options.allow_gpu_client.value()) {
-    host->SetAllowGpuClient();
+  if (service_options.allow_gpu_client.has_value() &&
+      service_options.allow_gpu_client.value()) {
+    utility_options.WithGpuClientAllowed();
   }
-  host->Start();
-  host->GetChildProcess()->BindServiceInterface(std::move(receiver));
+
+  utility_options.WithBoundServiceInterfaceOnChildProcess(std::move(receiver));
+
+  UtilityProcessHost::Start(std::move(utility_options),
+                            std::make_unique<UtilityProcessClient>(
+                                service_interface_name, service_options.site,
+                                std::move(service_options.process_callback)));
 }
 
 }  // namespace
