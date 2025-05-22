@@ -359,7 +359,7 @@
 
       <!-- Tab Grid Dialog strings -->
       <message name="IDS_REMOVE_TAB_FROM_GROUP" desc="Content description for an action which removes a tab from its group.">
-        Remove from group
+        Remove tab from group
       </message>
       <message name="IDS_TAB_GRID_DIALOG_TOOLBAR_EDIT_GROUP_NAME" desc="This text shows in the TabGridDialog toolbar menu as one menu item. When user selects this item, the group name field will be focused and the keyboard will show for users to edit the group name.">
         Edit group name
@@ -990,7 +990,7 @@
 
       <!-- Tab context menu (for individual tabs) -->
       <message name="IDS_ADD_TAB_TO_GROUP" desc="Content description for an action which adds a tab to a group.">
-        Add to group
+        Add tab to group
       </message>
       <message name="IDS_SELECT_TAB" desc="Content description for an action which selects a singular tab.">
         Select tab
@@ -1000,8 +1000,8 @@
       </message>
       <message name="IDS_MOVE_TAB_TO_ANOTHER_WINDOW" desc="Content description for an action which moves a tab to another window.">
         {WINDOW_COUNT, plural,
-          =1 {Move to new window}
-          other {Move to other window}}
+          =1 {Move tab to new window}
+          other {Move tab to another window}}
       </message>
       <message name="IDS_MOVE_TAB_TO_GROUP" desc="Content description for an action which moves a tab to another group.">
         Move to group

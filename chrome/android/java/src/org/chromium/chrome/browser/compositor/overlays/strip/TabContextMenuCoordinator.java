@@ -225,7 +225,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
 
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.close_tab, R.id.close_tab, isIncognito, /* enabled= */ true));
+                        R.string.close, R.id.close_tab, isIncognito, /* enabled= */ true));
     }
 
     @Override
