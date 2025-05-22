@@ -4713,10 +4713,6 @@
       status: "stable",
     },
     {
-      name: "SvgFilterUserSpaceViewportForNonSvg",
-      status: "stable",
-    },
-    {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
       status: "test",
     },

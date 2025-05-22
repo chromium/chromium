@@ -131,10 +131,7 @@ FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
                                          const cc::PaintFlags* fill_flags,
                                          const cc::PaintFlags* stroke_flags)
     : reference_box_(reference_box),
-      viewport_(
-          RuntimeEnabledFeatures::SvgFilterUserSpaceViewportForNonSvgEnabled()
-              ? viewport
-              : std::nullopt),
+      viewport_(viewport),
       zoom_(zoom),
       shorthand_scale_(1),
       current_color_(current_color),
@@ -537,12 +534,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
   // primitives since the behavior in these two cases (no primitives, empty
   // region) should match.
   if (filter_region.IsEmpty()) {
-    // TODO(fs): We rely on the presence of a node map here to opt-in to the
-    // check for an empty filter region. The reason for this is that we lack a
-    // viewport to resolve against for HTML content. This is crbug.com/512453.
-    if (viewport_ || node_map) {
-      return result;
-    }
+    return result;
   }
 
   if (!previous_effect)
