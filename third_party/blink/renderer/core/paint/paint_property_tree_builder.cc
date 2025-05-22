@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -269,6 +270,8 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateViewTransitionSubframeRootEffect();
   ALWAYS_INLINE void UpdateViewTransitionEffect();
   ALWAYS_INLINE void UpdateViewTransitionClip();
+  ALWAYS_INLINE const EffectPaintPropertyNodeOrAlias*
+  ParentForViewTransitionPseudoEffect() const;
   ALWAYS_INLINE void UpdateEffect();
   ALWAYS_INLINE void UpdateElementCaptureEffect();
   ALWAYS_INLINE void UpdateFilter();
@@ -1693,6 +1696,47 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
   return true;
 }
 
+const EffectPaintPropertyNodeOrAlias*
+FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
+  PseudoElement* pseudo = To<PseudoElement>(object_.GetNode());
+  DCHECK(pseudo);
+
+  Element& scope = pseudo->UltimateOriginatingElement();
+  if (scope.IsDocumentElement()) {
+    // The transition pseudo element doesn't draw into the LayoutView's
+    // effect, but rather as its sibling. So this re-parents the effect to
+    // whatever the grand-parent effect was. Note that it doesn't matter
+    // whether the grand-parent is the root stacking context or something
+    // intermediate, as long as it is a sibling of the LayoutView context.
+    // This makes it possible to capture the output of the LayoutView context
+    // into one of the transition contexts. We also want that capture to be
+    // without any additional effects, such as overscroll elasticity effects.
+    if (IsInLocalSubframe(object_)) {
+      return object_.GetDocument()
+          .GetLayoutView()
+          ->FirstFragment()
+          .PaintProperties()
+          ->ViewTransitionSubframeRootEffect();
+    } else {
+      return &EffectPaintPropertyNode::Root();
+    }
+  }
+
+  DCHECK(!scope.IsDocumentElement());
+  auto* scope_properties =
+      scope.GetLayoutObject()->FirstFragment().PaintProperties();
+  if (!scope_properties) {
+    return context_.current_effect;
+  }
+
+  // Make the effect node for the ::view-transition pseudo element a sibling of
+  // the ViewTransitionEffect for the scope element. The ViewTransitionEffect is
+  // guaranteed to exist (see ViewTransition::NeedsViewTransitionEffectNode).
+  auto* scope_vt_effect = scope_properties->ViewTransitionEffect();
+  CHECK(scope_vt_effect && scope_vt_effect->Parent());
+  return scope_vt_effect->Parent();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   DCHECK(properties_);
   // Since we're doing a full update, clear list of objects waiting for a
@@ -1790,26 +1834,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           style.IsRunningBackdropFilterAnimationOnCompositor();
 
       const auto* parent_effect = context_.current_effect;
-      // The transition pseudo element doesn't draw into the LayoutView's
-      // effect, but rather as its sibling. So this re-parents the effect to
-      // whatever the grand-parent effect was. Note that it doesn't matter
-      // whether the grand-parent is the root stacking context or something
-      // intermediate, as long as it is a sibling of the LayoutView context.
-      // This makes it possible to capture the output of the LayoutView context
-      // into one of the transition contexts. We also want that capture to be
-      // without any additional effects, such as overscroll elasticity effects.
       if (object_.GetNode() &&
           object_.GetNode()->GetPseudoId() == kPseudoIdViewTransition) {
-        if (IsInLocalSubframe(object_)) {
-          parent_effect = object_.GetDocument()
-                              .GetLayoutView()
-                              ->FirstFragment()
-                              .PaintProperties()
-                              ->ViewTransitionSubframeRootEffect();
-        } else {
-          parent_effect = &EffectPaintPropertyNode::Root();
-        }
-        DCHECK(parent_effect);
+        parent_effect = ParentForViewTransitionPseudoEffect();
       }
       DCHECK(parent_effect);
 

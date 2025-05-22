@@ -762,12 +762,17 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
 
 bool ViewTransition::NeedsViewTransitionEffectNode(
     const LayoutObject& object) const {
-  // Layout view always needs an effect node, even if root itself is not
-  // transitioning. The reason for this is that we want the root to have an
-  // effect which can be hoisted up be the sibling of the layout view. This
-  // simplifies calling code to have a consistent stacking context structure.
-  if (IsA<LayoutView>(object))
+  // The scope always needs an effect node, even if the scope element is not a
+  // participant in the transition. The reason for this is so that we can place
+  // the effect node for the ::view-transition pseudo element as a sibling of
+  // the scope's effect. For a document transition, the scope's effect node is
+  // associated with the LayoutView rather than the document element.
+  if (IsA<LayoutView>(object)) {
+    return has_document_scope_ && !IsTerminalState(state_);
+  }
+  if (!has_document_scope_ && object == scope_->GetLayoutObject()) {
     return !IsTerminalState(state_);
+  }
 
   // Otherwise check if the layout object has a transition element.
   auto* element = DynamicTo<Element>(object.GetNode());
