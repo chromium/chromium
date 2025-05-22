@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
-#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel_processor.h"
+#include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
 
 namespace blink {
 
@@ -43,7 +43,7 @@ class BiquadFilterHandler final : public AudioHandler {
 
   // Returns the number of channels for both the input and the output.
   unsigned NumberOfChannels();
-  AudioDSPKernelProcessor* Processor() { return processor_.get(); }
+  BiquadProcessor* Processor() { return processor_.get(); }
 
  private:
   BiquadFilterHandler(AudioNode&,
@@ -73,7 +73,7 @@ class BiquadFilterHandler final : public AudioHandler {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::unique_ptr<AudioDSPKernelProcessor> processor_;
+  std::unique_ptr<BiquadProcessor> processor_;
 
   base::WeakPtrFactory<BiquadFilterHandler> weak_ptr_factory_{this};
 };

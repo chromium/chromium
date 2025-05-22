@@ -28,28 +28,33 @@
 
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/biquad_processor.h"
-#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
 #include "third_party/blink/renderer/platform/audio/biquad.h"
 
 namespace blink {
 
-class BiquadProcessor;
+// BiquadDSPKernel is is responsible for filtering one channel of a
+// BiquadProcessor using a Biquad object.
 
-// BiquadDSPKernel is an AudioDSPKernel and is responsible for filtering one
-// channel of a BiquadProcessor using a Biquad object.
-
-class BiquadDSPKernel final : public AudioDSPKernel {
+class BiquadDSPKernel final {
  public:
   explicit BiquadDSPKernel(BiquadProcessor* processor)
-      : AudioDSPKernel(processor),
-        biquad_(processor->RenderQuantumFrames()),
-        tail_time_(std::numeric_limits<double>::infinity()) {}
+      : biquad_(processor->RenderQuantumFrames()),
+        tail_time_(std::numeric_limits<double>::infinity()),
+        kernel_processor_(processor),
+        sample_rate_(processor->SampleRate()),
+        render_quantum_frames_(processor->RenderQuantumFrames()) {}
 
   // AudioDSPKernel
-  void Process(const float* source,
-               float* dest,
-               uint32_t frames_to_process) override;
-  void Reset() override { biquad_.Reset(); }
+  void Process(const float* source, float* dest, uint32_t frames_to_process);
+  void ProcessOnlyAudioParams(uint32_t frames_to_process) {}
+  void Reset() { biquad_.Reset(); }
+
+  float SampleRate() const { return sample_rate_; }
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+  double Nyquist() const { return 0.5 * SampleRate(); }
+
+  BiquadProcessor* Processor() { return kernel_processor_; }
+  const BiquadProcessor* Processor() const { return kernel_processor_; }
 
   // Get the magnitude and phase response of the given BiquadDSPKernel at the
   // given set of frequencies (in Hz). The phase response is in radians.  This
@@ -60,9 +65,9 @@ class BiquadDSPKernel final : public AudioDSPKernel {
                                    float* mag_response,
                                    float* phase_response);
 
-  bool RequiresTailProcessing() const final;
-  double TailTime() const override;
-  double LatencyTime() const override;
+  bool RequiresTailProcessing() const;
+  double TailTime() const;
+  double LatencyTime() const;
   // Update the biquad coefficients with the given parameters
   void UpdateCoefficients(int number_of_frames,
                           const float* frequency,
@@ -93,6 +98,12 @@ class BiquadDSPKernel final : public AudioDSPKernel {
 
   // The current tail time for biquad filter.
   double tail_time_;
+
+  // This raw pointer is safe because the AudioDSPKernelProcessor object is
+  // guaranteed to be kept alive while the AudioDSPKernel object is alive.
+  raw_ptr<BiquadProcessor> kernel_processor_;
+  float sample_rate_;
+  unsigned render_quantum_frames_;
 };
 
 }  // namespace blink
