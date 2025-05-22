@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,8 @@ class FakeOnTaskNotificationsManagerDelegate
   void ShowToast(ToastData toast_data) override { ++toast_count_; }
   void ShowNotification(
       std::unique_ptr<message_center::Notification> notification) override {
+    CHECK_NE(notification->fullscreen_visibility(),
+             message_center::FullscreenVisibility::NONE);
     ++notification_count_;
   }
   void ClearNotification(const std::string& id) override {

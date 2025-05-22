@@ -250,6 +250,11 @@ void OnTaskNotificationsManager::CreateNotificationInternal(
       /*origin_url=*/GURL(), params.notifier_id,
       message_center::RichNotificationData(),
       /*delegate=*/nullptr, icon, SystemNotificationWarningLevel::NORMAL);
+
+  // Ensure notification is visible over fullscreen windows (for example, locked
+  // quiz).
+  notification->set_fullscreen_visibility(
+      message_center::FullscreenVisibility::OVER_USER);
   delegate_->ShowNotification(std::move(notification));
 }
 
