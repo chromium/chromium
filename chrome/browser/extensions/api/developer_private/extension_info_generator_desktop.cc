@@ -92,24 +92,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
   // can be removed.
   info.disable_reasons.parent_disabled_permissions = false;
 
-  // Location.
-  bool updates_from_web_store =
-      extension_management->UpdatesFromWebstore(extension);
-  if (extension.location() == mojom::ManifestLocation::kInternal &&
-      updates_from_web_store) {
-    info.location = developer::Location::kFromStore;
-  } else if (Manifest::IsUnpackedLocation(extension.location())) {
-    info.location = developer::Location::kUnpacked;
-  } else if (extension.was_installed_by_default() &&
-             !extension.was_installed_by_oem() && updates_from_web_store) {
-    info.location = developer::Location::kInstalledByDefault;
-  } else if (Manifest::IsExternalLocation(extension.location()) &&
-             updates_from_web_store) {
-    info.location = developer::Location::kThirdParty;
-  } else {
-    info.location = developer::Location::kUnknown;
-  }
-
   ManagementPolicy* management_policy = extension_system_->management_policy();
   info.must_remain_installed =
       management_policy->MustRemainInstalled(&extension, nullptr);

@@ -572,7 +572,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   }
 
   // TODO(crbug.com/419419534): Add back show_safe_browsing_allowlist_warning.
-  // TODO(crbug.com/419419534): Get extension_management here.
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
 
   // TODO(crbug.com/419419534): Add back ControlledInfo.
 
@@ -701,11 +702,22 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   }
 
   // Location.
-  // Set it to kUnknown only if the caller didn't set it.
-  if (info.location == developer::Location::kNone) {
+  bool updates_from_web_store =
+      extension_management->UpdatesFromWebstore(extension);
+  if (extension.location() == mojom::ManifestLocation::kInternal &&
+      updates_from_web_store) {
+    info.location = developer::Location::kFromStore;
+  } else if (Manifest::IsUnpackedLocation(extension.location())) {
+    info.location = developer::Location::kUnpacked;
+  } else if (extension.was_installed_by_default() &&
+             !extension.was_installed_by_oem() && updates_from_web_store) {
+    info.location = developer::Location::kInstalledByDefault;
+  } else if (Manifest::IsExternalLocation(extension.location()) &&
+             updates_from_web_store) {
+    info.location = developer::Location::kThirdParty;
+  } else {
     info.location = developer::Location::kUnknown;
   }
-  // TODO(crbug.com/419419534): Add back Location.
 
   // Location text.
   int location_text = -1;
