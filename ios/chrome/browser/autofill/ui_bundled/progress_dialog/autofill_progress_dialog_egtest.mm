@@ -36,13 +36,6 @@ const char kFormCardName[] = "CCName";
 
 }  // namespace
 
-// Matcher for the "Cancel" button.
-id<GREYMatcher> CancelButton() {
-  return grey_allOf(
-      chrome_test_util::CancelButton(),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-}
-
 @interface AutofillProgressDialogDismissEGTest : ChromeTestCase {
   NSString* _enrolledCardNameAndLastFour;
 }
@@ -126,13 +119,18 @@ id<GREYMatcher> CancelButton() {
                                  forRequest:kTriggeringRequestUrl
                               withErrorCode:net::HTTP_OK];
 
-  // Wait for the dialog to disappear after the delay. This delay is the
-  // autodismiss delay (1 second) + extra time to avoid flakiness on the
-  // simulators (2 seconds).
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::StaticTextWithAccessibilityLabelId(
-                          IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE)
-                                                 timeout:base::Seconds(3)];
+  // This delay is the autodismiss delay (1 second) + extra time to avoid
+  // flakiness on the simulators (2 seconds).
+  const base::TimeDelta total_delay_for_dismiss =
+      autofill_ui_constants::kProgressDialogConfirmationDismissDelay +
+      base::Seconds(2);
+
+  // Wait for the dialog to disappear after the delay.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabelId(
+              IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE)
+                                     timeout:total_delay_for_dismiss];
 }
 
 @end

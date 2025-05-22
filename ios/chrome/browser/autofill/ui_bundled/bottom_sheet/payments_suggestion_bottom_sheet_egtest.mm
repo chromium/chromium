@@ -16,6 +16,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
@@ -42,6 +43,11 @@ const char kFormCardName[] = "CCName";
 const char kFormCardNumber[] = "CCNo";
 const char kFormCardExpirationMonth[] = "CCExpiresMonth";
 const char kFormCardExpirationYear[] = "CCExpiresYear";
+NSString* const kTriggeringRequestUrl =
+    @"https://payments.google.com/payments/apis-secure/creditcardservice/"
+    @"getrealpan?s7e_suffix=chromewallet";
+NSString* const kSuccessResponseNoAuthNeeded =
+    @"{ \"pan\": \"5411111111112109\" }";
 
 // Matcher for the credit card suggestion chip.
 id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
@@ -119,6 +125,14 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
                  (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
     config.features_enabled.push_back(kStatelessFormSuggestionController);
+  } else if ([self
+                 isRunningTest:@selector(testFillingFromKeyboardOnAutofocus)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
+  } else if ([self isRunningTest:@selector
+                   (testUpdateBottomSheetOnAddServerCreditCard)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   }
   return config;
 }
@@ -462,6 +476,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
+  [AutofillAppInterface setUpFakeCreditCardServer];
+
   // Add a credit card to the Personal Data Manager.
   id<GREYMatcher> serverCreditCardEntry =
       grey_text([AutofillAppInterface saveMaskedCreditCard]);
@@ -491,9 +507,26 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
-  // Verify the CVC requester is visible.
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Verification")]
-      assertWithMatcher:grey_notNil()];
+  // Wait for the progress dialog to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::StaticTextWithAccessibilityLabelId(
+                          IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE)];
+  // Fake the successful server response that triggers Dismiss.
+  [AutofillAppInterface setPaymentsResponse:kSuccessResponseNoAuthNeeded
+                                 forRequest:kTriggeringRequestUrl
+                              withErrorCode:net::HTTP_OK];
+  // This delay is the autodismiss delay (1 second) + extra time to avoid
+  // flakiness on the simulators (2 seconds).
+  const base::TimeDelta total_delay_for_dismiss =
+      autofill_ui_constants::kProgressDialogConfirmationDismissDelay +
+      base::Seconds(2);
+
+  // Wait for the dialog to disappear after the delay.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabelId(
+              IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE)
+                                     timeout:total_delay_for_dismiss];
 
   GREYAssertNil(
       [MetricsAppInterface
@@ -503,9 +536,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
                              @"Autofill.TouchToFill.CreditCard.SelectedIndex"],
       @"Unexpected histogram error for touch to fill credit card selected "
       @"index");
-
-  // TODO(crbug.com/40577448): Figure out a way to enter CVC and get the
-  // unlocked card result.
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
@@ -797,6 +827,8 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // Clear the credit cards to remove the default local cards that aren't needed
   // for this test case.
   [AutofillAppInterface clearCreditCardStore];
+
+  [AutofillAppInterface setUpFakeCreditCardServer];
 
   // Add the server credit card. Before loading the page so it can be in the
   // autofill suggestion upon autofocusing the credit card field.
