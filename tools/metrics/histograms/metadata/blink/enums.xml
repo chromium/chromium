@@ -7808,6 +7808,7 @@ Called by update_use_counter_css.py.-->
   <int value="855" label="row-rule"/>
   <int value="856" label="text-grow"/>
   <int value="857" label="text-shrink"/>
+  <int value="858" label="rule"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

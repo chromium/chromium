@@ -6,9 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GAP_DECORATION_PROPERTY_UTILS_H_
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
+class CSSPropertyValue;
+class CSSValueList;
 template <typename T>
 class GapDataList;
 class StyleColor;
@@ -36,6 +39,12 @@ class CORE_EXPORT CSSGapDecorationUtils {
       CSSGapDecorationPropertyType type);
   static CSSPropertyID GetShorthandProperty(
       CSSGapDecorationPropertyDirection direction);
+  static void AddProperties(CSSGapDecorationPropertyDirection direction,
+                            const CSSValueList& rule_widths,
+                            const CSSValueList& rule_styles,
+                            const CSSValueList& rule_colors,
+                            bool important,
+                            HeapVector<CSSPropertyValue, 64>& properties);
 };
 
 }  // namespace blink

@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 
+#include "third_party/blink/renderer/core/css/css_property_value.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 
@@ -51,6 +54,41 @@ bool CSSGapDecorationUtils::RuleColorMaybeDependsOnCurrentColor(
             rep->RepeatedValues(),
             [](const StyleColor& v) { return v.DependsOnCurrentColor(); });
       });
+}
+
+void CSSGapDecorationUtils::AddProperties(
+    CSSGapDecorationPropertyDirection direction,
+    const CSSValueList& rule_widths,
+    const CSSValueList& rule_styles,
+    const CSSValueList& rule_colors,
+    bool important,
+    HeapVector<CSSPropertyValue, 64>& properties) {
+  CSSPropertyID rule_shorthand_id;
+  CSSPropertyID rule_width_id;
+  CSSPropertyID rule_style_id;
+  CSSPropertyID rule_color_id;
+
+  if (direction == CSSGapDecorationPropertyDirection::kColumn) {
+    rule_shorthand_id = CSSPropertyID::kColumnRule;
+    rule_width_id = CSSPropertyID::kColumnRuleWidth;
+    rule_style_id = CSSPropertyID::kColumnRuleStyle;
+    rule_color_id = CSSPropertyID::kColumnRuleColor;
+  } else {
+    rule_shorthand_id = CSSPropertyID::kRowRule;
+    rule_width_id = CSSPropertyID::kRowRuleWidth;
+    rule_style_id = CSSPropertyID::kRowRuleStyle;
+    rule_color_id = CSSPropertyID::kRowRuleColor;
+  }
+
+  css_parsing_utils::AddProperty(
+      rule_width_id, rule_shorthand_id, rule_widths, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      rule_style_id, rule_shorthand_id, rule_styles, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      rule_color_id, rule_shorthand_id, rule_colors, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 }
 
 }  // namespace blink

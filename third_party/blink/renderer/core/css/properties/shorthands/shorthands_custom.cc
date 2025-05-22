@@ -1196,9 +1196,32 @@ bool ColumnRule::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-      CSSGapDecorationPropertyDirection::kColumn, important, context, stream,
-      properties);
+  DCHECK_EQ(columnRuleShorthand().length(), 3u);
+  // If the CSSGapDecorations feature is not enabled, consume greedily since
+  // only single values are supported by 'column-rule' today.
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
+        columnRuleShorthand(), important, context, stream, properties);
+  }
+
+  CSSValueList* rule_widths = nullptr;
+  CSSValueList* rule_styles = nullptr;
+  CSSValueList* rule_colors = nullptr;
+
+  if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
+          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+    return false;
+  }
+
+  CHECK(rule_widths);
+  CHECK(rule_styles);
+  CHECK(rule_colors);
+
+  CSSGapDecorationUtils::AddProperties(
+      CSSGapDecorationPropertyDirection::kColumn, *rule_widths, *rule_styles,
+      *rule_colors, important, properties);
+
+  return true;
 }
 
 const CSSValue* ColumnRule::CSSValueFromComputedStyleInternal(
@@ -1217,9 +1240,25 @@ bool RowRule::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
-      CSSGapDecorationPropertyDirection::kRow, important, context, stream,
-      properties);
+  DCHECK_EQ(rowRuleShorthand().length(), 3u);
+  CSSValueList* rule_widths = nullptr;
+  CSSValueList* rule_styles = nullptr;
+  CSSValueList* rule_colors = nullptr;
+
+  if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
+          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+    return false;
+  }
+
+  CHECK(rule_widths);
+  CHECK(rule_styles);
+  CHECK(rule_colors);
+
+  CSSGapDecorationUtils::AddProperties(CSSGapDecorationPropertyDirection::kRow,
+                                       *rule_widths, *rule_styles, *rule_colors,
+                                       important, properties);
+
+  return true;
 }
 
 const CSSValue* RowRule::CSSValueFromComputedStyleInternal(
@@ -4132,6 +4171,53 @@ const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::BackgroundPositionOrMaskPosition(
       *this, style, &style.MaskLayers());
+}
+
+bool Rule::ParseShorthand(bool important,
+                          CSSParserTokenStream& stream,
+                          const CSSParserContext& context,
+                          const CSSParserLocalContext& local_context,
+                          HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK_EQ(ruleShorthand().length(), 6u);
+  CSSValueList* rule_widths = nullptr;
+  CSSValueList* rule_styles = nullptr;
+  CSSValueList* rule_colors = nullptr;
+
+  if (!css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
+          important, context, stream, rule_widths, rule_styles, rule_colors)) {
+    return false;
+  }
+
+  CHECK(rule_widths);
+  CHECK(rule_styles);
+  CHECK(rule_colors);
+
+  CSSGapDecorationUtils::AddProperties(
+      CSSGapDecorationPropertyDirection::kColumn, *rule_widths, *rule_styles,
+      *rule_colors, important, properties);
+  CSSGapDecorationUtils::AddProperties(CSSGapDecorationPropertyDirection::kRow,
+                                       *rule_widths, *rule_styles, *rule_colors,
+                                       important, properties);
+
+  return true;
+}
+
+const CSSValue* Rule::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const CSSValue* column_value =
+      GetCSSPropertyColumnRule().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* row_value = GetCSSPropertyRowRule().CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style, value_phase);
+
+  if (!base::ValuesEquivalent(column_value, row_value)) {
+    return nullptr;
+  }
+
+  return column_value;
 }
 
 bool RuleColor::ParseShorthand(

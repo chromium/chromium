@@ -666,6 +666,9 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(maskPositionShorthand());
     case CSSPropertyID::kMask:
       return GetLayeredShorthandValue(maskShorthand());
+    case CSSPropertyID::kRule:
+      return GetShorthandValueForRule(rowRuleShorthand(),
+                                      columnRuleShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
     case CSSPropertyID::kRuleWidth:
@@ -1905,6 +1908,29 @@ String StylePropertySerializer::GetShorthandValue(
     result.Append(value_text);
   }
   return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForRule(
+    const StylePropertyShorthand& row_rule_shorthand,
+    const StylePropertyShorthand& column_rule_shorthand) const {
+  CHECK_EQ(column_rule_shorthand.length(), row_rule_shorthand.length());
+  for (wtf_size_t i = 0; i < row_rule_shorthand.length(); ++i) {
+    const CSSValue* row_rule_data =
+        property_set_.GetPropertyCSSValue(*row_rule_shorthand.properties()[i]);
+    const CSSValue* column_rule_data = property_set_.GetPropertyCSSValue(
+        *column_rule_shorthand.properties()[i]);
+
+    if (!base::ValuesEquivalent(row_rule_data, column_rule_data)) {
+      return String();
+    }
+  }
+  // If the values are equivalent, serialize one of the shorthands.
+  // The `rule` shorthand is bi-directional, so the values should be
+  // equivalent.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#rule-bi-directional
+  return GetShorthandValueForGapDecorationsRule(
+      column_rule_shorthand, CSSGapDecorationPropertyDirection::kColumn);
 }
 
 String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(

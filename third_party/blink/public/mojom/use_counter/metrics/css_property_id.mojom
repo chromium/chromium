@@ -914,6 +914,7 @@ enum CSSSampleId {
     kRowRule = 855,
     kTextGrow = 856,
     kTextShrink = 857,
+    kRule = 858,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

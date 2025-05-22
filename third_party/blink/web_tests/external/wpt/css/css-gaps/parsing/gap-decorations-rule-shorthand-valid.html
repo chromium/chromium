@@ -13,8 +13,7 @@
 <body>
 <script>
 
-// TODO(samomekarajr): Add `rule` to this test.
-const properties = ["column-rule", "row-rule"];
+const properties = ["column-rule", "row-rule", "rule"];
 for (let property of properties) {
     // <gap-rule> = [<line-width> || <line-style> || <line-color>]
     test_valid_value(property, "5px solid red");

@@ -557,12 +557,12 @@ bool ConsumeGridTemplateShorthand(bool important,
 
 CSSValue* ConsumeItemTolerance(CSSParserTokenStream&, const CSSParserContext&);
 
-bool ConsumeGapDecorationsRuleShorthand(
-    CSSGapDecorationPropertyDirection direction,
-    bool important,
-    const CSSParserContext&,
-    CSSParserTokenStream&,
-    HeapVector<CSSPropertyValue, 64>& properties);
+bool ConsumeGapDecorationsRuleShorthand(bool important,
+                                        const CSSParserContext& context,
+                                        CSSParserTokenStream& stream,
+                                        CSSValueList*& rule_widths,
+                                        CSSValueList*& rule_styles,
+                                        CSSValueList*& rule_colors);
 
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream&,
                                      const CSSParserContext&);

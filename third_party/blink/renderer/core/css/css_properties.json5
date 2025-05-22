@@ -8678,6 +8678,14 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "rule",
+      longhands: [
+        "column-rule-width", "column-rule-style", "column-rule-color",
+        "row-rule-width", "row-rule-style", "row-rule-color"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "rule-color",
       longhands: ["column-rule-color", "row-rule-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

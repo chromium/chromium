@@ -64,6 +64,8 @@ class CORE_EXPORT StylePropertySerializer {
   String PageBreakPropertyValue(const StylePropertyShorthand&) const;
   String GetShorthandValue(const StylePropertyShorthand&,
                            String separator = " ") const;
+  String GetShorthandValueForRule(const StylePropertyShorthand&,
+                                  const StylePropertyShorthand&) const;
   String GetShorthandValueForBidirectionalGapRules(
       const StylePropertyShorthand&) const;
   String GetShorthandValueForGapDecorationsRule(
