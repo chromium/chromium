@@ -4954,7 +4954,10 @@ static_library("ui") {
     }
 
     public_deps += [
+      # TODO(crbug.com/419210492): Remove this dependency with chrome/browser/ui/sharing_hub
+      # and chrome/browser/ui/views/sharing_hub/ get componentized.
       "//chrome/browser/prefs:util",
+      "//chrome/browser/sharing_hub",
       "//ui/base/mojom:ui_base_types",
     ]
 

@@ -9424,6 +9424,12 @@ test("unit_tests") {
       "../browser/ui/views/sharing_hub/preview_view_unittest.cc",
       "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc",
     ]
+
+    deps += [
+      # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/sharing_hub/sharing_hub_model_unittest.cc
+      # test (above) gets componentized.
+      "//chrome/browser/sharing_hub",
+    ]
   }
 
   if (use_aura) {
