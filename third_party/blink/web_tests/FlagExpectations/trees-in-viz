@@ -51,7 +51,6 @@
 [ Mac15-arm64 ] fast/webgl/webgl-viewport-parameters-preserved.html [ Pass ]
 
 crbug.com/418116092 fast/dom/focus-contenteditable.html [ Failure ]
-crbug.com/418159586 fast/dom/inert/inert-node-is-uneditable.html [ Timeout ]
 
 # TODO(crbug.com/401453196): Resolve failing layout tests. Refine into child
 # bugs if/as it becomes clear that tests are failing due to distinct issues.
