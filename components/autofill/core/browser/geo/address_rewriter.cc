@@ -30,30 +30,22 @@ std::string GetMapKey(const std::string& region) {
   return base::StrCat({"IDR_ADDRESS_REWRITER_", region, "_RULES"});
 }
 
-// Helper function to extract region rules data into |out_data|.
-static bool ExtractRegionRulesData(const std::string& region,
-                                   std::string* out_data) {
-  int resource_id = 0;
+// Helper function to extract region rules data.
+std::string ExtractRegionRulesData(const std::string& region) {
   std::string resource_key = GetMapKey(region);
-  for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
-    // TODO: crbug.com/347651465: GRIT should define std::arrays instead of
-    // c-style arrays.
-    UNSAFE_TODO(if (kAutofillAddressRewriterResources[i].path == resource_key) {
-      resource_id = kAutofillAddressRewriterResources[i].id;
-      break;
-    })
+  for (const webui::ResourcePath& resource :
+       kAutofillAddressRewriterResources) {
+    if (resource.path == resource_key) {
+      std::string_view raw_resource =
+          ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+              resource.id);
+      std::string data;
+      compression::GzipUncompress(raw_resource, &data);
+      return data;
+    }
   }
 
-  if (!resource_id) {
-    return false;
-  }
-
-  // Gets and uncompresses resource data.
-  std::string_view raw_resource =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
-  compression::GzipUncompress(raw_resource, out_data);
-
-  return true;
+  return std::string();
 }
 
 // Helper function to populate |compiled_rules| by parsing |data_string|.
@@ -109,10 +101,8 @@ class Cache {
     }
 
     // Cache miss. Look for the raw rules. If none, then return nullptr.
-    std::string region_rules;
-    bool region_found = ExtractRegionRulesData(region, &region_rules);
-
-    if (!region_found) {
+    std::string region_rules = ExtractRegionRulesData(region);
+    if (region_rules.empty()) {
       return nullptr;
     }
 
