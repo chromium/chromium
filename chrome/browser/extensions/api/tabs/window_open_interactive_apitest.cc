@@ -14,7 +14,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpenFocus) {
   ASSERT_TRUE(RunExtensionTest("window_open/focus")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpen) {
+// TODO(crbug.com/414913454): Disabled on LSAN builds due to consistent failure.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_WindowOpen DISABLED_WindowOpen
+#else
+#define MAYBE_WindowOpen WindowOpen
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_WindowOpen) {
   extensions::ResultCatcher catcher;
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("window_open").AppendASCII("spanning"),
