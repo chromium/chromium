@@ -451,7 +451,11 @@ class GlicUiQuickLoadingSequenceWithPreloadTest
   ~GlicUiQuickLoadingSequenceWithPreloadTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceWithPreloadTest, Test) {
+// See https://crbug.com/418639389 - these probably need to be broken into unit
+// tests with only integration tests for the messaging being passed back and
+// forth; slow test runners can cause any time limit to be overrun.
+IN_PROC_BROWSER_TEST_F(GlicUiQuickLoadingSequenceWithPreloadTest,
+                       DISABLED_Test) {
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, &host()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
