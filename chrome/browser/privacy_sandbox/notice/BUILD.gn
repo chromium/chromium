@@ -76,6 +76,12 @@ source_set("notice") {
 
 # (Desktop Only)
 if (!is_android) {
+  source_set("desktop_entrypoint_handlers_helper") {
+    sources = [ "desktop_entrypoint_handlers_helper.cc" ]
+    public = [ "desktop_entrypoint_handlers_helper.h" ]
+    deps = [ "//chrome/common" ]
+  }
+
   source_set("desktop_view_manager") {
     sources = [
       "desktop_entrypoint_handlers.cc",
@@ -87,6 +93,7 @@ if (!is_android) {
     ]
     deps = [
       ":core",
+      ":desktop_entrypoint_handlers_helper",
       ":interfaces",
       ":notice_mojom",
       "//base",

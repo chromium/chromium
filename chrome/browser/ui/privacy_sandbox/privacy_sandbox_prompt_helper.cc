@@ -6,7 +6,7 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -140,8 +140,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // Check whether the navigation target is a suitable prompt location. The
   // navigation URL, rather than the visible or committed URL, is required to
   // distinguish between different types of NTPs.
-  if (!privacy_sandbox::NavigationHandler::IsUrlSuitableForPrompt(
-          navigation_handle->GetURL())) {
+  if (!privacy_sandbox::IsUrlSuitableForPrompt(navigation_handle->GetURL())) {
     base::UmaHistogramEnumeration(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kUrlNotSuitable);

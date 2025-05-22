@@ -40,7 +40,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/privacy_sandbox/notice:desktop_view_manager" ]
+    deps += [ "//chrome/browser/privacy_sandbox/notice:desktop_entrypoint_handlers_helper" ]
   }
 }
 
