@@ -32,6 +32,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
@@ -93,7 +94,9 @@ void GlobalFeatures::Init() {
     installer_downloader_controller_ = std::make_unique<
         installer_downloader::InstallerDownloaderController>(
         base::BindRepeating(
-            &installer_downloader::InstallerDownloaderInfoBarDelegate::Show));
+            &installer_downloader::InstallerDownloaderInfoBarDelegate::Show),
+        base::BindRepeating(static_cast<bool (*)()>(
+            &ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled)));
   }
 #endif
 }

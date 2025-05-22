@@ -12,13 +12,19 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model_impl.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider_impl.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace installer_downloader {
 
@@ -37,11 +43,31 @@ content::WebContents* GetActiveWebContents() {
   return nullptr;
 }
 
+std::optional<GURL> BuildInstallerDownloadUrl(bool is_metrics_enabled) {
+  std::string installer_url_template = kInstallerUrlTemplateParam.Get();
+
+  base::ReplaceFirstSubstringAfterOffset(
+      &installer_url_template, /*start_offset=*/0, "IIDGUID",
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  base::ReplaceFirstSubstringAfterOffset(&installer_url_template,
+                                         /*start_offset=*/0, "STATS",
+                                         is_metrics_enabled ? "1" : "0");
+
+  GURL installer_url(installer_url_template);
+
+  return installer_url.is_valid()
+             ? std::optional<GURL>(std::move(installer_url))
+             : std::nullopt;
+}
+
 }  // namespace
 
 InstallerDownloaderController::InstallerDownloaderController(
-    ShowInfobarCallback show_infobar_callback)
-    : show_infobar_callback_(std::move(show_infobar_callback)),
+    ShowInfobarCallback show_infobar_callback,
+    base::RepeatingCallback<bool()> is_metrics_enabled_callback)
+    : is_metrics_enabled_callback_(std::move(is_metrics_enabled_callback)),
+      show_infobar_callback_(std::move(show_infobar_callback)),
       model_(std::make_unique<InstallerDownloaderModelImpl>(
           std::make_unique<SystemInfoProviderImpl>())),
       get_active_web_contents_callback_(
@@ -49,8 +75,10 @@ InstallerDownloaderController::InstallerDownloaderController(
 
 InstallerDownloaderController::InstallerDownloaderController(
     ShowInfobarCallback show_infobar_callback,
+    base::RepeatingCallback<bool()> is_metrics_enabled_callback,
     std::unique_ptr<InstallerDownloaderModel> model)
-    : show_infobar_callback_(std::move(show_infobar_callback)),
+    : is_metrics_enabled_callback_(std::move(is_metrics_enabled_callback)),
+      show_infobar_callback_(std::move(show_infobar_callback)),
       model_(std::move(model)),
       get_active_web_contents_callback_(
           base::BindRepeating(&GetActiveWebContents)) {}
@@ -93,20 +121,38 @@ void InstallerDownloaderController::OnEligibilityReady(
   show_infobar_callback_.Run(
       contents,
       base::BindOnce(&InstallerDownloaderController::OnDownloadRequestAccepted,
-                     base::Unretained(this)),
+                     base::Unretained(this), destination.value()),
       base::BindOnce(&InstallerDownloaderController::OnInfoBarDismissed,
                      base::Unretained(this)));
 }
 
-void InstallerDownloaderController::OnDownloadRequestAccepted() {
+void InstallerDownloaderController::OnDownloadRequestAccepted(
+    const base::FilePath& destination) {
   // User have explicitly gave download consent. Therefore, a background
   // download should be issued.
-  //
+  auto* contents = get_active_web_contents_callback_.Run();
+
+  if (!contents) {
+    return;
+  }
+
+  std::optional<GURL> installer_url =
+      BuildInstallerDownloadUrl(is_metrics_enabled_callback_.Run());
+
+  if (!installer_url.has_value()) {
+    return;
+  }
+
   // TODO(https://crbug.com/417784931): Ensure that profile is not destroyed
   // during download.
+  model_->StartDownload(
+      installer_url.value(), destination,
+      CHECK_DEREF(contents->GetBrowserContext()->GetDownloadManager()),
+      base::BindOnce(&InstallerDownloaderController::OnDownloadCompleted,
+                     base::Unretained(this)));
 }
 
-void InstallerDownloaderController::OnDownloadCompleted() {
+void InstallerDownloaderController::OnDownloadCompleted(bool success) {
   // Update local state to indicated that downloaded have been successfully
   // completed.
 }

@@ -17,7 +17,13 @@ BASE_DECLARE_FEATURE(kInstallerDownloader);
 
 // Intentionally defaulted to empty string. It will be set by experiment.
 inline constexpr base::FeatureParam<std::string>
-    kLearnMoreUrl(&kInstallerDownloader, "LearnMoreUrl", "");
+    kLearnMoreUrl(&kInstallerDownloader, "learn_more_url", "");
+
+// Intentionally defaulted to empty string. It will be set by experiment.
+inline constexpr base::FeatureParam<std::string> kInstallerUrlTemplateParam(
+    &kInstallerDownloader,
+    "installer_url_template",
+    "");
 
 }  // namespace installer_downloader
 

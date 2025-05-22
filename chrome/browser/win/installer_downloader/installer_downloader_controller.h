@@ -50,10 +50,12 @@ class InstallerDownloaderController {
   using GetActiveWebContentsCallback =
       base::RepeatingCallback<content::WebContents*()>;
 
-  explicit InstallerDownloaderController(
-      ShowInfobarCallback show_infobar_callback);
   InstallerDownloaderController(
       ShowInfobarCallback show_infobar_callback,
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback);
+  InstallerDownloaderController(
+      ShowInfobarCallback show_infobar_callback,
+      base::RepeatingCallback<bool()> is_metrics_enabled_callback,
       std::unique_ptr<InstallerDownloaderModel> model);
 
   InstallerDownloaderController(const InstallerDownloaderController&) = delete;
@@ -68,7 +70,7 @@ class InstallerDownloaderController {
 
   // Trigger when user give an explicit consent through installer download
   // infobar.
-  void OnDownloadRequestAccepted();
+  void OnDownloadRequestAccepted(const base::FilePath& destination);
 
   // Called when the user dismisses the installer download infobar.
   void OnInfoBarDismissed();
@@ -78,7 +80,9 @@ class InstallerDownloaderController {
 
  private:
   void OnEligibilityReady(const std::optional<base::FilePath>& destination);
-  void OnDownloadCompleted();
+  void OnDownloadCompleted(bool success);
+
+  base::RepeatingCallback<bool()> is_metrics_enabled_callback_;
 
   ShowInfobarCallback show_infobar_callback_;
   std::unique_ptr<InstallerDownloaderModel> model_;

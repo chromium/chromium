@@ -14,10 +14,13 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,11 +28,24 @@
 
 using base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ContainsRegex;
+using ::testing::HasSubstr;
+using ::testing::Invoke;
+using ::testing::MatchesRegex;
+using ::testing::Not;
+using ::testing::Property;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::StrictMock;
 
 namespace installer_downloader {
 namespace {
+
+// A simple, valid template: IIDGUID and STATS are placeholders that the
+// production code will substitute.
+constexpr char kUrlTemplate[] =
+    "https://example.com/installer.exe?iid=IIDGUID&stats=STATS";
 
 class MockInstallerDownloaderModel : public InstallerDownloaderModel {
  public:
@@ -50,18 +66,29 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
 class InstallerDownloaderControllerTest : public testing::Test {
  protected:
   InstallerDownloaderControllerTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kInstallerDownloader,
+        {{kInstallerUrlTemplateParam.name, kUrlTemplate}});
+
+    auto download_manager = std::make_unique<content::MockDownloadManager>();
+    mock_download_manager_ = download_manager.get();
+    profile_.SetDownloadManagerForTesting(std::move(download_manager));
+
     web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
 
     auto model = std::make_unique<StrictMock<MockInstallerDownloaderModel>>();
     mock_model_ = model.get();
 
     controller_ = std::make_unique<InstallerDownloaderController>(
-        show_infobar_callback_.Get(), std::move(model));
+        show_infobar_callback_.Get(), is_metric_enabled_mock_callback_.Get(),
+        std::move(model));
 
     controller_->SetActiveWebContentsCallbackForTesting(
         base::BindLambdaForTesting(
             [&]() -> content::WebContents* { return web_contents_; }));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -74,6 +101,9 @@ class InstallerDownloaderControllerTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<InstallerDownloaderController> controller_;
   raw_ptr<MockInstallerDownloaderModel> mock_model_;
+  raw_ptr<content::MockDownloadManager> mock_download_manager_;
+  StrictMock<base::MockCallback<base::RepeatingCallback<bool()>>>
+      is_metric_enabled_mock_callback_;
 };
 
 TEST_F(InstallerDownloaderControllerTest, BailsWhenShowCountExceeded) {
@@ -123,6 +153,78 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenNotEligible) {
       .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
 
   controller_->MaybeShowInfoBar();
+}
+
+TEST_F(InstallerDownloaderControllerTest,
+       DownloadUrlHasValidGuidAndNoPlaceholders) {
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  EXPECT_CALL(
+      *mock_model_,
+      StartDownload(
+          Property(
+              &GURL::spec,
+              AllOf(
+                  // GUID in the iid= query param.
+                  ContainsRegex(
+                      "iid=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-"
+                      "[0-9a-f]{12}"),
+                  // Metrics flag.
+                  HasSubstr("&stats=1"),
+                  // No leftover placeholders.
+                  Not(HasSubstr("IIDGUID")), Not(HasSubstr("STATS")))),
+          destination, _, _));
+
+  controller_->OnDownloadRequestAccepted(destination);
+}
+
+TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  EXPECT_CALL(*mock_model_,
+              StartDownload(Property(&GURL::spec, HasSubstr("&stats=1")),
+                            destination, _, _));
+
+  controller_->OnDownloadRequestAccepted(destination);
+}
+
+TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(false));
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  EXPECT_CALL(*mock_model_,
+              StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
+                            destination, _, _));
+
+  controller_->OnDownloadRequestAccepted(destination);
+}
+
+TEST_F(InstallerDownloaderControllerTest,
+       DownloadGeneratesDifferentGuidEachTime) {
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run())
+      .WillRepeatedly(Return(true));
+
+  const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
+  GURL first_url;
+  GURL second_url;
+
+  {
+    ::testing::Sequence s;
+    EXPECT_CALL(*mock_model_, StartDownload(_, destination, _, _))
+        .InSequence(s)
+        .WillOnce(SaveArg<0>(&first_url));
+
+    EXPECT_CALL(*mock_model_, StartDownload(_, destination, _, _))
+        .InSequence(s)
+        .WillOnce(SaveArg<0>(&second_url));
+  }
+
+  controller_->OnDownloadRequestAccepted(destination);
+  controller_->OnDownloadRequestAccepted(destination);
+
+  EXPECT_NE(first_url, second_url);
 }
 
 }  // namespace

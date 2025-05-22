@@ -35,6 +35,7 @@ class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
 class ChromeVariationsServiceClient;
+class GlobalFeatures;
 class HttpsFirstModeService;
 class NavigationMetricsRecorder;
 class PrefService;
@@ -202,6 +203,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainExtraPartsGpu;
   friend class Browser;
   friend class BrowserProcessImpl;
+  friend class GlobalFeatures;
 #if BUILDFLAG(ENABLE_GLIC)
   friend class glic::GlicSyntheticTrialManager;
 #endif
