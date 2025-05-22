@@ -90,6 +90,13 @@ found in the LICENSE file.
             android:layout_marginHorizontal="@dimen/incognito_indicator_lateral_margin"
             android:visibility="gone" />
 
+        <ViewStub
+            android:id="@+id/extension_toolbar_container_stub"
+            android:inflatedId="@+id/extension_toolbar_container"
+            android:layout="@layout/extension_toolbar_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton"
@@ -97,13 +104,6 @@ found in the LICENSE file.
             android:visibility="visible"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
             app:menuVerticalOverlapAnchor="false" />
-
-        <ViewStub
-            android:id="@+id/extension_toolbar_container_stub"
-            android:inflatedId="@+id/extension_toolbar_container"
-            android:layout="@layout/extension_toolbar_container"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
 
         <include layout="@layout/menu_button"/>
     </LinearLayout>
