@@ -3256,10 +3256,6 @@ static_library("ui") {
   }
 
   if (is_win || is_mac) {
-    sources += [
-      "webui/settings/native_certificates_handler.cc",
-      "webui/settings/native_certificates_handler.h",
-    ]
     deps += [
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/pdf/infobar:impl",

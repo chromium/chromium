@@ -2051,9 +2051,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"manageDeviceCertificates", IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES},
       {"manageDeviceCertificatesDescription",
        IDS_SETTINGS_MANAGE_DEVICE_CERTIFICATES_DESCRIPTION},
-      {"chromeCertificates", IDS_SETTINGS_CHROME_CERTIFICATES},
-      {"chromeCertificatesDescription",
-       IDS_SETTINGS_CHROME_CERTIFICATES_DESCRIPTION},
 #endif
       {"safeBrowsingEnhancedLearnMoreLabel",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL}};

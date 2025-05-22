@@ -54,10 +54,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
   }
 
-  // <if expr="use_nss_certs">
-  r.CERTIFICATES = r.SECURITY.createChild('/certificates');
-  // </if>
-
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
     if (loadTimeData.getBoolean('enableSecurityKeysManagePhones')) {

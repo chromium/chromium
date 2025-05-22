@@ -415,11 +415,6 @@ build_webui("build") {
     ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }
 
-  if (use_nss_certs || chrome_root_store_cert_management_ui) {
-    ts_deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-  }
-
   ts_path_mappings =
       [ "/shared/settings/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",

@@ -86,17 +86,6 @@ suite('Main', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('ChromeRootStorePage', function() {
-    // Chrome Root Store Help link should not be present since
-    // kEnableCertManagementUIV2 feature flag is enabled by
-    // SettingsSecurityPageTest constructor.
-    // TODO(crbug.com/390333881): remove this test case once the feature flag
-    // and old implementation are removed.
-    const row =
-        page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
-  });
-
   test('ManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -337,7 +326,6 @@ suite('FlagsDisabled', function() {
       enableSecurityKeysSubpage: false,
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
-      enableCertManagementUIV2: false,
       extendedReportingRemovePrefDependency: false,
       hashPrefixRealTimeLookupsSamplePing: false,
     });
@@ -367,23 +355,6 @@ suite('FlagsDisabled', function() {
 
   teardown(function() {
     page.remove();
-  });
-
-  // <if expr="is_macosx or is_win">
-  test('NativeCertificateManager', function() {
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#manageCertificatesLinkRow')!.click();
-    return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
-  });
-  // </if>
-
-  test('ChromeRootStorePage', async function() {
-    const row =
-        page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    assertTrue(!!row);
-    row.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
 
   test('LogManageCertificatesClick', async function() {

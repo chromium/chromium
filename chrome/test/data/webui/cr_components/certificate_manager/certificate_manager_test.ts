@@ -27,13 +27,21 @@ import type {CertificatePasswordDecryptionDialogElement} from 'chrome://resource
 import type {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
 import type {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
 import type {CaTrustInfo, CertificatesBrowserProxy, CertificatesError, CertificatesOrgGroup, CertificateSubnode} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
-import { CertificatesBrowserProxyImpl, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
+// <if expr="is_chromeos">
+import {CertificateProvisioningBrowserProxyImpl} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
+// </if>
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+// <if expr="is_chromeos">
+import {TestCertificateProvisioningBrowserProxy} from './test_certificate_provisioning_browser_proxy.js';
+// </if>
+
 // clang-format on
 
 /**
@@ -604,9 +612,15 @@ suite('CertificateManagerTests', function() {
   }
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestCertificatesBrowserProxy();
     CertificatesBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // <if expr="is_chromeos">
+    const provisioningBrowserProxy =
+        new TestCertificateProvisioningBrowserProxy();
+    CertificateProvisioningBrowserProxyImpl.setInstance(
+        provisioningBrowserProxy);
+    // </if>
     page = document.createElement('certificate-manager');
     document.body.appendChild(page);
   });

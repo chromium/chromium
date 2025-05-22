@@ -300,16 +300,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      // <if expr="chrome_root_store_cert_management_ui">
-      enableCertManagementUIV2_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('enableCertManagementUIV2');
-        },
-      },
-      // </if>
-
       enableKeyboardLockPrompt_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
@@ -383,9 +373,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
-  // <if expr="chrome_root_store_cert_management_ui">
-  declare private enableCertManagementUIV2_: boolean;
-  // </if>
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableRelatedWebsiteSetsV2Ui_: boolean;
   declare private allSitesPageTitle_: string;

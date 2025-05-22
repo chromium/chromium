@@ -68,12 +68,6 @@ export interface PrivacyPageBrowserProxy {
 
   // </if>
 
-  // <if expr="is_win or is_macosx">
-  /** Invokes the native certificate manager (used by win and mac). */
-  showManageSslCertificates(): void;
-
-  // </if>
-
   setBlockAutoplayEnabled(enabled: boolean): void;
   getSecureDnsResolverList(): Promise<ResolverOption[]>;
   getSecureDnsSetting(): Promise<SecureDnsSetting>;
@@ -105,12 +99,6 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
   setBlockAutoplayEnabled(enabled: boolean) {
     chrome.send('setBlockAutoplayEnabled', [enabled]);
   }
-
-  // <if expr="is_win or is_macosx">
-  showManageSslCertificates() {
-    chrome.send('showManageSSLCertificates');
-  }
-  // </if>
 
   getSecureDnsResolverList() {
     return sendWithPromise('getSecureDnsResolverList');

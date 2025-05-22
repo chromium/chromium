@@ -15,7 +15,10 @@ build_webui_tests("build") {
   if (use_nss_certs) {
     files += [ "certificate_manager_test.ts" ]
     if (is_chromeos) {
-      files += [ "certificate_manager_provisioning_test.ts" ]
+      files += [
+        "certificate_manager_provisioning_test.ts",
+        "test_certificate_provisioning_browser_proxy.ts",
+      ]
     }
   }
 

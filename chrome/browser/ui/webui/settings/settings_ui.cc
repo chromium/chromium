@@ -159,7 +159,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
-#include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -181,12 +180,6 @@
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 #include "components/language/core/common/language_experiments.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "chrome/browser/ui/webui/certificates_handler.h"
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/webui/settings/native_certificates_handler.h"
-#endif  // BUILDFLAG(USE_NSS_CERTS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/mac_system_settings_handler.h"
@@ -229,24 +222,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   AddSettingsPageUIHandler(std::make_unique<AppearanceHandler>(web_ui));
 
-#if BUILDFLAG(USE_NSS_CERTS)
-  AddSettingsPageUIHandler(
-      std::make_unique<certificate_manager::CertificatesHandler>());
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-  // Chrome Certificate Management UI V2.
-  html_source->AddBoolean(
-      "enableCertManagementUIV2",
-      base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2));
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
 #if BUILDFLAG(IS_CHROMEOS)
-  AddSettingsPageUIHandler(
-      chromeos::cert_provisioning::CertificateProvisioningUiHandler::
-          CreateForProfile(profile));
   AddSettingsPageUIHandler(std::make_unique<LanguagesHandler>(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean("axTreeFixingEnabled", base::FeatureList::IsEnabled(

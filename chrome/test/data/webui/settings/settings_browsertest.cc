@@ -1139,7 +1139,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             blink::features::kWebPrinting,
 #endif
             features::kDbdRevampDesktop,
-            features::kEnableCertManagementUIV2,
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             permissions::features::kPermissionSiteSettingsRadioButton,
             privacy_sandbox::kFingerprintingProtectionUx,
@@ -1180,13 +1179,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacySandbox) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacySandbox')");
 }
 
-#if BUILDFLAG(USE_NSS_CERTS)
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CertificateManagementV2) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('CertificateManagementV2')");
-}
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        CookiesSubpageRedesignDisabled) {
   RunTest("settings/privacy_page_test.js",
@@ -1222,14 +1214,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('HappinessTrackingSurveys')");
 }
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40669164): disabling due to failures on several builders.
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_CertificateManager) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('NativeCertificateManager')");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        EnableWebBluetoothNewPermissionsBackend) {
@@ -1455,19 +1439,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubExtensions) {
   RunTest("settings/safety_hub_extensions_module_test.js", "mocha.run()");
 }
 
-class SettingsSecurityPageTest : public SettingsBrowserTest {
- protected:
-  SettingsSecurityPageTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kEnableCertManagementUIV2,
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SettingsSecurityPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
   RunTest("settings/security_page_test.js", "runMochaSuite('Main')");

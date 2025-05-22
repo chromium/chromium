@@ -22,9 +22,6 @@ export function ensureLazyLoaded(): Promise<void> {
               'settings-clear-browsing-data-dialog',
               'settings-clear-browsing-data-dialog-v2',
               'settings-search-engines-page',
-              // <if expr="use_nss_certs">
-              'certificate-manager',
-              // </if>
               'settings-a11y-page', 'settings-downloads-page',
               // <if expr="not chromeos_ash">
               'settings-languages-page',

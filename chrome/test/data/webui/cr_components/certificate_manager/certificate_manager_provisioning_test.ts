@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_provisi
 
 import type {CertificateProvisioningActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
 import {CertificateProvisioningViewDetailsActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import type {CertificateProvisioningBrowserProxy, CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
 import {CertificateProvisioningBrowserProxyImpl} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
 import type {CertificateProvisioningDetailsDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_details_dialog.js';
 import type {CertificateProvisioningEntryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
@@ -16,8 +16,9 @@ import type {CertificateProvisioningListElement} from 'chrome://resources/cr_com
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestCertificateProvisioningBrowserProxy} from './test_certificate_provisioning_browser_proxy.js';
 
 const PROCESS_ID = 'dummyProcessId';
 const PROFILE_ID = 'dummyProfileId';
@@ -28,35 +29,6 @@ const STATE_NAME_1 = 'dummyStateName';
 const STATE_NAME_2 = 'dummyStateName2';
 const TIME_SINCE_LAST_UPDATE = 'dummyTimeSinceLastUpdate';
 const LAST_UNSUCCESSFUL_MESSAGE = 'dummyLastUnsuccessfulMessage';
-
-/**
- * A test version of CertificateProvisioningBrowserProxy.
- * Provides helper methods for allowing tests to know when a method was called,
- * as well as specifying mock responses.
- */
-class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
-    implements CertificateProvisioningBrowserProxy {
-  constructor() {
-    super([
-      'refreshCertificateProvisioningProcesses',
-      'triggerCertificateProvisioningProcessUpdate',
-      'triggerCertificateProvisioningProcessReset',
-    ]);
-  }
-
-  refreshCertificateProvisioningProcesses() {
-    this.methodCalled('refreshCertificateProvisioningProcesses');
-  }
-
-  triggerCertificateProvisioningProcessUpdate(certProfileId: string) {
-    this.methodCalled(
-        'triggerCertificateProvisioningProcessUpdate', certProfileId);
-  }
-  triggerCertificateProvisioningProcessReset(certProfileId: string) {
-    this.methodCalled(
-        'triggerCertificateProvisioningProcessReset', certProfileId);
-  }
-}
 
 function createSampleCertificateProvisioningProcess(isUpdated: boolean):
     CertificateProvisioningProcess {

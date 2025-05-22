@@ -112,18 +112,6 @@ suite('PrivacyPage', function() {
     resetRouterForTesting();
   });
 
-  // <if expr="use_nss_certs">
-  // Old certificate manager should not be shown since kEnableCertManagementUIV2
-  // feature flag is enabled in SettingsSecurityPageTest constructor.
-  // TODO(crbug.com/390333881): remove this test case once the feature flag
-  // and old implementation are removed.
-  test('certificate_manager_visibility', function() {
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
-    const certManager = page.shadowRoot!.querySelector('certificate-manager');
-    assertFalse(!!certManager, 'found unexpected <certificate-manager> tag');
-  });
-  // </if>
-
   test('showDeleteBrowsingDataDialog', function() {
     assertFalse(!!page.shadowRoot!.querySelector(
         'settings-clear-browsing-data-dialog-v2'));
@@ -349,49 +337,6 @@ suite(`PrivacySandbox`, function() {
         routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
   });
 });
-
-// <if expr="use_nss_certs">
-// Test with Certificate Management V2 flag off.
-// TODO(crbug.com/390333881): remove this test suite once the feature flag and
-// old implementation are removed.
-suite(`CertificateManagementV2`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableCertManagementUIV2: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  teardown(function() {
-    page.remove();
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('certificate_manager_visibility', function() {
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
-    // Old certificate manager shown on platforms using NSS.
-    const certManager = page.shadowRoot!.querySelector('certificate-manager');
-    assertTrue(
-        !!certManager, 'did not find expected <certificate-manager> tag');
-  });
-});
-// </if>
 
 suite('WebPrintingNotShown', function () {
   test('navigateToWebPrinting', function () {

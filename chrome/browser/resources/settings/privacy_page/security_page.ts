@@ -90,19 +90,6 @@ export class SettingsSecurityPageElement extends
 
   static get properties() {
     return {
-      // <if expr="chrome_root_store_cert_management_ui">
-      /**
-       * Whether we should show the new cert management UI.
-       */
-      enableCertManagementUIV2_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('enableCertManagementUIV2');
-        },
-      },
-      // </if>
-
       /**
        * Whether the secure DNS setting should be displayed.
        */
@@ -232,9 +219,6 @@ export class SettingsSecurityPageElement extends
       },
     };
   }
-  // <if expr="chrome_root_store_cert_management_ui">
-  declare private enableCertManagementUIV2_: boolean;
-  // </if>
   declare private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
@@ -265,16 +249,6 @@ export class SettingsSecurityPageElement extends
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
-    // <if expr="use_nss_certs">
-    if (routes.CERTIFICATES) {
-      this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#manageCertificatesLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-    // </if>
 
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
@@ -511,26 +485,10 @@ export class SettingsSecurityPageElement extends
   }
 
   private onManageCertificatesClick_() {
-    // <if expr="use_nss_certs">
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
-    // </if>
-    // <if expr="is_win or is_macosx">
-    this.browserProxy_.showManageSslCertificates();
-    // </if>
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.MANAGE_CERTIFICATES);
-  }
-
-  private onNewManageCertificatesClick_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('certManagementV2URL'));
-  }
-
-  private onChromeCertificatesClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   }
 
   private onAdvancedProtectionProgramLinkClick_() {
