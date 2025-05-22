@@ -124,6 +124,10 @@ struct LayerTreeUpdate {
   // not include changes to individual nodes in the tree.
   TransformTreeUpdate? transform_tree_update;
 
+  // Miscellaneous scroll tree properties, if changed since last update. Does
+  // not include changes to individual nodes in the tree.
+  ScrollTreeUpdate? scroll_tree_update;
+
   // Nodes added or modified on any property tree since the last update.
   array<TransformNode> transform_nodes;
   array<ClipNode> clip_nodes;

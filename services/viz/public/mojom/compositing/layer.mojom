@@ -8,6 +8,7 @@ import "cc/mojom/element_id.mojom";
 import "cc/mojom/hit_test_opaqueness.mojom";
 import "cc/mojom/layer_type.mojom";
 import "cc/mojom/paint_flags.mojom";
+import "cc/mojom/synced_scroll_offset.mojom";
 import "cc/mojom/ui_resource_id.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "skia/public/mojom/skpath.mojom";
@@ -514,6 +515,12 @@ struct EffectNode {
 
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;
+};
+
+// Updates to a scroll tree, not including the nodes themselves. These
+// correspond to data members of cc::ScrollTree.
+struct ScrollTreeUpdate {
+  map<cc.mojom.ElementId, cc.mojom.SyncedScrollOffset> synced_scroll_offsets;
 };
 
 // Details about a new or updated node within a scroll property tree.

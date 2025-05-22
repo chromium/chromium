@@ -446,6 +446,14 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   return base::ok();
 }
 
+base::expected<void, std::string> UpdateScrollTreeProperties(
+    cc::PropertyTrees& trees,
+    cc::ScrollTree& tree,
+    const mojom::ScrollTreeUpdate& update) {
+  tree.synced_scroll_offset_map() = update.synced_scroll_offsets;
+  return base::ok();
+}
+
 void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
                             cc::MirrorLayerImpl& layer) {
   layer.SetMirroredLayerId(extra->mirrored_layer_id);
@@ -1418,6 +1426,12 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     RETURN_IF_ERROR(UpdateTransformTreeProperties(
         property_trees, property_trees.transform_tree_mutable(),
         *update->transform_tree_update));
+  }
+
+  if (update->scroll_tree_update) {
+    RETURN_IF_ERROR(UpdateScrollTreeProperties(
+        property_trees, property_trees.scroll_tree_mutable(),
+        *update->scroll_tree_update));
   }
 
   ASSIGN_OR_RETURN(const bool transform_nodes_changed,

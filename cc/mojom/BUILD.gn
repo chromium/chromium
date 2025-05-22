@@ -114,53 +114,17 @@ mojom("mojom") {
   blink_cpp_typemaps = shared_typemap
 }
 
-mojom("layer_type") {
+mojom("layer_trees") {
   generate_java = true
-  sources = [ "layer_type.mojom" ]
-}
-
-mojom("missing_tile_reason") {
-  generate_java = true
-  sources = [ "missing_tile_reason.mojom" ]
-}
-
-mojom("ui_resource_id") {
-  generate_java = true
-  sources = [ "ui_resource_id.mojom" ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "cc.mojom.UIResourceId"
-          cpp = "::cc::UIResourceId"
-          copyable_pass_by_value = true
-        },
-      ]
-      traits_headers = [ "ui_resource_id_mojom_traits.h" ]
-    },
+  sources = [
+    "element_id.mojom",
+    "hit_test_opaqueness.mojom",
+    "layer_type.mojom",
+    "missing_tile_reason.mojom",
+    "paint_flags.mojom",
+    "synced_scroll_offset.mojom",
+    "ui_resource_id.mojom",
   ]
-}
-
-mojom("hit_test_opaqueness") {
-  generate_java = true
-  sources = [ "hit_test_opaqueness.mojom" ]
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "cc.mojom.HitTestOpaqueness"
-          cpp = "::cc::HitTestOpaqueness"
-        },
-      ]
-      traits_headers = [ "hit_test_opaqueness_mojom_traits.h" ]
-    },
-  ]
-}
-
-mojom("element_id") {
-  generate_java = true
-  sources = [ "element_id.mojom" ]
   cpp_typemaps = [
     {
       types = [
@@ -174,13 +138,15 @@ mojom("element_id") {
       traits_headers = [ "element_id_mojom_traits.h" ]
       traits_public_deps = [ "//cc/paint" ]
     },
-  ]
-}
-
-mojom("paint_flags") {
-  generate_java = true
-  sources = [ "paint_flags.mojom" ]
-  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.HitTestOpaqueness"
+          cpp = "::cc::HitTestOpaqueness"
+        },
+      ]
+      traits_headers = [ "hit_test_opaqueness_mojom_traits.h" ]
+    },
     {
       types = [
         {
@@ -195,5 +161,32 @@ mojom("paint_flags") {
       traits_headers = [ "paint_flags_mojom_traits.h" ]
       traits_public_deps = [ "//cc/paint" ]
     },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.SyncedScrollOffset"
+          cpp = "::scoped_refptr<::cc::SyncedScrollOffset>"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//cc/mojom/synced_scroll_offset_type_traits.h" ]
+      traits_sources = [ "//cc/mojom/synced_scroll_offset_type_traits.cc" ]
+      traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.UIResourceId"
+          cpp = "::cc::UIResourceId"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "ui_resource_id_mojom_traits.h" ]
+    },
+  ]
+  public_deps = [
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
   ]
 }

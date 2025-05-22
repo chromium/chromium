@@ -66,12 +66,7 @@ mojom("mojom") {
   public_deps = [
     ":shared_image_format",
     ":singleplanar_format",
-    "//cc/mojom:element_id",
-    "//cc/mojom:hit_test_opaqueness",
-    "//cc/mojom:layer_type",
-    "//cc/mojom:missing_tile_reason",
-    "//cc/mojom:paint_flags",
-    "//cc/mojom:ui_resource_id",
+    "//cc/mojom:layer_trees",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",

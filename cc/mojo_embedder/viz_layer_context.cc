@@ -419,6 +419,20 @@ viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
   return wire;
 }
 
+viz::mojom::ScrollTreeUpdatePtr ComputeScrollTreePropertiesUpdate(
+    const ScrollTree& old_tree,
+    const ScrollTree& new_tree) {
+  if (old_tree.synced_scroll_offset_map() ==
+      new_tree.synced_scroll_offset_map()) {
+    return nullptr;
+  }
+
+  auto wire = viz::mojom::ScrollTreeUpdate::New();
+  wire->synced_scroll_offsets = new_tree.synced_scroll_offset_map();
+
+  return wire;
+}
+
 void SerializeUIResourceRequest(
     cc::LayerTreeHostImpl& host_impl,
     viz::RasterContextProvider& context_provider,
@@ -1187,6 +1201,9 @@ void VizLayerContext::UpdateDisplayTreeFrom(
                             update->num_scroll_nodes);
   update->transform_tree_update = ComputeTransformTreePropertiesUpdate(
       old_trees.transform_tree(), property_trees.transform_tree());
+
+  update->scroll_tree_update = ComputeScrollTreePropertiesUpdate(
+      old_trees.scroll_tree(), property_trees.scroll_tree());
 
   last_committed_property_trees_ = property_trees;
 

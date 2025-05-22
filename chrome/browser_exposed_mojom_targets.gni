@@ -12,7 +12,7 @@
 # Linux.
 
 browser_exposed_mojom_targets = [
-  "//cc/mojom:layer_type",
+  "//cc/mojom:layer_trees",
   "//cc/mojom:mojom",
   "//chrome/browser/glic:mojo_bindings",
   "//chrome/browser/lens/core/mojom:mojo_bindings",

@@ -670,13 +670,20 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Reports reasons for blocking scroll updates on main-thread repaint.
   uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
 
+  using SyncedScrollOffsetMap =
+      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
+
+  const SyncedScrollOffsetMap& synced_scroll_offset_map() const {
+    return synced_scroll_offset_map_;
+  }
+  SyncedScrollOffsetMap& synced_scroll_offset_map() {
+    return synced_scroll_offset_map_;
+  }
+
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;
   using PropertyTree::set_needs_update;
-
-  using SyncedScrollOffsetMap =
-      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 
   int currently_scrolling_node_id_ = kInvalidPropertyNodeId;
 

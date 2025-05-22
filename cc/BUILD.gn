@@ -468,9 +468,7 @@ cc_component("cc") {
 
   public_deps = [
     "//cc/base",
-    "//cc/mojom:layer_type",
-    "//cc/mojom:missing_tile_reason",
-    "//cc/mojom:ui_resource_id",
+    "//cc/mojom:layer_trees",
     "//cc/paint",
     "//components/viz/common",
     "//skia",
