@@ -14,10 +14,6 @@ export enum PauseActionSource {
 }
 
 export interface SpeechPlayingState {
-  // If the speech tree for the current page has been initialized. This
-  // happens in updateContent before speech has been initiated by users but it
-  // can also be set to true via a play from selection.
-  isSpeechTreeInitialized: boolean;
   // True when the user presses play, regardless of if audio has actually
   // started yet. This will be false when speech is paused.
   isSpeechActive: boolean;
@@ -54,7 +50,6 @@ interface ReadingPosition {
 
 export class SpeechModel {
   private speechPlayingState_: SpeechPlayingState = {
-    isSpeechTreeInitialized: false,
     isSpeechActive: false,
     pauseSource: PauseActionSource.DEFAULT,
     isAudioCurrentlyPlaying: false,
@@ -151,14 +146,6 @@ export class SpeechModel {
 
   setState(state: SpeechPlayingState): void {
     this.speechPlayingState_ = {...state};
-  }
-
-  isSpeechTreeInitialized(): boolean {
-    return this.speechPlayingState_.isSpeechTreeInitialized;
-  }
-
-  setIsSpeechTreeInitialized(value: boolean): void {
-    this.speechPlayingState_.isSpeechTreeInitialized = value;
   }
 
   isSpeechActive(): boolean {

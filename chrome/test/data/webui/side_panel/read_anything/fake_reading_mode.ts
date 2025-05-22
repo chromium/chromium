@@ -79,6 +79,9 @@ export class FakeReadingMode {
   // TTS voice language preferences saved in database
   savedLanguagePref: Set<string> = new Set<string>();
 
+  // If the speech tree has been initialized.
+  isSpeechTreeInitialized: boolean = false;
+
   private maxNodeId: number = 5;
 
   fetchedImages: number[] = [];
@@ -305,7 +308,9 @@ export class FakeReadingMode {
   //       },
   //     ],
   //   };
-  setContentForTesting(_snapshotLite: Object, _contentNodeIds: number[]) {}
+  setContentForTesting(_snapshotLite: Object, contentNodeIds: number[]) {
+    this.isSpeechTreeInitialized = contentNodeIds.length > 0;
+  }
 
   // Set the theme. Used by tests only.
   setThemeForTesting(

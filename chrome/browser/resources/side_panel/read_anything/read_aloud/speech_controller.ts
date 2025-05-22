@@ -118,7 +118,7 @@ export class SpeechController {
   }
 
   isSpeechTreeInitialized(): boolean {
-    return this.model_.isSpeechTreeInitialized();
+    return chrome.readingMode.isSpeechTreeInitialized;
   }
 
   isPausedFromButton(): boolean {
@@ -172,7 +172,6 @@ export class SpeechController {
     // TODO: crbug.com/40927698 - There should be a way to use AXPosition so
     // that this step can be skipped.
     chrome.readingMode.initAxPositionWithNode(firstTextNode);
-    this.model_.setIsSpeechTreeInitialized(true);
   }
 
   onSelectionChange() {
@@ -780,7 +779,6 @@ export class SpeechController {
     this.wordBoundaries_.resetToDefaultState();
 
     const speechPlayingState = {
-      isSpeechTreeInitialized: false,
       isSpeechActive: false,
       pauseSource: PauseActionSource.DEFAULT,
       isAudioCurrentlyPlaying: false,

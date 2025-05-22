@@ -954,6 +954,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::EngineErrorStopSource)
       .SetProperty("contentFinishedStopSource",
                    &ReadAnythingAppController::ContentFinishedStopSource)
+      .SetProperty("isSpeechTreeInitialized",
+                   &ReadAnythingAppController::IsSpeechTreeInitialized)
       .SetProperty(
           "unexpectedUpdateContentStopSource",
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
@@ -1803,6 +1805,10 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   // TODO: crbug.com/411198154: This should only be called if the ax position
   // is not already initialized.
   PreprocessTextForSpeech();
+}
+
+bool ReadAnythingAppController::IsSpeechTreeInitialized() {
+  return read_aloud_model_.speech_tree_initialized();
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {

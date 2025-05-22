@@ -9,7 +9,7 @@ import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, Vo
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setSimpleAxTreeWithText, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -206,6 +206,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('on speech rate change speech rate updated', async () => {
     setupBasicSpeech(speech);
+    setSimpleAxTreeWithText('we mean no harm');
     app.updateContent();
     await emitPlayPause();
 
@@ -247,6 +248,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     test('on first click starts speech', async () => {
+      setSimpleAxTreeWithText('We come in peace');
       await emitPlayPause();
       assertTrue(speechController.isSpeechActive());
       assertTrue(speechController.isSpeechTreeInitialized());
@@ -254,6 +256,7 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     test('on second click stops speech', async () => {
+      setSimpleAxTreeWithText('Don\'t be alarmed!');
       await emitPlayPause();
       await emitPlayPause();
 

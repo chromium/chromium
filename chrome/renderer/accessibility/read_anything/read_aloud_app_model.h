@@ -49,6 +49,7 @@ class ReadAloudAppModel {
   ReadAloudAppModel(const ReadAloudAppModel& other) = delete;
   ReadAloudAppModel& operator=(const ReadAloudAppModel&) = delete;
 
+  bool speech_tree_initialized() { return speech_tree_initialized_; }
   bool speech_playing() { return speech_playing_; }
   void set_speech_playing(bool is_playing) { speech_playing_ = is_playing; }
   double speech_rate() const { return speech_rate_; }
@@ -333,7 +334,7 @@ class ReadAloudAppModel {
   // can result in the AXPosition being set to the null position, reading mode
   // can't rely on AXPosition->IsNullPosition() to check whether or not the
   // speech tree has been initialized.
-  bool is_ax_tree_initialized_ = false;
+  bool speech_tree_initialized_ = false;
 
   // Our current index within processed_granularities_on_current_page_.
   size_t processed_granularity_index_ = 0;

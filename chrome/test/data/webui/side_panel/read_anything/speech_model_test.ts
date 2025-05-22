@@ -25,7 +25,6 @@ suite('SpeechModel', () => {
     const pauseSource = PauseActionSource.ENGINE_INTERRUPT;
     const state = {
       isSpeechActive: true,
-      isSpeechTreeInitialized: true,
       pauseSource: pauseSource,
       isAudioCurrentlyPlaying: true,
       hasSpeechBeenTriggered: true,
@@ -36,18 +35,10 @@ suite('SpeechModel', () => {
 
     assertNotEquals(state, speechModel.getState());
     assertTrue(speechModel.isSpeechActive());
-    assertTrue(speechModel.isSpeechTreeInitialized());
     assertEquals(pauseSource, speechModel.getPauseSource());
     assertTrue(speechModel.isAudioCurrentlyPlaying());
     assertTrue(speechModel.hasSpeechBeenTriggered());
     assertTrue(speechModel.isSpeechBeingRepositioned());
-  });
-
-  test('setIsSpeechTreeInitialized', () => {
-    speechModel.setIsSpeechTreeInitialized(true);
-    assertTrue(speechModel.isSpeechTreeInitialized());
-    speechModel.setIsSpeechTreeInitialized(false);
-    assertFalse(speechModel.isSpeechTreeInitialized());
   });
 
   test('setIsSpeechActive', () => {

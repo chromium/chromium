@@ -98,6 +98,9 @@ declare namespace chrome {
     // If distillations have been queued up.
     let requiresDistillation: boolean;
 
+    // If the speech tree has been initialized in the renderer.
+    let isSpeechTreeInitialized: boolean;
+
     // Returns whether the reading highlight is currently on.
     function isHighlightOn(): boolean;
 

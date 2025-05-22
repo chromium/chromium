@@ -90,14 +90,14 @@ void ReadAloudAppModel::InitAXPositionWithNode(
   // new position if the node's manager is missing, as that means we've
   // received incorrect data somewhere.
   if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition()) &&
-      ax_node->GetManager() && !is_ax_tree_initialized_) {
+      ax_node->GetManager() && !speech_tree_initialized_) {
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     current_text_index_ = 0;
     processed_granularity_index_ = 0;
     processed_granularities_on_current_page_.clear();
     active_tree_id_ = active_tree_id;
-    is_ax_tree_initialized_ = true;
+    speech_tree_initialized_ = true;
   }
 }
 void ReadAloudAppModel::MovePositionToNextGranularity() {
@@ -643,7 +643,7 @@ void ReadAloudAppModel::ResetReadAloudState() {
   current_text_index_ = 0;
   processed_granularity_index_ = 0;
   processed_granularities_on_current_page_.clear();
-  is_ax_tree_initialized_ = false;
+  speech_tree_initialized_ = false;
 }
 
 bool ReadAloudAppModel::IsValidAXPosition(
