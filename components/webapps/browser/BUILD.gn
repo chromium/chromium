@@ -48,6 +48,8 @@ source_set("browser") {
     "banners/web_app_banner_data.h",
     "features.cc",
     "features.h",
+    "image_visual_diff.cc",
+    "image_visual_diff.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_data_fetcher.cc",
@@ -211,6 +213,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "banners/app_banner_settings_helper_unittest.cc",
+    "image_visual_diff_unittest.cc",
     "install_result_code_unittest.cc",
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
