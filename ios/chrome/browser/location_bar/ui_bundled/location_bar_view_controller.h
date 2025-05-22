@@ -179,6 +179,9 @@ class Tracker;
 // Records the lens overlay entrypoint availability in the location bar.
 - (void)recordLensOverlayAvailability;
 
+// Moves the focus of VoiceOver to the steady view.
+- (void)focusSteadyViewForVoiceOver;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_VIEW_CONTROLLER_H_

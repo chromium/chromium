@@ -14,6 +14,8 @@
 - (void)focusOmnibox;
 // Focus the omnibox but skip the NTP check.
 - (void)focusOmniboxFromFakebox;
+// Moves the focus of VoiceOver to the omnibox, without activating it.
+- (void)focusOmniboxForVoiceOver;
 // Cancel omnibox edit (from shield tap or cancel button tap).
 - (void)cancelOmniboxEdit;
 @end

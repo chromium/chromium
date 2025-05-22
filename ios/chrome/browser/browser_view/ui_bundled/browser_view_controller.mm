@@ -2360,8 +2360,10 @@ enum HeaderBehaviour {
   // Toolbar snapshot is only used for the UIRefresh animation.
   UIView* toolbarSnapshot;
 
-  if (tabURL == kChromeUINewTabURL && !_isOffTheRecord &&
-      !IsRegularXRegularSizeClass(self)) {
+  BOOL isNTP = tabURL == kChromeUINewTabURL;
+  BOOL isIncognito = _isOffTheRecord;
+
+  if (isNTP && !isIncognito && !IsRegularXRegularSizeClass(self)) {
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
     UIViewController* toolbarViewController =
@@ -2382,6 +2384,8 @@ enum HeaderBehaviour {
   }
   newPage.userInteractionEnabled = NO;
   NSInteger currentAnimationIdentifier = ++_NTPAnimationIdentifier;
+
+  __weak id<OmniboxCommands> omniboxHandler = self.omniboxCommandsHandler;
 
   // Cleanup steps needed for both UI Refresh and stack-view style animations.
   UIView* webStateView = [self viewForWebState:webState];
@@ -2414,6 +2418,10 @@ enum HeaderBehaviour {
     [strongSelf webStateSelected];
     if (completion) {
       completion();
+    }
+
+    if (isNTP && isIncognito) {
+      [omniboxHandler focusOmniboxForVoiceOver];
     }
 
     [strongSelf executeAndClearForegroundTabWasAddedCompletionBlock:YES];

@@ -430,6 +430,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 }
 
+- (void)focusSteadyViewForVoiceOver {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.locationBarSteadyView);
+}
+
 #pragma mark - LocationBarAnimatee
 
 - (void)offsetTextFieldToMatchSteadyView {

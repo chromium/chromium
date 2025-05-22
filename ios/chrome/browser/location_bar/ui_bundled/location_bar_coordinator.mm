@@ -446,6 +446,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 }
 
+- (void)focusOmniboxForVoiceOver {
+  [self.viewController focusSteadyViewForVoiceOver];
+}
+
 - (void)cancelOmniboxEdit {
   if (self.isCancellingOmniboxEdit) {
     return;
