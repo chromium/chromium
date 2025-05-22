@@ -10,5 +10,4 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"
     style="@style/ToolbarHoverableButton"
-    app:menuMaxWidth="@dimen/extension_action_button_list_menu_width"
-    app:tint="@color/default_icon_color_tint_list" />
+    app:menuMaxWidth="@dimen/extension_action_button_list_menu_width" />
