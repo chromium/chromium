@@ -645,7 +645,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // A staging texture to handle backbuffer formats that cannot be represented
   // as SharedImages. This includes unpremultiplied alpha and sRGB textures.
   bool staging_texture_needed_ = false;
-  bool premultiplying_internally_ = false;
   GLuint staging_texture_ = 0;
   void CopyStagingTextureToBackColorBufferIfNeeded();
 

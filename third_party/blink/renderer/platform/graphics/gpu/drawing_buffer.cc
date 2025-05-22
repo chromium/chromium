@@ -432,15 +432,6 @@ bool DrawingBuffer::PrepareTransferableResource(
     return false;
   }
 
-  // If the requested alpha type was unpremul, then set the output resource to
-  // be unpremul as well unless we have already handled premultiplication
-  // internally.
-  SkAlphaType resource_alpha_type = kPremul_SkAlphaType;
-  if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
-      !premultiplying_internally_) {
-    resource_alpha_type = kUnpremul_SkAlphaType;
-  }
-
   if (IsUsingGpuCompositing()) {
     gpu::SyncToken sync_token;
     auto shared_image =
@@ -468,12 +459,10 @@ bool DrawingBuffer::PrepareTransferableResource(
     ReadFramebufferIntoBitmapPixels(
         static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
 
-    viz::TransferableResource::MetadataOverride overrides;
-    overrides.alpha_type = resource_alpha_type;
     *out_resource = viz::TransferableResource::Make(
         resource.shared_image,
         viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        resource.sync_token, overrides);
+        resource.sync_token);
 
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->is_low_latency_rendering = resource.shared_image->usage().Has(
@@ -2039,7 +2028,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // backbuffer that we will use for compositing will be premultiplied (e.g,
     // because it be used as an overlay), then we will need to create a separate
     // unpremultiplied staging backbuffer for WebGL to render to.
-    premultiplying_internally_ = true;
     staging_texture_needed_ = true;
   }
   if (requested_format_ == GL_SRGB8_ALPHA8) {
