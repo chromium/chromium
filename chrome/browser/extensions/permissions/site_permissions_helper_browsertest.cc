@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/run_loop.h"
-#include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/extensions/blocked_action_waiter.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
@@ -19,6 +19,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
@@ -346,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     // on all sites -> on click (revokes access)
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     ASSERT_EQ(
@@ -378,8 +378,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // on site -> on-click (should remove site access and active tab
     // permissions)
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     ASSERT_EQ(
@@ -397,8 +396,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // Confirm that unintended access isn't just waiting for a reload to allow
     // it to run.
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     ASSERT_TRUE(ReloadPageAndWaitForLoad());
     ASSERT_TRUE(WaitForReloadToFinish());
     blocked_action_waiter.Wait();
@@ -417,8 +415,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     // on all sites -> on click (revokes access)
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     ASSERT_EQ(
@@ -455,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // on site -> on-click (should remove site access and active tab
     // permissions)
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     ASSERT_EQ(
@@ -474,8 +470,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     // Confirm that unintended access isn't just waiting for a reload to allow
     // it to run.
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     ASSERT_TRUE(ReloadPageAndWaitForLoad());
     ASSERT_TRUE(WaitForReloadToFinish());
     blocked_action_waiter.Wait();
@@ -498,8 +493,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
   {
     // Navigate to a.com. Script is not injected since extension has withheld
     // site access.
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     NavigateTo("a.com", "/simple.html");
     blocked_action_waiter.Wait();
     ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -526,8 +520,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
   {
     // Navigate to b.com. Script is not injected since extension has withheld
     // site access.
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     NavigateTo("b.com", "/simple.html");
     blocked_action_waiter.Wait();
     EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -541,8 +534,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     // Navigate back to a.com. Since we navigated to another origin, and then
     // back to a.com it should not have tab permissions anymore. Thus, the
     // script is not injected.
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     NavigateTo("a.com", "/simple.html");
     blocked_action_waiter.Wait();
     EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
@@ -709,8 +701,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
   }
   {
     // on site -> on-click (refresh needed due to revoking permissions).
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     EXPECT_EQ(
@@ -751,8 +742,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
   }
   {
     // on all sites -> on-click
-    browsertest_util::BlockedActionWaiter blocked_action_waiter(
-        active_action_runner());
+    BlockedActionWaiter blocked_action_waiter(active_action_runner());
     permissions_helper_->UpdateSiteAccess(*extension_, active_web_contents(),
                                           UserSiteAccess::kOnClick);
     EXPECT_EQ(

@@ -15,6 +15,7 @@ class Value;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace extensions::browsertest_util {
@@ -69,6 +70,14 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
 // enabled.
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
                                               const ExtensionId& extension_id);
+
+// Returns whether the given `web_contents` has the associated
+// `changed_title`. If the web contents has neither `changed_title`
+// nor `original_title `, adds a failure to the test (for an unexpected
+// title).
+bool DidChangeTitle(content::WebContents& web_contents,
+                    const std::u16string& original_title,
+                    const std::u16string& changed_title);
 
 }  // namespace extensions::browsertest_util
 

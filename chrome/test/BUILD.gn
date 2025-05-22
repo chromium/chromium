@@ -357,6 +357,8 @@ static_library("test_support") {
 
   if (enable_extensions_core) {
     sources += [
+      "../browser/extensions/blocked_action_waiter.cc",
+      "../browser/extensions/blocked_action_waiter.h",
       "../browser/extensions/extension_service_test_base.cc",
       "../browser/extensions/extension_service_test_base.h",
       "../browser/extensions/extension_service_test_with_install.cc",

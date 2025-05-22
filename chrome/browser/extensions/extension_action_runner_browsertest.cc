@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/extensions/blocked_action_waiter.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
@@ -240,7 +241,7 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
 
   ASSERT_EQ(REQUIRES_CONSENT, requires_consent);
 
-  browsertest_util::BlockedActionWaiter waiter(runner);
+  BlockedActionWaiter waiter(runner);
   navigate();
   waiter.Wait();
   EXPECT_TRUE(runner->WantsToRun(extension));

@@ -8,6 +8,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_host.h"
@@ -88,6 +89,20 @@ void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
   content::StopServiceWorkerForScope(service_worker_context, extension->url(),
                                      run_loop.QuitClosure());
   run_loop.Run();
+}
+
+bool DidChangeTitle(content::WebContents& web_contents,
+                    const std::u16string& original_title,
+                    const std::u16string& changed_title) {
+  const std::u16string& title = web_contents.GetTitle();
+  if (title == changed_title) {
+    return true;
+  }
+  if (title == original_title) {
+    return false;
+  }
+  ADD_FAILURE() << "Unexpected page title found:  " << title;
+  return false;
 }
 
 }  // namespace extensions::browsertest_util

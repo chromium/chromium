@@ -91,32 +91,4 @@ size_t GetWindowControllerCountInProfile(Profile* profile) {
   return count;
 }
 
-bool DidChangeTitle(content::WebContents& web_contents,
-                    const std::u16string& original_title,
-                    const std::u16string& changed_title) {
-  const std::u16string& title = web_contents.GetTitle();
-  if (title == changed_title) {
-    return true;
-  }
-  if (title == original_title) {
-    return false;
-  }
-  ADD_FAILURE() << "Unexpected page title found:  " << title;
-  return false;
-}
-
-BlockedActionWaiter::BlockedActionWaiter(ExtensionActionRunner* runner) {
-  action_runner_observation_.Observe(runner);
-}
-
-BlockedActionWaiter::~BlockedActionWaiter() = default;
-
-void BlockedActionWaiter::Wait() {
-  run_loop_.Run();
-}
-
-void BlockedActionWaiter::OnBlockedActionAdded() {
-  run_loop_.Quit();
-}
-
 }  // namespace extensions::browsertest_util
