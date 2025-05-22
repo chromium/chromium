@@ -158,10 +158,6 @@ class OnDeviceModelServiceController
     return safety_client_.language_detection_model_path();
   }
 
-  mojo::Remote<on_device_model::mojom::OnDeviceModel>& base_model_remote() {
-    return base_model_controller_->remote();
-  }
-
  private:
   // A set of (references to) compatible, versioned dependencies that implement
   // a ModelBasedCapability.
@@ -233,11 +229,6 @@ class OnDeviceModelServiceController
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& DirectUse();
 
     on_device_model::ModelAssetPaths PopulateModelPaths();
-
-    // TODO(holte): Eliminate this accessor
-    mojo::Remote<on_device_model::mojom::OnDeviceModel>& remote() {
-      return remote_;
-    }
 
     OnDeviceModelMetadata* model_metadata() { return model_metadata_.get(); }
 
