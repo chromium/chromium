@@ -667,6 +667,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Preview.TimeToStoreFirstUsableFrameAfterStartCapture"
+    units="ms" expires_after="2026-05-22">
+  <owner>chazzy@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When generating a preview for a background tab, this measures the time
+    between starting a video capture and storing the first usable frame as the
+    current thumbnail.
+  </summary>
+</histogram>
+
 <histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
     expires_after="2025-05-11">
   <owner>gambard@chromium.org</owner>

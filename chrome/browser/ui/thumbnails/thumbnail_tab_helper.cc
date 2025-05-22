@@ -305,6 +305,14 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
     const SkBitmap& bitmap,
     uint64_t frame_id) {
+  // If this is the first thumbnail being stored, record the time it took from
+  // capturing to storing the frame.
+  if (!thumbnail_->has_data() &&
+      start_video_capture_time_ != base::TimeTicks()) {
+    UMA_HISTOGRAM_TIMES(
+        "Tab.Preview.TimeToStoreFirstUsableFrameAfterStartCapture",
+        base::TimeTicks::Now() - start_video_capture_time_);
+  }
   StoreThumbnail(CaptureType::kVideoFrame, bitmap, frame_id);
 }
 
@@ -339,6 +347,8 @@ void ThumbnailTabHelper::StartVideoCapture() {
     return;
   }
 
+  start_video_capture_time_ = base::TimeTicks::Now();
+
   last_frame_capture_info_ = GetInitialCaptureInfo(
       source_size, scale_factor, /* include_scrollbars_in_capture */ true);
   background_capturer_->Start(last_frame_capture_info_);
@@ -346,6 +356,7 @@ void ThumbnailTabHelper::StartVideoCapture() {
 
 void ThumbnailTabHelper::StopVideoCapture() {
   background_capturer_->Stop();
+  start_video_capture_time_ = base::TimeTicks();
 }
 
 // static
