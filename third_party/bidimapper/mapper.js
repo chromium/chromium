@@ -217,6 +217,7 @@
         (function (EventNames) {
             EventNames["RequestDevicePromptUpdated"] = "bluetooth.requestDevicePromptUpdated";
             EventNames["GattConnectionAttempted"] = "bluetooth.gattConnectionAttempted";
+            EventNames["CharacteristicEventGenerated"] = "bluetooth.characteristicEventGenerated";
         })(Bluetooth.EventNames || (Bluetooth.EventNames = {}));
     })(Bluetooth$2 || (Bluetooth$2 = {}));
     const EVENT_NAMES = new Set([
@@ -385,6 +386,9 @@
             return params;
         }
         parseSimulateCharacteristicParameters(params) {
+            return params;
+        }
+        parseSimulateCharacteristicResponseParameters(params) {
             return params;
         }
         parseSimulateDescriptorParameters(params) {
@@ -565,17 +569,30 @@
             return {};
         }
         async createUserContext(params) {
-            if (params['acceptInsecureCerts'] !== undefined) {
-                if (params['acceptInsecureCerts'] === false &&
+            const w3cParams = params;
+            if (w3cParams.acceptInsecureCerts !== undefined) {
+                if (w3cParams.acceptInsecureCerts === false &&
                     this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true)
                     throw new UnknownErrorException(`Cannot set user context's "acceptInsecureCerts" to false, when a capability "acceptInsecureCerts" is set to true`);
             }
-            const request = {
-                proxyServer: params['goog:proxyServer'] ?? undefined,
-            };
-            const proxyBypassList = params['goog:proxyBypassList'] ?? undefined;
-            if (proxyBypassList) {
-                request.proxyBypassList = proxyBypassList.join(',');
+            const request = {};
+            if (w3cParams.proxy) {
+                const proxyStr = getProxyStr(w3cParams.proxy);
+                if (proxyStr) {
+                    request.proxyServer = proxyStr;
+                }
+                if (w3cParams.proxy.noProxy) {
+                    request.proxyBypassList = w3cParams.proxy.noProxy.join(',');
+                }
+            }
+            else {
+                if (params['goog:proxyServer'] !== undefined) {
+                    request.proxyServer = params['goog:proxyServer'];
+                }
+                const proxyBypassList = params['goog:proxyBypassList'] ?? undefined;
+                if (proxyBypassList) {
+                    request.proxyBypassList = proxyBypassList.join(',');
+                }
             }
             const context = await this.#browserCdpClient.sendCommand('Target.createBrowserContext', request);
             this.#userContextStorage.getConfig(context.browserContextId).acceptInsecureCerts = params['acceptInsecureCerts'];
@@ -633,6 +650,49 @@
             }
             return { clientWindows: uniqueClientWindows };
         }
+    }
+    function getProxyStr(proxyConfig) {
+        if (proxyConfig.proxyType === 'direct' ||
+            proxyConfig.proxyType === 'system') {
+            return undefined;
+        }
+        if (proxyConfig.proxyType === 'pac') {
+            throw new UnsupportedOperationException(`PAC proxy configuration is not supported per user context`);
+        }
+        if (proxyConfig.proxyType === 'autodetect') {
+            throw new UnsupportedOperationException(`Autodetect proxy is not supported per user context`);
+        }
+        if (proxyConfig.proxyType === 'manual') {
+            const servers = [];
+            if (proxyConfig.httpProxy !== undefined) {
+                servers.push(`http=${proxyConfig.httpProxy}`);
+            }
+            if (proxyConfig.ftpProxy !== undefined) {
+                servers.push(`ftp=${proxyConfig.ftpProxy}`);
+            }
+            if (proxyConfig.sslProxy !== undefined) {
+                servers.push(`https=${proxyConfig.sslProxy}`);
+            }
+            if (proxyConfig.socksProxy !== undefined ||
+                proxyConfig.socksVersion !== undefined) {
+                if (proxyConfig.socksProxy === undefined) {
+                    throw new InvalidArgumentException(`'socksVersion' cannot be set without 'socksProxy'`);
+                }
+                if (proxyConfig.socksVersion === undefined ||
+                    typeof proxyConfig.socksVersion !== 'number' ||
+                    !Number.isInteger(proxyConfig.socksVersion) ||
+                    proxyConfig.socksVersion < 0 ||
+                    proxyConfig.socksVersion > 255) {
+                    throw new InvalidArgumentException(`'socksVersion' must be between 0 and 255`);
+                }
+                servers.push(`socks=socks${proxyConfig.socksVersion}://${proxyConfig.socksProxy}`);
+            }
+            if (servers.length === 0) {
+                return undefined;
+            }
+            return servers.join(';');
+        }
+        throw new UnknownErrorException(`Unknown proxy type`);
     }
 
     /**
@@ -4448,7 +4508,7 @@
                 case 'bluetooth.simulateCharacteristic':
                     return await this.#bluetoothProcessor.simulateCharacteristic(this.#parser.parseSimulateCharacteristicParameters(command.params));
                 case 'bluetooth.simulateCharacteristicResponse':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#bluetoothProcessor.simulateCharacteristicResponse(this.#parser.parseSimulateCharacteristicResponseParameters(command.params));
                 case 'bluetooth.simulateDescriptor':
                     return await this.#bluetoothProcessor.simulateDescriptor(this.#parser.parseSimulateDescriptorParameters(command.params));
                 case 'bluetooth.simulateDescriptorResponse':
@@ -4686,10 +4746,12 @@
         #eventManager;
         #browsingContextStorage;
         #bluetoothDevices;
+        #bluetoothCharacteristics;
         constructor(eventManager, browsingContextStorage) {
             this.#eventManager = eventManager;
             this.#browsingContextStorage = browsingContextStorage;
             this.#bluetoothDevices = new Map();
+            this.#bluetoothCharacteristics = new Map();
         }
         #getDevice(address) {
             const device = this.#bluetoothDevices.get(address);
@@ -4726,6 +4788,7 @@
             const context = this.#browsingContextStorage.getContext(params.context);
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             this.#bluetoothDevices.clear();
+            this.#bluetoothCharacteristics.clear();
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
                 state: params.state,
                 leSupported: params.leSupported ?? true,
@@ -4736,6 +4799,7 @@
             const context = this.#browsingContextStorage.getContext(params.context);
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             this.#bluetoothDevices.clear();
+            this.#bluetoothCharacteristics.clear();
             return {};
         }
         async simulatePreconnectedPeripheral(params) {
@@ -4776,7 +4840,9 @@
                         characteristicUuid: params.characteristicUuid,
                         properties: params.characteristicProperties,
                     });
-                    service.characteristics.set(params.characteristicUuid, new BluetoothCharacteristic(response.characteristicId, params.characteristicUuid, service));
+                    const characteristic = new BluetoothCharacteristic(response.characteristicId, params.characteristicUuid, service);
+                    service.characteristics.set(params.characteristicUuid, characteristic);
+                    this.#bluetoothCharacteristics.set(characteristic.id, characteristic);
                     return {};
                 }
                 case 'remove': {
@@ -4788,11 +4854,27 @@
                         characteristicId: characteristic.id,
                     });
                     service.characteristics.delete(params.characteristicUuid);
+                    this.#bluetoothCharacteristics.delete(characteristic.id);
                     return {};
                 }
                 default:
                     throw new InvalidArgumentException(`Parameter "type" of ${params.type} is not supported`);
             }
+        }
+        async simulateCharacteristicResponse(params) {
+            const context = this.#browsingContextStorage.getContext(params.context);
+            const device = this.#getDevice(params.address);
+            const service = this.#getService(device, params.serviceUuid);
+            const characteristic = this.#getCharacteristic(service, params.characteristicUuid);
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.simulateCharacteristicOperationResponse', {
+                characteristicId: characteristic.id,
+                type: params.type,
+                code: params.code,
+                ...(params.data && {
+                    data: btoa(String.fromCharCode(...params.data)),
+                }),
+            });
+            return {};
         }
         async simulateDescriptor(params) {
             const device = this.#getDevice(params.address);
@@ -4897,6 +4979,36 @@
                             code: 0x0,
                         });
                 }
+            });
+            cdpTarget.browserCdpClient.on('BluetoothEmulation.characteristicOperationReceived', (event) => {
+                if (!this.#bluetoothCharacteristics.has(event.characteristicId)) {
+                    return;
+                }
+                let type;
+                if (event.type === 'write') {
+                    if (event.writeType === 'write-default-deprecated') {
+                        return;
+                    }
+                    type = event.writeType;
+                }
+                else {
+                    type = event.type;
+                }
+                const characteristic = this.#bluetoothCharacteristics.get(event.characteristicId);
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: 'bluetooth.characteristicEventGenerated',
+                    params: {
+                        context: cdpTarget.id,
+                        address: characteristic.service.device.address,
+                        serviceUuid: characteristic.service.uuid,
+                        characteristicUuid: characteristic.uuid,
+                        type,
+                        ...(event.data && {
+                            data: Array.from(atob(event.data), (c) => c.charCodeAt(0)),
+                        }),
+                    },
+                }, cdpTarget.id);
             });
         }
         async handleRequestDevicePrompt(params) {
@@ -14603,6 +14715,10 @@
             data: z.array(z.number().int().nonnegative()).optional(),
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
+    z.lazy(() => z.union([
+        Bluetooth$1.RequestDevicePromptUpdatedSchema,
+        Bluetooth$1.GattConnectionAttemptedSchema,
+    ]));
     (function (Bluetooth) {
         Bluetooth.RequestDevicePromptUpdatedSchema = z.lazy(() => z.object({
             method: z.literal('bluetooth.requestDevicePromptUpdated'),
@@ -15072,6 +15188,7 @@
     (function (Browser) {
         Browser.CreateUserContextParametersSchema = z.lazy(() => z.object({
             acceptInsecureCerts: z.boolean().optional(),
+            proxy: Session$1.ProxyConfigurationSchema.optional(),
         }));
     })(Browser$1 || (Browser$1 = {}));
     (function (Browser) {
@@ -17413,6 +17530,11 @@
             return parseObject(params, Bluetooth$1.SimulateCharacteristicParametersSchema);
         }
         Bluetooth.parseSimulateCharacteristicParams = parseSimulateCharacteristicParams;
+        function parseSimulateCharacteristicResponseParams(params) {
+            return parseObject(params, Bluetooth$1
+                .SimulateCharacteristicResponseParametersSchema);
+        }
+        Bluetooth.parseSimulateCharacteristicResponseParams = parseSimulateCharacteristicResponseParams;
         function parseSimulateDescriptorParams(params) {
             return parseObject(params, Bluetooth$1.SimulateDescriptorParametersSchema);
         }
@@ -17464,6 +17586,9 @@
         }
         parseSimulateCharacteristicParameters(params) {
             return Bluetooth.parseSimulateCharacteristicParams(params);
+        }
+        parseSimulateCharacteristicResponseParameters(params) {
+            return Bluetooth.parseSimulateCharacteristicResponseParams(params);
         }
         parseSimulateDescriptorParameters(params) {
             return Bluetooth.parseSimulateDescriptorParams(params);
