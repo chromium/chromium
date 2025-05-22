@@ -108,6 +108,21 @@ constexpr std::string_view kAcceptSignature = "accept-signature";
 
 const GURL kExampleURL = GURL("https://example.test/");
 
+std::unique_ptr<net::URLRequest> CreateRequest(
+    const net::URLRequestContext& context,
+    const GURL& url) {
+  std::unique_ptr<net::URLRequest> request =
+      context.CreateRequest(url, net::DEFAULT_PRIORITY, /*delegate=*/nullptr,
+                            TRAFFIC_ANNOTATION_FOR_TESTS);
+  return request;
+}
+
+std::unique_ptr<net::URLRequest> CreateRequest(
+    const net::URLRequestContext& context,
+    const std::string_view url_string) {
+  return CreateRequest(context, GURL(url_string));
+}
+
 }  // namespace
 
 class SRIMessageSignatureParserTest : public testing::Test {
@@ -736,9 +751,11 @@ TEST_F(SRIMessageSignatureParserTest, ParameterSorting) {
 //
 class SRIMessageSignatureBaseTest : public testing::Test {
  protected:
-  SRIMessageSignatureBaseTest() {}
+  SRIMessageSignatureBaseTest()
+      : context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        request_(CreateRequest(*context_, kExampleURL)) {}
 
-  const GURL& url() { return kExampleURL; }
+  const net::URLRequest& request() { return *request_; }
 
   scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInput(
       const char* input) {
@@ -758,6 +775,12 @@ class SRIMessageSignatureBaseTest : public testing::Test {
     }
     return builder.Build();
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> request_;
 };
 
 TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
@@ -766,7 +789,7 @@ TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
   mojom::SRIMessageSignaturePtr signature;
 
   std::optional<std::string> result =
-      ConstructSignatureBase(signature, this->url(), *headers);
+      ConstructSignatureBase(signature, request(), *headers);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -777,7 +800,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
   EXPECT_EQ(0u, parsed->issues.size());
 
   std::optional<std::string> result =
-      ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+      ConstructSignatureBase(parsed->signatures[0], request(), *headers);
   ASSERT_TRUE(result.has_value());
   std::string expected_base =
       base::StrCat({"\"unencoded-digest\";sf: ", kValidDigestHeader,
@@ -821,7 +844,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
         base::StrCat({"\"unencoded-digest\";sf: ", kValidDigestHeader,
@@ -865,8 +888,9 @@ TEST_F(SRIMessageSignatureBaseTest, AuthorityComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
+    request_ = CreateRequest(*context_, test.url);
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -903,8 +927,9 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
+    request_ = CreateRequest(*context_, test.url);
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -950,8 +975,9 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       ASSERT_EQ(1u, parsed->signatures.size()) << parsed->issues[0]->error;
       EXPECT_EQ(0u, parsed->issues.size());
 
-      std::optional<std::string> result = ConstructSignatureBase(
-          parsed->signatures[0], GURL(test.url), *headers);
+      request_ = CreateRequest(*context_, test.url);
+      std::optional<std::string> result =
+          ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
       EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
     }
@@ -975,8 +1001,9 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       ASSERT_EQ(1u, parsed->signatures.size()) << parsed->issues[0]->error;
       EXPECT_EQ(0u, parsed->issues.size());
 
-      std::optional<std::string> result = ConstructSignatureBase(
-          parsed->signatures[0], GURL(test.url), *headers);
+      request_ = CreateRequest(*context_, test.url);
+      std::optional<std::string> result =
+          ConstructSignatureBase(parsed->signatures[0], request(), *headers);
       ASSERT_TRUE(result.has_value());
       EXPECT_EQ(expected_base.str(), result.value()) << GURL(test.url).query();
     }
@@ -1020,8 +1047,9 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
+    request_ = CreateRequest(*context_, test.url);
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -1056,8 +1084,9 @@ TEST_F(SRIMessageSignatureBaseTest, SchemeComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
+    request_ = CreateRequest(*context_, test.url);
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -1091,8 +1120,8 @@ TEST_F(SRIMessageSignatureBaseTest, StatusComponent) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->issues.size());
 
-    std::optional<std::string> result = ConstructSignatureBase(
-        parsed->signatures[0], GURL(kExampleURL), *headers);
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -1149,7 +1178,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -1182,7 +1211,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     EXPECT_THAT(result, testing::Optional(expected_base.str()));
   } while (std::next_permutation(params.begin(), params.end()));
 }
@@ -1206,7 +1235,7 @@ TEST_F(SRIMessageSignatureBaseTest, UnknownParameters) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
         base::StrCat({"\"unencoded-digest\";sf: ", kValidDigestHeader,
@@ -1222,7 +1251,11 @@ TEST_F(SRIMessageSignatureBaseTest, UnknownParameters) {
 //
 class SRIMessageSignatureValidationTest : public testing::Test {
  protected:
-  SRIMessageSignatureValidationTest() {}
+  SRIMessageSignatureValidationTest()
+      : context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        request_(CreateRequest(*context_, kExampleURL)) {}
+
+  const net::URLRequest& request() { return *request_; }
 
   scoped_refptr<net::HttpResponseHeaders> Headers(std::string_view digest,
                                                   std::string_view signature,
@@ -1240,8 +1273,6 @@ class SRIMessageSignatureValidationTest : public testing::Test {
     }
     return builder.Build();
   }
-
-  const GURL& url() { return kExampleURL; }
 
   scoped_refptr<net::HttpResponseHeaders> ValidHeaders() {
     return Headers(kValidDigestHeader, kValidSignatureHeader,
@@ -1262,6 +1293,9 @@ class SRIMessageSignatureValidationTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> request_;
 };
 
 TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
@@ -1272,7 +1306,7 @@ TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
   EXPECT_EQ(0u, parsed->issues.size());
 
   EXPECT_TRUE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   EXPECT_EQ(0u, parsed->issues.size());
 }
 
@@ -1283,7 +1317,7 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
   EXPECT_EQ(0u, parsed->issues.size());
 
   EXPECT_TRUE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   EXPECT_EQ(0u, parsed->issues.size());
 }
 
@@ -1306,7 +1340,7 @@ TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
   EXPECT_EQ(0u, parsed->issues.size());
 
   EXPECT_FALSE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   ASSERT_EQ(1u, parsed->issues.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
             parsed->issues[0]->error);
@@ -1326,7 +1360,7 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
   EXPECT_EQ(0u, parsed->issues.size());
 
   EXPECT_TRUE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   EXPECT_EQ(0u, parsed->issues.size());
 }
 
@@ -1342,18 +1376,18 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
               base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 - 1;
   task_environment_.AdvanceClock(base::Seconds(diff));
   EXPECT_TRUE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   ASSERT_EQ(0u, parsed->issues.size());
 
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_TRUE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   ASSERT_EQ(0u, parsed->issues.size());
 
   // ...but not after expiration.
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_FALSE(
-      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+      ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
   ASSERT_EQ(1u, parsed->issues.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureExpired,
             parsed->issues[0]->error);
@@ -1376,7 +1410,7 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     EXPECT_EQ(0u, parsed->issues.size());
 
     EXPECT_FALSE(
-        ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+        ValidateSRIMessageSignaturesOverHeaders(parsed, request(), *headers));
     EXPECT_EQ(1u, parsed->issues.size());
     EXPECT_EQ(
         mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
@@ -1411,8 +1445,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
       features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead("", "", "");
-  auto result =
-      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
+  auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
   EXPECT_FALSE(result.has_value());
 }
 
@@ -1425,8 +1458,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
-  auto result =
-      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
+  auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
   EXPECT_FALSE(result.has_value());
 }
 
@@ -1442,7 +1474,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
 
   // Matching key.
   {
-    auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head,
+    auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head,
                                                            {kPublicKey});
     EXPECT_FALSE(result.has_value());
   }
@@ -1451,7 +1483,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
   {
     std::string wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     auto result = MaybeBlockResponseForSRIMessageSignature(
-        this->url(), *head, {kPublicKey, wrong_key});
+        request(), *head, {kPublicKey, wrong_key});
     EXPECT_FALSE(result.has_value());
   }
 
@@ -1459,7 +1491,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
   {
     std::string wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     auto result = MaybeBlockResponseForSRIMessageSignature(
-        this->url(), *head, {wrong_key, kPublicKey});
+        request(), *head, {wrong_key, kPublicKey});
     EXPECT_FALSE(result.has_value());
   }
 }
@@ -1476,7 +1508,7 @@ TEST_P(SRIMessageSignatureEnforcementTest,
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
   auto result =
-      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {wrong_key});
+      MaybeBlockResponseForSRIMessageSignature(request(), *head, {wrong_key});
 
   // Regardless of the feature-flag's state, integrity requirements are
   // enforced.
@@ -1500,8 +1532,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result =
-      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
+  auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
   if (feature_flag_enabled) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
@@ -1530,7 +1561,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
   auto result =
-      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {wrong_key});
+      MaybeBlockResponseForSRIMessageSignature(request(), *head, {wrong_key});
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
             result.value());
@@ -1557,7 +1588,9 @@ class SRIMessageSignatureRequestHeaderTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   std::unique_ptr<net::URLRequestContext> context_;
   std::unique_ptr<net::URLRequest> url_request_;
 };

@@ -573,9 +573,12 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
 
 std::optional<std::string> ConstructSignatureBase(
     const mojom::SRIMessageSignaturePtr& signature,
-    const GURL& request_url,
+    const net::URLRequest& url_request,
     const net::HttpResponseHeaders& headers) {
-  if (!signature || !request_url.is_valid()) {
+  const GURL request_url = url_request.url();
+  DCHECK(request_url.is_valid());
+
+  if (!signature) {
     return std::nullopt;
   }
 
@@ -678,10 +681,13 @@ std::optional<std::string> ConstructSignatureBase(
 
 bool ValidateSRIMessageSignaturesOverHeaders(
     mojom::SRIMessageSignaturesPtr& message_signatures,
-    const GURL& request_url,
+    const net::URLRequest& url_request,
     const net::HttpResponseHeaders& headers) {
+  const GURL request_url = url_request.url();
+  DCHECK(url_request.url().is_valid());
+
   // If no signatures are present, validation automatically succeeds.
-  if (!message_signatures->signatures.size() || !request_url.is_valid()) {
+  if (!message_signatures->signatures.size()) {
     return true;
   }
 
@@ -700,7 +706,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 
     // Generate the signature base:
     std::string signature_base =
-        ConstructSignatureBase(message_signature, request_url, headers)
+        ConstructSignatureBase(message_signature, url_request, headers)
             .value_or("");
 
     // Decode the public key, and validate that both the public key and the
@@ -736,7 +742,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
-    const GURL& request_url,
+    const net::URLRequest& url_request,
     const network::mojom::URLResponseHead& response,
     const std::vector<std::string>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
@@ -748,14 +754,15 @@ MaybeBlockResponseForSRIMessageSignature(
     return std::nullopt;
   }
 
-  // No headers, no blocking.
+  // No headers, no URL: no blocking.
+  const GURL request_url = url_request.url();
   if (!response.headers || !request_url.is_valid()) {
     return std::nullopt;
   }
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
   bool passed_validation =
       !parsed_headers->signatures.size() ||
-      (ValidateSRIMessageSignaturesOverHeaders(parsed_headers, request_url,
+      (ValidateSRIMessageSignaturesOverHeaders(parsed_headers, url_request,
                                                *response.headers) &&
        MatchExpectedPublicKeys(parsed_headers, expected_public_keys));
 
