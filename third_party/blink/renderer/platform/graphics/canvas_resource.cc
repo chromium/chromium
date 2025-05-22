@@ -175,15 +175,9 @@ bool CanvasResource::PrepareTransferableResource(
     return false;
   }
 
-  viz::TransferableResource::MetadataOverride overrides;
-
-  // TODO(crbug.com/645993): For WebGL, this should be inherited from the WebGL
-  // context's creation settings.
-  overrides.alpha_type = kPremul_SkAlphaType;
   *out_resource = viz::TransferableResource::Make(
       client_shared_image, GetTransferableResourceSource(),
-      GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
-      overrides);
+      GetSyncTokenWithOptionalVerification(needs_verified_synctoken));
 
   out_resource->hdr_metadata = GetHDRMetadata();
   out_resource->is_low_latency_rendering = client_shared_image->usage().Has(
