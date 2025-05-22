@@ -291,16 +291,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             TabGroupMetadata tabGroupMetadata,
             int tabAtIndex) {
         long startTime = SystemClock.elapsedRealtime();
-        int tabGroupSizeBeforeReparent = tabGroupMetadata.tabIdsToUrls.size();
-        // Records tab group reparenting group size histogram.
-        RecordHistogram.recordCount1000Histogram(
-                "Android.Reparent.TabGroup.GroupSize", tabGroupSizeBeforeReparent);
-
         // 1. Pause the relevant observers prior to detaching the grouped tabs.
         pauseObserversForGroupReparenting(tabGroupMetadata);
 
         // 2. Setup the re-parenting intent, detaching the grouped tabs from the current activity.
         Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
+        intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
         setupIntentForGroupReparenting(tabGroupMetadata, intent, null);
 
         // 3. Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
@@ -315,23 +311,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
                     resumeSyncService(tabGroupMetadata);
-
-                    // Records tab group reparenting duration histogram.
-                    long currentTime = SystemClock.elapsedRealtime();
-                    RecordHistogram.recordLongTimesHistogram(
-                            "Android.Reparent.TabGroup.Duration", currentTime - startTime);
-
-                    // Records tab group reparenting group size diff histogram.
-                    int destWindowId =
-                            TabWindowManagerSingleton.getInstance().getIdForWindow(targetActivity);
-                    TabGroupModelFilter destWindowModelFilter =
-                            getTabGroupModelFilterByWindowId(
-                                    destWindowId, tabGroupMetadata.isIncognito);
-                    int tabGroupSizeAfterReparent =
-                            destWindowModelFilter.getTabCountForGroup(tabGroupMetadata.tabGroupId);
-                    RecordHistogram.recordCount1000Histogram(
-                            "Android.Reparent.TabGroup.GroupSize.Diff",
-                            tabGroupSizeBeforeReparent - tabGroupSizeAfterReparent);
                 });
     }
 
@@ -1067,6 +1046,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @VisibleForTesting
     void beginReparentingTabGroup(TabGroupMetadata tabGroupMetadata, Intent intent) {
+        long startTime = SystemClock.elapsedRealtime();
+        intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
+
         // Pause observers before detaching tabs.
         pauseObserversForGroupReparenting(tabGroupMetadata);
 

@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGR
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
+import android.os.SystemClock;
 import android.provider.Browser;
 
 import androidx.test.filters.MediumTest;
@@ -572,9 +573,17 @@ public class ChromeTabbedActivityTest {
     }
 
     private void testTabGroupIntent(boolean shouldApplyCollapse) {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize", 3)
+                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize.Diff", 0)
+                        .expectAnyRecord("Android.Reparent.TabGroup.Duration")
+                        .build();
+        long startTime = SystemClock.elapsedRealtime();
         int initialWindowCount = MultiWindowUtils.getInstanceCount();
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
+        intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -635,6 +644,9 @@ public class ChromeTabbedActivityTest {
                     } else {
                         Assert.assertFalse(filter.getTabGroupCollapsed(expectedRootId));
                     }
+
+                    // Verify histograms.
+                    histogramExpectation.assertExpected();
                 });
     }
 

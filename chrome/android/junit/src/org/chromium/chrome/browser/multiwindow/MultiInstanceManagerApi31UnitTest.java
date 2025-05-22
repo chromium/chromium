@@ -62,7 +62,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -1642,13 +1641,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     private void doTestReparentGroupToRunningActivity(boolean isGroupShared) {
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Android.Reparent.TabGroup.GroupSize", 3)
-                        .expectAnyRecord("Android.Reparent.TabGroup.GroupSize.Diff")
-                        .expectAnyRecord("Android.Reparent.TabGroup.Duration")
-                        .build();
-
         // Setup.
         mMultiInstanceManager.mTestBuildInstancesList = true;
         ArrayList<Map.Entry<Integer, String>> tabIdsToUrls =
@@ -1690,8 +1682,5 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
-
-        // Verify histograms.
-        histogramExpectation.assertExpected();
     }
 }

@@ -270,6 +270,10 @@ public class IntentHandler {
     public static final String EXTRA_TAB_GROUP_METADATA =
             "org.chromium.chrome.browser.tab_group_metadata";
 
+    /** Used to measure the duration of the tab group drag drop reparenting process. */
+    public static final String EXTRA_REPARENT_START_TIME =
+            "org.chromium.chrome.browser.reparent_start_time";
+
     public static final String EXTRA_CCT_EARLY_NAV = "org.chromium.chrome.browser.cct_early_nav";
 
     /** The package name for the Google Search App. */
