@@ -125,6 +125,74 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
              NetLog::TickCountToString(entry.source.start_time));
   const auto source_type_string = SourceTypeToStaticString(entry.source.type);
   const auto track = get_source_track(entry.source.id, source_type_string);
+  const perfetto::StaticString entry_type_string(
+      NetLogEventTypeToString(entry.type));
+
+  // We use Perfetto Flows to relate the entry back to the thread that caused it
+  // be logged (typically, the network thread). This bridges the gap between
+  // thread call stacks and NetLog, allowing users to correlate them.
+  //
+  // To provide anchor points for the flow, we write instant events on the
+  // current thread stack.
+  //
+  // For "instant" events (NetLogEventPhase::NONE), we simply generate a random
+  // flow ID. The flow starts from the instant event we are writing to the
+  // current thread, and terminates on the NetLog event.
+  //
+  // For non-instant events, it's a bit trickier. For maximum readability, we
+  // want the flow to start from the instant event we are writing to the current
+  // thread for the BEGIN entry, go through the NetLog event, and then terminate
+  // on a separate thread event for the END entry. This means we need to use the
+  // same flow ID for BEGIN and END entries. There is no obvious ID we can use
+  // that would be identical between the two entries. The approach we use here
+  // is to generate the flow ID from the Track ID and the NetLog event type.
+  // This will work as long as a given Track doesn't have two NetLog events that
+  // are the same type *and* overlap in time. If this assumption breaks, we will
+  // need to revisit this approach; we may need to track additional state.
+  const auto thread_event_name_str = base::StringPrintf(
+      "%s: %s%s/%s", root_track_name_.value,
+      [&] {
+        switch (entry.phase) {
+          case NetLogEventPhase::BEGIN:
+            return "BEGIN ";
+          case NetLogEventPhase::END:
+            return "END ";
+          case NetLogEventPhase::NONE:
+            return "";
+        }
+      }(),
+      source_type_string.value, entry_type_string.value);
+  // Note: the separate variable is load-bearing, as DynamicString will not
+  // retain the std::string. See https://crbug.com/417982839.
+  const perfetto::DynamicString thread_event_name(thread_event_name_str);
+  const uint64_t thread_flow_id =
+      entry.phase == NetLogEventPhase::NONE
+          ? base::RandUint64()
+          : track.uuid + std::hash<std::string_view>()(std::string_view(
+                             reinterpret_cast<const char*>(&entry.type),
+                             sizeof(entry.type)));
+  if (entry.phase != NetLogEventPhase::END) {
+    TRACE_EVENT_INSTANT(kNetLogTracingCategory, thread_event_name,
+                        perfetto::Flow::ProcessScoped(thread_flow_id));
+  } else {
+    TRACE_EVENT_INSTANT(
+        kNetLogTracingCategory, thread_event_name,
+        perfetto::TerminatingFlow::ProcessScoped(thread_flow_id));
+  }
+  const auto add_thread_flow = [&](perfetto::EventContext& event_context) {
+    switch (entry.phase) {
+      case NetLogEventPhase::BEGIN:
+        perfetto::Flow::ProcessScoped(thread_flow_id)(event_context);
+        break;
+      case NetLogEventPhase::END:
+        // No need to add the flow: we already added it to this event while
+        // processing the BEGIN entry.
+        break;
+      case NetLogEventPhase::NONE:
+        perfetto::TerminatingFlow::ProcessScoped(thread_flow_id)(event_context);
+        break;
+    }
+  };
 
   // The tracing category must be a compile-time constant, hence the macro to
   // handle the sensitive vs non-sensitive categories.
@@ -154,8 +222,7 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
         source_dependency_type.has_value()) {
       source_dependency_flow_id = base::RandUint64();
       CALL_TRACE_EVENT(
-          TRACE_EVENT_INSTANT,
-          perfetto::StaticString(NetLogEventTypeToString(entry.type)),
+          TRACE_EVENT_INSTANT, entry_type_string,
           get_source_track(
               *source_dependency_id,
               SourceTypeToStaticString(
@@ -163,31 +230,35 @@ void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
           perfetto::Flow::ProcessScoped(*source_dependency_flow_id));
     }
   }
+  const auto maybe_add_source_dependency_flow =
+      [&](perfetto::EventContext& event_context) {
+        if (source_dependency_flow_id.has_value()) {
+          perfetto::TerminatingFlow::ProcessScoped (*source_dependency_flow_id)(
+              event_context);
+        }
+      };
+
   const auto set_event_fields = [&](perfetto::EventContext& event_context) {
-    if (source_dependency_flow_id.has_value()) {
-      perfetto::TerminatingFlow::ProcessScoped (*source_dependency_flow_id)(
-          event_context);
-    }
+    add_thread_flow(event_context);
+    maybe_add_source_dependency_flow(event_context);
   };
 
   switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
-      CALL_TRACE_EVENT(
-          TRACE_EVENT_BEGIN,
-          perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
-          set_event_fields, "source_type", source_type_string, "params",
-          std::make_unique<TracedValue>(std::move(params)));
+      CALL_TRACE_EVENT(TRACE_EVENT_BEGIN, entry_type_string, track,
+                       set_event_fields, "source_type", source_type_string,
+                       "params",
+                       std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::END:
       CALL_TRACE_EVENT(TRACE_EVENT_END, track, set_event_fields, "params",
                        std::make_unique<TracedValue>(std::move(params)));
       break;
     case NetLogEventPhase::NONE:
-      CALL_TRACE_EVENT(
-          TRACE_EVENT_INSTANT,
-          perfetto::StaticString(NetLogEventTypeToString(entry.type)), track,
-          set_event_fields, "source_type", source_type_string, "params",
-          std::make_unique<TracedValue>(std::move(params)));
+      CALL_TRACE_EVENT(TRACE_EVENT_INSTANT, entry_type_string, track,
+                       set_event_fields, "source_type", source_type_string,
+                       "params",
+                       std::make_unique<TracedValue>(std::move(params)));
       break;
   }
 
