@@ -111,7 +111,6 @@ bool IsProfileStateReady(Browser* browser) {
 
 UserActivityBrowserAgent::UserActivityBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
-      browser_(browser),
       profile_(browser->GetProfile()) {
   SceneState* scene_state = browser_->GetSceneState();
   connection_information_ = scene_state.controller;

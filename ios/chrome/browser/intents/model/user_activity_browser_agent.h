@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "url/gurl.h"
+
 // This browser agent handles user intents events.
 class UserActivityBrowserAgent
     : public BrowserUserData<UserActivityBrowserAgent> {
@@ -103,9 +104,6 @@ class UserActivityBrowserAgent
                                  ApplicationModeForTabOpening target_mode);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The browser associated with this agent.
-  raw_ptr<Browser> browser_ = nullptr;
 
   // The ProfileIOS associated to the browser.
   raw_ptr<ProfileIOS> profile_ = nullptr;
