@@ -781,14 +781,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Inserts a find result into `find_results_`, which is sorted.
   void AddFindResult(PDFiumRange result);
 
-  // Search a page using PDFium's methods.  Doesn't work with unicode.  This
-  // function is just kept arount in case PDFium code is fixed.
-  void SearchUsingPDFium(const std::u16string& term,
-                         bool case_sensitive,
-                         bool first_search,
-                         int character_to_start_searching_from,
-                         int current_page);
-
   // Search a page ourself using ICU.
   void SearchUsingICU(const std::u16string& term,
                       bool case_sensitive,

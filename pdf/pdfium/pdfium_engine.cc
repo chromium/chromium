@@ -1942,19 +1942,11 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   int current_page = next_page_to_search_;
 
   if (pages_[current_page]->available()) {
-    // Don't use PDFium to search for now, since it doesn't support unicode
-    // text. Leave the code for now to avoid bit-rot, in case it's fixed later.
-    // The extra parens suppress a -Wunreachable-code warning.
-    if ((false)) {
-      SearchUsingPDFium(text, case_sensitive, first_search,
-                        character_to_start_searching_from, current_page);
-    } else {
-      SearchUsingICU(
-          text, case_sensitive, first_search, character_to_start_searching_from,
-          last_character_index_to_search_, current_page, last_page_to_search_,
-          base::BindRepeating(&PDFiumEngine::AddFindResult,
-                              weak_factory_.GetWeakPtr()));
-    }
+    SearchUsingICU(
+        text, case_sensitive, first_search, character_to_start_searching_from,
+        last_character_index_to_search_, current_page, last_page_to_search_,
+        base::BindRepeating(&PDFiumEngine::AddFindResult,
+                            weak_factory_.GetWeakPtr()));
 
     if (!IsPageVisible(current_page))
       pages_[current_page]->Unload();
@@ -1996,38 +1988,6 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
         base::BindOnce(&PDFiumEngine::ContinueFind,
                        find_weak_factory_.GetWeakPtr(), case_sensitive));
   }
-}
-
-void PDFiumEngine::SearchUsingPDFium(const std::u16string& term,
-                                     bool case_sensitive,
-                                     bool first_search,
-                                     int character_to_start_searching_from,
-                                     int current_page) {
-  // Find all the matches in the current page.
-  unsigned long flags = case_sensitive ? FPDF_MATCHCASE : 0;
-  FPDF_SCHHANDLE find =
-      FPDFText_FindStart(pages_[current_page]->GetTextPage(),
-                         reinterpret_cast<const unsigned short*>(term.c_str()),
-                         flags, character_to_start_searching_from);
-
-  // Note: since we search one page at a time, we don't find matches across
-  // page boundaries.  We could do this manually ourself, but it seems low
-  // priority since Reader itself doesn't do it.
-  while (FPDFText_FindNext(find)) {
-    PDFiumRange result(pages_[current_page].get(),
-                       FPDFText_GetSchResultIndex(find),
-                       FPDFText_GetSchCount(find));
-
-    if (!first_search && last_character_index_to_search_ != -1 &&
-        result.page_index() == last_page_to_search_ &&
-        result.char_index() >= last_character_index_to_search_) {
-      break;
-    }
-
-    AddFindResult(std::move(result));
-  }
-
-  FPDFText_FindClose(find);
 }
 
 void PDFiumEngine::SearchUsingICU(const std::u16string& term,
