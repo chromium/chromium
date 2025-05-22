@@ -73,7 +73,9 @@ chromium-metrics-reviews@google.com.
   <variant name="NoSparePresent"/>
   <variant name="RefusedByEmbedder"/>
   <variant name="RefusedBySiteInstance"/>
+  <variant name="RefusedForJitMismatch"/>
   <variant name="RefusedForPdfContent"/>
+  <variant name="RefusedForV8OptimizationMismatch"/>
   <variant name="SpareTaken"/>
 </variants>
 

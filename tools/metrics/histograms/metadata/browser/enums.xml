@@ -478,6 +478,8 @@ chromium-metrics-reviews@google.com.
     https://crbug.com/840409).
   </int>
   <int value="6" label="RefusedForPdfContent"/>
+  <int value="7" label="RefusedForJitMismatch"/>
+  <int value="8" label="RefusedForV8OptimizationMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/render_process_host_impl.h:SpareProcessMaybeTakeAction) -->

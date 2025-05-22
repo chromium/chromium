@@ -564,7 +564,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kSpareTaken = 4,
     kRefusedBySiteInstance = 5,
     kRefusedForPdfContent = 6,
-    kMaxValue = kRefusedForPdfContent
+    kRefusedForJitMismatch = 7,
+    kRefusedForV8OptimizationMismatch = 8,
+    kMaxValue = kRefusedForV8OptimizationMismatch
   };
   // LINT.ThenChange(tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 

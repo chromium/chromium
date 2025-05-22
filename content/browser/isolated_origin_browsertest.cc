@@ -7369,7 +7369,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, Localhost) {
 }
 
 // Helper class for testing site isolation triggered by different JIT policies
-// being applied.
+// being applied. Parameterized to run with JIT enabled and disabled by default.
 class JITIsolationTest : public IsolatedOriginTest,
                          public ::testing::WithParamInterface<bool> {
  public:
@@ -7393,10 +7393,12 @@ class JITIsolationTest : public IsolatedOriginTest,
       if (site_url.is_empty()) {
         return is_jit_disabled_by_default_;
       }
-      if (site_url.DomainIs("jit-disabled.com")) {
+      if (site_url.DomainIs("jit-disabled.com") ||
+          site_url.DomainIs("isolated.foo.com")) {
         return true;
       }
-      if (site_url.DomainIs("jit-enabled.com")) {
+      if (site_url.DomainIs("jit-enabled.com") ||
+          site_url.DomainIs("isolated.bar.com")) {
         return false;
       }
       return is_jit_disabled_by_default_;
@@ -7417,27 +7419,47 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, MainFrameTest) {
   JitContentBrowserClient policy(jit_disabled_by_default,
                                  /* disable_site_isolation_entirely */ false);
 
-  // Navigate to jit-disabled.com which should always have JIT disabled.
+  // Navigate to jit-disabled.com which should always have JIT disabled when
+  // site isolation is enabled.
   GURL disabled_url(
       embedded_test_server()->GetURL("www.jit-disabled.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), disabled_url));
 
-  EXPECT_TRUE(shell()
-                  ->web_contents()
-                  ->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->IsJitDisabled());
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_TRUE(shell()
+                    ->web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetProcess()
+                    ->IsJitDisabled());
+  } else {
+    // Otherwise expect to use the default JIT value.
+    EXPECT_EQ(jit_disabled_by_default, shell()
+                                           ->web_contents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetProcess()
+                                           ->IsJitDisabled());
+  }
 
-  // Navigate to jit-enabled.com which should always have JIT enabled.
+  // Navigate to jit-enabled.com which should always have JIT enabled when site
+  // isolation is enabled.
   GURL enabled_url(
       embedded_test_server()->GetURL("www.jit-enabled.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), enabled_url));
 
-  EXPECT_FALSE(shell()
-                   ->web_contents()
-                   ->GetPrimaryMainFrame()
-                   ->GetProcess()
-                   ->IsJitDisabled());
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_FALSE(shell()
+                     ->web_contents()
+                     ->GetPrimaryMainFrame()
+                     ->GetProcess()
+                     ->IsJitDisabled());
+  } else {
+    // Otherwise expect to use the default JIT value.
+    EXPECT_EQ(jit_disabled_by_default, shell()
+                                           ->web_contents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetProcess()
+                                           ->IsJitDisabled());
+  }
 
   // Navigate to a site with no policy and it should match the default.
   GURL default_url(
@@ -7459,13 +7481,21 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, DefaultSiteTest) {
     return;
   }
 
+  // Before adding a custom ContentBrowserClient, the initial empty document
+  // should have JIT enabled by default.
+  EXPECT_FALSE(shell()
+                   ->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->IsJitDisabled());
+
   bool jit_disabled_by_default = GetParam();
   JitContentBrowserClient policy(jit_disabled_by_default,
                                  /* disable_site_isolation_entirely */ true);
 
   // All three sites should have JIT enabled or disabled together, if site
   // isolation is disabled, since they are all put into the default
-  // SiteInstance.
+  // SiteInstance or SiteInstanceGroup.
   GURL disabled_url(
       embedded_test_server()->GetURL("www.jit-disabled.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), disabled_url));
@@ -7495,6 +7525,32 @@ IN_PROC_BROWSER_TEST_P(JITIsolationTest, DefaultSiteTest) {
                                          ->GetPrimaryMainFrame()
                                          ->GetProcess()
                                          ->IsJitDisabled());
+
+  // isolated.foo.com and isolated.bar.com are explicitly isolated in
+  // IsolatedOriginTest::SetUpCommandLine. They will still get their own
+  // process, even with site isolation disabled. Since JIT is enabled or
+  // disabled process wide, the isolated site's process can have a JIT enabled
+  // value that differs from the default, which is specified by
+  // JitContentBrowserClient::IsJitDisabledForSite.
+  GURL foo_isolated_url(
+      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
+  EXPECT_TRUE(IsIsolatedOrigin(foo_isolated_url));
+  EXPECT_TRUE(NavigateToURL(shell(), foo_isolated_url));
+  EXPECT_TRUE(shell()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame()
+                  ->GetProcess()
+                  ->IsJitDisabled());
+
+  GURL bar_isolated_url(
+      embedded_test_server()->GetURL("isolated.bar.com", "/title1.html"));
+  EXPECT_TRUE(IsIsolatedOrigin(bar_isolated_url));
+  EXPECT_TRUE(NavigateToURL(shell(), bar_isolated_url));
+  EXPECT_FALSE(shell()
+                   ->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->IsJitDisabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(JITEnabledByDefault,
@@ -7516,13 +7572,21 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
   EXPECT_TRUE(NavigateToURL(shell(), default_embeds_disabled));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
-  // Top frame 'foo.com' should have JIT enabled as that's the default.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
-  // The frame containing jit-disabled.com should have JIT disabled.
   FrameTreeNode* child_frame_node = root->child_at(0);
-  EXPECT_TRUE(
-      child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  if (AreAllSitesIsolatedForTesting()) {
+    // Top frame 'foo.com' should have JIT enabled as that's the default.
+    EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
+    // The frame containing jit-disabled.com should have JIT disabled.
+    EXPECT_TRUE(
+        child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  } else {
+    // Without site isolation, both frames should have the default, which is JIT
+    // enabled.
+    EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
+    EXPECT_FALSE(
+        child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  }
 
   // And the other way round, where jit-disabled.com embeds foo.com.
   GURL disabled_embeds_default(embedded_test_server()->GetURL(
@@ -7534,13 +7598,22 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameTest) {
                     shell()->web_contents()->GetPrimaryMainFrame())
                     .size());
 
-  // Top frame 'jit-disabled.com' should have JIT disabled.
   root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_TRUE(root->current_frame_host()->GetProcess()->IsJitDisabled());
-  // The frame containing foo.com should have JIT enabled as that's the default.
   child_frame_node = root->child_at(0);
-  EXPECT_FALSE(
-      child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  if (AreAllSitesIsolatedForTesting()) {
+    // Top frame 'jit-disabled.com' should have JIT disabled.
+    EXPECT_TRUE(root->current_frame_host()->GetProcess()->IsJitDisabled());
+    // The frame containing foo.com should have JIT enabled as that's the
+    // default.
+    EXPECT_FALSE(
+        child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  } else {
+    // Without site isolation, both frames should have the default, which is JIT
+    // disabled.
+    EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
+    EXPECT_FALSE(
+        child_frame_node->current_frame_host()->GetProcess()->IsJitDisabled());
+  }
 }
 
 // Check that jitless subframes obey process reuse policies.
@@ -7555,34 +7628,55 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameProcessReuse) {
 
   EXPECT_TRUE(NavigateToURL(shell(), default_embeds_disabled));
 
-  // Top frame 'foo.com' should have JIT enabled as that's the default.
-  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_FALSE(root->current_frame_host()->GetProcess()->IsJitDisabled());
-  // The frame containing jit-disabled.com should have JIT disabled.
-  FrameTreeNode* child = root->child_at(0);
-  EXPECT_TRUE(child->current_frame_host()->GetProcess()->IsJitDisabled());
+  RenderFrameHostImpl* root =
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
+  RenderFrameHostImpl* child = web_contents()
+                                   ->GetPrimaryFrameTree()
+                                   .root()
+                                   ->child_at(0)
+                                   ->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    // Top frame 'foo.com' should have JIT enabled as that's the default.
+    EXPECT_FALSE(root->GetProcess()->IsJitDisabled());
+    // The frame containing jit-disabled.com should have JIT disabled.
+    EXPECT_TRUE(child->GetProcess()->IsJitDisabled());
+  } else {
+    EXPECT_EQ(root->GetProcess(), child->GetProcess());
+    // Without site isolation, both frames should have the default JIT value,
+    // which is enabled.
+    EXPECT_FALSE(root->GetProcess()->IsJitDisabled());
+    EXPECT_FALSE(child->GetProcess()->IsJitDisabled());
+  }
 
   // Create a new window, unrelated to the current one, and set up the same
   // frame hierarchy.
   Shell* new_shell = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(new_shell, default_embeds_disabled));
 
-  FrameTreeNode* new_root =
+  FrameTreeNode* new_root_node =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
           .root();
-  EXPECT_FALSE(new_root->current_frame_host()->GetProcess()->IsJitDisabled());
-
-  FrameTreeNode* new_child = new_root->child_at(0);
-  EXPECT_TRUE(new_child->current_frame_host()->GetProcess()->IsJitDisabled());
+  RenderFrameHostImpl* new_root = new_root_node->current_frame_host();
+  RenderFrameHostImpl* new_child = new_root->child_at(0)->current_frame_host();
 
   // The subframes should be in separate BrowsingInstances, but because they
-  // have the same site, they should share the same process.
-  EXPECT_FALSE(
-      new_child->current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
-          child->current_frame_host()->GetSiteInstance()));
-  EXPECT_EQ(new_child->current_frame_host()->GetProcess(),
-            child->current_frame_host()->GetProcess());
+  // have the same site, they should share the same process with site isolation.
+  // Without site isolation, they will be in the corresponding
+  // BrowsingInstance's default SiteInstance/Group, and will have different
+  // processes.
+  EXPECT_FALSE(new_child->GetSiteInstance()->IsRelatedSiteInstance(
+      child->GetSiteInstance()));
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_FALSE(new_root->GetProcess()->IsJitDisabled());
+    EXPECT_TRUE(new_child->GetProcess()->IsJitDisabled());
+    EXPECT_EQ(new_child->GetProcess(), child->GetProcess());
+  } else {
+    EXPECT_FALSE(new_root->GetProcess()->IsJitDisabled());
+    EXPECT_FALSE(new_child->GetProcess()->IsJitDisabled());
+    EXPECT_EQ(new_root->GetProcess(), new_child->GetProcess());
+    EXPECT_NE(new_child->GetProcess(), child->GetProcess());
+  }
 }
 
 }  // namespace content

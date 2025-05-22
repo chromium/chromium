@@ -262,12 +262,28 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
 
     BrowserContext* browser_context =
         isolation_context.browser_or_resource_context().ToBrowserContext();
+
+    // If the SiteInfo is for a site that does not require a dedicated process
+    // (and will end up in the default SiteInstanceGroup), then we should use
+    // the default JITless and V8 optimization values. Passing an empty URL into
+    // the corresponding ContentBrowserClient functions returns the default
+    // JITless/V8 values for the embedder.
+    GURL lock_url_or_default =
+        ShouldUseDefaultSiteInstanceGroup() &&
+                !RequiresDedicatedProcessInternal(
+                    site_url, isolation_context, browser_context,
+                    url_info.requests_coop_isolation(),
+                    url_info.requests_default_origin_agent_cluster_isolation(),
+                    site_url == GetErrorPageSiteAndLockURL(),
+                    url_info.is_sandboxed, url_info.is_pdf)
+            ? GURL()
+            : lock_url;
     is_jitless =
         is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
-                          browser_context, lock_url);
+                          browser_context, lock_url_or_default);
     are_v8_optimizations_disabled =
         GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-            browser_context, lock_url);
+            browser_context, lock_url_or_default);
 
     if (!storage_partition_config.has_value()) {
       storage_partition_config =
@@ -693,58 +709,12 @@ bool SiteInfo::RequiresDedicatedProcess(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(isolation_context.browser_or_resource_context());
 
-  // If --site-per-process is enabled, site isolation is enabled everywhere.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return true;
-
-  // If there is a COOP header request to require a dedicated process for this
-  // SiteInfo, honor it.  Note that we have already checked other eligibility
-  // criteria such as memory thresholds prior to setting this bit on SiteInfo.
-  if (does_site_request_dedicated_process_for_coop_)
-    return true;
-
-  // Always require a dedicated process for isolated origins.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->IsIsolatedOrigin(isolation_context,
-                               url::Origin::Create(site_url_),
-                               requires_origin_keyed_process_)) {
-    return true;
-  }
-
-  // Require a dedicated process for all sandboxed frames. Note: If this
-  // SiteInstance is a sandboxed child of a sandboxed parent, then the logic in
-  // RenderFrameHostManager::CanUseSourceSiteInstance will assign the child to
-  // the parent's SiteInstance, so we don't need to worry about the parent's
-  // sandbox status here.
-  if (is_sandboxed_)
-    return true;
-
-  // Error pages in main frames do require isolation, however since this is
-  // missing the context whether this is for a main frame or not, that part
-  // is enforced in RenderFrameHostManager.
-  if (is_error_page())
-    return true;
-
-  // Isolate PDF content.
-  if (is_pdf_)
-    return true;
-
-  // Isolate WebUI pages from one another and from other kinds of schemes.
-  for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
-    if (site_url_.SchemeIs(webui_scheme))
-      return true;
-  }
-
-  // Let the content embedder enable site isolation for specific URLs. Use the
-  // canonical site url for this check, so that schemes with nested origins
-  // (blob and filesystem) work properly.
-  if (GetContentClient()->browser()->DoesSiteRequireDedicatedProcess(
-          isolation_context.browser_or_resource_context().ToBrowserContext(),
-          site_url_)) {
-    return true;
-  }
-
-  return false;
+  BrowserContext* browser_context =
+      isolation_context.browser_or_resource_context().ToBrowserContext();
+  return RequiresDedicatedProcessInternal(
+      site_url_, isolation_context, browser_context, is_error_page(),
+      does_site_request_dedicated_process_for_coop_,
+      requires_origin_keyed_process_, is_sandboxed_, is_pdf_);
 }
 
 bool SiteInfo::ShouldLockProcessToSite(
@@ -1011,6 +981,82 @@ GURL SiteInfo::GetOriginBasedSiteURLForDataURL(const url::Origin& origin) {
   CHECK(origin.opaque());
   return GURL(url::kDataScheme + std::string(":") +
               origin.GetNonceForSerialization()->ToString());
+}
+
+// static
+bool SiteInfo::RequiresDedicatedProcessInternal(
+    const GURL& site_url,
+    const IsolationContext& isolation_context,
+    BrowserContext* browser_context,
+    bool does_site_request_dedicated_process_for_coop,
+    bool requires_origin_keyed_process,
+    bool is_error_page,
+    bool is_sandboxed,
+    bool is_pdf) {
+  // If --site-per-process is enabled, site isolation is enabled everywhere.
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    return true;
+  }
+
+  // If there is a COOP header request to require a dedicated process for this
+  // SiteInfo, honor it.  Note that we have already checked other eligibility
+  // criteria such as memory thresholds prior to setting this bit on SiteInfo.
+  if (does_site_request_dedicated_process_for_coop) {
+    return true;
+  }
+
+  // Always require a dedicated process for isolated origins.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (policy->IsIsolatedOrigin(isolation_context, url::Origin::Create(site_url),
+                               requires_origin_keyed_process)) {
+    return true;
+  }
+
+  // Require a dedicated process for all sandboxed frames. Note: If this
+  // SiteInstance is a sandboxed child of a sandboxed parent, then the logic in
+  // RenderFrameHostManager::CanUseSourceSiteInstance will assign the child to
+  // the parent's SiteInstance, so we don't need to worry about the parent's
+  // sandbox status here.
+  if (is_sandboxed) {
+    return true;
+  }
+
+  // Error pages in main frames do require isolation, however since this is
+  // missing the context whether this is for a main frame or not, that part
+  // is enforced in RenderFrameHostManager.
+  if (is_error_page) {
+    return true;
+  }
+
+  // Isolate PDF content.
+  if (is_pdf) {
+    return true;
+  }
+
+  // Isolate WebUI pages from one another and from other kinds of schemes.
+  for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
+    if (site_url.SchemeIs(webui_scheme)) {
+      return true;
+    }
+  }
+
+  // Let the content embedder enable site isolation for specific URLs. Use the
+  // canonical site url for this check, so that schemes with nested origins
+  // (blob and filesystem) work properly.
+  if (GetContentClient()->browser()->DoesSiteRequireDedicatedProcess(
+          browser_context, site_url)) {
+    return true;
+  }
+
+  return false;
+}
+
+// static
+GURL SiteInfo::GetSiteForURLForTest(const IsolationContext& isolation_context,
+                                    const UrlInfo& url_info,
+                                    bool should_use_effective_urls) {
+  return GetSiteForURLInternal(isolation_context, url_info,
+                               should_use_effective_urls);
 }
 
 }  // namespace content

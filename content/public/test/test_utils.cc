@@ -558,9 +558,16 @@ bool EffectiveURLContentBrowserClientHelper::DoesSiteRequireDedicatedProcess(
   }
 
   for (const auto& pair : urls_to_modify_) {
-    auto site_info = SiteInfo::CreateForTesting(
-        IsolationContext(browser_context), pair.first);
-    if (site_info.site_url() == effective_site_url) {
+    // `effective_site_url` requires a dedicated process if a SiteInfo created
+    // for it uses a matching site URL (and thus doesn't use unisolated.invalid
+    // for the default SiteInstance). It is important not to call
+    // SiteInfo::CreateForTesting here to avoid an infinite recursive call when
+    // computing values for the SiteInfo.
+    GURL maybe_modified_url =
+        SiteInfo::GetSiteForURLForTest(IsolationContext(browser_context),
+                                       UrlInfo::CreateForTesting(pair.first),
+                                       /*should_use_effective_urls=*/true);
+    if (maybe_modified_url == effective_site_url) {
       return true;
     }
   }
