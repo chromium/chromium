@@ -19,6 +19,34 @@
 
 #action-panel {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 16px;
+}
+
+#status-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  font-weight: bold;
+  color: var(--google-grey-700);
+}
+
+.status-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.status-idle .status-circle {
+  background-color: var(--google-green-700);
+}
+
+.status-tracing .status-circle {
+  background-color: var(--google-red-700);
+}
+
+.status-stopping .status-circle {
+  background-color: var(--google-orange-700);
 }
