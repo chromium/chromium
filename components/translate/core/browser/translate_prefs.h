@@ -38,10 +38,6 @@ namespace translate {
 // target language option.
 BASE_DECLARE_FEATURE(kTranslateRecentTarget);
 
-// This allows the user to disable translate by using the
-// `--disable-features=Translate` command-line flag.
-BASE_DECLARE_FEATURE(kTranslate);
-
 // Whether to migrate the obsolete always-translate languages pref to the new
 // pref during object construction as a fix for crbug/1291356, which had
 // previously not been migrated at all on iOS. This also enables a more

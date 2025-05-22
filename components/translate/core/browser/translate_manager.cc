@@ -158,15 +158,6 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
 bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   bool can_translate = true;
 
-  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
-    if (!menuLogging)
-      return false;
-    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-            kTranslateDisabled);
-    can_translate = false;
-  }
-
   if (net::NetworkChangeNotifier::IsOffline()) {
     if (!menuLogging)
       return false;
@@ -677,8 +668,7 @@ void TranslateManager::SetIgnoreMissingKeyForTesting(bool ignore) {
 // static
 bool TranslateManager::IsAvailable(const TranslatePrefs* prefs) {
   // These conditions mirror the conditions in InitiateTranslation.
-  return base::FeatureList::IsEnabled(translate::kTranslate) &&
-         (ignore_missing_key_for_testing_ ||
+  return (ignore_missing_key_for_testing_ ||
           ::google_apis::HasAPIKeyConfigured()) &&
          prefs->IsOfferTranslateEnabled();
 }
@@ -821,12 +811,6 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledDoesntNeedTranslation);
-  }
-
-  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
-    decision->PreventAllTriggering();
-    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
-        TriggerDecision::kDisabledTranslationFeatureDisabled);
   }
 
   // Also, skip if the connection is currently offline - initiation doesn't make

@@ -126,8 +126,6 @@ BASE_FEATURE(kTranslateRecentTarget,
              "TranslateRecentTarget",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTranslate, "Translate", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMigrateAlwaysTranslateLanguagesFix,
              "MigrateAlwaysTranslateLanguagesFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
