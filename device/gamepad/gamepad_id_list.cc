@@ -613,6 +613,7 @@ constexpr auto kGamepadInfo = base::MakeFixedFlatMap<
     {{0x2dc8, 0x2830}, kXInputTypeNone},
     {{0x2dc8, 0x3000}, kXInputTypeNone},
     {{0x2dc8, 0x3001}, kXInputTypeNone},
+    {{0x2dc8, 0x301b}, kXInputTypeNone},
     {{0x2dc8, 0x3106}, kXInputTypeXbox360},
     {{0x2dc8, 0x3820}, kXInputTypeNone},
     {{0x2dc8, 0x9001}, kXInputTypeNone},

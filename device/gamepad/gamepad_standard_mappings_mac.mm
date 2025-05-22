@@ -139,6 +139,12 @@ void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void Mapper8BitDoBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = AxisToButton(input.axes[4]);
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = AxisToButton(input.axes[3]);
+}
+
 void MapperPlaystationSixAxis(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[14];
@@ -782,6 +788,8 @@ constexpr struct MappingData {
 } kAvailableMappings[] = {
     // PowerA Wireless Controller - Nintendo GameCube style
     {GamepadId::kPowerALicPro, MapperSwitchPro},
+    // 8BitDo Ultimate Wireless 2C (Bluetooth)
+    {GamepadId::k8BitDoProduct301b, Mapper8BitDoBluetooth},
     // Snakebyte iDroid:con
     {GamepadId::kBroadcomProduct8502, MapperSnakebyteIDroidCon},
     // DragonRise Generic USB
