@@ -124,8 +124,17 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
   EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
+// TODO(419581863): Disabled on Linux because some Linux testing environments
+// use a screen size of 0x0 which causes the window position to be clamped. This
+// doesn't reflect a real condition that the code under test needs to handle so
+// the test is disabled.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MovesAndChangesWidgetSize DISABLED_MovesAndChangesWidgetSize
+#else
+#define MAYBE_MovesAndChangesWidgetSize MovesAndChangesWidgetSize
+#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
-                       MovesAndChangesWidgetSize) {
+                       MAYBE_MovesAndChangesWidgetSize) {
   gfx::Rect test_initial_bounds = GetWidgetBounds();
   gfx::Rect test_new_bounds(
       gfx::Point(test_initial_bounds.x() - 10, test_initial_bounds.y() + 10),
@@ -186,7 +195,17 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
             GetWidgetBounds());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, AllCallbacksRunInOrder) {
+// TODO(419581863): Disabled on Linux because some Linux testing environments
+// use a screen size of 0x0 which causes the window position to be clamped. This
+// doesn't reflect a real condition that the code under test needs to handle so
+// the test is disabled.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AllCallbacksRunInOrder DISABLED_AllCallbacksRunInOrder
+#else
+#define MAYBE_AllCallbacksRunInOrder AllCallbacksRunInOrder
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
+                       MAYBE_AllCallbacksRunInOrder) {
   gfx::Rect initial_bounds = GetWidgetBounds();
   gfx::Rect target_bounds_1(initial_bounds.origin(), {400, 400});
 
