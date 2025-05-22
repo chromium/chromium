@@ -264,4 +264,27 @@ BASE_FEATURE(kWebViewQuicConnectionTimeout,
 // seconds.
 const base::FeatureParam<int> kWebViewQuicConnectionTimeoutSeconds{
     &kWebViewQuicConnectionTimeout, "WebViewQuicConnectionTimeoutSeconds", 30};
+// When enabled, instead of using the 20MiB as the HTTP cache
+// limit, derive the value from the cache quota allocated to the app by the
+// Android framework.
+//
+// Each code cache's limit will be half the value of the HTTP cache limit.
+BASE_FEATURE(kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+             "WebViewCacheSizeLimitDerivedFromAppCacheQuota",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The multiplier that is used to compute the cache limit from the cache quota.
+const base::FeatureParam<double> kWebViewCacheSizeLimitMultiplier{
+    &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    "WebViewCacheSizeLimitMultiplier", 0.5};
+
+// The minimum HTTP cache size limit
+const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum{
+    &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    "WebViewCacheSizeLimitMinimum", 20 * 1024 * 1024};
+
+// The maximum HTTP cache size limit
+const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum{
+    &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    "WebViewCacheSizeLimitMaximum", 320 * 1024 * 1024};
 }  // namespace android_webview::features

@@ -834,6 +834,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_RECORD_APP_CACHE_HISTOGRAMS,
                 "When enabled, records histograms relating to app's cache size."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_CACHE_SIZE_LIMIT_DERIVED_FROM_APP_CACHE_QUOTA,
+                "When enabled, instead of using the 20MiB as the HTTP cache limit, derive the value"
+                        + " from the cache quota allocated to the app by the Android framework."),
+        Flag.baseFeature(
                 GfxSwitches.USE_SMART_REF_FOR_GPU_FENCE_HANDLE,
                 "Avoids cloning of gpu fences when possible"),
         Flag.baseFeature(

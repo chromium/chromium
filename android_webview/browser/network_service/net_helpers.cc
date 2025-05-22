@@ -4,8 +4,11 @@
 
 #include "android_webview/browser/network_service/net_helpers.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/url_constants.h"
+#include "base/android/path_utils.h"
 #include "base/check_op.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -23,6 +26,34 @@ int UpdateCacheControlFlags(int load_flags, int cache_control_flags) {
   load_flags &= ~all_cache_control_flags;
   load_flags |= cache_control_flags;
   return load_flags;
+}
+
+int GetHttpCacheSizeInternal() {
+  constexpr int DEFAULT_CACHE_LIMIT = 20 * 1024 * 1024;  // 20MiB
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
+    int64_t cache_quota =
+        AwBrowserProcess::GetInstance()->GetHostAppCacheQuota();
+    if (cache_quota == -1) {
+      return DEFAULT_CACHE_LIMIT;
+    }
+
+    int max_cache_limit = features::kWebViewCacheSizeLimitMaximum.Get();
+    int min_cache_limit = features::kWebViewCacheSizeLimitMinimum.Get();
+
+    int64_t cache_limit =
+        features::kWebViewCacheSizeLimitMultiplier.Get() * cache_quota;
+    if (cache_limit > max_cache_limit) {
+      return max_cache_limit;
+    }
+    if (cache_limit < min_cache_limit) {
+      return min_cache_limit;
+    }
+    return cache_limit;
+  }
+
+  return DEFAULT_CACHE_LIMIT;
 }
 
 // Gets the net-layer load_flags which reflect |client|'s cache mode.
@@ -100,10 +131,13 @@ bool ShouldBlockURL(const GURL& url,
 }
 
 int GetHttpCacheSize() {
-  // This currently returns a constant value, but we may consider deciding cache
-  // size dynamically, since Android provides better support on newer versions
-  // (http://crbug.com/893318).
-  return 20 * 1024 * 1024;  // 20M
+  // static so that `GetHttpCacheSizeInternal()` is called only once.
+  static int cache_limit{GetHttpCacheSizeInternal()};
+  // Using WARNING instead of INFO since usage of INFO is unallowed.
+  // This is semantically not a warning and is temporary till the
+  // HTTP Cache size experiment has landed.
+  LOG(WARNING) << "HTTP Cache size is: " << cache_limit;
+  return cache_limit;
 }
 
 void ConvertRequestHeadersToVectors(const net::HttpRequestHeaders& headers,

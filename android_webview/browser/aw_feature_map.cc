@@ -59,6 +59,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewRecordAppCacheHistograms,
     &features::kWebViewQuicConnectionTimeout,
+    &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
 };
 
 // static

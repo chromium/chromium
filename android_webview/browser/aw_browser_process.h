@@ -15,6 +15,7 @@
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
+#include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -38,6 +39,7 @@ namespace prefs {
 extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kAuthServerAllowlist[];
 extern const char kEnterpriseAuthAppLinkPolicy[];
+extern const char kLastKnownAppCacheQuota[];
 
 }  // namespace prefs
 
@@ -64,6 +66,16 @@ class AwBrowserProcess {
   void CreateLocalState();
   void InitSafeBrowsing();
 
+  // App's cache quota value when queried by WebView.
+  // Returns -1 if app's cache quota is unavailable to WebView.
+  // Note that this does not reflect the real-time quota. The quota can
+  // be changed by the Android framework during the lifetime of the app.
+  // This method MUST be called from the UI thread.
+  int64_t GetHostAppCacheQuota();
+
+  // This method can be called from any thread.
+  void FetchHostAppCacheQuota();
+
   safe_browsing::RemoteSafeBrowsingDatabaseManager* GetSafeBrowsingDBManager();
 
   // Called on UI thread.
@@ -86,6 +98,8 @@ class AwBrowserProcess {
   static void RegisterNetworkContextLocalStatePrefs(
       PrefRegistrySimple* pref_registry);
   static void RegisterEnterpriseAuthenticationAppLinkPolicyPref(
+      PrefRegistrySimple* pref_registry);
+  static void RegisterAppCacheQuotaLocalStatePref(
       PrefRegistrySimple* pref_registry);
 
   // Constructs HttpAuthDynamicParams based on |local_state_|.
@@ -138,7 +152,8 @@ class AwBrowserProcess {
   // Accessed on UI and IO threads.
   std::unique_ptr<AwSafeBrowsingAllowlistManager>
       safe_browsing_allowlist_manager_;
-
+  base::Lock lock_;
+  int64_t app_cache_quota_ GUARDED_BY(lock_) = -1;
   std::unique_ptr<VisibilityMetricsLogger> visibility_metrics_logger_;
   std::unique_ptr<AwContentsLifecycleNotifier> aw_contents_lifecycle_notifier_;
   std::unique_ptr<EnterpriseAuthenticationAppLinkManager> app_link_manager_;

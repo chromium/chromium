@@ -54,6 +54,9 @@ BASE_EXPORT bool GetNativeLibraryDirectory(FilePath* result);
 // is placed in the FilePath pointed to by 'result'.
 BASE_EXPORT bool GetExternalStorageDirectory(FilePath* result);
 
+// Retrieves the cache quota allocated to the app by the Android framework in
+// bytes. Return value of -1 depicts an error.
+BASE_EXPORT int64_t GetCacheQuotaBytes();
 }  // namespace android
 }  // namespace base
 

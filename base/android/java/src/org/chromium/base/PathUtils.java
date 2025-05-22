@@ -25,11 +25,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -344,6 +346,23 @@ public abstract class PathUtils {
         }
 
         return toAbsolutePathStrings(files);
+    }
+
+    /**
+     * @return The cache quota allocated to the app by the Android framework in bytes. If the app
+     *     uses more cache than its quota, the app is at a higher risk of having its cache entries
+     *     evicted. Return value of -1 depicts an error.
+     */
+    @CalledByNative
+    public static long getCacheQuotaBytes() {
+        try {
+            StorageManager storageManager =
+                    ContextUtils.getApplicationContext().getSystemService(StorageManager.class);
+            UUID storageUuid = storageManager.getUuidForPath(new File(getCacheDirectory()));
+            return storageManager.getCacheQuotaBytes(storageUuid);
+        } catch (IOException e) {
+            return -1;
+        }
     }
 
     private static String[] toAbsolutePathStrings(List<File> files) {
