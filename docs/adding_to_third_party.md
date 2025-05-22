@@ -287,6 +287,65 @@ into the product and does any of the following:
 * Collects new data
 * Influences or sets security-related policy (including the user experience)
 
+**Update Mechanism** {#update-mechanism}
+
+We aim to autoroll as many dependencies as is feasible, and track those
+that can't with an exception.
+
+The `Update Mechanism:` field specifies how this dependency is kept
+up-to-date. You will use one of the exact string formats listed below,
+replacing `(crbug.com/BUG_ID)` with the actual bug link where required.
+The format is `Primary[.SubsetSpecifier] (crbug.com/BUG_ID)`.
+
+**Accepted Values:**
+* `Autoroll`
+* `Manual (crbug.com/BUG_ID)`
+* `Static (crbug.com/BUG_ID)`
+* `Static.HardFork (crbug.com/BUG_ID)`
+
+See below for the meaning of each primary mechanism and subset specifier.
+
+**Primary Mechanisms:**
+
+* **`Autoroll`**
+  * Updated automatically by a service (e.g., Skia Autoroller,
+    Copybara).
+* **`Manual`**
+  * Updated manually by OWNERS (e.g., using `roll_deps`).
+* **`Static`**
+  * Changes are authored by Chromium Authors.
+  * **Security:** Some dependencies will lack vulnerability coverage. If sufficient
+    metadata is provided (e.g. closest point of divergence from an upstream,
+    or a cpe), vulnerabilities will still be filed.
+
+**Subset Specifiers**
+
+* **`Static`** (With no SubsetSpecifier)
+  * Origin: Not git or package manager upstream.
+    E.g. Blog post, [USENET](https://crsrc.org/c/third_party/webrtc/common_audio/third_party/spl_sqrt_floor/README.chromium;l=12) group.
+  * **`Static.HardFork`**
+    * Originated externally (git or package manager), but now updated and maintained
+      *internally by Chromium committers*, diverging from the original
+      upstream.
+
+**Bug Link Format and Purpose:**
+* **Format:** `(crbug.com/BUG_ID)`.
+* **Location:** File bugs using the linked template in [Autoroll Exceptions](#autoroll-exceptions).
+* **Purpose:** The bug is the official record for:
+  * **Manual:**
+    * Justification for not autorolling; *or*
+    * Tracking the work to enable autorolling.
+  * **Static**:
+    * Rationale for the static classification.
+    * Approval from ATL, and `chrome-security@` review outcome.
+
+#### Autoroll Exceptions
+
+If a dependency can't be autorolled, it needs an exception. OWNERS
+should file a bug using the template in
+[`Chromium > ThirdParty > Autoroll Exceptions`](https://issues.chromium.org/issues/new?component=1801247&template=2135097).
+This component has auto-assignment and will help you track the exception.
+
 **CPE Prefix**
 One of the fields is CPEPrefix. This is used by Chromium and Google systems to
 spot known upstream security vulnerabilities, and ensure we merge the fixes
