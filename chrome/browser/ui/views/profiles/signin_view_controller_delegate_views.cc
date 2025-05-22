@@ -154,6 +154,8 @@ SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
                                    ->GetController()
                                    ->GetAs<HistorySyncOptinUI>();
   DCHECK(web_ui);
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        SigninViewController::kHistorySyncOptinViewId);
   web_ui->Initialize(browser);
   return web_view;
 }

@@ -267,6 +267,9 @@ GURL GetSigninUrlForDiceSigninTab(
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
                                       kSignoutConfirmationDialogViewElementId);
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
+                                      kHistorySyncOptinViewId);
+
 SigninViewController::SigninViewController(Browser* browser)
     : browser_(browser) {}
 

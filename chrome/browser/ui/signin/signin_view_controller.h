@@ -65,6 +65,7 @@ class SigninViewController {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kSignoutConfirmationDialogViewElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinViewId);
 
   explicit SigninViewController(Browser* browser);
 

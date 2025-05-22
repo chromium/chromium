@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -83,7 +82,6 @@ void HistorySyncOptinHandler::FinishAndCloseDialog() {
 }
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {
-  sync_pb::UserConsentTypes::SyncConsent sync_consent;
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   CHECK(sync_service);

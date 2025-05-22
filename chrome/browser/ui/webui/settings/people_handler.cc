@@ -658,6 +658,32 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
   DCHECK(IsChangePrimaryAccountAllowed(profile_, email.GetString()))
       << "Changing the primary account is not allowed!";
 
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  // TODO(crbug.com/419203245): Update the UI for this button and the conditions
+  // under which it appears when it triggers the History Sync Optin, instead of
+  // the Sync Consent screen.
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+    if (sync_service &&
+        !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kHistory)) {
+      const signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
+      CHECK(identity_manager);
+      CHECK(gaia::AreEmailsSame(
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email,
+          email.GetString()));
+
+      Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+      if (!browser) {
+        return;
+      }
+      browser->signin_view_controller()->ShowModalHistorySyncOptInDialog();
+    }
+    return;
+  }
+
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
