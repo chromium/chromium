@@ -4,11 +4,29 @@ Tests that numeric and color values are incremented/decremented correctly.
 Running: testInit
 
 Running: testAlterColor
-    color: #EE3;
+    color
+      
+      
+      
+        
+      
+    : #EE3;
 
 Running: testAlterNumber
-    opacity: 11.6;
+    opacity
+      
+      
+      
+        
+      
+    : 11.6;
 
 Running: testAlterBigNumber
-    transform: rotate(1000000000000000065537deg);
+    transform
+      
+      
+      
+        
+      
+    : rotate(1000000000000000065537deg);
 

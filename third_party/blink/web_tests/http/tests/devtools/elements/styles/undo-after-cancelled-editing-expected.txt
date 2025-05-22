@@ -12,7 +12,7 @@ element.style { ()
 [expanded] 
 #inspected { (<style>)
     color: blue;
-    : ;
+: ;
 
 [expanded] 
 div { (user agent stylesheet)

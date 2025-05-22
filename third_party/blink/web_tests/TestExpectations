@@ -9393,16 +9393,6 @@ crbug.com/404571518 [ Win11-arm64 ] virtual/gpu/external/wpt/mediacapture-record
 crbug.com/405231143 [ Mac13 ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize-in-iframe.html [ Failure ]
 crbug.com/405231143 [ Mac ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure Timeout ]
 
-# Disabled for a devtools change
-crbug.com/418963209 http/tests/devtools/elements/styles-1/add-new-rule-keyboard.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles-1/add-new-rule-with-style-after-body.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles-4/styles-source-lines.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles/cancel-upon-invalid-property.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles/edit-css-with-source-url.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles/styles-mouse-test.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles/undo-after-cancelled-editing.js [ Failure Pass ]
-crbug.com/418963209 http/tests/devtools/elements/styles/up-down-numerics-and-colors.js [ Failure Pass ]
-
 # Gardener 2025-03-21
 crbug.com/405231143 [ Win11-arm64 ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure ]
 

@@ -13,8 +13,7 @@ element.style { ()
 
 [expanded] 
 #main, .at_line_26 { (styles-sour…per.html:29 -> styles-source-lines-helper.html:29:2)
-    font-family: /*  Comment in 
-                      value  */ courier;
+    font-family: /* Comment in value */ courier;
 
 [expanded] 
 #main, .at_line_11::before { (styles-sour…per.html:15 -> styles-source-lines-helper.html:15:2)
