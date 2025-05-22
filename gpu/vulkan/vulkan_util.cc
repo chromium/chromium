@@ -558,6 +558,12 @@ bool CheckVulkanCompatibilities(
     return false;
   }
 
+  // Some android x86 devices (e.g older gpu on auto devices) don't report
+  // format support correctly. See crbug.com/379205391
+  if (device_properties.vendor_id == kVendorIntel) {
+    return false;
+  }
+
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
