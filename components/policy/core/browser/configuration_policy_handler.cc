@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -903,6 +904,13 @@ bool CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
   if (!policy) {
     return true;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // For development and testing without a policy server.
+  if (policy->source == policy::POLICY_SOURCE_COMMAND_LINE) {
+    return true;
+  }
+#endif
 
   // If the policy source is POLICY_SOURCE_MERGED, it is still cloud-only if all
   // policy values merged into it are cloud-only.
