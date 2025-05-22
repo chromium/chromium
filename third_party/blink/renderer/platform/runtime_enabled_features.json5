@@ -1540,12 +1540,12 @@
     {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allow sibling-index() and sibling-count() in @container queries
       name: "CSSSiblingFunctionsInContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSSignRelatedFunctions",
