@@ -4655,6 +4655,37 @@ const FeatureEntry::FeatureVariation
         {"With EE Adaptation", nullptr, 0, "3389532"},
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const FeatureEntry::FeatureParam
+    kHistorySyncOptinExpansionPillBrowseAcrossDevices[] = {
+        {"history-sync-optin-expansion-pill-option", "browse-across-devices"}};
+const FeatureEntry::FeatureParam kHistorySyncOptinExpansionPillSyncHistory[] = {
+    {"history-sync-optin-expansion-pill-option", "sync-history"}};
+const FeatureEntry::FeatureParam
+    kHistorySyncOptinExpansionPillSeeTabsFromOtherDevices[] = {
+        {"history-sync-optin-expansion-pill-option",
+         "see-tabs-from-other-devices"}};
+const FeatureEntry::FeatureParam
+    kHistorySyncOptinExpansionPillBrowseAcrossDevicesNewProfileMenuPromoVariant
+        [] = {{"history-sync-optin-expansion-pill-option",
+               "browse-across-devices-new-profile-menu-promo-variant"}};
+
+const FeatureEntry::FeatureVariation kHistorySyncOptinExpansionPillVariations[] = {
+    {"- Browse across devices",
+     kHistorySyncOptinExpansionPillBrowseAcrossDevices,
+     std::size(kHistorySyncOptinExpansionPillBrowseAcrossDevices), nullptr},
+    {"- Sync history", kHistorySyncOptinExpansionPillSyncHistory,
+     std::size(kHistorySyncOptinExpansionPillSyncHistory), nullptr},
+    {"- See tabs from other devices",
+     kHistorySyncOptinExpansionPillSeeTabsFromOtherDevices,
+     std::size(kHistorySyncOptinExpansionPillSeeTabsFromOtherDevices), nullptr},
+    {"- Browse across devices (Profile Menu Variant)",
+     kHistorySyncOptinExpansionPillBrowseAcrossDevicesNewProfileMenuPromoVariant,
+     std::size(
+         kHistorySyncOptinExpansionPillBrowseAcrossDevicesNewProfileMenuPromoVariant),
+     nullptr}};
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10475,7 +10506,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
      flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,
      kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptinExpansionPill)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnableHistorySyncOptinExpansionPill,
+         kHistorySyncOptinExpansionPillVariations,
+         "EnableHistorySyncOptinExpansionPill")},
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
