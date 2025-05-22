@@ -1066,6 +1066,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetworkServiceFeatures.SHARED_DICTIONARY_CACHE,
                 "When enabled, keep recently-used compression dictionaries in a memory cache."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.CACHE_SHARING_FOR_PERVASIVE_SCRIPTS,
+                "When enabled, enables a singled-keyed HTTP cache for well-known privacy-safe"
+                        + " resources."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
