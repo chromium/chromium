@@ -381,10 +381,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             throw new IllegalStateException(
                     "The account should be on the device before it can be set as primary.");
         }
-        if (!SigninFeatureMap.isEnabled(
-                SigninFeatures.MAKE_ACCOUNTS_AVAILABLE_IN_IDENTITY_MANAGER)) {
-            seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
-        }
+        seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
         notifySignInAllowedChanged();
 
         Log.d(TAG, "Checking if account has policy management enabled");
