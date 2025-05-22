@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "net/cert/qwac.h"
+#include "net/cert/two_qwac.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
