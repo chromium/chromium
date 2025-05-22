@@ -33,6 +33,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/test/views_test_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 
@@ -474,6 +478,15 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 // on various platforms. These should be re-enabled as support is added.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
 
+// DnD is flaky on some Mac versions. This allows us to at least have non-zero
+// coverage.
+#define MAYBE_SKIP_FOR_MAC_VERSION()                                          \
+  if (auto version = base::mac::MacOSMajorVersion();                          \
+      version != 12 && version != 13) {                                       \
+    GTEST_SKIP()                                                              \
+        << "DND testing is flaky on some Mac versions (crbug.com/415251142)"; \
+  }
+
 gfx::Point PointForDropTargetFromView(views::View* view) {
   return view->GetBoundsInScreen().right_center() - gfx::Vector2d(10, 0);
 }
@@ -574,10 +587,9 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
   net::EmbeddedTestServer http_server_;
 };
 
-// TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
-// and DnD testing isn't well-supported for other platforms.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
-                       DISABLED_ShowsDropTargetOnLinkDragged) {
+                       ShowsDropTargetOnLinkDragged) {
+  MAYBE_SKIP_FOR_MAC_VERSION();
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GetURL("/links.html"), 0),
       CheckTabIsActive(0),
@@ -634,10 +646,9 @@ class MultiContentsViewBookmarkDragEntrypointsUiTest
   }
 };
 
-// TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
-// and DnD testing isn't well-supported for other platforms.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBookmarkDragEntrypointsUiTest,
-                       DISABLED_ShowsDropTargetOnBookmarkedLinkDragged) {
+                       ShowsDropTargetOnBookmarkedLinkDragged) {
+  MAYBE_SKIP_FOR_MAC_VERSION();
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const std::u16string bookmark_title = u"Bookmark";
