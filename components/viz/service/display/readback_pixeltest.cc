@@ -497,16 +497,10 @@ class ReadbackPixelTest : public VizPixelTest {
                                        base::span<const uint8_t> pixels) {
     scoped_refptr<gpu::ClientSharedImage> client_shared_image =
         CreateSharedImageWithPixels(format, size, gfx::ColorSpace(), pixels);
-    gpu::SyncToken sync_token = child_context_provider_->SharedImageInterface()
-                                    ->GenUnverifiedSyncToken();
 
-    TransferableResource resource =
-        is_software_renderer()
-            ? TransferableResource::MakeSoftwareSharedImage(
-                  client_shared_image, sync_token, size, format)
-            : TransferableResource::MakeGpu(client_shared_image, GL_TEXTURE_2D,
-                                            sync_token, size, format,
-                                            /*is_overlay_candidate=*/false);
+    TransferableResource resource = TransferableResource::Make(
+        client_shared_image, TransferableResource::ResourceSource::kTest,
+        client_shared_image->creation_sync_token());
 
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, child_context_provider_,
