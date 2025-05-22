@@ -616,18 +616,18 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
 
   Document& doc = GetDocument();
   if (IsRenderingContext2D()) {
-    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2d);
+    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2D);
   }
   if (attributes.alpha) {
-    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2dAlpha);
+    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2DAlpha);
   }
   if (attributes.desynchronized) {
-    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2dDesynchronized);
+    UseCounter::CountWebDXFeature(doc, WebDXFeature::kCanvas2DDesynchronized);
   }
   if (attributes.will_read_frequently ==
       CanvasContextCreationAttributesCore::WillReadFrequently::kTrue) {
     UseCounter::CountWebDXFeature(doc,
-                                  WebDXFeature::kCanvas2dWillreadfrequently);
+                                  WebDXFeature::kCanvas2DWillreadfrequently);
   }
   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {

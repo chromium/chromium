@@ -8128,11 +8128,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="198" label="DynamicRange"/>
   <int value="199" label="DisplayMode"/>
   <int value="200" label="Canvas"/>
-  <int value="201" label="Canvas2d"/>
-  <int value="202" label="Canvas2dAlpha"/>
-  <int value="203" label="Canvas2dColorManagement"/>
-  <int value="204" label="Canvas2dDesynchronized"/>
-  <int value="205" label="Canvas2dWillreadfrequently"/>
+  <int value="201" label="Canvas2D"/>
+  <int value="202" label="Canvas2DAlpha"/>
+  <int value="203" label="Canvas2DColorManagement"/>
+  <int value="204" label="Canvas2DDesynchronized"/>
+  <int value="205" label="Canvas2DWillreadfrequently"/>
   <int value="206" label="Ch"/>
   <int value="207" label="Rch"/>
   <int value="208" label="RubyAlign"/>
@@ -8225,7 +8225,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="295" label="ScrollMarkers"/>
   <int value="296" label="PopoverHint"/>
   <int value="297" label="RegexpEscape"/>
-  <int value="298" label="Float16array"/>
+  <int value="298" label="Float16Array"/>
   <int value="299" label="AppFileHandlers"/>
   <int value="300" label="AppProtocolHandlers"/>
   <int value="301" label="Badging"/>
@@ -8261,7 +8261,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="331" label="TextUnderlineOffset"/>
   <int value="332" label="WindowManagement"/>
   <int value="333" label="Requestclose"/>
-  <int value="334" label="Uint8arrayBase64Hex"/>
+  <int value="334" label="Uint8ArrayBase64Hex"/>
   <int value="335" label="LineBreak"/>
   <int value="336" label="OverflowClip"/>
   <int value="337" label="LightDark"/>
