@@ -134,8 +134,6 @@
 ../util/lib/__init__.py
 ../util/lib/common/__init__.py
 ../util/lib/common/chrome_test_server_spawner.py
-../util/lib/common/decorators.py
-../util/lib/common/google_storage_helper.py
 ../util/lib/common/unittest_util.py
 ../util/lib/proto/__init__.py
 ../util/lib/proto/average.py
@@ -226,9 +224,11 @@ pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
 pylib/utils/chrome_proxy_utils.py
 pylib/utils/code_coverage_utils.py
+pylib/utils/decorators.py
 pylib/utils/device_dependencies.py
 pylib/utils/dexdump.py
 pylib/utils/gold_utils.py
+pylib/utils/google_storage_helper.py
 pylib/utils/instrumentation_tracing.py
 pylib/utils/local_utils.py
 pylib/utils/logdog_helper.py

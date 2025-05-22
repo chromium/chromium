@@ -5,21 +5,14 @@
 """Generic utilities for all python scripts."""
 
 import atexit
-try:
-  from http.client import HTTPConnection
-except ImportError:
-  from httplib import HTTPConnection
-
+import httplib
 import os
 import signal
 import stat
 import subprocess
 import sys
 import tempfile
-try:
-  from urllib.parse import urlparse
-except ImportError:
-  from urlparse import urlparse
+import urlparse
 
 
 def GetPlatformName():
@@ -143,9 +136,9 @@ def DoesUrlExist(url):
   Returns:
     True if url exists, otherwise False.
   """
-  parsed = urlparse(url)
+  parsed = urlparse.urlparse(url)
   try:
-    conn = HTTPConnection(parsed.netloc)
+    conn = httplib.HTTPConnection(parsed.netloc)
     conn.request('HEAD', parsed.path)
     response = conn.getresponse()
   except (socket.gaierror, socket.error):

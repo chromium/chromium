@@ -9,7 +9,7 @@ import os
 import sys
 
 from pylib import constants
-from lib.common import decorators
+from pylib.utils import decorators
 
 sys.path.insert(
     0,

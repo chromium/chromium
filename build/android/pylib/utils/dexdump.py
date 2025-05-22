@@ -11,25 +11,11 @@ from xml.etree import ElementTree
 from collections import namedtuple
 from typing import Dict
 
-DIR_SOURCE_ROOT = os.environ.get(
-    'CHECKOUT_SOURCE_ROOT',
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-                     os.pardir)))
-DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
-
-if DEVIL_PATH not in sys.path:
-  sys.path.append(DEVIL_PATH)
 from devil.utils import cmd_helper
+from pylib import constants
 
-PYLIB_PATH = os.path.join(os.path.dirname(__file__), '..')
-sys.path.append(PYLIB_PATH)
-import constants  # pylint: disable=import-error
-
-GYP_UTIL_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'gyp',
-                             'util')
-sys.path.append(GYP_UTIL_PATH)
-import build_utils  # pylint: disable=import-error
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'gyp'))
+from util import build_utils
 
 DEXDUMP_PATH = os.path.join(constants.ANDROID_SDK_TOOLS, 'dexdump')
 

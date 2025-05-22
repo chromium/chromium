@@ -3,12 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Unittest on process_perf_results.py
-
-Example usage:
-  vpython3 process_perf_results_unittest.py
-"""
-
 from __future__ import absolute_import
 import json
 import os
@@ -20,10 +14,9 @@ from unittest import mock
 import six
 
 from core import path_util
+path_util.AddAndroidPylibToPath()
 
-path_util.AddBuildUtilToPath()
-
-from lib.common import google_storage_helper  # pylint: disable=import-error
+from pylib.utils import google_storage_helper  # pylint: disable=import-error
 
 path_util.AddTelemetryToPath()
 
