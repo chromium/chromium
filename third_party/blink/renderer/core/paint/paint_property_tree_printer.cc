@@ -205,6 +205,10 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.ElementCaptureEffect(), "ElementCaptureEffect",
                object);
   SetDebugName(properties.EffectIsolationNode(), "EffectIsolationNode", object);
+  SetDebugName(properties.ViewTransitionEffect(), "ViewTransitionEffect",
+               object);
+  SetDebugName(properties.ViewTransitionSubframeRootEffect(),
+               "ViewTransitionSubframeRootEffect", object);
 
   SetDebugName(properties.Scroll(), "Scroll", object);
 }
