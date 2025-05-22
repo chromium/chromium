@@ -4,11 +4,6 @@
 //
 // MTPDeviceObjectEnumerator unit tests.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/win/mtp_device_object_enumerator.h"
 
 #include <stddef.h>
@@ -70,23 +65,20 @@ TEST_F(MTPDeviceObjectEnumeratorWinTest, Empty) {
 
 TEST_F(MTPDeviceObjectEnumeratorWinTest, Traversal) {
   MTPDeviceObjectEntries entries;
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (const auto& test_case : kTestCases) {
     entries.push_back(MTPDeviceObjectEntry(
-        kTestCases[i].object_id,
-        kTestCases[i].name,
-        kTestCases[i].is_directory,
-        kTestCases[i].size,
-        base::Time::FromTimeT(kTestCases[i].last_modified_time)));
+        test_case.object_id, test_case.name, test_case.is_directory,
+        test_case.size, base::Time::FromTimeT(test_case.last_modified_time)));
   }
   MTPDeviceObjectEnumerator enumerator(entries);
   TestEnumeratorIsEmpty(&enumerator);
   TestEnumeratorIsEmpty(&enumerator);
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    EXPECT_EQ(kTestCases[i].name, enumerator.Next().AsUTF16Unsafe());
-    EXPECT_EQ(kTestCases[i].object_id, enumerator.GetObjectId());
-    EXPECT_EQ(kTestCases[i].size, enumerator.Size());
-    EXPECT_EQ(kTestCases[i].is_directory, enumerator.IsDirectory());
-    EXPECT_EQ(kTestCases[i].last_modified_time,
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.name, enumerator.Next().AsUTF16Unsafe());
+    EXPECT_EQ(test_case.object_id, enumerator.GetObjectId());
+    EXPECT_EQ(test_case.size, enumerator.Size());
+    EXPECT_EQ(test_case.is_directory, enumerator.IsDirectory());
+    EXPECT_EQ(test_case.last_modified_time,
               enumerator.LastModifiedTime().ToTimeT());
   }
   TestNextEntryIsEmpty(&enumerator);
