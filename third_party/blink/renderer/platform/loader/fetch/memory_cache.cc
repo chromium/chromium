@@ -44,7 +44,22 @@ namespace blink {
 
 static Persistent<MemoryCache>* g_memory_cache;
 
-static const base::TimeDelta kCUnloadPageResourceSaveTime = base::Minutes(5);
+static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
+    base::Minutes(5);
+
+// Feature to control the duration for which a strong reference may remain
+// in the MemoryCache after its last access.
+BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
+             "MemoryCacheChangeStrongReferencePruneDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Parameter defining the delay after which a strong reference is removed
+// from the MemoryCache after its last access.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMemoryCacheStrongReferencePruneDelay,
+                   &kMemoryCacheChangeStrongReferencePruneDelay,
+                   "strong_reference_prune_delay",
+                   kDefaultStrongReferencePruneDelay);
 
 static constexpr char kPageSavedResourceStrongReferenceSize[] =
     "Blink.MemoryCache.PageSavedResourceStrongReferenceSize";
@@ -82,7 +97,8 @@ MemoryCache* MemoryCache::Get() {
 
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : strong_references_prune_duration_(kCUnloadPageResourceSaveTime),
+    : strong_references_prune_duration_(
+          kMemoryCacheStrongReferencePruneDelay.Get()),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
   MemoryPressureListenerRegistry::Instance().RegisterClient(this);
