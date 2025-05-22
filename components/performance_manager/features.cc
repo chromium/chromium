@@ -168,7 +168,7 @@ BASE_FEATURE(kUnthrottledTabProcessReporting,
 
 BASE_FEATURE(kPMProcessPriorityPolicy,
              "PMProcessPriorityPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kInheritParentPriority{
     &kPMProcessPriorityPolicy, "inherit_parent_priority", true};

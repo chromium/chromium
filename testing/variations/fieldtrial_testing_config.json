@@ -15893,26 +15893,6 @@
             ]
         }
     ],
-    "PMProcessPriorityPolicy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacAllowBackgroundingRenderProcesses",
-                        "PMProcessPriorityPolicy",
-                        "PriorityOverridePendingViews"
-                    ]
-                }
-            ]
-        }
-    ],
     "PWAIconAndTitleInNativeNotificationsWin": [
         {
             "platforms": [
