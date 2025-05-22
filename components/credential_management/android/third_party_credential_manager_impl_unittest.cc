@@ -34,7 +34,7 @@ class MockThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
 
   MOCK_METHOD(void,
               Get,
-              (bool is_auto_select_allowed, const std::string&, GetCallback),
+              (bool is_auto_select_allowed, bool include_passwords, const std::string&, GetCallback),
               (override));
   MOCK_METHOD(void,
               Store,
@@ -91,7 +91,7 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithOptionalMediation) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kTestOrigin));
 
-  EXPECT_CALL(*mock_bridge(), Get(/*mediation=*/true, kTestOrigin, _));
+  EXPECT_CALL(*mock_bridge(), Get(/*mediation=*/true, /*include_passwords=*/true, kTestOrigin, _));
 
   credential_manager()->Get(
       /*mediation=*/password_manager::CredentialMediationRequirement::kOptional,
@@ -103,7 +103,7 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithRequiredMediation) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kTestOrigin));
 
-  EXPECT_CALL(*mock_bridge(), Get(/*mediation=*/false, kTestOrigin, _));
+  EXPECT_CALL(*mock_bridge(), Get(/*mediation=*/false, /*include_passwords=*/true, kTestOrigin, _));
 
   credential_manager()->Get(
       /*mediation=*/password_manager::CredentialMediationRequirement::kRequired,

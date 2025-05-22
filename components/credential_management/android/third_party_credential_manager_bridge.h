@@ -26,6 +26,7 @@ class CredentialManagerBridge {
   virtual ~CredentialManagerBridge() = default;
 
   virtual void Get(bool is_auto_select_allowed,
+                   bool include_passwords,
                    const std::string& origin,
                    GetCallback completion_callback) = 0;
 
@@ -53,6 +54,7 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
     // The `completion_callback` should always be invoked on completion, passing
     // the PasswordCredentialResponse.
     virtual void Get(bool is_auto_select_allowed,
+                     bool include_passwords,
                      const std::string& origin,
                      base::OnceCallback<void(PasswordCredentialResponse)>
                          completion_callback) = 0;
@@ -81,6 +83,7 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
   void Create();
 
   void Get(bool is_auto_select_allowed,
+           bool include_passwords,
            const std::string& origin,
            GetCallback completion_callback) override;
 

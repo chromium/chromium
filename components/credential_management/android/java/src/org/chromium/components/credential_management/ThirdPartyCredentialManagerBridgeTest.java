@@ -76,7 +76,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(true, ORIGIN, mCredentialResponseCallback);
+        mBridge.get(true, true, ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(
@@ -103,7 +103,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(false, ORIGIN, mCredentialResponseCallback);
+        mBridge.get(false, true, ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(

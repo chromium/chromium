@@ -46,6 +46,7 @@ class ThirdPartyCredentialManagerBridge {
     @CalledByNative
     void get(
             boolean isAutoSelectAllowed,
+            boolean includePasswords,
             String origin,
             Callback<PasswordCredentialResponse> callback) {
         Context context = ContextUtils.getApplicationContext();
@@ -56,11 +57,12 @@ class ThirdPartyCredentialManagerBridge {
         GetPasswordOption passwordOption =
                 new GetPasswordOption(
                         Collections.emptySet(), isAutoSelectAllowed, Collections.emptySet());
-        GetCredentialRequest getPasswordRequest =
-                new GetCredentialRequest.Builder()
-                        .addCredentialOption(passwordOption)
-                        .setOrigin(origin)
-                        .build();
+        GetCredentialRequest.Builder getCredentialRequestBuilder =
+                new GetCredentialRequest.Builder();
+        if (includePasswords) {
+            getCredentialRequestBuilder.addCredentialOption(passwordOption);
+        }
+        getCredentialRequestBuilder.setOrigin(origin);
 
         CredentialManagerCallback<GetCredentialResponse, GetCredentialException>
                 credentialCallback =
@@ -76,7 +78,7 @@ class ThirdPartyCredentialManagerBridge {
                             }
                         };
         credentialManager.getCredentialAsync(
-                context, getPasswordRequest, null, Runnable::run, credentialCallback);
+                context, getCredentialRequestBuilder.build(), null, Runnable::run, credentialCallback);
     }
 
     @CalledByNative

@@ -92,6 +92,7 @@ void ThirdPartyCredentialManagerImpl::Get(
 
   // TODO(crbug.com/404199116): Pass all the parameters to the bridge.
   bridge_->Get(ShouldAllowAutoSelect(mediation),
+               include_passwords,
                render_frame_host().GetLastCommittedOrigin().Serialize(),
                std::move(callback));
 }
