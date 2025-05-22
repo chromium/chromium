@@ -239,7 +239,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
   if (!policy) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    LOGFN(INFO) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
     return hr;
   }
 
@@ -249,7 +249,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
   // gaia user must already exist.
   hr = IsGaiaUserSidDifferent(&is_sid_different);
   if (FAILED(hr)) {
-    LOGFN(ERROR) << "IsGaiaUserSidDifferent hr=" << putHR(hr);
+    LOGFN(INFO) << "IsGaiaUserSidDifferent hr=" << putHR(hr);
     return hr;
   }
 
@@ -259,7 +259,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
     hr = policy->RetrievePrivateData(kLsaKeyGaiaUsername, gaia_username,
                                      std::size(gaia_username));
     if (FAILED(hr)) {
-      LOGFN(ERROR) << "RetrievePrivateData for gaia username hr=" << putHR(hr);
+      LOGFN(INFO) << "RetrievePrivateData for gaia username hr=" << putHR(hr);
       return hr;
     }
 
@@ -267,7 +267,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
     hr = manager->GenerateRandomPassword(new_password, std::size(new_password));
     if (FAILED(hr)) {
       SecurelyClearBuffer(new_password, std::size(new_password));
-      LOGFN(ERROR) << "GenerateRandomPassword hr=" << putHR(hr);
+      LOGFN(INFO) << "GenerateRandomPassword hr=" << putHR(hr);
       return hr;
     }
 
@@ -276,7 +276,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
                                      std::size(current_password));
     if (FAILED(hr)) {
       SecurelyClearBuffer(new_password, std::size(current_password));
-      LOGFN(ERROR) << "RetrievePrivateData hr=" << putHR(hr);
+      LOGFN(INFO) << "RetrievePrivateData hr=" << putHR(hr);
       return hr;
     }
 
@@ -286,14 +286,14 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
     SecurelyClearBuffer(current_password, std::size(current_password));
     if (FAILED(hr)) {
       SecurelyClearBuffer(new_password, std::size(new_password));
-      LOGFN(ERROR) << "ChangeUserPassword hr=" << putHR(hr);
+      LOGFN(INFO) << "ChangeUserPassword hr=" << putHR(hr);
       return hr;
     }
 
     hr = policy->StorePrivateData(kLsaKeyGaiaPassword, new_password);
     SecurelyClearBuffer(new_password, std::size(new_password));
     if (FAILED(hr)) {
-      LOGFN(ERROR) << "StoreGaiaPassword hr=" << putHR(hr);
+      LOGFN(INFO) << "StoreGaiaPassword hr=" << putHR(hr);
       return hr;
     }
 
@@ -301,7 +301,7 @@ HRESULT OSGaiaUserManager::ChangeGaiaUserPasswordIfNeeded() {
 
     hr = StoreCurrentGaiaSid();
     if (FAILED(hr)) {
-      LOGFN(ERROR) << "StoreCurrentGaiaSid hr=" << putHR(hr);
+      LOGFN(INFO) << "StoreCurrentGaiaSid hr=" << putHR(hr);
       return hr;
     }
     LOGFN(INFO) << "Current SID stored for gaia user.";
