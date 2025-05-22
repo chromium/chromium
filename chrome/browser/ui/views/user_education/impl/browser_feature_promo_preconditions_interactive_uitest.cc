@@ -13,6 +13,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -56,6 +58,12 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
   BrowserFeaturePromoPreconditionsUiTest() = default;
   ~BrowserFeaturePromoPreconditionsUiTest() override = default;
 
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+  }
+
  protected:
   auto CaptureAnchor(ui::ElementIdentifier id) {
     return AfterShow(id, [this](ui::TrackedElement* el) {
@@ -80,18 +88,7 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
           user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
-class WindowActivePreconditionUiTest
-    : public BrowserFeaturePromoPreconditionsUiTest {
- public:
-  WindowActivePreconditionUiTest() = default;
-  ~WindowActivePreconditionUiTest() override = default;
-
-  void SetUpOnMainThread() override {
-    BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
-    g_browser_process->local_state()->SetBoolean(
-        chrome_urls::kInternalOnlyUisEnabled, true);
-  }
-};
+using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
   RunTestSequence(
@@ -146,6 +143,115 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
       // Since the element is recreated, need to capture again.
       InAnyContext(CaptureAnchor(kWebUIIPHDemoElementIdentifier)),
       CheckWindowActiveResult(user_education::FeaturePromoResult::Success()));
+}
+
+using ContentNotFullscreenPreconditionUiTest =
+    BrowserFeaturePromoPreconditionsUiTest;
+
+IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, NotFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      CheckResult(
+          [this]() {
+            ContentNotFullscreenPrecondition precond(*browser());
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest,
+                       MaximizedNotFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      Do([this]() { browser()->window()->Maximize(); }),
+      CheckResult(
+          [this]() {
+            ContentNotFullscreenPrecondition precond(*browser());
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, Fullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->EnterFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)
+                                ->web_contents()
+                                ->GetPrimaryMainFrame());
+                  }),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->exclusive_access_manager()
+                ->fullscreen_controller()
+                ->IsTabFullscreen();
+          },
+          true),
+      CheckResult(
+          [this]() {
+            ContentNotFullscreenPrecondition precond(*browser());
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::kBlockedByUi));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      NavigateWebContents(kTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->EnterFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)
+                                ->web_contents()
+                                ->GetPrimaryMainFrame());
+                  }),
+      WithElement(kTabId,
+                  [this](ui::TrackedElement* tab) {
+                    browser()
+                        ->exclusive_access_manager()
+                        ->fullscreen_controller()
+                        ->ExitFullscreenModeForTab(
+                            AsInstrumentedWebContents(tab)->web_contents());
+                  }),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->exclusive_access_manager()
+                ->fullscreen_controller()
+                ->IsTabFullscreen();
+          },
+          false),
+      CheckResult(
+          [this]() {
+            ContentNotFullscreenPrecondition precond(*browser());
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()));
 }
 
 using OmniboxNotOpenPreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;

@@ -88,6 +88,10 @@ void BrowserFeaturePromoController25::Init() {
       std::make_unique<OmniboxNotOpenPrecondition>(*browser_view_);
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
+  ptr = std::make_unique<ContentNotFullscreenPrecondition>(
+      *browser_view_->browser());
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
   ptr = std::make_unique<ToolbarNotCollapsedPrecondition>(*browser_view_);
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
@@ -170,6 +174,9 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
                         controller->WrapSharedPrecondition(id));
                   }
                 };
+
+            // Promos shouldn't show when content is fullscreen.
+            maybe_add_shared_precondition(kContentNotFullscreenPrecondition);
 
             // Most promos are blocked by an open omnibox to prevent z-fighting
             // issues.
