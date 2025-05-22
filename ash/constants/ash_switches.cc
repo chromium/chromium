@@ -868,6 +868,9 @@ const char kOobeTriggerSyncTimeoutForTests[] =
 // If set, the overview button will be visible.
 const char kOverviewButtonForTests[] = "overview-button-for-tests";
 
+// If set, the overrrides the overscan settings on all displays.
+const char kOverscanInsetsOverride[] = "overscan-insets-override";
+
 // Controls how often the HiddenNetworkHandler class checks for wrongly hidden
 // networks. The interval should be provided in seconds, should follow the
 // format "--hidden-network-migration-interval=#", and should be >= 1.

@@ -393,7 +393,9 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       clear_overscan_insets_(false),
       bits_per_channel_(0),
       variable_refresh_rate_state_(VariableRefreshRateState::kVrrNotCapable),
-      vsync_rate_min_(std::nullopt) {}
+      vsync_rate_min_(std::nullopt) {
+  has_overscan_ = true;
+}
 
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
     default;

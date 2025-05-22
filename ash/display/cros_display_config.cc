@@ -889,8 +889,7 @@ void CrosDisplayConfig::OverscanCalibration(
     case crosapi::mojom::DisplayConfigOperation::kStart: {
       DVLOG(1) << "OverscanCalibrationStart: " << display_id;
       gfx::Insets insets =
-          Shell::Get()->window_tree_host_manager()->GetOverscanInsets(
-              display.id());
+          Shell::Get()->display_manager()->GetOverscanInsets(display.id());
       if (calibrator) {
         DVLOG(1) << "Replacing existing calibrator for id: " << display_id;
       }

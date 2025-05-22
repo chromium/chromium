@@ -1512,8 +1512,6 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithFourDisplays) {
 }
 
 TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
-  WindowTreeHostManager* window_tree_host_manager =
-      Shell::Get()->window_tree_host_manager();
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
 
@@ -1521,8 +1519,8 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  window_tree_host_manager->SetOverscanInsets(
-      display1.id(), gfx::Insets::TLBR(10, 15, 20, 25));
+  display_manager()->SetOverscanInsets(display1.id(),
+                                       gfx::Insets::TLBR(10, 15, 20, 25));
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   EXPECT_EQ(gfx::Rect(0, 0, 80, 170), root_windows[0]->bounds());
   EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
@@ -1533,7 +1531,7 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   generator.MoveMouseToInHost(20, 25);
   EXPECT_EQ(gfx::Point(5, 15), event_handler.GetLocationAndReset());
 
-  window_tree_host_manager->SetOverscanInsets(display1.id(), gfx::Insets());
+  display_manager()->SetOverscanInsets(display1.id(), gfx::Insets());
   EXPECT_EQ(gfx::Rect(0, 0, 120, 200), root_windows[0]->bounds());
   EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
             display_manager_test.GetSecondaryDisplay().bounds());

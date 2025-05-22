@@ -451,16 +451,6 @@ aura::Window::Windows WindowTreeHostManager::GetAllRootWindows() {
   return windows;
 }
 
-gfx::Insets WindowTreeHostManager::GetOverscanInsets(int64_t display_id) const {
-  return GetDisplayManager()->GetOverscanInsets(display_id);
-}
-
-void WindowTreeHostManager::SetOverscanInsets(
-    int64_t display_id,
-    const gfx::Insets& insets_in_dip) {
-  GetDisplayManager()->SetOverscanInsets(display_id, insets_in_dip);
-}
-
 std::vector<RootWindowController*>
 WindowTreeHostManager::GetAllRootWindowControllers() {
   std::vector<RootWindowController*> controllers;
