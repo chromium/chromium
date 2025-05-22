@@ -22771,21 +22771,6 @@
             ]
         }
     ],
-    "SkipGrantAccessToDataPathIfAlreadySet": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipGrantAccessToDataPathIfAlreadySet"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipIsolatedSplitPreload": [
         {
             "platforms": [

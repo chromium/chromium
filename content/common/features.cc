@@ -515,7 +515,7 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
 // Skip granting access to the data path if it has already been set.
 BASE_FEATURE(kSkipGrantAccessToDataPathIfAlreadySet,
              "SkipGrantAccessToDataPathIfAlreadySet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
