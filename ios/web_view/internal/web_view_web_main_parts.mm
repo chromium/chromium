@@ -4,6 +4,8 @@
 
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 
+#import <string_view>
+
 #import "base/base_paths.h"
 #import "base/check.h"
 #import "base/feature_list.h"
@@ -22,6 +24,7 @@
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_service.h"
 #import "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
+#import "ios/web_view/public/cwv_global_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
@@ -30,6 +33,17 @@
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
 #endif
+
+namespace {
+std::string MakeFeaturesString(
+    const std::vector<const base::Feature*>& features) {
+  std::vector<std::string_view> feature_names;
+  for (const auto* feature : features) {
+    feature_names.push_back(feature->name);
+  }
+  return base::JoinString(feature_names, ",");
+}
+}  // namespace
 
 namespace ios_web_view {
 
@@ -67,16 +81,21 @@ void WebViewWebMainParts::PreCreateThreads() {
       variations::VariationsIdsProvider::Mode::kUseSignedInState);
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-  std::string enable_features = base::JoinString(
-      {
-          autofill::features::kAutofillUpstream.name,
-          syncer::kSyncPasswordCleanUpAccidentalBatchDeletions.name,
-      },
-      ",");
-  std::string disabled_features;
+
+  std::vector<const base::Feature*> enabled_features = {
+      &autofill::features::kAutofillUpstream,
+
+      &syncer::kSyncPasswordCleanUpAccidentalBatchDeletions,
+  };
+  std::vector<const base::Feature*> disabled_features;
+  if ([CWVGlobalState sharedInstance].autofillAcrossIframesEnabled) {
+    enabled_features.push_back(&autofill::features::kAutofillAcrossIframesIos);
+  } else {
+    disabled_features.push_back(&autofill::features::kAutofillAcrossIframesIos);
+  }
   feature_list->InitFromCommandLine(
-      /*enable_features=*/enable_features,
-      /*disable_features=*/disabled_features);
+      /*enable_features=*/MakeFeaturesString(enabled_features),
+      /*disable_features=*/MakeFeaturesString(disabled_features));
   base::FeatureList::SetInstance(std::move(feature_list));
 }
 

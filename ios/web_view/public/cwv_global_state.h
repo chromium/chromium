@@ -11,6 +11,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Flags that specify options that should be set before starting the early
+// initialization.
+CWV_EXPORT
+@interface CWVEarlyInitFlags : NSObject
+
+// Set to `YES` to enable the autofill across iframes feature.
+@property(nonatomic, readonly) BOOL autofillAcrossIframesEnabled;
+
+@end
+
 // Manages internal global state that must be initialized before accessing any
 // of the other public APIs //ios/web_view/public.
 CWV_EXPORT
@@ -37,6 +47,9 @@ CWV_EXPORT
 // Returns `YES` if `-[CWVGlobalState start]` has been called.
 @property(nonatomic, readonly, getter=isStarted) BOOL started;
 
+// Returns `YES` if the autofill across iframes feature is enabled.
+@property(nonatomic, readonly) BOOL autofillAcrossIframesEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Use this method to set the necessary credentials used to communicate with
@@ -46,10 +59,16 @@ CWV_EXPORT
                clientID:(NSString*)clientID
            clientSecret:(NSString*)clientSecret;
 
-// Initializes internal global state machinery. This should be called as early
-//  during the host app's launch process as possible. For example, in
-// `-[UIApplicationDelegate application:willFinishLaunchingWithOptions:]`.
+// Initializes internal global state machinery with the default flags. See
+// -earlyInitWithFlags for more details.
 - (void)earlyInit;
+
+// Initializes internal global state machinery with `flags` specifying options
+// that should be set before starting the early initialization. This should be
+// called as early as possible during the host app's launch process. For
+// example, in
+// `-[UIApplicationDelegate application:willFinishLaunchingWithOptions:]`.
+- (void)earlyInitWithFlags:(CWVEarlyInitFlags*)flags;
 
 // Starts up internal global state machinery. This can be called anytime after
 // `earlyInit`, but must be called before using any other CWV* classes.

@@ -17,6 +17,9 @@
 #import "testing/coverage_util_ios.h"
 #endif  // defined(CWV_UNIT_TEST)
 
+@implementation CWVEarlyInitFlags
+@end
+
 @implementation CWVGlobalState {
   std::unique_ptr<ios_web_view::WebViewWebClient> _web_client;
   std::unique_ptr<ios_web_view::WebViewWebMainDelegate> _web_main_delegate;
@@ -78,10 +81,14 @@
 #endif  // defined(CWV_UNIT_TEST)
 }
 
-- (void)earlyInit {
+- (void)earlyInitWithFlags:(CWVEarlyInitFlags*)flags {
 #if defined(CWV_UNIT_TEST)
   // Global state initialization is not needed in a unit test environment.
 #else
+  // Set flags before doing anything else.
+  CHECK(flags);
+  _autofillAcrossIframesEnabled = flags.autofillAcrossIframesEnabled;
+
   DCHECK([NSThread isMainThread]);
 
   static dispatch_once_t onceToken;
@@ -101,6 +108,10 @@
     _isEarlyInitialized = YES;
   });
 #endif  // defined(CWV_UNIT_TEST)
+}
+
+- (void)earlyInit {
+  [self earlyInitWithFlags:[[CWVEarlyInitFlags alloc] init]];
 }
 
 - (void)start {
