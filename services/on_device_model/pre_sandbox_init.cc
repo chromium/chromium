@@ -16,6 +16,9 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "gpu/config/gpu_info_collector.h"                    // nogncheck
+#endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"         // nogncheck
@@ -53,6 +56,20 @@ void UpdateSandboxOptionsForGpu(
 }
 #endif
 
+#if !BUILDFLAG(IS_FUCHSIA)
+// If this feature is enabled, a WebGPU device is created for each valid
+// adapter. This makes sure any relevant drivers or other libs are loaded before
+// enabling the sandbox.
+BASE_FEATURE(kOnDeviceModelWarmDrivers,
+             "OnDeviceModelWarmDrivers",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+#endif
+
 }  // namespace
 
 // static
@@ -74,31 +91,39 @@ bool OnDeviceModelService::PreSandboxInit() {
   }
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Warm any relevant drivers before attempting to bring up the sandbox. For
-  // good measure we initialize a device instance for any adapter with an
-  // appropriate backend on top of any integrated or discrete GPU.
-  dawnProcSetProcs(&dawn::native::GetProcs());
-  auto instance = std::make_unique<dawn::native::Instance>();
-  const wgpu::RequestAdapterOptions adapter_options{
-      .backendType = wgpu::BackendType::Vulkan,
-  };
-  std::vector<dawn::native::Adapter> adapters =
-      instance->EnumerateAdapters(&adapter_options);
-  for (auto& nativeAdapter : adapters) {
-    wgpu::Adapter adapter = wgpu::Adapter(nativeAdapter.Get());
-    wgpu::AdapterInfo info;
-    adapter.GetInfo(&info);
-    if (info.adapterType == wgpu::AdapterType::IntegratedGPU ||
-        info.adapterType == wgpu::AdapterType::DiscreteGPU) {
-      const wgpu::DeviceDescriptor descriptor;
-      wgpu::Device device{nativeAdapter.CreateDevice(&descriptor)};
-      if (device) {
-        device.Destroy();
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers)) {
+    // Warm any relevant drivers before attempting to bring up the sandbox. For
+    // good measure we initialize a device instance for any adapter with an
+    // appropriate backend on top of any integrated or discrete GPU.
+    dawnProcSetProcs(&dawn::native::GetProcs());
+    auto instance = std::make_unique<dawn::native::Instance>();
+    const wgpu::RequestAdapterOptions adapter_options{
+#if BUILDFLAG(IS_WIN)
+        .backendType = wgpu::BackendType::D3D12,
+#elif BUILDFLAG(IS_APPLE)
+        .backendType = wgpu::BackendType::Metal,
+#else
+        .backendType = wgpu::BackendType::Vulkan,
+#endif
+    };
+    std::vector<dawn::native::Adapter> adapters =
+        instance->EnumerateAdapters(&adapter_options);
+    for (auto& nativeAdapter : adapters) {
+      wgpu::Adapter adapter = wgpu::Adapter(nativeAdapter.Get());
+      wgpu::AdapterInfo info;
+      adapter.GetInfo(&info);
+      if (info.adapterType == wgpu::AdapterType::IntegratedGPU ||
+          info.adapterType == wgpu::AdapterType::DiscreteGPU) {
+        const wgpu::DeviceDescriptor descriptor;
+        wgpu::Device device{nativeAdapter.CreateDevice(&descriptor)};
+        if (device) {
+          device.Destroy();
+        }
       }
     }
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif
   return true;
 }
 

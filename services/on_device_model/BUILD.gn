@@ -42,8 +42,10 @@ component("on_device_model_service") {
   }
 
   if (is_linux || is_chromeos) {
+    deps += [ "//gpu/config" ]
+  }
+  if (!is_fuchsia) {
     deps += [
-      "//gpu/config",
       "//third_party/dawn/include/dawn:cpp_headers",
       "//third_party/dawn/src/dawn:proc",
       "//third_party/dawn/src/dawn/native",
