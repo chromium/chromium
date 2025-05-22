@@ -22963,19 +22963,6 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxCctAdsNoticeSurveyFailures) -->
 
-<!-- LINT.IfChange(PrivacySandboxClickEvent) -->
-
-<enum name="PrivacySandboxClickEvent">
-  <int value="0" label="Ack"/>
-  <int value="1" label="Settings"/>
-  <int value="2" label="More"/>
-  <int value="3" label="DropDown"/>
-  <int value="4" label="No"/>
-  <int value="5" label="PrivacyPolicyBack"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDebouncedOnClick.java:PrivacySandboxClickEventAndroid) -->
-
 <!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
 
 <enum name="PrivacySandboxDialogCallbackState">

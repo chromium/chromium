@@ -22,10 +22,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 
 import java.io.IOException;
@@ -35,49 +31,28 @@ import java.util.List;
 /** Tests {@link PrivacySandboxDebouncedOnClick}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({
-    ChromeFeatureList.PRIVACY_SANDBOX_NOTICE_ACTION_DEBOUNCING_ANDROID + ":debouncing-delay-ms/200"
-})
 @Batch(Batch.PER_CLASS)
 public final class PrivacySandboxDebouncedOnClickTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
             Arrays.asList(
+                    new ParameterSet().value(R.id.ack_button).name("Ack"),
+                    new ParameterSet().value(R.id.settings_button).name("Settings"),
+                    new ParameterSet().value(R.id.more_button).name("More"),
+                    new ParameterSet().value(R.id.dropdown_element).name("Dropdown"),
+                    new ParameterSet().value(R.id.no_button).name("No"),
                     new ParameterSet()
-                            .value(R.id.ack_button, PrivacySandboxDebouncedOnClick.ClickEvent.ACK)
-                            .name("Ack"),
-                    new ParameterSet()
-                            .value(
-                                    R.id.settings_button,
-                                    PrivacySandboxDebouncedOnClick.ClickEvent.SETTINGS)
-                            .name("Settings"),
-                    new ParameterSet()
-                            .value(R.id.more_button, PrivacySandboxDebouncedOnClick.ClickEvent.MORE)
-                            .name("More"),
-                    new ParameterSet()
-                            .value(
-                                    R.id.dropdown_element,
-                                    PrivacySandboxDebouncedOnClick.ClickEvent.DROP_DOWN)
-                            .name("Dropdown"),
-                    new ParameterSet()
-                            .value(R.id.no_button, PrivacySandboxDebouncedOnClick.ClickEvent.NO)
-                            .name("No"),
-                    new ParameterSet()
-                            .value(
-                                    R.id.privacy_policy_back_button,
-                                    PrivacySandboxDebouncedOnClick.ClickEvent.PRIVACY_POLICY_BACK)
+                            .value(R.id.privacy_policy_back_button)
                             .name("PrivacyPolicyBack"));
 
     private final View mMockView;
     private int mNumClicks;
     private final int mButtonRid;
-    private final int mExpectedClickEvent;
     private final PrivacySandboxDebouncedOnClickImpl mFakeDialog;
 
-    public PrivacySandboxDebouncedOnClickTest(int rid, int clickEvent) {
+    public PrivacySandboxDebouncedOnClickTest(int rid) {
         mMockView = mock(View.class);
         mButtonRid = rid;
-        mExpectedClickEvent = clickEvent;
         mFakeDialog =
                 new PrivacySandboxDebouncedOnClickImpl(
                         "ProtectedAudienceMeasurementNoticeModal"
@@ -124,16 +99,10 @@ public final class PrivacySandboxDebouncedOnClickTest {
     public void testDoubleClickIsDebounced() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    HistogramWatcher watcher =
-                            HistogramWatcher.newSingleRecordWatcher(
-                                    "PrivacySandbox.Notice.ClickIgnored.ProtectedAudienceMeasurementNoticeModalClankBrApp",
-                                    mExpectedClickEvent);
                     doubleClickNotice();
 
                     // Expect only 1 click recorded because the other is ignored.
                     assertEquals(1, mNumClicks);
-                    // Expect a histogram entry for the click ignored.
-                    watcher.assertExpected();
                 });
     }
 
@@ -142,10 +111,6 @@ public final class PrivacySandboxDebouncedOnClickTest {
     public void testDoubleClickIsDebouncedThenClickIsRegistered() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    HistogramWatcher watcher =
-                            HistogramWatcher.newSingleRecordWatcher(
-                                    "PrivacySandbox.Notice.ClickIgnored.ProtectedAudienceMeasurementNoticeModalClankBrApp",
-                                    mExpectedClickEvent);
                     doubleClickNotice();
 
                     waitPastDebouncingDelay();
@@ -155,26 +120,6 @@ public final class PrivacySandboxDebouncedOnClickTest {
 
                     // Expect 2 clicks recorded because the third click comes in > 100ms after.
                     assertEquals(2, mNumClicks);
-                    // Expect a histogram entry for the click ignored.
-                    watcher.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_NOTICE_ACTION_DEBOUNCING_ANDROID)
-    public void testDoubleClickWithoutDebouncing() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    HistogramWatcher watcher =
-                            HistogramWatcher.newSingleRecordWatcher(
-                                    "PrivacySandbox.Notice.DurationSinceLastRegisteredAction.ProtectedAudienceMeasurementNoticeModalClankBrApp");
-                    doubleClickNotice();
-
-                    // Expect 2 clicks recorded.
-                    assertEquals(2, mNumClicks);
-                    // Expect the time between the two clicks to be recorded.
-                    watcher.assertExpected();
                 });
     }
 }
