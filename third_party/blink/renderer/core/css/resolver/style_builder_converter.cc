@@ -214,13 +214,17 @@ DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
       const DynamicRangeLimit limit =
           ConvertDynamicRangeLimit(state, *mix_value->Limits()[i]);
       const float fraction =
-          0.01f * mix_value->Percentages()[i]->ComputePercentage<float>(
-                      state.CssToLengthConversionData());
+          0.01f *
+          std::clamp(mix_value->Percentages()[i]->ComputePercentage<float>(
+                         state.CssToLengthConversionData()),
+                     0.f, 100.f);
       fraction_sum += fraction;
       standard_mix_sum += fraction * limit.standard_mix;
       constrained_high_mix_sum += fraction * limit.constrained_high_mix;
     }
-    CHECK_NE(fraction_sum, 0.f);
+    if (fraction_sum == 0.f) {
+      return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
+    }
     return DynamicRangeLimit(
         /*standard_mix=*/standard_mix_sum / fraction_sum,
         /*constrained_high_mix=*/constrained_high_mix_sum / fraction_sum);
