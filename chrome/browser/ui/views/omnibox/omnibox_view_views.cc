@@ -1516,8 +1516,7 @@ void OmniboxViewViews::OnBlur() {
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
   if (command_id == Textfield::kPaste) {
-    return !GetReadOnly() &&
-           !GetClipboardText(/*notify_if_restricted=*/false).empty();
+    return !GetReadOnly() && CanGetClipboardText();
   }
   if (command_id == IDC_PASTE_AND_GO) {
     return !GetReadOnly() && !IsClipboardDataMarkedAsConfidential() &&
@@ -1576,8 +1575,7 @@ bool OmniboxViewViews::IsTextEditCommandEnabled(
     case ui::TextEditCommand::MOVE_DOWN:
       return !GetReadOnly();
     case ui::TextEditCommand::PASTE:
-      return !GetReadOnly() &&
-             !GetClipboardText(show_rejection_ui_if_any_).empty();
+      return !GetReadOnly() && CanGetClipboardText();
     default:
       return Textfield::IsTextEditCommandEnabled(command);
   }

@@ -11,6 +11,35 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
+bool CanGetClipboardText() {
+  // Note that this is intended for pre-flighting and so therefore, in this
+  // context, it's unsafe to actually try to access the clipboard (especially on
+  // macOS with Pasteboard Privacy). Therefore, make reasonable assumptions
+  // below (marked as such) to avoid inspecting actual clipboard data.
+
+  // Try text format.
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
+                                   ui::ClipboardBuffer::kCopyPaste,
+                                   &data_dst)) {
+    // Reasonable assumption: If there is text data on the clipboard, it's of
+    // non-zero length.
+    return true;
+  }
+
+  // Try bookmark format.
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
+                                   ui::ClipboardBuffer::kCopyPaste,
+                                   &data_dst)) {
+    // Reasonable assumption: The URL is valid.
+    return true;
+  }
+
+  return false;
+}
+
 std::u16string GetClipboardText(bool notify_if_restricted) {
   // Try text format.
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();

@@ -1940,7 +1940,6 @@ void Textfield::EnsureCaretNotInRect(const gfx::Rect& rect_in_screen) {
 }
 
 bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
-  std::u16string result;
   bool editable = !GetReadOnly();
   bool readable = text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD;
   switch (command) {
@@ -1995,13 +1994,16 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::COPY:
       return readable && HasSelection();
     case ui::TextEditCommand::PASTE: {
+      if (!editable) {
+        return false;
+      }
       ui::DataTransferEndpoint data_dst(
           ui::EndpointType::kDefault,
           {.notify_if_restricted = show_rejection_ui_if_any_});
-      ui::Clipboard::GetForCurrentThread()->ReadText(
-          ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
+      return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
+          ui::ClipboardFormatType::PlainTextType(),
+          ui::ClipboardBuffer::kCopyPaste, &data_dst);
     }
-      return editable && !result.empty();
     case ui::TextEditCommand::SELECT_ALL:
       return !GetText().empty() &&
              GetSelectedRange().length() != GetText().length();
