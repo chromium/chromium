@@ -13,23 +13,9 @@
 #include "base/not_fatal_until.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "base/feature_list.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
-#include "chrome/browser/win/conflicts/module_load_attempt_log_listener.h"
-#include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
-#include "chrome/chrome_elf/third_party_dlls/public_api.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#endif
 
 namespace {
 
@@ -54,10 +40,6 @@ ModuleDatabase::ModuleDatabase()
                                             base::Unretained(this))) {
   AddObserver(&module_inspector_);
   AddObserver(&third_party_metrics_);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  MaybeInitializeThirdPartyConflictsManager();
-#endif
 }
 
 ModuleDatabase::~ModuleDatabase() {
@@ -89,16 +71,6 @@ void ModuleDatabase::SetInstance(
   // This is deliberately leaked. It can be cleaned up by manually deleting the
   // ModuleDatabase.
   g_module_database = module_database.release();
-}
-
-void ModuleDatabase::StartDrainingModuleLoadAttemptsLog() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // ModuleDatabase owns |module_load_attempt_log_listener_|, so it is safe to
-  // use base::Unretained().
-  module_load_attempt_log_listener_ =
-      std::make_unique<ModuleLoadAttemptLogListener>(base::BindRepeating(
-          &ModuleDatabase::OnModuleBlocked, base::Unretained(this)));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool ModuleDatabase::IsIdle() {
@@ -258,30 +230,6 @@ void ModuleDatabase::StartInspection() {
   module_inspector_.StartInspection();
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// static
-ModuleDatabase* ModuleDatabase::GetInstanceForTesting(
-    std::unique_ptr<InstalledApplications> installed_applications) {
-  CHECK(g_module_database->third_party_conflicts_manager_);
-  g_module_database->third_party_conflicts_manager_
-      ->SetInstalledApplicationsForTesting(  // IN-TEST
-          std::move(installed_applications));
-  return GetInstance();
-}
-
-// static
-void ModuleDatabase::DisableThirdPartyBlocking() {
-  // Immediately disable the hook. DisableHook() can be called concurrently.
-  DisableHook();
-
-  // Notify the ModuleDatabase instance.
-  GetTaskRunner()->PostTask(FROM_HERE, base::BindOnce([]() {
-                              GetInstance()->OnThirdPartyBlockingDisabled();
-                            }));
-}
-
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 bool ModuleDatabase::FindOrCreateModuleInfo(
     const base::FilePath& module_path,
     uint32_t module_size,
@@ -328,10 +276,11 @@ void ModuleDatabase::OnModuleInspected(
 
   it->second.inspection_result = std::move(inspection_result);
 
-  if (RegisteredModulesEnumerated())
+  if (RegisteredModulesEnumerated()) {
     for (auto& observer : observer_list_) {
       observer.OnNewModuleFound(it->first, it->second);
     }
+  }
 
   // Notify the observers if this was the last outstanding module inspection and
   // the delay has already expired.
@@ -356,24 +305,3 @@ void ModuleDatabase::NotifyLoadedModules(ModuleDatabaseObserver* observer) {
       observer->OnNewModuleFound(module.first, module.second);
   }
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void ModuleDatabase::OnThirdPartyBlockingDisabled() {
-  third_party_metrics_.SetHookDisabled();
-
-  if (third_party_conflicts_manager_)
-    third_party_conflicts_manager_->DisableModuleAnalysis();
-}
-
-void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (IncompatibleApplicationsUpdater::IsWarningEnabled() ||
-      ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
-    StartInspection();
-
-    third_party_conflicts_manager_ =
-        std::make_unique<ThirdPartyConflictsManager>(this);
-  }
-}
-#endif

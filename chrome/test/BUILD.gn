@@ -3971,10 +3971,6 @@ if (!is_android) {
       if (target_cpu == "x64") {
         sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
       }
-
-      if (is_chrome_branded) {
-        deps += [ "//chrome/browser/win/conflicts:browser_tests" ]
-      }
     }
 
     if (is_mac) {

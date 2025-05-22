@@ -6440,41 +6440,10 @@ static_library("browser") {
     all_dependent_configs = [ ":browser_win_linker_flags" ]
 
     if (is_chrome_branded) {
-      deps += [
-        "//chrome/chrome_elf:sha1",
-        "//chrome/chrome_elf:third_party_shared_defines",
-        "//chrome/updater/app/server/win:updater_legacy_idl",
-      ]
-      libs += [ "msi.lib" ]
+      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
       sources += [
-        "component_updater/third_party_module_list_component_installer_win.cc",
-        "component_updater/third_party_module_list_component_installer_win.h",
         "policy/status_provider/updater_status_and_value_provider.cc",
         "policy/status_provider/updater_status_and_value_provider.h",
-        "win/conflicts/incompatible_applications_updater.cc",
-        "win/conflicts/incompatible_applications_updater.h",
-        "win/conflicts/installed_applications.cc",
-        "win/conflicts/installed_applications.h",
-        "win/conflicts/module_blocklist_cache_updater.cc",
-        "win/conflicts/module_blocklist_cache_updater.h",
-        "win/conflicts/module_blocklist_cache_util.cc",
-        "win/conflicts/module_blocklist_cache_util.h",
-        "win/conflicts/module_list_component_updater.cc",
-        "win/conflicts/module_list_component_updater.h",
-        "win/conflicts/module_list_filter.cc",
-        "win/conflicts/module_list_filter.h",
-        "win/conflicts/module_load_attempt_log_listener.cc",
-        "win/conflicts/module_load_attempt_log_listener.h",
-        "win/conflicts/msi_util.cc",
-        "win/conflicts/msi_util.h",
-        "win/conflicts/registry_key_watcher.cc",
-        "win/conflicts/registry_key_watcher.h",
-        "win/conflicts/third_party_conflicts_manager.cc",
-        "win/conflicts/third_party_conflicts_manager.h",
-        "win/conflicts/token_util.cc",
-        "win/conflicts/token_util.h",
-        "win/conflicts/uninstall_application.cc",
-        "win/conflicts/uninstall_application.h",
       ]
     }
   } else {
@@ -8722,9 +8691,6 @@ static_library("browser_generated_files") {
   if (is_win) {
     arflags = [ "/llvmlibempty" ]
     public_deps += [ "//chrome/browser/ui/startup:buildflags" ]
-    if (is_chrome_branded) {
-      public_deps += [ "//chrome/browser/win/conflicts:module_list_proto" ]
-    }
   }
   if (is_win || is_mac || is_linux) {
     public_deps += [

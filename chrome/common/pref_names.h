@@ -3600,17 +3600,6 @@ inline constexpr char kWebShareVisitedTargets[] =
     "profile.web_share.visited_targets";
 
 #if BUILDFLAG(IS_WIN)
-// Acts as a cache to remember incompatible applications through restarts. Used
-// for the Incompatible Applications Warning feature.
-inline constexpr char kIncompatibleApplications[] = "incompatible_applications";
-
-// Contains the MD5 digest of the current module blacklist cache. Used to detect
-// external tampering.
-inline constexpr char kModuleBlocklistCacheMD5Digest[] =
-    "module_blocklist_cache_md5_digest";
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_WIN)
 // A boolean value, controlling whether Chrome renderer processes have the CIG
 // mitigation enabled.
 inline constexpr char kRendererCodeIntegrityEnabled[] =

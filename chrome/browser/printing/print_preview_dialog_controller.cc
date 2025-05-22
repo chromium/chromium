@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -38,10 +37,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/win/conflicts/module_database.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
@@ -200,10 +195,6 @@ PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
 void PrintPreviewDialogController::PrintPreview(
     WebContents* initiator,
     const mojom::RequestPrintPreviewParams& params) {
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  PrintViewManagerBase::DisableThirdPartyBlocking();
-#endif
-
   if (initiator->IsCrashed()) {
     return;
   }
