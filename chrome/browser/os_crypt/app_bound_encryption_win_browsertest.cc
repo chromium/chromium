@@ -512,14 +512,6 @@ class AppBoundEncryptionWinReencryptTest
 
 // Test the basic interface to Encrypt and Decrypt data.
 IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/417904984): Deflake on Win.
-  if (!std::get<0>(GetParam()) && std::get<1>(GetParam())) {
-    GTEST_SKIP()
-        << "Test is disabled for the NoFakeReencryptFeatureOn combination.";
-  }
-#endif
-
   ASSERT_TRUE(install_static::IsSystemInstall());
   const std::string plaintext("plaintext");
   std::string ciphertext;
