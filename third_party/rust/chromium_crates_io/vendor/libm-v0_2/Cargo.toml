@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libm"
-version = "0.2.13"
+version = "0.2.15"
 authors = ["Jorge Aparicio <jorge@japaric.io>"]
 build = "build.rs"
 autolib = false

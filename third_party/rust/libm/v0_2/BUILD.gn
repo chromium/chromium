@@ -23,9 +23,11 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/acoshf.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/aarch64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/i586.rs",
-    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/i686.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/wasm32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86/detect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86/fma.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asin.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asinf.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asinh.rs",
@@ -71,7 +73,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floorf128.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floorf16.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fma.rs",
-    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fma_wide.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmin_fmax.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fminimum_fmaximum.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fminimum_fmaximum_num.rs",
@@ -86,6 +87,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fabs.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fdim.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/floor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fma_wide.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmax.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmaximum.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmaximum_num.rs",
@@ -170,6 +173,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/big.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/big/tests.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/env.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/feature_detect.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/float_traits.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/hex_float.rs",
     "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/int_traits.rs",
@@ -193,7 +197,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Jorge Aparicio <jorge@japaric.io>"
   cargo_pkg_name = "libm"
   cargo_pkg_description = "libm in pure Rust"
-  cargo_pkg_version = "0.2.13"
+  cargo_pkg_version = "0.2.15"
 
   allow_unsafe = true
 

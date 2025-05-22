@@ -2,6 +2,9 @@
 pub mod macros;
 mod big;
 mod env;
+// Runtime feature detection requires atomics.
+#[cfg(target_has_atomic = "ptr")]
+pub(crate) mod feature_detect;
 mod float_traits;
 pub mod hex_float;
 mod int_traits;
