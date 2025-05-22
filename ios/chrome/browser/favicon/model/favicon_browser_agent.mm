@@ -13,7 +13,7 @@
 #import "url/gurl.h"
 
 FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
+    : BrowserUserData(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
   DCHECK(browser_->GetWebStateList()->empty())
@@ -25,9 +25,7 @@ FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser)
       SessionRestorationServiceFactory::GetForProfile(profile));
 }
 
-FaviconBrowserAgent::~FaviconBrowserAgent() {
-  browser_ = nullptr;
-}
+FaviconBrowserAgent::~FaviconBrowserAgent() = default;
 
 #pragma mark - SessionRestorationObserver
 
