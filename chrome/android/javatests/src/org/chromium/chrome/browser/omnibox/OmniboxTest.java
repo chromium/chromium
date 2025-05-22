@@ -24,11 +24,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -102,7 +102,6 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
-    @DisabledTest(message = "crbug.com/419016470 - likely addressed, but can't trigger bot from CQ")
     public void testDefaultText() {
         mActivityTestRule.startOnNtp();
 
@@ -111,13 +110,17 @@ public class OmniboxTest {
         // Omnibox on NTP shows the hint text.
         Assert.assertNotNull(urlBar);
         Assert.assertEquals("Location bar has text.", "", urlBar.getText().toString());
-        Assert.assertEquals(
-                "Location bar has incorrect hint.",
-                mActivityTestRule
-                        .getActivity()
-                        .getResources()
-                        .getString(R.string.omnibox_empty_hint_with_dse_name, "Google"),
-                urlBar.getHint().toString());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Assert.assertEquals(
+                            "Location bar has incorrect hint.",
+                            OmniboxResourceProvider.getString(
+                                    mActivityTestRule.getActivity(),
+                                    R.string.omnibox_empty_hint_with_dse_name,
+                                    "Google"),
+                            urlBar.getHint().toString());
+                });
 
         // Type something in the omnibox.
         // Note that the TextView does not provide a way to test if the hint is showing, the API
