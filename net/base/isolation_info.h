@@ -92,6 +92,7 @@ class NET_EXPORT IsolationInfo {
 
     // Updates nothing on redirect.
     kOther,
+    kMax = kOther
   };
 
   // Default constructor returns an IsolationInfo with empty origins, a null

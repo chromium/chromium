@@ -147,6 +147,11 @@ std::optional<IsolationInfo> IsolationInfo::Deserialize(
         proto.network_isolation_partition());
   }
 
+  if (proto.request_type() < 0 ||
+      proto.request_type() > static_cast<int>(RequestType::kMax)) {
+    return std::nullopt;
+  }
+
   return IsolationInfo::CreateIfConsistent(
       static_cast<RequestType>(proto.request_type()),
       std::move(top_frame_origin), std::move(frame_origin),

@@ -615,6 +615,18 @@ TEST_F(IsolationInfoTest,
   EXPECT_FALSE(IsolationInfo::Deserialize(info.SerializeAsString()));
 }
 
+TEST_F(IsolationInfoTest, DeserializationHandlesInvalidRequestType) {
+  proto::IsolationInfo info;
+  info.set_request_type(1337);
+  info.set_top_frame_origin(kOrigin1.Serialize());
+  info.set_frame_origin(kOrigin2.Serialize());
+
+  EXPECT_EQ(IsolationInfo::Deserialize(info.SerializeAsString()), std::nullopt);
+
+  info.set_request_type(-42);
+  EXPECT_EQ(IsolationInfo::Deserialize(info.SerializeAsString()), std::nullopt);
+}
+
 }  // namespace
 
 }  // namespace net
