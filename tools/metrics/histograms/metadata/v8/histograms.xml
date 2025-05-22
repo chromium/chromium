@@ -2422,26 +2422,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmFlushedLiftoffCodeSizeBytes" units="bytes"
-    expires_after="2025-08-31">
-  <owner>evih@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of executable Liftoff code that was flushed. Recorded on
-    emergency GCs for allocations and on memory pressure.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmFlushedLiftoffMetadataSizeBytes" units="bytes"
-    expires_after="2025-07-01">
-  <owner>evih@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of Liftoff metadata that was flushed. Recorded on emergency GCs
-    for allocations and on memory pressure.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmFunctionsPerModule{V8WasmSeparateAsmAndWasm}"
     units="functions" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
