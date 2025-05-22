@@ -21,12 +21,14 @@
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -50,9 +52,12 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
-            "os": "Android"
+            "os": "Android",
+            "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

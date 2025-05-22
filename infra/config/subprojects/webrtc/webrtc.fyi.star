@@ -251,16 +251,13 @@ builder(
             "webrtc_chromium_simple_gtests",
         ],
         mixins = [
-            "walleye",
+            "chromium_pixel_2_pie",
         ],
         per_test_modifications = {
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
                 ],
-                swarming = targets.swarming(
-                    shards = 4,
-                ),
             ),
         },
     ),
@@ -298,16 +295,13 @@ builder(
             "webrtc_chromium_simple_gtests",
         ],
         mixins = [
-            "walleye",
+            "chromium_pixel_2_pie",
         ],
         per_test_modifications = {
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
                 ],
-                swarming = targets.swarming(
-                    shards = 4,
-                ),
             ),
         },
     ),
