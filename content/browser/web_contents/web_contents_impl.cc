@@ -3415,6 +3415,8 @@ void WebContentsImpl::DetachUnownedInnerWebContents(
     }
     inner_web_contents_impl->RecursivelyRegisterRenderWidgetHostViews();
   }
+
+  inner_main_frame->UpdateAXTreeData();
 }
 
 void WebContentsImpl::AttachGuestPage(
