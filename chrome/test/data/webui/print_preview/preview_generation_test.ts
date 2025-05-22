@@ -702,9 +702,11 @@ suite('PreviewGenerationTest', function() {
     assertEquals(792, page.$.documentInfo.pageSize.height);
 
     const o = CustomMarginsOrientation;
-    assertEquals(28, page.$.documentInfo.margins.get(o.TOP));
-    assertEquals(28, page.$.documentInfo.margins.get(o.RIGHT));
-    assertEquals(28, page.$.documentInfo.margins.get(o.BOTTOM));
-    assertEquals(28, page.$.documentInfo.margins.get(o.LEFT));
+    const margins = page.$.documentInfo.margins;
+    assertTrue(!!margins);
+    assertEquals(28, margins.get(o.TOP));
+    assertEquals(28, margins.get(o.RIGHT));
+    assertEquals(28, margins.get(o.BOTTOM));
+    assertEquals(28, margins.get(o.LEFT));
   });
 });

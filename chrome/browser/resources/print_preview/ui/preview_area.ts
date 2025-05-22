@@ -98,7 +98,7 @@ export class PrintPreviewPreviewAreaElement extends
   accessor destination: Destination;
   accessor documentModifiable: boolean = false;
   accessor error: Error|null = null;
-  accessor margins: Margins;
+  accessor margins: Margins|null = null;
   accessor measurementSystem: MeasurementSystem|null = null;
   accessor pageSize: Size = new Size(612, 792);
   accessor previewState: PreviewAreaState = PreviewAreaState.LOADING;
@@ -550,7 +550,7 @@ export class PrintPreviewPreviewAreaElement extends
 
       const customMarginsChanged =
           Object.values(CustomMarginsOrientation).some(side => {
-            return this.margins.get(side) !==
+            return this.margins!.get(side) !==
                 customMargins[MARGIN_KEY_MAP.get(side)!];
           });
       if (customMarginsChanged) {

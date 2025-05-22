@@ -89,7 +89,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   protected accessor documentSettings_: DocumentSettings =
       createDocumentSettings();
   protected accessor error_: Error|null = null;
-  protected accessor margins_: Margins;
+  protected accessor margins_: Margins|null = null;
   protected accessor pageSize_: Size = new Size(612, 792);
   protected accessor settingsManaged_: boolean = false;
   protected accessor measurementSystem_: MeasurementSystem|null = null;

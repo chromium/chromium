@@ -89,7 +89,7 @@ export class PrintPreviewDocumentInfoElement extends
 
   accessor documentSettings: DocumentSettings = createDocumentSettings();
   inFlightRequestId: number = -1;
-  accessor margins: Margins;
+  accessor margins: Margins|null = null;
   accessor pageSize: Size = new Size(612, 792);
   accessor printableArea: PrintableArea =
       new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));

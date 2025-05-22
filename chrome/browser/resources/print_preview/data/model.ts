@@ -494,7 +494,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   accessor settingsManaged: boolean = false;
   accessor destination: Destination;
   accessor documentSettings: DocumentSettings = createDocumentSettings();
-  accessor margins: Margins;
+  accessor margins: Margins|null = null;
   accessor pageSize: Size = new Size(612, 792);
 
   observable: Observable<Settings>;

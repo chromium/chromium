@@ -77,7 +77,7 @@ export class PrintPreviewMarginControlContainerElement extends
   }
 
   accessor pageSize: Size = new Size(612, 792);
-  accessor documentMargins: Margins;
+  accessor documentMargins: Margins|null = null;
   accessor previewLoaded: boolean = false;
   accessor measurementSystem: MeasurementSystem|null = null;
   accessor state: State = State.NOT_READY;
@@ -147,6 +147,7 @@ export class PrintPreviewMarginControlContainerElement extends
       // Set the custom margins values to the current document margins if the
       // custom margins were reset.
       const newMargins: Partial<MarginsSetting> = {};
+      assert(this.documentMargins);
       for (const side of Object.values(CustomMarginsOrientation)) {
         const key = MARGIN_KEY_MAP.get(side)!;
         newMargins[key] = this.documentMargins.get(side);
