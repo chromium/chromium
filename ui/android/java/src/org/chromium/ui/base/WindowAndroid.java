@@ -123,10 +123,6 @@ public class WindowAndroid
 
     private @Nullable AndroidPermissionDelegate mPermissionDelegate;
 
-    // Note that this state lives in Java, rather than in the native BeginFrameSource because
-    // clients may pause VSync before the native WindowAndroid is created.
-    private boolean mVSyncPaused;
-
     // List of display modes with the same dimensions as the current mode but varying refresh rate.
     private @Nullable List<Display.Mode> mSupportedRefreshRateModes;
 
@@ -920,8 +916,6 @@ public class WindowAndroid
                                     mDisplayAndroid.getDisplayId(),
                                     getMouseWheelScrollFactor(),
                                     getWindowIsWideColorGamut());
-            WindowAndroidJni.get()
-                    .setVSyncPaused(mNativeWindowAndroid, WindowAndroid.this, mVSyncPaused);
             onAdaptiveRefreshRateInfoChanged(mDisplayAndroid.getAdaptiveRefreshRateInfo());
         }
         return mNativeWindowAndroid;
@@ -1098,18 +1092,6 @@ public class WindowAndroid
     @VisibleForTesting
     public boolean haveAnimationsEnded() {
         return mAnimationsOverContent.isEmpty();
-    }
-
-    /**
-     * Pauses/Unpauses VSync. When VSync is paused the compositor for this window will idle, and
-     * requestAnimationFrame callbacks won't fire, etc.
-     */
-    public void setVSyncPaused(boolean paused) {
-        if (mVSyncPaused == paused) return;
-        mVSyncPaused = paused;
-        if (mNativeWindowAndroid != 0) {
-            WindowAndroidJni.get().setVSyncPaused(mNativeWindowAndroid, WindowAndroid.this, paused);
-        }
     }
 
     @Override
@@ -1433,8 +1415,6 @@ public class WindowAndroid
         void onActivityStopped(long nativeWindowAndroid, WindowAndroid caller);
 
         void onActivityStarted(long nativeWindowAndroid, WindowAndroid caller);
-
-        void setVSyncPaused(long nativeWindowAndroid, WindowAndroid caller, boolean paused);
 
         void onUpdateRefreshRate(long nativeWindowAndroid, WindowAndroid caller, float refreshRate);
 

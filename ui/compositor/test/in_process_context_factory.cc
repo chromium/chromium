@@ -160,7 +160,6 @@ class InProcessContextFactory::PerCompositorData
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
       override {}
 #if BUILDFLAG(IS_ANDROID)
-  void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetAdaptiveRefreshRateInfo(
       bool has_support,

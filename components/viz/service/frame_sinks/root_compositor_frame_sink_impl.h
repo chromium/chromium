@@ -91,7 +91,6 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
                                  base::TimeDelta interval) override;
   void ForceImmediateDrawAndSwapIfPossible() override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetVSyncPaused(bool paused) override;
   void UpdateRefreshRate(float refresh_rate) override;
   void SetAdaptiveRefreshRateInfo(
       bool has_support,

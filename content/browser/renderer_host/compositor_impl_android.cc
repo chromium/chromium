@@ -708,17 +708,6 @@ bool CompositorImpl::IsDrawingFirstVisibleFrame() const {
   return !has_submitted_frame_since_became_visible_;
 }
 
-void CompositorImpl::SetVSyncPaused(bool paused) {
-  if (vsync_paused_ == paused) {
-    return;
-  }
-
-  vsync_paused_ = paused;
-  if (display_private_) {
-    display_private_->SetVSyncPaused(paused);
-  }
-}
-
 void CompositorImpl::OnUpdateRefreshRate(float refresh_rate) {
   if (display_private_) {
     display_private_->UpdateRefreshRate(refresh_rate);
@@ -813,7 +802,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   display_private_->SetDisplayVisible(true);
   display_private_->Resize(size_);
   display_private_->SetDisplayColorSpaces(display_color_spaces_);
-  display_private_->SetVSyncPaused(vsync_paused_);
   display_private_->SetSupportedRefreshRates(
       root_window_->GetSupportedRefreshRates());
   MaybeUpdateObserveBeginFrame();

@@ -471,11 +471,6 @@ void RootCompositorFrameSinkImpl::ForceImmediateDrawAndSwapIfPossible() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RootCompositorFrameSinkImpl::SetVSyncPaused(bool paused) {
-  if (external_begin_frame_source_)
-    external_begin_frame_source_->OnSetBeginFrameSourcePaused(paused);
-}
-
 void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
   if (external_begin_frame_source_)
     external_begin_frame_source_->UpdateRefreshRate(refresh_rate);

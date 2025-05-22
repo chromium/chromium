@@ -641,7 +641,6 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/ScreenOrientationListenerTest.java",
     "javatests/src/org/chromium/content/browser/TestsJavaScriptEvalTest.java",
     "javatests/src/org/chromium/content/browser/TracingControllerAndroidImplTest.java",
-    "javatests/src/org/chromium/content/browser/VSyncPausedTest.java",
     "javatests/src/org/chromium/content/browser/VideoFullscreenOrientationLockTest.java",
     "javatests/src/org/chromium/content/browser/VideoRotateToFullscreenTest.java",
     "javatests/src/org/chromium/content/browser/ViewportTest.java",

@@ -219,7 +219,6 @@ class StubCompositorFrameSink
   void SetDisplayVSyncParameters(base::TimeTicks timebase,
                                  base::TimeDelta interval) override {}
   void ForceImmediateDrawAndSwapIfPossible() override {}
-  void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetAdaptiveRefreshRateInfo(
       bool has_support,

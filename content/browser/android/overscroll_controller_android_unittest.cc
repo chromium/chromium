@@ -50,7 +50,6 @@ class MockCompositor : public WindowAndroidCompositor {
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) override {}
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) override {}
   bool IsDrawingFirstVisibleFrame() const override { return false; }
-  void SetVSyncPaused(bool paused) override {}
   void OnUpdateRefreshRate(float refresh_rate) override {}
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override {}

@@ -149,7 +149,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   bool IsDrawingFirstVisibleFrame() const override;
-  void SetVSyncPaused(bool paused) override;
   void OnUpdateRefreshRate(float refresh_rate) override;
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
@@ -255,7 +254,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   // Viz-specific members for communicating with the display.
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
   std::unique_ptr<viz::HostDisplayClient> display_client_;
-  bool vsync_paused_ = false;
 
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
 

@@ -108,9 +108,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
                          const base::android::JavaParamRef<jobject>& obj);
   void OnActivityStarted(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
-  void SetVSyncPaused(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
-                      bool paused);
   void OnUpdateRefreshRate(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            float refresh_rate);
@@ -206,7 +203,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
 
   float mouse_wheel_scroll_factor_;
-  bool vsync_paused_ = false;
 
   raw_ptr<TestHooks> test_hooks_ = nullptr;
 
