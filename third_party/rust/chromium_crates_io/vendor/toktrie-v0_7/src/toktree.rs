@@ -295,26 +295,25 @@ impl TokTrie {
     }
 
     fn tokens_dbg_ext(&self, toks: &[u32], quote: bool) -> String {
+        // if the token list is too long, we are typically interested in the most recent ones
         let (limited, toks) = if toks.len() > Self::MAX_DBG_TOKENS {
-            (true, &toks[0..Self::MAX_DBG_TOKENS])
+            ("…", &toks[toks.len() - Self::MAX_DBG_TOKENS..])
         } else {
-            (false, toks)
+            ("", toks)
         };
 
-        let mut joined = toks
+        let joined = toks
             .iter()
             .map(|t| self.token_dbg_ext(*t, false))
             .collect::<Vec<_>>()
             .join("‧");
 
-        if limited {
-            joined.push('…');
-        }
-
         if quote {
-            format!("⟦{}⟧", joined)
-        } else {
+            format!("⟦{}{}⟧", limited, joined)
+        } else if limited.is_empty() {
             joined
+        } else {
+            format!("{}{}", limited, joined)
         }
     }
 
@@ -1037,9 +1036,12 @@ impl TrieHash {
         self.children.sort_by_key(|e| e.byte);
         for entry in &mut self.children {
             num_ch -= 1;
+            assert!(num_parents < 0xff);
             entry.serialize(data, if num_ch == 0 { num_parents + 1 } else { 1 });
         }
-        data[idx].bits2 |= ((data.len() - idx) as u32) << 8;
+        let subtree_size = data.len() - idx;
+        assert!(subtree_size < 0x100_0000);
+        data[idx].bits2 |= (subtree_size as u32) << 8;
     }
 }
 
