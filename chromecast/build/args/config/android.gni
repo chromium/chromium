@@ -12,3 +12,4 @@ enable_extensions = false
 enable_pdf = false
 enable_plugins = false
 enable_printing = false
+v8_use_external_startup_data = false
