@@ -804,7 +804,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
-    public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false);
+    public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
     public static final CachedFlag sMostVisitedTilesReselect =

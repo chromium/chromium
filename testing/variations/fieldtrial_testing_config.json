@@ -14607,6 +14607,21 @@
             ]
         }
     ],
+    "MiniOriginBar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MiniOriginBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoChannelAssociatedSendUsesRunOrPostTask": [
         {
             "platforms": [

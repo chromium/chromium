@@ -471,6 +471,7 @@ public class ToolbarPositionControllerTest {
     @Test
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    @DisableFeatures(ChromeFeatureList.MINI_ORIGIN_BAR)
     public void testUpdatePositionChangesWithFormFieldFocusState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -570,6 +571,7 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    @DisableFeatures(ChromeFeatureList.MINI_ORIGIN_BAR)
     public void testCalculateStateTransition() {
         boolean formFieldStateChanged = false;
         boolean prefStateChanged = false;
