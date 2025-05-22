@@ -10,6 +10,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/sharesheet",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chrome/test:test_support",

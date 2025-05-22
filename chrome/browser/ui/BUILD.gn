@@ -5086,6 +5086,11 @@ static_library("ui") {
         "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h",
         "views/status_icons/status_tray_chromeos.cc",
       ]
+
+      # TODO(crbug.com/419210492): Remove this dep when sharing_hub_bubble_controller_chromeos_impl.h (above)
+      # gets componentized.
+      public_deps += [ "//chrome/browser/sharesheet" ]
+
       deps += [
         "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
         "//chromeos/components/kiosk",

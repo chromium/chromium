@@ -21,7 +21,10 @@ static_library("sharesheet") {
     "sharesheet_util.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sharesheet",
+  ]
 
   deps = [
     "//ash",
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "//ash",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/sharesheet",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/components/sharesheet:constants",
@@ -81,6 +85,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/policy/dlp/test:test_support",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sharesheet",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/components/sharesheet:constants",

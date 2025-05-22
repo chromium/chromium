@@ -4139,6 +4139,10 @@ if (!is_android) {
 
     if (is_win || is_chromeos || is_mac) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
+
+      if (is_chromeos) {
+        deps += [ "//chrome/browser/sharesheet" ]
+      }
     }
 
     if (enable_plugins) {
@@ -8685,6 +8689,7 @@ test("unit_tests") {
       "//chrome/browser/push_notification:test_support",
       "//chrome/browser/push_notification/protos:proto",
       "//chrome/browser/screen_ai/public:test_support",
+      "//chrome/browser/sharesheet",
       "//chrome/browser/smart_card:smart_card",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/ash:test_support",

@@ -39,6 +39,7 @@ source_set("browser_tests") {
     ":nearby_share",
     "//chrome/browser",
     "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/sharesheet",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
   ]
