@@ -2684,7 +2684,7 @@
   {
     "name": "enable-audio-focus-enforcement",
     "owners": [ "liberato@chromium.org", "steimel@chromium.org", "meganlfu@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 155
   },
   {
     "name": "enable-auto-disable-accessibility",
