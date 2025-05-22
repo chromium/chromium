@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -275,13 +274,11 @@ void KioskExternalUpdater::ProcessParsedManifest(
       }
     }
 
+    auto app = manager.GetApp(app_id);
+    CHECK(app.has_value());
+
     ExternalUpdate update;
-    KioskChromeAppManager::App app;
-    if (manager.GetApp(app_id, &app)) {
-      update.app_name = app.name;
-    } else {
-      NOTREACHED();
-    }
+    update.app_name = app->name;
     update.external_crx = extensions::CRXFileInfo(
         external_update_path_.AppendASCII(*external_crx_str),
         extensions::GetExternalVerifierFormat());

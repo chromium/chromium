@@ -59,7 +59,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "extensions/common/mojom/manifest.mojom-data-view.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -421,13 +421,12 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
 
   // Make sure that if an app was auto launched with zero delay, it is reflected
   // in the app data.
-  KioskChromeAppManager::App app;
-  manager()->GetApp("fake_app_1", &app);
-  EXPECT_FALSE(app.was_auto_launched_with_zero_delay);
+  EXPECT_FALSE(
+      manager()->GetApp("fake_app_1")->was_auto_launched_with_zero_delay);
 
   manager()->SetAppWasAutoLaunchedWithZeroDelay("fake_app_1");
-  manager()->GetApp("fake_app_1", &app);
-  EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
+  EXPECT_TRUE(
+      manager()->GetApp("fake_app_1")->was_auto_launched_with_zero_delay);
 
   // Clear the auto launch app.
   SetConsumerKioskAutoLaunchChromeAppForTesting(
@@ -436,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
 
   // App should still report it was auto launched with zero delay, even though
   // it is no longer set to auto launch in the future.
-  manager()->GetApp("fake_app_1", &app);
-  EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
+  EXPECT_TRUE(
+      manager()->GetApp("fake_app_1")->was_auto_launched_with_zero_delay);
 
   // Set another auto launch app.
   SetConsumerKioskAutoLaunchChromeAppForTesting(

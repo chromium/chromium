@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -210,12 +211,12 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   }
 
   bool IsKioskAppAutoLaunched(const std::string& app_id) {
-    KioskChromeAppManager::App app;
-    if (!KioskChromeAppManager::Get()->GetApp(app_id, &app)) {
+    auto app = KioskChromeAppManager::Get()->GetApp(app_id);
+    if (!app.has_value()) {
       ADD_FAILURE() << "App " << app_id << " not found.";
       return false;
     }
-    return app.was_auto_launched_with_zero_delay;
+    return app->was_auto_launched_with_zero_delay;
   }
 
   void ExpectCommandLineHasDefaultPolicySwitches(

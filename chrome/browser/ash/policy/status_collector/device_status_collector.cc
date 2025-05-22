@@ -15,38 +15,42 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <map>
+#include <memory>
 #include <optional>
 #include <set>
-#include <sstream>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/circular_deque.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/posix/eintr_wrapper.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
@@ -58,6 +62,8 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/ash/policy/status_collector/tpm_status_combiner.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -68,7 +74,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
@@ -79,21 +85,23 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/experiences/arc/mojom/enterprise_reporting.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/power_manager/idle.pb.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/version/version_loader.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -102,19 +110,18 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
-#include "components/user_manager/user_type.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
+#include "storage/browser/file_system/mount_points.h"
+#include "ui/base/idle/idle.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace policy {
 
@@ -2710,11 +2717,11 @@ bool DeviceStatusCollector::GetRunningKioskApp(
         running_kiosk_app->set_extension_version(app_version);
       }
 
-      ash::KioskChromeAppManager::App app_info;
-      if (ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
-                                                    &app_info)) {
+      auto app =
+          ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id);
+      if (app.has_value()) {
         running_kiosk_app->set_required_platform_version(
-            app_info.required_platform_version);
+            app->required_platform_version);
       }
       break;
     }

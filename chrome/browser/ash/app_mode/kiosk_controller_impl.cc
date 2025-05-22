@@ -70,13 +70,13 @@ std::optional<KioskApp> WebAppById(const WebKioskAppManager& manager,
 
 std::optional<KioskApp> ChromeAppById(const KioskChromeAppManager& manager,
                                       std::string_view chrome_app_id) {
-  KioskChromeAppManager::App manager_app;
-  if (!manager.GetApp(std::string(chrome_app_id), &manager_app)) {
+  auto manager_app = manager.GetApp(std::string(chrome_app_id));
+  if (!manager_app.has_value()) {
     return std::nullopt;
   }
   return KioskApp(
-      KioskAppId::ForChromeApp(chrome_app_id, manager_app.account_id),
-      manager_app.name, manager_app.icon);
+      KioskAppId::ForChromeApp(chrome_app_id, manager_app->account_id),
+      manager_app->name, manager_app->icon);
 }
 
 std::optional<KioskApp> IsolatedWebAppById(const KioskIwaManager& manager,

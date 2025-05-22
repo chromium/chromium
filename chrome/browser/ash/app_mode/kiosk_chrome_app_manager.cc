@@ -330,13 +330,13 @@ KioskChromeAppManager::App KioskChromeAppManager::ConstructApp(
   return app;
 }
 
-bool KioskChromeAppManager::GetApp(const std::string& app_id, App* app) const {
+std::optional<KioskChromeAppManager::App> KioskChromeAppManager::GetApp(
+    const std::string& app_id) const {
   const KioskAppData* data = GetAppData(app_id);
   if (!data) {
-    return false;
+    return std::nullopt;
   }
-  *app = ConstructApp(*data);
-  return true;
+  return ConstructApp(*data);
 }
 
 void KioskChromeAppManager::ClearAppData(const std::string& app_id) {

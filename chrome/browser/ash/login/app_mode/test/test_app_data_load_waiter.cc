@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 
@@ -111,8 +110,8 @@ void TestAppDataLoadWaiter::OnKioskExtensionDownloadFailed(
 }
 
 bool TestAppDataLoadWaiter::IsAppDataLoaded() {
-  KioskChromeAppManager::App app;
-  return manager_->GetApp(app_id_, &app) && !app.is_loading;
+  auto app = manager_->GetApp(app_id_);
+  return app.has_value() && !app->is_loading;
 }
 
 }  // namespace ash

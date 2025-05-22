@@ -11,7 +11,7 @@
 #include "apps/test/app_window_waiter.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -29,7 +29,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "extensions/common/mojom/manifest.mojom-data-view.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/window/non_client_view.h"
@@ -53,10 +53,7 @@ ManifestLocation InstallationSource(Profile& profile, std::string_view app_id) {
 }
 
 KioskChromeAppManager::App GetAppFromManager(const KioskApp& app) {
-  KioskChromeAppManager::App chrome_app;
-  CHECK(KioskChromeAppManager::Get()->GetApp(app.id().app_id.value(),
-                                             &chrome_app));
-  return chrome_app;
+  return KioskChromeAppManager::Get()->GetApp(app.id().app_id.value()).value();
 }
 
 }  // namespace
