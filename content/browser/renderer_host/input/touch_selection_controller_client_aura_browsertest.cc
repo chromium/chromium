@@ -278,6 +278,8 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), test_url));
     aura::Window* content = shell()->web_contents()->GetContentNativeView();
     content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 600));
+
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   }
 
   gfx::PointF GetPointInText(int cursor_index) const {
