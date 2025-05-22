@@ -83,6 +83,10 @@ class AXBitset {
     }
   }
 
+  // Returns the number of attributes that are currently explicitly set
+  // (i.e., have been Set to true or false and not subsequently Unset).
+  size_t Size() const { return std::popcount(set_bits_); }
+
  private:
   uint64_t set_bits_ = 0;
   uint64_t values_ = 0;

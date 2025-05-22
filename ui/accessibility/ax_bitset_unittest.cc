@@ -82,4 +82,24 @@ TEST(AXBitsetTest, ForEach) {
 
   EXPECT_EQ(expected_attributes, collected_attributes);
 }
+
+TEST(AXBitsetTest, Size) {
+  AXBitset<TestEnum> map;
+  size_t expected_size = 0;
+  EXPECT_EQ(expected_size, map.Size());
+
+  map.Set(TestEnum::kMinValue, true);
+  map.Set(TestEnum::kLastValue, false);
+  expected_size = 2;
+  EXPECT_EQ(expected_size, map.Size());
+
+  // Re-setting an existing attribute.
+  map.Set(TestEnum::kMinValue, false);
+  EXPECT_EQ(expected_size, map.Size());
+
+  // Unset existing attribute.
+  map.Unset(TestEnum::kLastValue);
+  expected_size = 1;
+  EXPECT_EQ(expected_size, map.Size());
+}
 }  // namespace ui
