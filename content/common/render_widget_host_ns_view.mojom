@@ -162,18 +162,20 @@ interface RenderWidgetHostNSViewHost {
   // Indicates whether or not the NSView is its NSWindow's first responder.
   OnFirstResponderChanged(bool is_first_responder);
 
-  // Indicates whether or not the NSView is its NSWindow's first responder.
-  OnWindowIsKeyChanged(bool is_key);
-
   // Indicates whether or not the NSView's NSWindow is key.
-  OnBoundsInWindowChanged(
-      gfx.mojom.Rect view_bounds_in_window_dip,
-      bool attached_to_window);
+  OnWindowIsKeyChanged(bool is_key);
 
   // Indicates the NSView's bounds in its NSWindow's DIP coordinate system (with
   // the origin at the upper-left corner), and indicate if the the NSView is
   // attached to an NSWindow (if it is not, then |view_bounds_in_window_dip|'s
   // origin is meaningless, but its size is still relevant).
+  OnBoundsInWindowChanged(
+      gfx.mojom.Rect view_bounds_in_window_dip,
+      bool attached_to_window);
+
+  // Indicates the NSView's NSWindow's frame in the global display::Screen
+  // DIP coordinate system (where the origin the upper-left corner of
+  // Screen::GetPrimaryDisplay).
   OnWindowFrameInScreenChanged(
       gfx.mojom.Rect window_frame_in_screen_dip);
 
