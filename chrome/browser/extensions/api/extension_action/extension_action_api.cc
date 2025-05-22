@@ -84,8 +84,9 @@ Browser* FindLastActiveBrowserWindow(Profile* profile,
                                      bool check_incognito_profile) {
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
 
-  if (browser && browser->window()->IsActive())
+  if (browser && browser->window()->IsActive()) {
     return browser;  // Found an active browser.
+  }
 
   // It's possible that the last active browser actually corresponds to the
   // associated incognito profile, and this won't be returned by
@@ -97,8 +98,9 @@ Browser* FindLastActiveBrowserWindow(Profile* profile,
     DCHECK(incognito_profile);
     Browser* incognito_browser =
         chrome::FindLastActiveWithProfile(incognito_profile);
-    if (incognito_browser->window()->IsActive())
+    if (incognito_browser->window()->IsActive()) {
       return incognito_browser;
+    }
   }
 
   return nullptr;
@@ -107,11 +109,13 @@ Browser* FindLastActiveBrowserWindow(Profile* profile,
 // Returns true if the color values provided could be parsed into a color
 // object out param.
 bool ParseColor(const base::Value& color_value, SkColor& color) {
-  if (color_value.is_string())
+  if (color_value.is_string()) {
     return content::ParseCssColorString(color_value.GetString(), &color);
+  }
 
-  if (!color_value.is_list())
+  if (!color_value.is_list()) {
     return false;
+  }
 
   const base::Value::List& color_list = color_value.GetList();
   if (color_list.size() != 4 ||
@@ -220,8 +224,9 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
   // The tabId might appear in details (if it exists), as the first
   // argument besides the action type (depends on the function), or be omitted
   // entirely.
-  if (args().empty())
+  if (args().empty()) {
     return true;
+  }
 
   base::Value& first_arg = mutable_args()[0];
 
@@ -268,8 +273,9 @@ void ExtensionActionFunction::NotifyChange() {
 }
 
 void ExtensionActionFunction::SetVisible(bool visible) {
-  if (extension_action_->GetIsVisible(tab_id_) == visible)
+  if (extension_action_->GetIsVisible(tab_id_) == visible) {
     return;
+  }
   extension_action_->SetIsVisible(tab_id_, visible);
   NotifyChange();
 }
@@ -313,14 +319,16 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
     EXTENSION_FUNCTION_VALIDATE(parse_result ==
                                 extensions::IconParseResult::kSuccess);
 
-    if (icon.isNull())
+    if (icon.isNull()) {
       return RespondNow(Error("Icon invalid."));
+    }
 
     gfx::Image icon_image(icon);
     const SkBitmap bitmap = icon_image.AsBitmap();
     const bool is_visible = image_util::IsIconSufficientlyVisible(bitmap);
-    if (!is_visible && g_report_error_for_invisible_icon)
+    if (!is_visible && g_report_error_for_invisible_icon) {
       return RespondNow(Error("Icon not sufficiently visible."));
+    }
 
     extension_action_->SetIcon(tab_id_, icon_image);
   } else if (details_->FindInt("iconIndex")) {
@@ -371,10 +379,11 @@ ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
 
   std::string* badge_text = details_->FindString("text");
-  if (badge_text)
+  if (badge_text) {
     extension_action_->SetBadgeText(tab_id_, *badge_text);
-  else
+  } else {
     extension_action_->ClearBadgeText(tab_id_);
+  }
 
   NotifyChange();
   return RespondNow(NoArguments());
@@ -386,8 +395,9 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
   base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
-  if (!ParseColor(*color_value, color))
+  if (!ParseColor(*color_value, color)) {
     return RespondNow(Error(extension_misc::kInvalidColorError));
+  }
   extension_action_->SetBadgeBackgroundColor(tab_id_, color);
   NotifyChange();
   return RespondNow(NoArguments());
@@ -399,11 +409,13 @@ ActionSetBadgeTextColorFunction::RunExtensionAction() {
   base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
-  if (!ParseColor(*color_value, color))
+  if (!ParseColor(*color_value, color)) {
     return RespondNow(Error(extension_misc::kInvalidColorError));
+  }
 
-  if (SkColorGetA(color) == SK_AlphaTRANSPARENT)
+  if (SkColorGetA(color) == SK_AlphaTRANSPARENT) {
     return RespondNow(Error(extension_misc::kInvalidColorError));
+  }
   extension_action_->SetBadgeTextColor(tab_id_, color);
   NotifyChange();
   return RespondNow(NoArguments());
@@ -523,8 +535,9 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
   if (window_id == extension_misc::kCurrentWindowId) {
     browser =
         FindLastActiveBrowserWindow(profile, include_incognito_information());
-    if (!browser)
+    if (!browser) {
       error = kNoActiveWindowFound;
+    }
   } else {
     if (WindowController* controller =
             ExtensionTabUtil::GetControllerInProfileWithId(
@@ -542,8 +555,9 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     return RespondNow(Error(kOpenPopupInactiveWindow));
   }
 
-  if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))
+  if (!HasPopupOnActiveTab(browser, browser_context(), *extension())) {
     return RespondNow(Error(kNoActivePopup));
+  }
 
   if (!OpenPopupInBrowser(
           *browser, *extension(), &error,
@@ -585,11 +599,13 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   Browser* browser =
       FindLastActiveBrowserWindow(profile, include_incognito_information());
 
-  if (!browser)
+  if (!browser) {
     return RespondNow(Error(kNoActiveWindowFound));
+  }
 
-  if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))
+  if (!HasPopupOnActiveTab(browser, browser_context(), *extension())) {
     return RespondNow(Error(kNoActivePopup));
+  }
 
   std::string error;
   if (!OpenPopupInBrowser(*browser, *extension(), &error,
@@ -625,8 +641,9 @@ void BrowserActionOpenPopupFunction::OnBrowserContextShutdown() {
 }
 
 void BrowserActionOpenPopupFunction::OpenPopupTimedOut() {
-  if (did_respond())
+  if (did_respond()) {
     return;
+  }
 
   DVLOG(1) << "chrome.browserAction.openPopup did not show a popup.";
   Respond(Error(kOpenPopupError));
@@ -635,12 +652,14 @@ void BrowserActionOpenPopupFunction::OpenPopupTimedOut() {
 void BrowserActionOpenPopupFunction::OnExtensionHostCompletedFirstLoad(
     content::BrowserContext* browser_context,
     ExtensionHost* host) {
-  if (did_respond())
+  if (did_respond()) {
     return;
+  }
 
   if (host->extension_host_type() != mojom::ViewType::kExtensionPopup ||
-      host->extension()->id() != extension_->id())
+      host->extension()->id() != extension_->id()) {
     return;
+  }
 
   Respond(NoArguments());
   host_registry_observation_.Reset();
