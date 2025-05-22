@@ -55,8 +55,6 @@ class ClosingWebStateObserverBrowserAgent
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
 
-  raw_ptr<Browser> browser_;
-
   base::WeakPtrFactory<ClosingWebStateObserverBrowserAgent> weak_ptr_factory_{
       this};
 };

@@ -24,7 +24,7 @@
 
 ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
     Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
+    : BrowserUserData(browser) {
   DCHECK(!browser_->GetProfile()->IsOffTheRecord());
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
@@ -69,7 +69,6 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
 void ClosingWebStateObserverBrowserAgent::RecordHistoryFromStorage(
     int index,
     web::proto::WebStateStorage storage) {
-  DCHECK(browser_);
   sessions::RestoreIOSLiveTab live_tab(storage.navigation());
   IOSChromeTabRestoreServiceFactory::GetForProfile(browser_->GetProfile())
       ->CreateHistoricalTab(&live_tab, index);
@@ -84,7 +83,6 @@ void ClosingWebStateObserverBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   browser_->RemoveObserver(this);
   browser_->GetWebStateList()->RemoveObserver(this);
-  browser_ = nullptr;
 }
 
 #pragma mark - WebStateListObserving
