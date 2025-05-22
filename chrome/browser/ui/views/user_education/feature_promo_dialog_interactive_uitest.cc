@@ -249,8 +249,10 @@ class FeaturePromoDialogWebUITabStripTest : public FeaturePromoDialogTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Being deleted in a followup CL:
+// https://chromium-review.googlesource.com/c/chromium/src/+/6576285
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogWebUITabStripTest,
-                       InvokeUi_IPH_WebUITabStrip) {
+                       DISABLED_InvokeUi_IPH_WebUITabStrip) {
   ui::TouchUiController::TouchUiScoperForTesting touch_override(true);
   RunScheduledLayouts();
 

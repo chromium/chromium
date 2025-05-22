@@ -6195,7 +6195,15 @@ void BrowserView::MaybeShowFeaturePromo(
 void BrowserView::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
   if (feature_promo_controller_) {
-    feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
+    // Preconditions for feature promos may require the browser to be fully
+    // constructed before they can be run. Post this task to ensure browser
+    // initialization is complete before attempting to show startup promos.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&user_education::FeaturePromoControllerCommon::
+                           MaybeShowStartupPromo,
+                       feature_promo_controller_->GetAsWeakPtr(),
+                       std::move(params)));
   }
 }
 
