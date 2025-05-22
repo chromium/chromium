@@ -35,7 +35,7 @@ void RaceNetworkRequestSimpleBufferManager::OnDataComplete() {
 
 void RaceNetworkRequestSimpleBufferManager::Clone(
     mojo::ScopedDataPipeProducerHandle producer_handle,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceClosure callback) {
   CHECK(!producer_handle_.is_valid());
   producer_handle_ = std::move(producer_handle);
   producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
@@ -59,11 +59,11 @@ void RaceNetworkRequestSimpleBufferManager::OnWriteAvailable(
   MaybeWriteData();
 }
 
-void RaceNetworkRequestSimpleBufferManager::Finish(bool success) {
+void RaceNetworkRequestSimpleBufferManager::Finish() {
   write_position_ = 0;
   producer_handle_.reset();
   producer_handle_watcher_.reset();
-  std::move(clone_complete_callback_).Run(success);
+  std::move(clone_complete_callback_).Run();
 }
 
 void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
@@ -71,7 +71,7 @@ void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
     std::string_view data = GetDataFromBuffer();
     if (data.empty()) {
       if (write_position_ == buffered_body_.size() && drain_complete_) {
-        Finish(/*success=*/true);
+        Finish();
       }
       break;
     }
@@ -89,7 +89,6 @@ void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
         return;
       default:
         // ERROR, disconnect
-        Finish(/*success=*/false);
         return;
     }
   }

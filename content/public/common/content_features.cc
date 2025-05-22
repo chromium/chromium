@@ -950,7 +950,7 @@ BASE_FEATURE(kServiceWorkerAutoPreload,
 BASE_FEATURE(
     kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement,
     "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
-    base::FEATURE_ENABLED_BY_DEFAULT);
+    base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Run video capture service in the Browser process as opposed to a dedicated

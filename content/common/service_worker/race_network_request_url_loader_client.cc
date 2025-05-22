@@ -694,13 +694,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
       std::nullopt);
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted(
-    bool success) {
-  if (!success) {
-    TransitionState(State::kAborted);
-    Abort();
-    return;
-  }
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted() {
   if (state_ == State::kCompleted) {
     //  `kCompleted` indicates the network request and data processing to
     //  `owner_` are finished. With
@@ -727,7 +721,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnCloneCompleted(
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    OnCloneCompletedForFetchHandler(bool success) {
+    OnCloneCompletedForFetchHandler() {
   clone_response_for_fetch_handler_completed_ = true;
   if (completion_status_.has_value()) {
     // If `completion_status_` already exists, which means the resource load was
