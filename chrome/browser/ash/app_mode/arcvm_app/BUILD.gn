@@ -10,10 +10,13 @@ static_library("arcvm_app") {
   sources = [
     "kiosk_arcvm_app_data.cc",
     "kiosk_arcvm_app_data.h",
+    "kiosk_arcvm_app_launcher.cc",
+    "kiosk_arcvm_app_launcher.h",
     "kiosk_arcvm_app_manager.cc",
     "kiosk_arcvm_app_manager.h",
   ]
   deps = [
+    "//ash",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/app_list/arc",
@@ -21,7 +24,10 @@ static_library("arcvm_app") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
     "//components/account_id",
+    "//components/exo",
     "//components/prefs",
+    "//content/public/browser",
+    "//ui/aura",
     "//ui/gfx",
   ]
 }
