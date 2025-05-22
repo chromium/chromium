@@ -1342,9 +1342,17 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
       CancelAuthenticatorRequest();
     }
     return;
-  } else if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
-             AuthenticatorType::kTouchID) {
+  }
+  if (ephemeral_state_.dispatched_platform_authenticator_type_ ==
+      AuthenticatorType::kTouchID) {
     webauthn::user_actions::RecordChromeProfileCancelled();
+    if (ui_presentation() == UIPresentation::kModalImmediate) {
+      // On immediate mode there's no need to show the error sheet where the
+      // user can retry. Instead fail early and let the relying party handle the
+      // error.
+      CancelAuthenticatorRequest();
+      return;
+    }
   }
   SetCurrentStep(Step::kErrorInternalUnrecognized);
 }
