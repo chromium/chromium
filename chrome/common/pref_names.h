@@ -2348,6 +2348,12 @@ inline constexpr char kCommandLineFlagSecurityWarningsEnabled[] =
     "browser.command_line_flag_security_warnings_enabled";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Boolean value that determines whether the NTP extension attribution on the
+// NTP footer is enabled. This is false when disabled by the
+// `NTPFooterExtensionAttributionEnabled` policy.
+inline constexpr char kNTPFooterExtensionAttributionEnabled[] =
+    "ntp_footer.settings.extension_attribution";
+
 // Pref name for controlling presentation of promotions, including full-tab
 // promotional and/or educational content.
 // This preference replaces browser.promotional_tabs_enabled.
@@ -4216,12 +4222,6 @@ inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
 // `NTPFooterTManagementNoticeEnabled` policy.
 inline constexpr char kNTPFooterManagementNoticeEnabled[] =
     "ntp_footer.settings.management_notice";
-
-// Boolean value that determines whether the NTP extension attribution on the
-// NTP footer is enabled. This is false when disabled by the
-// `NTPFooterExtensionAttributionEnabled` policy.
-inline constexpr char kNTPFooterExtensionAttributionEnabled[] =
-    "ntp_footer.settings.extension_attribution";
 
 #if BUILDFLAG(IS_ANDROID)
 // An integer count of how many account-level breached credentials were

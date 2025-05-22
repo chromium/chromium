@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_registrar.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -168,6 +168,50 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_UnloadExtension) {
   document_.FlushForTesting();
 }
 
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_DisableByPolicy) {
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
+  // Force activation of the URL override. The usual observer for
+  // extension load isn't created in the unit test.
+  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+      profile(),
+      extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
+
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .WillOnce(
+          [](const std::string& name) { EXPECT_EQ(name, std::string()); });
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, false);
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ReenablePolicy) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, false);
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
+  // Force activation of the URL override. The usual observer for
+  // extension load isn't created in the unit test.
+  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+      profile(),
+      extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
+
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .WillOnce(
+          [](const std::string& name) { EXPECT_EQ(name, kExtensionNtpName); });
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, true);
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class NewTabFooterHandlerEnterpriseTest : public testing::Test {
  public:
@@ -253,6 +297,8 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_CustomText) {
   // text.
   profile_manager_->local_state()->Get()->SetString(
       prefs::kEnterpriseCustomLabelForBrowser, "custom label");
+  document_.FlushForTesting();
+
   EXPECT_CALL(document_, SetManagementNotice)
       .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
         EXPECT_EQ("Managed by custom label", notice->text);
@@ -326,6 +372,112 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_DefaultLogo) {
                                      "data:image/png;base64,"));
       });
   handler().UpdateManagementNotice();
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_SetLabelPolicy) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  // Set a custom label policy and verify that the document receives the updated
+  // text that uses the new label.
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by NewCustomLabel", notice->text);
+      });
+  profile_manager_->local_state()->Get()->SetString(
+      prefs::kEnterpriseCustomLabelForBrowser, "NewCustomLabel");
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest,
+       SetManagementNotice_UunsetLabelPolicy) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  profile_manager_->local_state()->Get()->SetString(
+      prefs::kEnterpriseCustomLabelForBrowser, "CustomLabel");
+  // Browser management is local, so no domain is indicated in the managent
+  // notice text.
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by CustomLabel", notice->text);
+      });
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+
+  // Unset the custom label policy and verify that the document receives the
+  // updated text, which is the default.
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by your organization", notice->text);
+      });
+  profile_manager_->local_state()->Get()->SetString(
+      prefs::kEnterpriseCustomLabelForBrowser, std::string());
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest,
+       SetManagementNotice_DisableNoticePolicy) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  // Disable the management notice policy and verify that an empty notice is
+  // set.
+  profile_manager_->local_state()->Get()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, false);
+
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_FALSE(notice);
+      });
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest,
+       SetManagementNotice_ReenableNoticePolicy) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+  profile_manager_->local_state()->Get()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, false);
+
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_FALSE(notice);
+      });
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+
+  // Unset the management notice policy and verify that the notice is set.
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by your organization", notice->text);
+      });
+
+  profile_manager_->local_state()->Get()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, true);
 
   document_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&document_);

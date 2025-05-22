@@ -173,6 +173,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCaretBrowsingEnabled, false);
   registry->RegisterBooleanPref(prefs::kShowCaretBrowsingDialog, true);
+  registry->RegisterBooleanPref(prefs::kNTPFooterExtensionAttributionEnabled,
+                                true);
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -202,7 +204,5 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterIntegerPref(prefs::kEnterpriseProfileBadgeToolbarSettings,
                                 0);
-  registry->RegisterBooleanPref(prefs::kNTPFooterExtensionAttributionEnabled,
-                                true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }

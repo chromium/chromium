@@ -47,22 +47,39 @@ NewTabFooterHandler::NewTabFooterHandler(
       handler_{this, std::move(pending_handler)} {
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
+  profile_pref_change_registrar_.Init(profile_->GetPrefs());
+  profile_pref_change_registrar_.Add(
+      prefs::kNTPFooterExtensionAttributionEnabled,
+      base::BindRepeating(&NewTabFooterHandler::UpdateNtpExtensionName,
+                          base::Unretained(this)));
+  local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+  local_state_pref_change_registrar_.Add(
+      prefs::kNTPFooterManagementNoticeEnabled,
+      base::BindRepeating(&NewTabFooterHandler::UpdateManagementNotice,
+                          base::Unretained(this)));
+  local_state_pref_change_registrar_.Add(
+      prefs::kEnterpriseCustomLabelForBrowser,
+      base::BindRepeating(&NewTabFooterHandler::UpdateManagementNotice,
+                          base::Unretained(this)));
 }
 
 NewTabFooterHandler::~NewTabFooterHandler() = default;
 
 void NewTabFooterHandler::UpdateNtpExtensionName() {
-  const extensions::Extension* ntp_extension =
-      extensions::GetExtensionOverridingNewTabPage(profile_);
-  if (!ntp_extension) {
-    curr_ntp_extension_id_ = std::string();
-    document_->SetNtpExtensionName(std::string());
-    return;
+  std::string id;
+  std::string name;
+  bool attribution_enabled = profile_->GetPrefs()->GetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled);
+  if (attribution_enabled) {
+    if (const extensions::Extension* ntp_extension =
+            extensions::GetExtensionOverridingNewTabPage(profile_)) {
+      id = ntp_extension->id();
+      name = ntp_extension->name();
+    }
   }
-
-  curr_ntp_extension_id_ = ntp_extension->id();
-  document_->SetNtpExtensionName(std::move(ntp_extension->name()));
-}
+  curr_ntp_extension_id_ = id;
+  document_->SetNtpExtensionName(std::move(name));
+  }
 
 void NewTabFooterHandler::OpenExtensionOptionsPageWithFallback() {
   GURL options_url = GURL(chrome::kChromeUIExtensionsURL);

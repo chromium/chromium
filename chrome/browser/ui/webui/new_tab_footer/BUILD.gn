@@ -15,6 +15,7 @@ source_set("new_tab_footer") {
   public_deps = [
     ":mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/prefs",
     "//extensions/browser:browser",
     "//ui/webui",
   ]

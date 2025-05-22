@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -56,11 +57,15 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   std::string curr_ntp_extension_id_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebContents> web_contents_;
+  PrefChangeRegistrar profile_pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
+  // These are located at the end of the list of member variables to ensure the
+  // WebUI page is disconnected before other members are destroyed.
   mojo::Remote<new_tab_footer::mojom::NewTabFooterDocument> document_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandler> handler_;
 };

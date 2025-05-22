@@ -12,6 +12,7 @@ features:
   per_profile: true
 future_on:
 - chrome.*
+- chrome_os
 items:
 - caption: Enable extension theme attribution on NTP Footer
   value: true
