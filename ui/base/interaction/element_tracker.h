@@ -283,14 +283,8 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   bool operator==(const SafeElementReference& other) const {
     return element_ == other.element_;
   }
-  bool operator!=(const SafeElementReference& other) const {
-    return element_ != other.element_;
-  }
   bool operator==(const TrackedElement* other) const {
     return element_ == other;
-  }
-  bool operator!=(const TrackedElement* other) const {
-    return element_ != other;
   }
 
   // Gets the held element as type T if present, null if not present or not a T.

@@ -128,14 +128,14 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
 
   constexpr bool operator!() const { return !handle_; }
 
-  constexpr bool operator==(const ElementIdentifier& other) const = default;
+  friend constexpr bool operator==(const ElementIdentifier&,
+                                   const ElementIdentifier&) = default;
 
   // TODO(crbug.com/333028921): Operator < cannot be constexpr because memory
   // order of Impl objects is not strictly known at compile time. Fix this...
   // somehow? Possibilities include compile-time hashing of identifier string.
-  bool operator<(const ElementIdentifier& other) const {
-    return handle_ < other.handle_;
-  }
+  friend auto operator<=>(const ElementIdentifier&,
+                          const ElementIdentifier&) = default;
 
   // Retrieves the element name, or the empty string if none.
   std::string GetName() const;
@@ -217,15 +217,10 @@ class COMPONENT_EXPORT(UI_BASE) ElementContext {
   explicit operator intptr_t() const { return static_cast<intptr_t>(value_); }
   explicit operator bool() const { return value_ != 0; }
   bool operator!() const { return !value_; }
-  bool operator==(const ElementContext& other) const {
-    return value_ == other.value_;
-  }
-  bool operator!=(const ElementContext& other) const {
-    return value_ != other.value_;
-  }
-  bool operator<(const ElementContext& other) const {
-    return value_ < other.value_;
-  }
+  friend bool operator==(const ElementContext&,
+                         const ElementContext&) = default;
+  friend auto operator<=>(const ElementContext&,
+                          const ElementContext&) = default;
 
  private:
   uintptr_t value_ = 0;

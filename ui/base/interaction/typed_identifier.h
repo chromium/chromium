@@ -29,17 +29,10 @@ class TypedIdentifier final {
 
   constexpr bool operator!() const { return !identifier_; }
 
-  constexpr bool operator==(const TypedIdentifier<Type>& other) const {
-    return identifier_ == other.identifier_;
-  }
-
-  constexpr bool operator!=(const TypedIdentifier<Type>& other) const {
-    return identifier_ != other.identifier_;
-  }
-
-  constexpr bool operator<(const TypedIdentifier<Type>& other) const {
-    return identifier_ < other.identifier_;
-  }
+  friend constexpr bool operator==(const TypedIdentifier<Type>&,
+                                   const TypedIdentifier<Type>&) = default;
+  friend constexpr auto operator<=>(const TypedIdentifier<Type>&,
+                                    const TypedIdentifier<Type>&) = default;
 
  private:
   ElementIdentifier identifier_;

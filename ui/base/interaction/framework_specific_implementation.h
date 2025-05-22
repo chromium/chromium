@@ -137,8 +137,7 @@ class FrameworkSpecificRegistrationList {
       return *this;
     }
     Iterator operator++(int) { return Iterator(it_++); }
-    bool operator==(const Iterator& other) const { return it_ == other.it_; }
-    bool operator!=(const Iterator& other) const { return it_ != other.it_; }
+    friend bool operator==(const Iterator&, const Iterator&) = default;
 
    private:
     friend class FrameworkSpecificRegistrationList<T>;
