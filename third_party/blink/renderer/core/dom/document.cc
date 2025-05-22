@@ -2449,6 +2449,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     UnblockLoadEventAfterLayoutTreeUpdate();
   };
 
+  ViewTransitionUtils::WillUpdateStyleAndLayoutTree(*this);
+
   bool needs_slot_assignment = IsSlotAssignmentDirty();
   bool needs_layout_tree_update = false;
 

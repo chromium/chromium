@@ -101,6 +101,10 @@ class CORE_EXPORT ViewTransitionUtils {
   // elements in the ViewTransitionStyleTracker.
   static bool IsViewTransitionParticipantFromSupplement(
       const LayoutObject& object);
+
+  // Called when the lifecycle will update style and layout tree for the given
+  // document. Used to invalidate pseudo styles if necessary.
+  static void WillUpdateStyleAndLayoutTree(Document& document);
 };
 
 }  // namespace blink

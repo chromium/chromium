@@ -299,10 +299,9 @@ ViewTransitionUtils::GetPropertyCSSValueScope::GetPropertyCSSValueScope(
     return;
   }
 
-  ViewTransitionUtils::ForEachTransition(
-      document_, [](ViewTransition& transition) {
-        transition.WillEnterGetComputedStyleScope();
-      });
+  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+    supplement->WillEnterGetComputedStyleScope();
+  }
 }
 
 ViewTransitionUtils::GetPropertyCSSValueScope::~GetPropertyCSSValueScope() {
@@ -310,10 +309,15 @@ ViewTransitionUtils::GetPropertyCSSValueScope::~GetPropertyCSSValueScope() {
     return;
   }
 
-  ViewTransitionUtils::ForEachTransition(
-      document_, [](ViewTransition& transition) {
-        transition.WillExitGetComputedStyleScope();
-      });
+  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document_)) {
+    supplement->WillExitGetComputedStyleScope();
+  }
+}
+
+void ViewTransitionUtils::WillUpdateStyleAndLayoutTree(Document& document) {
+  if (auto* supplement = ViewTransitionSupplement::FromIfExists(document)) {
+    supplement->WillUpdateStyleAndLayoutTree();
+  }
 }
 
 }  // namespace blink

@@ -2399,4 +2399,10 @@ void ViewTransitionStyleTracker::WillExitGetComputedStyleScope() {
   in_get_computed_style_scope_ = false;
 }
 
+void ViewTransitionStyleTracker::InvalidateInternalPseudoStyle() {
+  if (HasInternalPseudoElements()) {
+    InvalidatePseudoStyle();
+  }
+}
+
 }  // namespace blink

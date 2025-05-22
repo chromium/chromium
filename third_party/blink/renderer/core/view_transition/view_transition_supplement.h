@@ -78,6 +78,11 @@ class CORE_EXPORT ViewTransitionSupplement
   ViewTransition* GetTransition(const Element&);
   void ForEachTransition(base::FunctionRef<void(ViewTransition&)>);
 
+  void WillEnterGetComputedStyleScope();
+  void WillExitGetComputedStyleScope();
+
+  void WillUpdateStyleAndLayoutTree();
+
   explicit ViewTransitionSupplement(Document&);
   ~ViewTransitionSupplement() override;
 
@@ -161,6 +166,9 @@ class CORE_EXPORT ViewTransitionSupplement
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
 
   Vector<String> cross_document_types_;
+
+  bool in_get_computed_style_scope_ = false;
+  bool last_update_had_computed_style_scope_ = false;
 };
 
 }  // namespace blink

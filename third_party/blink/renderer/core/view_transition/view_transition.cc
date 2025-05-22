@@ -1102,4 +1102,10 @@ void ViewTransition::WillExitGetComputedStyleScope() {
   }
 }
 
+void ViewTransition::InvalidateInternalPseudoStyle() {
+  if (style_tracker_) {
+    style_tracker_->InvalidateInternalPseudoStyle();
+  }
+}
+
 }  // namespace blink

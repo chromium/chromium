@@ -232,6 +232,8 @@ class ViewTransitionStyleTracker
   void WillEnterGetComputedStyleScope();
   void WillExitGetComputedStyleScope();
 
+  void InvalidateInternalPseudoStyle();
+
  private:
   class ImageWrapperPseudoElement;
 

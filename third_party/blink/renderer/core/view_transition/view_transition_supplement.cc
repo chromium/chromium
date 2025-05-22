@@ -329,6 +329,34 @@ void ViewTransitionSupplement::ForEachTransition(
   }
 }
 
+void ViewTransitionSupplement::WillEnterGetComputedStyleScope() {
+  CHECK(!in_get_computed_style_scope_);
+  in_get_computed_style_scope_ = true;
+
+  ForEachTransition([](ViewTransition& transition) {
+    transition.WillEnterGetComputedStyleScope();
+  });
+}
+
+void ViewTransitionSupplement::WillExitGetComputedStyleScope() {
+  CHECK(in_get_computed_style_scope_);
+  in_get_computed_style_scope_ = false;
+
+  ForEachTransition([](ViewTransition& transition) {
+    transition.WillExitGetComputedStyleScope();
+  });
+}
+
+void ViewTransitionSupplement::WillUpdateStyleAndLayoutTree() {
+  if (in_get_computed_style_scope_ == last_update_had_computed_style_scope_) {
+    return;
+  }
+  last_update_had_computed_style_scope_ = in_get_computed_style_scope_;
+  ForEachTransition([](ViewTransition& transition) {
+    transition.InvalidateInternalPseudoStyle();
+  });
+}
+
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
     : Supplement<Document>(document) {}
 

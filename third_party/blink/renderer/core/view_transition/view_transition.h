@@ -281,8 +281,14 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void NotifyInvokeDOMChangeCallback();
   bool PendingDomCallback();
 
+  // Notifies the view transition object when we start or stop style processing
+  // for getComputedStyle.
   void WillEnterGetComputedStyleScope();
   void WillExitGetComputedStyleScope();
+
+  // If this transition is in a phase that has non-web exposed view transition
+  // pseudo elements, then this invalidates the style for those pseudo elements.
+  void InvalidateInternalPseudoStyle();
 
  private:
   friend class ViewTransitionTest;
