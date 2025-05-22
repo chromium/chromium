@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/tracing.h"
@@ -50,9 +51,12 @@ class HttpStreamPool::AttemptManager::QuicAttempt
 
   base::TimeTicks start_time() const { return start_time_; }
 
+  bool is_slow() const { return is_slow_; }
+
  private:
   const HttpStreamKey& stream_key() const;
 
+  void OnSessionAttemptSlow();
   void OnSessionAttemptComplete(int rv);
 
   const raw_ptr<AttemptManager> manager_;
@@ -63,6 +67,8 @@ class HttpStreamPool::AttemptManager::QuicAttempt
   const perfetto::Flow flow_;
 
   std::unique_ptr<QuicSessionAttempt> session_attempt_;
+  base::OneShotTimer slow_timer_;
+  bool is_slow_ = false;
   std::optional<int> result_;
 
   base::WeakPtrFactory<QuicAttempt> weak_ptr_factory_{this};

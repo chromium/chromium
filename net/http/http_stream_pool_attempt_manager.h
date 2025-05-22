@@ -195,6 +195,9 @@ class HttpStreamPool::AttemptManager
   // Called when the QuicAttempt owned by `this` is completed.
   void OnQuicAttemptComplete(QuicAttemptOutcome result);
 
+  // Called when the QuicAttempt owned by `this` is slow.
+  void OnQuicAttemptSlow();
+
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
 
