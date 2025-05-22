@@ -228,6 +228,10 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(
           .capture_mode = trace_net_log_capture_mode,
           .use_sensitive_category = trace_net_log_capture_mode !=
                                     net::NetLogCaptureMode::kHeavilyRedacted,
+          // TODO(https://crbug.com/410018349): it would be nice to have one
+          // TraceNetLogObserver per CronetEngine so that each engine has its
+          // own root track, if that's possible?
+          .root_track_name = "Cronet NetLog",
       });
   CHECK(!g_trace_net_log_capture_mode.has_value());
   g_trace_net_log_capture_mode = trace_net_log_capture_mode;
