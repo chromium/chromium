@@ -24,6 +24,7 @@ import {
   NoSuchUserContextException,
   type Session,
   UnknownErrorException,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {MapperOptionsStorage} from '../../MapperOptions.js';
@@ -203,14 +204,14 @@ export function getProxyStr(
   }
 
   if (proxyConfig.proxyType === 'pac') {
-    throw new InvalidArgumentException(
+    throw new UnsupportedOperationException(
       `PAC proxy configuration is not supported per user context`,
     );
   }
 
   if (proxyConfig.proxyType === 'autodetect') {
-    throw new InvalidArgumentException(
-      `Proxy auto-detection is not supported per user context`,
+    throw new UnsupportedOperationException(
+      `Autodetect proxy is not supported per user context`,
     );
   }
 
@@ -235,9 +236,17 @@ export function getProxyStr(
     }
 
     // SOCKS Proxy
-    if (proxyConfig.socksProxy !== undefined) {
+    if (
+      proxyConfig.socksProxy !== undefined ||
+      proxyConfig.socksVersion !== undefined
+    ) {
       // socksVersion is mandatory and must be a valid integer if socksProxy is
       // specified.
+      if (proxyConfig.socksProxy === undefined) {
+        throw new InvalidArgumentException(
+          `'socksVersion' cannot be set without 'socksProxy'`,
+        );
+      }
       if (
         proxyConfig.socksVersion === undefined ||
         typeof proxyConfig.socksVersion !== 'number' ||

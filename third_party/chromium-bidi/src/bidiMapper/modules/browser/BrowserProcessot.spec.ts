@@ -21,6 +21,7 @@ import {
   InvalidArgumentException,
   UnknownErrorException,
   type Session,
+  UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 
 import {getProxyStr} from './BrowserProcessor.js';
@@ -36,17 +37,21 @@ describe('BrowserProcessor:getProxyStr', () => {
     expect(getProxyStr(proxyConfig)).to.be.undefined;
   });
 
-  it('should throw InvalidArgumentException for "pac" proxyType', () => {
+  it('should throw UnsupportedOperationException for "pac" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {
       proxyType: 'pac',
       proxyAutoconfigUrl: 'some_url',
     };
-    expect(() => getProxyStr(proxyConfig)).to.throw(InvalidArgumentException);
+    expect(() => getProxyStr(proxyConfig)).to.throw(
+      UnsupportedOperationException,
+    );
   });
 
-  it('should throw InvalidArgumentException for "autodetect" proxyType', () => {
+  it('should throw UnsupportedOperationException for "autodetect" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {proxyType: 'autodetect'};
-    expect(() => getProxyStr(proxyConfig)).to.throw(InvalidArgumentException);
+    expect(() => getProxyStr(proxyConfig)).to.throw(
+      UnsupportedOperationException,
+    );
   });
 
   describe('manual proxyType', () => {
@@ -99,6 +104,16 @@ describe('BrowserProcessor:getProxyStr', () => {
         };
         expect(getProxyStr(proxyConfig)).to.equal(
           'socks=socks0://socks.server:1080',
+        );
+      });
+
+      it('should throw InvalidArgumentException if socksProxy is undefined while socksVersion is not', () => {
+        const proxyConfig: Session.ProxyConfiguration = {
+          proxyType: 'manual',
+          socksVersion: 5,
+        };
+        expect(() => getProxyStr(proxyConfig)).to.throw(
+          InvalidArgumentException,
         );
       });
 
