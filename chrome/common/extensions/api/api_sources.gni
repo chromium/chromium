@@ -27,6 +27,7 @@ schema_sources_ = [
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
 uncompiled_sources_ = [
+  "action.json",
   "browsing_data.json",
   "extension.json",
 ]
@@ -156,7 +157,6 @@ if (enable_extensions) {
   }
 
   uncompiled_sources_ += [
-    "action.json",
     "browser_action.json",
     "idltest.idl",
     "page_action.json",
