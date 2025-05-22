@@ -406,6 +406,7 @@ static_library("ui") {
     "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
+    "//chrome/browser/ui/unowned_user_data",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/about:impl",

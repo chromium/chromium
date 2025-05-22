@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Technically, this could be supported on more platforms, but these are the only
+# ones where it's needed today.
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("unowned_user_data") {
+  public = [
+    "scoped_unowned_user_data.h",
+    "unowned_user_data_host.h",
+    "unowned_user_data_interface.h",
+  ]
+
+  sources = [
+    "scoped_unowned_user_data.cc",
+    "unowned_user_data_host.cc",
+  ]
+
+  public_deps = [ "//base" ]
+}
