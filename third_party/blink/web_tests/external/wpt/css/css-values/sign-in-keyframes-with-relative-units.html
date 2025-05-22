@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>CSS Values Test: sign() in keyframes with relative units and font-size change</title>
+<link rel="help" href="https://drafts.csswg.org/css-values/#sign-funcs">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @keyframes --a {
+    from {
+      scale: calc(1.5 + sign(1em - 10px));
+    }
+    to {
+      scale: 1;
+    }
+  }
+  #target {
+    animation-name: --a;
+    animation-duration: 1000s;
+    animation-timing-function: steps(2, start);
+    width: 100px;
+    height: 100px;
+    background: teal;
+    font-size: 8px;
+  }
+</style>
+<div id="target"></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(target).scale, "0.75");
+  }, "Initially, the font-size is 8px for #target, so the result is 0.75");
+
+  test(() => {
+    target.style.fontSize = "16px";
+    assert_equals(getComputedStyle(target).scale, "1.75");
+  }, "Changing the font-size of #target changes the start point, so the result should be 1.75");
+</script>

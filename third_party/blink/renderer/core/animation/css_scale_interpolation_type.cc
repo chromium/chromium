@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -202,14 +203,19 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertValue(
 
   CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
 
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
+  CSSPrimitiveValue::LengthTypeFlags types;
   for (const auto& scale_value : list) {
-    if (To<CSSPrimitiveValue>(*scale_value).IsElementDependent()) {
+    const auto& primitive_value = To<CSSPrimitiveValue>(*scale_value);
+    primitive_value.AccumulateLengthUnitTypes(types);
+    if (primitive_value.IsElementDependent()) {
       conversion_checkers.push_back(
           TreeCountingChecker::Create(conversion_data));
       break;
     }
+  }
+  if (InterpolationType::ConversionChecker* length_units_checker =
+          LengthUnitsChecker::MaybeCreate(types, state)) {
+    conversion_checkers.push_back(length_units_checker);
   }
   if (list.length() == 1) {
     InterpolableNumber* scale =
