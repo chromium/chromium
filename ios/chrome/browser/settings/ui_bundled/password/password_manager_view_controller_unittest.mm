@@ -1312,6 +1312,7 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromoMoreInfoButtonMetric) {
 // disabled.
 TEST_F(PasswordManagerViewControllerTest,
        TrustedVaultWidgetPromoWhenFlagIsDisabled) {
+  base::HistogramTester histogram_tester;
   AddSavedForm1();
 
   GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
@@ -1319,6 +1320,11 @@ TEST_F(PasswordManagerViewControllerTest,
 
   EXPECT_FALSE([GetPasswordManagerViewController().tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierTrustedVaultWidgetPromo]);
+
+  // Bucket count should be zero.
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed, 0);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
@@ -1334,6 +1340,7 @@ TEST_F(PasswordManagerViewControllerTest,
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
 
+  base::HistogramTester histogram_tester;
   AddSavedForm1();
 
   // Make Password Manager show the promo:
@@ -1342,6 +1349,11 @@ TEST_F(PasswordManagerViewControllerTest,
 
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo)));
+
+  // Bucket count should be one.
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed, 1);
 
   InlinePromoItem* item = static_cast<InlinePromoItem*>(GetTableViewItem(
       GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo), 0));
@@ -1363,6 +1375,31 @@ TEST_F(PasswordManagerViewControllerTest,
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
+// Test verifies that the Trusted Vault widget promo impression is being
+// recorded only once.
+TEST_F(PasswordManagerViewControllerTest,
+       TrustedVaultWidgetPromoIpressionRecordedOnlyOnce) {
+  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+
+  base::HistogramTester histogram_tester;
+  AddSavedForm1();
+
+  // Make Password Manager show the promo:
+  GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+  [GetPasswordManagerViewController() reloadData];
+
+  // Bucket count should be one.
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed, 1);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
 // Tests that `showTrustedVaultReauthForFetchKeysFromViewController` is being
 // called when tapping the trusted vault widget promo's button.
 TEST_F(PasswordManagerViewControllerTest,
@@ -1372,6 +1409,7 @@ TEST_F(PasswordManagerViewControllerTest,
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
 
+  base::HistogramTester histogram_tester;
   AddSavedForm1();
 
   // Make Password Manager show the promo:
@@ -1394,6 +1432,11 @@ TEST_F(PasswordManagerViewControllerTest,
 
   EXPECT_OCMOCK_VERIFY(
       password_manager_view_controller_presentation_delegate_mock_);
+
+  // Bucket count should be one.
+  histogram_tester.ExpectBucketCount(
+      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kActedUpon, 1);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }

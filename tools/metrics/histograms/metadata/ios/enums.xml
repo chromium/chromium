@@ -1444,6 +1444,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Open Instructions"/>
 </enum>
 
+<!-- LINT.IfChange(PromoWithTrustedVaultKeyRetrievalAction) -->
+
+<enum name="PromoWithTrustedVaultKeyRetrievalAction">
+  <int value="0" label="Displayed"/>
+  <int value="1" label="Acted upon"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h:PromoWithTrustedVaultKeyRetrievalAction) -->
+
 <!-- LINT.IfChange(PushNotificationClientId) -->
 
 <enum name="PushNotificationClientId">

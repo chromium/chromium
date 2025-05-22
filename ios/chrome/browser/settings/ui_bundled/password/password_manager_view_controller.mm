@@ -299,6 +299,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   BOOL _shouldShowPasswordManagerWidgetPromo;
   // Whether or not the TrustedVault widget promo should be shown.
   BOOL _shouldShowTrustedVaultWidgetPromo;
+  // Whether the TrustedVault widget promo impression metric was already
+  // recorded.
+  BOOL _trustedVaultWidgetPromoImpressionWasRecorded;
   // Stores the most recently created or updated password form.
   std::optional<password_manager::CredentialUIEntry> _mostRecentlyUpdatedCred;
 }
@@ -516,6 +519,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       [model addSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
       [model addItem:self.trustedVaultWidgetPromoItem
           toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
+      [self recordTrustedVaultWidgetPromoImpression];
     }
 
     // Widget promo.
@@ -862,8 +866,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)didTapTrustedVaultWidgetKeyRetrievalButton {
-  // TODO(crbug.com/407605858): Add logic for publishing impressions and clicks
-  // metrics of the Trusted Vault widget.
+  // Note: There could be multiple reports of the `kActedUpon` event per a
+  // single `kDisplayed` event.
+  UmaHistogramEnumeration(
+      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kActedUpon);
   [self.presentationDelegate
           performReauthenticationForRetrievingTrustedVaultKey];
 }
@@ -1198,6 +1205,17 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 #pragma mark - Private methods
+
+// Records the Trusted Vault Widget Promo impression (if it hasn't been recorded
+// yet).
+- (void)recordTrustedVaultWidgetPromoImpression {
+  if (!_trustedVaultWidgetPromoImpressionWasRecorded) {
+    UmaHistogramEnumeration(
+        kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
+        PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed);
+    _trustedVaultWidgetPromoImpressionWasRecorded = YES;
+  }
+}
 
 // Populates the text and urls content of the ManageAccountLinkItem.
 - (void)populateManageAccountLinkItemContent {

@@ -68,3 +68,6 @@ NSString* const kWidgetTrustedVaultPromoImageID =
 
 const char kPasswordManagerWidgetPromoActionHistogram[] =
     "IOS.PasswordManager.WidgetPromo.Action";
+
+const char kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram[] =
+    "IOS.PasswordManager.TrustedVaultKeyRetrievalPromo.Action";

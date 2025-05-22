@@ -3877,6 +3877,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordManager.TrustedVaultKeyRetrievalPromo.Action"
+    enum="PromoWithTrustedVaultKeyRetrievalAction" expires_after="2026-05-01">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>rgod@google.com</owner>
+  <summary>
+    [iOS Only] Tracks impressions and clicks of the Password Manager Trusted
+    Vault widget promo. Note: there might be multiple reports of the 'Acted
+    upon' event per a single 'Displayed' event (this can make the interpretation
+    harder as we are not be able to distinguish 100 display with 1 activation
+    each, or 100 display with 50 having 2 activations and 50 without any).
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.WidgetPromo.Action"
     enum="PromoWithInstructionsAction" expires_after="2025-11-16">
   <owner>noemies@google.com</owner>
