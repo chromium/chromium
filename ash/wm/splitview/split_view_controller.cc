@@ -692,40 +692,39 @@ void SplitViewController::SnapWindow(aura::Window* window,
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
 }
 
+bool SplitViewController::ShouldWindowBeManagedBySplitViewController(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source) const {
+  if (!ShouldAllowSplitView()) {
+    return false;
+  }
+
+  // If the snap wm event is from desk template launch when in overview, do not
+  // try to snap the window in split screen. Otherwise, overview might be exited
+  // because of window snapping.
+  const bool in_overview = IsInOverviewSession();
+  const int32_t window_id =
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
+  if (in_overview &&
+      window == WindowRestoreController::Get()->to_be_snapped_window() &&
+      app_restore::DeskTemplateReadHandler::Get()->GetWindowInfo(window_id)) {
+    return false;
+  }
+
+  return InTabletMode() || in_overview ||
+         ShouldConsiderWindowForSplitViewSetupView(window,
+                                                   snap_action_source) ||
+         // While we don't want the keyboard shortcuts to start partial
+         // overview, we do want them to possibly create a snap group.
+         snap_action_source == WindowSnapActionSource::kKeyboardShortcutToSnap;
+}
+
 void SplitViewController::OnSnapEvent(
     aura::Window* window,
     WMEventType event_type,
     WindowSnapActionSource snap_action_source) {
   CHECK(event_type == WM_EVENT_SNAP_PRIMARY ||
         event_type == WM_EVENT_SNAP_SECONDARY);
-
-  // If split view can't be enabled at the moment, do nothing.
-  if (!ShouldAllowSplitView()) {
-    return;
-  }
-
-  const bool in_overview = IsInOverviewSession();
-
-  // In clamshell mode, only if overview is active on window snapped or in
-  // faster split screen setup session, the window should be managed by
-  // `SplitViewController`. Otherwise, the window should be managed by
-  // `WindowState`.
-  if (!InTabletMode() &&
-      !(in_overview || ShouldConsiderWindowForSplitViewSetupView(
-                           window, snap_action_source))) {
-    return;
-  }
-
-  // If the snap wm event is from desk template launch when in overview, do not
-  // try to snap the window in split screen. Otherwise, overview might be exited
-  // because of window snapping.
-  const int32_t window_id =
-      window->GetProperty(app_restore::kRestoreWindowIdKey);
-  if (in_overview &&
-      window == WindowRestoreController::Get()->to_be_snapped_window() &&
-      app_restore::DeskTemplateReadHandler::Get()->GetWindowInfo(window_id)) {
-    return;
-  }
 
   // Do nothing if `window` is already waiting to be snapped in split screen.
   // Order here matters: this must return for auto-snap windows before they try
@@ -734,12 +733,13 @@ void SplitViewController::OnSnapEvent(
     return;
   }
 
-  const SnapPosition to_snap_position = event_type == WM_EVENT_SNAP_PRIMARY
-                                            ? SnapPosition::kPrimary
-                                            : SnapPosition::kSecondary;
-  // Start observing the to-be-snapped window.
-  to_be_snapped_windows_observer_->AddToBeSnappedWindow(
-      window, to_snap_position, snap_action_source);
+  if (ShouldWindowBeManagedBySplitViewController(window, snap_action_source)) {
+    const SnapPosition to_snap_position = event_type == WM_EVENT_SNAP_PRIMARY
+                                              ? SnapPosition::kPrimary
+                                              : SnapPosition::kSecondary;
+    to_be_snapped_windows_observer_->AddToBeSnappedWindow(
+        window, to_snap_position, snap_action_source);
+  }
 }
 
 void SplitViewController::AttachToBeSnappedWindow(

@@ -87,7 +87,8 @@ bool SnapGroupController::OnWindowSnapped(
       CanSnapActionSourceStartFasterSplitView(snap_action_source) ||
       snap_action_source ==
           WindowSnapActionSource::kSnapByClamshellTabletTransition ||
-      snap_action_source == WindowSnapActionSource::kAutoSnapInSplitView;
+      snap_action_source == WindowSnapActionSource::kAutoSnapInSplitView ||
+      snap_action_source == WindowSnapActionSource::kKeyboardShortcutToSnap;
   if (!can_group_or_replace) {
     return false;
   }
@@ -127,9 +128,11 @@ bool SnapGroupController::OnWindowSnapped(
       case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
       case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
       case WindowSnapActionSource::kAutoSnapInSplitView:
-        // Else if using a drag to snap or auto-snap action source, respect the
-        // opposite window's snap ratio. This is to give the impression of
-        // filling the layout and feels more intuitive to the user.
+      case WindowSnapActionSource::kKeyboardShortcutToSnap:
+        // Else, e.g. if using a drag to snap or auto-snap action source,
+        // respect the opposite window's snap ratio. This is to give the
+        // impression of filling the layout and feels more intuitive to the
+        // user.
         target_window = opposite;
         break;
       default:

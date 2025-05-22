@@ -462,6 +462,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // needs to be activated. Returns nullptr if there is no such window.
   aura::Window* GetActiveWindowAfterResizingUponExit();
 
+  bool ShouldWindowBeManagedBySplitViewController(
+      aura::Window* window,
+      WindowSnapActionSource snap_action_source) const;
+
   // Called after a to-be-snapped window `window` got snapped. It updates the
   // split view states and notifies observers about the change. It also restore
   // the snapped window's transform if it's not identity and activate it. If
