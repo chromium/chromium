@@ -71,6 +71,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/location.fill.symbolset/location.fill.cr.svg",
     "Assets.xcassets/location.symbolset/Contents.json",
     "Assets.xcassets/location.symbolset/location.cr.svg",
+    "Assets.xcassets/magnifyingglass_spark.symbolset/Contents.json",
+    "Assets.xcassets/magnifyingglass_spark.symbolset/magnifyingglass.spark.cr.svg",
     "Assets.xcassets/multicolor_chromeball.symbolset/Contents.json",
     "Assets.xcassets/multicolor_chromeball.symbolset/multicolor.chromeball.cr.svg",
     "Assets.xcassets/my_drive.symbolset/Contents.json",
