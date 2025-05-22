@@ -15,6 +15,7 @@ source_set("new_tab_footer") {
     "//base:base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/browser/search",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
@@ -27,6 +28,7 @@ source_set("new_tab_footer") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
@@ -35,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":new_tab_footer",
     "//base/test:test_support",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
   ]

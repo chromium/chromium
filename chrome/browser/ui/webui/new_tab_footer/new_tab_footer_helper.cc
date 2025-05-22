@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "extensions/common/constants.h"
 
 namespace ntp_footer {
@@ -24,4 +28,12 @@ bool IsExtensionNtp(const GURL& url, Profile* profile) {
   return extension_managing_ntp->id() == url.host();
 }
 
+bool CanShowExtensionFooter(const GURL& url, Profile* profile) {
+  if (!IsExtensionNtp(url, profile)) {
+    return false;
+  }
+
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled);
+}
 }  // namespace ntp_footer

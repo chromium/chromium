@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/browser/search",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",

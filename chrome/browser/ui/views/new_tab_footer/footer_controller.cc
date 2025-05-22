@@ -4,17 +4,37 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 
 namespace new_tab_footer {
 
-// TODO (crbug.com/415116344) add unittest coverage.
+namespace {
+bool IsNtp(const GURL& url,
+           content::WebContents* web_contents,
+           Profile* profile) {
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (entry->IsInitialEntry()) {
+    entry = web_contents->GetController().GetVisibleEntry();
+  }
+  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
+         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
+         search::NavEntryIsInstantNTP(web_contents, entry) ||
+         ntp_footer::IsExtensionNtp(url, profile);
+}
+}  // namespace
+
 NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
     : tab_(tab) {
   // TODO(crbug.com/4438803): Support SideBySide.
@@ -55,15 +75,21 @@ void NewTabFooterController::UpdateFooterVisibility() {
     url = tab_->GetContents()->GetController().GetVisibleEntry()->GetURL();
   }
 
-  bool is_footer_visible_pref =
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
-  bool can_show_footer =
-      is_footer_visible_pref && ntp_footer::IsExtensionNtp(url, profile_);
-  if (can_show_footer) {
+  // Always show management notice on NTP.
+  if (IsNtp(url, tab_->GetContents(), profile_) &&
+      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_)) {
     ShowUI();
-  } else {
-    CloseUI();
+    return;
   }
+
+  bool is_footer_visible =
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
+  if (is_footer_visible && ntp_footer::CanShowExtensionFooter(url, profile_)) {
+    ShowUI();
+    return;
+  }
+
+  CloseUI();
 }
 
 void NewTabFooterController::TabForegrounded(tabs::TabInterface* tab) {
@@ -81,5 +107,4 @@ void NewTabFooterController::CloseUI() {
     footer_web_view_->CloseUI();
   }
 }
-
 }  // namespace new_tab_footer
