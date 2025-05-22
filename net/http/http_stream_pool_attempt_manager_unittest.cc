@@ -2936,7 +2936,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
   }
   Group& group =
       pool().GetOrCreateGroupForTesting(requesters[0]->GetStreamKey());
-  ASSERT_EQ(group.attempt_manager()->TcpBasedAttemptCount(), 0u);
+  ASSERT_EQ(group.ConnectingStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(pool().TotalConnectingStreamCount(), 0u);
@@ -3310,9 +3310,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Close the session before the second request can try to use it.
   spdy_session_pool()->CloseAllSessions();
 
-  // Finish the service endpoint resolution. It should create a new SPDY
-  // session.
-  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   requester_b.WaitForResult();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   EXPECT_EQ(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
@@ -3367,13 +3364,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   StreamRequester requester_b;
   requester_b.set_destination("https://example.test").RequestStream(pool());
 
-  // Call both CallOnServiceEndpointsUpdated() and
-  // CallOnServiceEndpointRequestFinished() to check existing sessions twice.
+  // Call CallOnServiceEndpointsUpdated(). The corresponding AttemptManager will
+  // destroy ServiceEndpointRequest.
   endpoint_request
       ->add_endpoint(
           ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
-      .CallOnServiceEndpointsUpdated()
-      .CallOnServiceEndpointRequestFinished(OK);
+      .CallOnServiceEndpointsUpdated();
+  CHECK(!endpoint_request);
 
   requester_b.WaitForResult();
 
@@ -3707,14 +3704,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       .CallOnServiceEndpointRequestFinished(OK);
   // There should be only one in-flight attempt because attempts are throttled.
   Group& group = pool().GetOrCreateGroupForTesting(requester1.GetStreamKey());
-  ASSERT_EQ(group.attempt_manager()->TcpBasedAttemptCount(), 1u);
+  ASSERT_EQ(group.ConnectingStreamSocketCount(), 1u);
 
   FastForwardBy(AttemptManager::kSpdyThrottleDelay);
-  ASSERT_EQ(group.attempt_manager()->TcpBasedAttemptCount(), 2u);
+  ASSERT_EQ(group.ConnectingStreamSocketCount(), 2u);
 
   connect_completer1.Complete(OK);
   RunUntilIdle();
-  ASSERT_EQ(group.attempt_manager()->TcpBasedAttemptCount(), 0u);
+  ASSERT_EQ(group.ConnectingStreamSocketCount(), 0u);
 
   EXPECT_THAT(requester1.result(), Optional(IsOk()));
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
@@ -4647,9 +4644,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, HavingSpdySessionIsNotStalled) {
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 
   EXPECT_FALSE(pool()
-                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
-                   .attempt_manager()
-                   ->IsStalledByPoolLimit());
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetPriorityIfStalledByPoolLimit()
+                   .has_value());
 }
 
 // Tests that when an AttemptManager has a QUIC session, it's not treated as
@@ -7109,6 +7106,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
   delegate2.set_expected_protocol(NextProto::kProtoHTTP2);
   delegate2.CreateAndStartJob(pool());
 
+  base::WeakPtr<AttemptManager> attempt_manager =
+      pool()
+          .GetGroupForTesting(stream_key)
+          ->attempt_manager()
+          ->GetWeakPtrForTesting();
+
   h3_completer.Complete(OK);
   h2_completer.Complete(OK);
 
@@ -7117,10 +7120,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
   EXPECT_THAT(delegate2.GetResult(), IsOk());
   EXPECT_EQ(delegate2.negotiated_protocol(), NextProto::kProtoHTTP2);
 
-  EXPECT_THAT(pool()
-                  .GetOrCreateGroupForTesting(stream_key)
-                  .attempt_manager()
-                  ->GetQuicAttemptResultForTesting(),
+  EXPECT_THAT(attempt_manager->GetQuicAttemptResultForTesting(),
               Optional(IsError(ERR_ABORTED)));
 }
 

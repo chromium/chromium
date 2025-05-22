@@ -1632,6 +1632,10 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
+  // TODO(crbug.com/414173943): Move this StartDraining() call to
+  // somewhere else so that `this` enters the draining state when all jobs are
+  // notified.
+  StartDraining();
 }
 
 void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
@@ -1662,10 +1666,9 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
-  // TODO(crbug.com/414173943): Move this StartDraining() call somewhere else
-  // so that `this` enters the draining state when all jobs are notified. We
-  // only start draining here tentatively as we need to update unittests first
-  // to support other paths like SPDY session ready.
+  // TODO(crbug.com/414173943): Move this StartDraining() call to
+  // somewhere else so that `this` enters the draining state when all jobs are
+  // notified.
   StartDraining();
 }
 
