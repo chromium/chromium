@@ -14,15 +14,17 @@
     <div id="fast-soft-navigation">Click here!</div>
 
     <script>
-      // This soft navigation is slow - it will wait 1s before it changes the URL.
+      // This soft navigation is slow - it will wait 1s before processing.
       function slowSoftNavigation(t) {
-        const greeting = document.createElement("div");
-        greeting.textContent = "Hello, World.";
-        document.body.appendChild(greeting);
-        t.step_timeout(() => history.pushState({}, "", "/slow-soft-navigation"), 1000);
+        t.step_timeout(() => {
+          const greeting = document.createElement("div");
+          greeting.textContent = "Hello, World.";
+          document.body.appendChild(greeting);
+          history.pushState({}, "", "/slow-soft-navigation");
+        }, 1000);
       }
 
-      // This soft navigation is fast - it will change the URL immediately.
+      // This soft navigation is fast - it will process immediately.
       function fastSoftNavigation() {
         const greeting = document.createElement("div");
         greeting.textContent = "Hello, World.";
