@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
     expires_after="2025-09-28">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs discard candidates. This is recorded each time Chrome
@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabManager.Discarding.DiscardCount" units="Discards"
     expires_after="2025-09-28">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Cumulative number of tabs discarded due to low memory conditions, recorded
@@ -1713,7 +1713,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabManager.Discarding.DiscardToReloadTime" units="ms"
     expires_after="2025-11-16">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between a tab getting discarded to eventually being reloaded by
@@ -1735,7 +1735,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabManager.Discarding.InactiveToReloadTime" units="ms"
     expires_after="2025-10-05">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between the time a tab switched from being active to inactive
@@ -1758,7 +1758,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabManager.Discarding.ReloadCount" units="Reloads"
     expires_after="2025-10-12">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Cumulative number of discarded tabs that have been reloaded by the user,
@@ -1770,7 +1770,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabManager.Discarding.ReloadToCloseTime" units="ms"
     expires_after="2025-06-22">
-  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between the last time a discarded tab was reloaded and the time
@@ -2074,7 +2074,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2092,7 +2091,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2110,7 +2108,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2180,7 +2177,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2799,7 +2795,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>chrisha@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
