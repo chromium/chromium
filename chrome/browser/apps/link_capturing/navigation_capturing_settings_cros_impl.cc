@@ -30,11 +30,9 @@ NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
     return std::nullopt;
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
-  std::optional<webapps::AppId> app_id =
-      apps::FindAppIdsToLaunchForUrl(proxy, url).preferred;
-  if (app_id.has_value() &&
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
+  auto app_id = apps::FindAppIdsToLaunchForUrl(proxy, url).preferred;
+  if (!app_id.has_value() ||
       proxy->AppRegistryCache().GetAppType(*app_id) != apps::AppType::kWeb) {
     return std::nullopt;
   }
