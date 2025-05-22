@@ -8,4 +8,17 @@ key_rotation_data {
     value {
     }
   }
+  key_rotations {
+    key: "an43pcfoq6otbo6625jsvszlnv7qwtbjbo6xhenehxb33xai6fayiaacai"
+    value {
+      expected_key: "AydEPXfeFKrl93GXweZlwZN8xHTV9F2+tTA+YdOJ5vHO"
+    }
+  }
+}
+
+iwa_access_control: {
+  managed_allowlist: {
+    key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
+    value: {}
+  }
 }
