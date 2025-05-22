@@ -9,6 +9,15 @@
 // mediator.
 @protocol PageActionMenuMutator
 
+// Opens Lens overlay.
+- (void)openLensOverlay;
+
+// Starts reader mode.
+- (void)startReaderMode;
+
+// Starts GLIC overlay.
+- (void)startGlicOverlay;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

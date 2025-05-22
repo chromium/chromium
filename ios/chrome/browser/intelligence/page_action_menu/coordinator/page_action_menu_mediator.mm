@@ -6,4 +6,18 @@
 
 @implementation PageActionMenuMediator
 
+#pragma mark - PageActionMenuMutator
+
+- (void)openLensOverlay {
+  // TODO(crbug.com/414412781): Handle this.
+}
+
+- (void)startReaderMode {
+  // TODO(crbug.com/414412781): Handle this.
+}
+
+- (void)startGlicOverlay {
+  // TODO(crbug.com/414412781): Handle this.
+}
+
 @end
