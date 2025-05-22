@@ -38,31 +38,28 @@ class PrivacySandboxNoticeEntryPointHandlersTest : public InProcessBrowserTest {
             ->SetTestingFactoryAndUse(
                 browser()->profile(),
                 base::BindRepeating(&BuildMockPrivacySandboxNoticeService)));
-
-    mock_view_manager_ = std::make_unique<MockDesktopViewManager>();
-
-    ON_CALL(*mock_notice_service_, GetDesktopViewManager())
-        .WillByDefault(testing::Return(mock_view_manager_.get()));
   }
 
   void TearDownOnMainThread() override {
     mock_notice_service_ = nullptr;
-    mock_view_manager_.reset();
   }
 
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
+  MockDesktopViewManager* mock_view_manager() {
+    return static_cast<MockDesktopViewManager*>(
+        mock_notice_service_->GetDesktopViewManager());
+  }
+
  protected:
   raw_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
   net::EmbeddedTestServer https_test_server_;
-  std::unique_ptr<MockDesktopViewManager> mock_view_manager_;
 };
 
 // Test that navigation to unsuitable URLS do not alert view manager.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
                        UnsuitableUrl) {
-  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
-      .Times(0);
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
 
   std::vector<GURL> urls_to_open = {
       https_test_server()->GetURL("a.test", "/title1.html"),
@@ -72,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls_to_open[i]));
   }
 
-  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
+  Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
@@ -119,12 +116,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxNoticeEntryPointHandlersTest_SuitableUrls,
                        SuitableUrl) {
   GURL url_to_open = GetParam();
 
-  EXPECT_CALL(*mock_view_manager_.get(), HandleChromeOwnedPageNavigation)
-      .Times(1);
+  EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_to_open));
 
-  Mock::VerifyAndClearExpectations(mock_view_manager_.get());
+  Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 
 // Define the test parameters.
