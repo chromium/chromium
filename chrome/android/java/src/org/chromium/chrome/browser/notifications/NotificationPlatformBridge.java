@@ -98,7 +98,7 @@ public class NotificationPlatformBridge {
 
     // We always use the same request code for pending intents. We use other ways to force
     // uniqueness of pending intents when necessary.
-    private static final int PENDING_INTENT_REQUEST_CODE = 0;
+    static final int PENDING_INTENT_REQUEST_CODE = 0;
 
     private static final int[] EMPTY_VIBRATION_PATTERN = new int[0];
 
@@ -296,9 +296,8 @@ public class NotificationPlatformBridge {
                         SuspiciousNotificationWarningInteractions.UNSUBSCRIBE);
                 return true;
             case NotificationConstants.ACTION_SHOW_ORIGINAL_NOTIFICATION:
-                onNotificationShowOriginal(attributes);
-                recordSuspiciousNotificationWarningInteractions(
-                        SuspiciousNotificationWarningInteractions.SHOW_ORIGINAL_NOTIFICATION);
+                NotificationContentDetectionManager.showOriginalNotification(
+                        attributes.notificationId);
                 return false;
             case NotificationConstants.ACTION_ALWAYS_ALLOW:
                 // Add entry to `sAlwaysAllowNotificationsMap` for possible reporting later.
@@ -527,7 +526,7 @@ public class NotificationPlatformBridge {
      * @param origin The origin to whom the notification belongs.
      * @param actionIndex The zero-based index of the action button, or -1 if not applicable.
      */
-    private static Uri makeIntentData(String notificationId, String origin, int actionIndex) {
+    static Uri makeIntentData(String notificationId, String origin, int actionIndex) {
         return Uri.parse(origin).buildUpon().fragment(notificationId + "," + actionIndex).build();
     }
 
@@ -1053,8 +1052,10 @@ public class NotificationPlatformBridge {
                                                     NotificationConstants.ACTION_PRE_UNSUBSCRIBE,
                                                     /* actionIndex= */ -1,
                                                     /* mutable= */ false),
-                                            PLATFORM_ID,
-                                            profile);
+                                            identifyingAttributes.scopeUrl,
+                                            identifyingAttributes.profileId,
+                                            identifyingAttributes.incognito,
+                                            identifyingAttributes.webApkPackage);
                                 } else {
                                     mNotificationManager.notify(notification);
                                 }
@@ -1376,27 +1377,6 @@ public class NotificationPlatformBridge {
                                 /* iconId= */ 0,
                                 res.getString(R.string.notification_unsubscribe_button),
                                 unsubscribeIntentProvider.getPendingIntent())
-                        .build());
-    }
-
-    private static void appendAlwaysAllowButton(
-            Notification.Builder notificationBuilder,
-            NotificationIdentifyingAttributes identifyingAttributes) {
-        PendingIntentProvider alwaysAllowIntentProvider =
-                makePendingIntent(
-                        identifyingAttributes,
-                        NotificationConstants.ACTION_ALWAYS_ALLOW,
-                        /* actionIndex= */ -1,
-                        false);
-
-        Context context = ContextUtils.getApplicationContext();
-        Resources res = context.getResources();
-
-        notificationBuilder.addAction(
-                new Notification.Action.Builder(
-                                /* iconId= */ 0,
-                                res.getString(R.string.notification_always_allow_button),
-                                alwaysAllowIntentProvider.getPendingIntent())
                         .build());
     }
 
@@ -1854,71 +1834,6 @@ public class NotificationPlatformBridge {
     }
 
     /**
-     * Called when the user clicks the `ACTION_SHOW_ORIGINAL_NOTIFICATION` button, expressly
-     * dismisses the suspicious warning notification, and then shows the original notification with
-     * the `ACTION_ALWAYS_ALLOW` button.
-     *
-     * @param identifyingAttributes Common attributes identifying a notification and its source.
-     */
-    private static void onNotificationShowOriginal(
-            NotificationIdentifyingAttributes identifyingAttributes) {
-        Context context = ContextUtils.getApplicationContext();
-        var notificationManager = BaseNotificationManagerProxyFactory.create();
-        notificationManager.getActiveNotifications(
-                (activeNotifications) -> {
-                    Bundle tappedNotificationExtras =
-                            findNotificationExtras(
-                                    activeNotifications, identifyingAttributes.notificationId);
-
-                    Optional<Notification> notificationBackupOptional =
-                            getNotificationBackupOrCancel(
-                                    tappedNotificationExtras,
-                                    identifyingAttributes.notificationId,
-                                    NotificationConstants
-                                            .EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT);
-
-                    if (notificationBackupOptional.isPresent()) {
-                        Notification notificationBackup = notificationBackupOptional.get();
-                        Notification.Builder builder =
-                                Notification.Builder.recoverBuilder(context, notificationBackup);
-
-                        // Store original notification contents as an extra in order to restore the
-                        // original notification without "Always allow" button and also any other
-                        // notifications that has "Always allow" button.
-                        Bundle extras = new Bundle();
-                        extras.putParcelable(
-                                NotificationConstants
-                                        .EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT,
-                                notificationBackup.clone());
-                        // Store extra signaling that the user has seen the original notification.
-                        // This will help determine whether to allow the reporting feature from the
-                        // unsubscribe confirmation notification or not.
-                        extras.putBoolean(
-                                NotificationConstants
-                                        .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED,
-                                true);
-                        builder.addExtras(extras);
-
-                        // Add the unsubscribe and always allow notification buttons. If the feature
-                        // parameter specifies to swap buttons, then "Unsubscribe" should be the
-                        // secondary button. Otherwise, it should be the primary button.
-                        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
-                                NotificationContentDetectionManager
-                                        .SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
-                                /* defaultValue= */ false)) {
-                            appendAlwaysAllowButton(builder, identifyingAttributes);
-                            appendUnsubscribeButton(builder, identifyingAttributes);
-                        } else {
-                            appendUnsubscribeButton(builder, identifyingAttributes);
-                            appendAlwaysAllowButton(builder, identifyingAttributes);
-                        }
-                        displayNotificationSilently(builder, identifyingAttributes.notificationId);
-                    }
-                });
-    }
-
-    /**
      * Called when the user clicks the `ACTION_ALWAYS_ALLOW` button, dismisses all active
      * notifications from the same origin and restores them to their original notifications in
      * receiving order. Done pre-native to ensure the confirmation notification is displayed after
@@ -1982,7 +1897,7 @@ public class NotificationPlatformBridge {
      * extras Bundle. Otherwise, returns null if the notification is not found or does not have
      * extras.
      */
-    private static Bundle findNotificationExtras(
+    static Bundle findNotificationExtras(
             List<? extends StatusBarNotificationProxy> notifications, String notificationId) {
         for (StatusBarNotificationProxy proxy : notifications) {
             if (proxy.getId() == PLATFORM_ID && proxy.getTag().equals(notificationId)) {
@@ -1997,7 +1912,7 @@ public class NotificationPlatformBridge {
      * `extraNotificationBackupType` if present. If there is a backup key without a backup
      * notification, cancel the tapped notification.
      */
-    private static Optional<Notification> getNotificationBackupOrCancel(
+    static Optional<Notification> getNotificationBackupOrCancel(
             Bundle notificationExtras, String notificationId, String extraNotificationBackupType) {
         var notificationManager = BaseNotificationManagerProxyFactory.create();
 
@@ -2024,7 +1939,7 @@ public class NotificationPlatformBridge {
     }
 
     /** Displays a notification with group alert behavior set to `GROUP_ALERT_SUMMARY`. */
-    private static void displayNotificationSilently(
+    static void displayNotificationSilently(
             Notification.Builder notificationBuilder, String notificationTag) {
         var notificationManager = BaseNotificationManagerProxyFactory.create();
 
