@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1686,6 +1687,7 @@ public class ToolbarManager
                 mBottomToolbarControlsOffsetSupplier,
                 mProgressBarContainer,
                 controlContainerTranslationSupplier,
+                new Handler(Looper.getMainLooper()),
                 mActivity);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =

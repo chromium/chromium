@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +46,11 @@ import java.lang.annotation.RetentionPolicy;
 public class ToolbarPositionController implements OnSharedPreferenceChangeListener {
 
     @IntDef({
-        ToolbarPositionController.StateTransition.NONE,
-        ToolbarPositionController.StateTransition.SNAP_TO_TOP,
-        ToolbarPositionController.StateTransition.SNAP_TO_BOTTOM,
-        ToolbarPositionController.StateTransition.ANIMATE_TO_TOP,
-        ToolbarPositionController.StateTransition.ANIMATE_TO_BOTTOM,
+        StateTransition.NONE,
+        StateTransition.SNAP_TO_TOP,
+        StateTransition.SNAP_TO_BOTTOM,
+        StateTransition.ANIMATE_TO_TOP,
+        StateTransition.ANIMATE_TO_BOTTOM,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface StateTransition {
@@ -89,6 +90,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Context mContext;
     private final ObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
     private final ObservableSupplier<Integer> mControlContainerTranslationSupplier;
+    private final Handler mHandler;
     @LayerVisibility private int mLayerVisibility;
     private final BottomControlsLayerWithOffset mBottomToolbarLayer;
     private final BottomControlsLayerWithOffset mProgressBarLayer;
@@ -131,6 +133,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
             View toolbarProgressBarContainer,
             ObservableSupplier<Integer> controlContainerTranslationSupplier,
+            Handler handler,
             Context context) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
@@ -251,6 +254,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier.addObserver(
                 (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
         updateCurrentPosition();
+        mHandler = handler;
     }
 
     /**
@@ -343,20 +347,31 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         int newTopHeight;
         int controlContainerHeight = mControlContainer.getToolbarHeight();
+        mCurrentPosition = newControlsPosition;
 
-        assert !((ViewGroup) mToolbarProgressBarContainer.getParent()).isInLayout()
-                : "Cannot change position during CoordinatorLayout layout pass";
         if (newControlsPosition == ControlsPosition.TOP) {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
             mLayerVisibility = LayerVisibility.HIDDEN;
             mControlContainer.getView().setTranslationY(0);
             mToolbarProgressBarContainer.setTranslationY(0);
-            CoordinatorLayout.LayoutParams progressBarLayoutParams =
-                    (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
-            progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
-            progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
-            progressBarLayoutParams.gravity = Gravity.TOP;
-            mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
+            Runnable progressBarChangeRunnable =
+                    () -> {
+                        // Bail out if there was a state change while we waited for the runnable to
+                        // execute.
+                        if (mCurrentPosition != ControlsPosition.TOP) return;
+                        LayoutParams progressBarLayoutParams =
+                                (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
+                        progressBarLayoutParams.setAnchorId(mControlContainer.getView().getId());
+                        progressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
+                        progressBarLayoutParams.gravity = Gravity.TOP;
+                        mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
+                    };
+
+            if (((ViewGroup) mToolbarProgressBarContainer.getParent()).isInLayout()) {
+                mHandler.post(progressBarChangeRunnable);
+            } else {
+                progressBarChangeRunnable.run();
+            }
         } else {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             mLayerVisibility = LayerVisibility.VISIBLE;
@@ -372,7 +387,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         boolean animatingToBottom = stateTransition == StateTransition.ANIMATE_TO_BOTTOM;
 
         mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
-        mCurrentPosition = newControlsPosition;
         if (animatingToTop || animatingToBottom) {
             mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(true);
             // Prevent a visual glitch when animating the control container into a new location by
@@ -407,7 +421,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mCurrentPosition == ControlsPosition.TOP ? controlContainerHeight : 0;
         hairlineLayoutParams.bottomMargin =
                 mCurrentPosition == ControlsPosition.BOTTOM ? controlContainerHeight : 0;
-        CoordinatorLayout.LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
+        LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
         int verticalGravity =
                 mCurrentPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
         layoutParams.gravity = Gravity.START | verticalGravity;

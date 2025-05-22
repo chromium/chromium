@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -320,6 +322,7 @@ public class ToolbarPositionControllerTest {
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
                         mControlContainerTranslationSupplier,
+                        new Handler(Looper.getMainLooper()),
                         mContext);
     }
 
@@ -827,6 +830,26 @@ public class ToolbarPositionControllerTest {
         mControlContainerTranslationSupplier.set(20);
         verify(mControlContainerView).setTranslationY(32);
         assertEquals(32, mBottomToolbarOffsetSupplier.get().intValue());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    public void testParentLayoutInLayoutDuringPositionChange() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+
+        doReturn(true).when(mProgressBarParent).isInLayout();
+        mIsNtpShowing.set(true);
+
+        // Progress bar params should not have changed yet; changing them mid-layout pass can cause
+        // a crash.
+        assertEquals(Gravity.BOTTOM, mProgressBarLayoutParams.gravity);
+        assertEquals(Gravity.NO_GRAVITY, mProgressBarLayoutParams.anchorGravity);
+        assertEquals(View.NO_ID, mProgressBarLayoutParams.getAnchorId());
+
+        // Run the posted task to complete changing the progress bar layout params.
+        ShadowLooper.idleMainLooper();
+        assertControlsAtTop();
     }
 
     private void assertControlsAtBottom() {
