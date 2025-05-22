@@ -53,4 +53,9 @@ std::string StubDataTypeSyncBridge::GetStorageKey(
   return std::string();
 }
 
+bool StubDataTypeSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  return true;
+}
+
 }  // namespace syncer
