@@ -312,7 +312,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         menu.findItem(R.id.download_page_id).setVisible(shouldShowDownloadPageMenuItem(currentTab));
 
         menu.findItem(R.id.ntp_customization_id)
-                .setVisible(ChromeFeatureList.sNewTabPageCustomization.isEnabled());
+                .setVisible(ChromeFeatureList.sNewTabPageCustomization.isEnabled() && !isIncognito);
     }
 
     private void prepareCommonMenuItems(Menu menu, @MenuGroup int menuGroup, boolean isIncognito) {
