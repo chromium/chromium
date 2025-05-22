@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
@@ -54,8 +55,8 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         populateSites();
         updateBlockedSitesDescription();
     }
@@ -117,5 +118,10 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
                 mBlockedSitesCategory.getPreferenceCount() == 0
                         ? R.string.settings_fledge_page_blocked_sites_description_empty
                         : R.string.settings_fledge_page_blocked_sites_description);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

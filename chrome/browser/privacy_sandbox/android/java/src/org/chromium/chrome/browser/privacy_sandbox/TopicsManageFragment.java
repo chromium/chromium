@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -155,5 +156,10 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
         getCustomTabLauncher()
                 .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

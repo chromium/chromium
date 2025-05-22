@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -219,8 +220,8 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateCurrentSites);
         updatePreferenceVisibility();
     }
@@ -324,5 +325,10 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                 return false;
             }
         };
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

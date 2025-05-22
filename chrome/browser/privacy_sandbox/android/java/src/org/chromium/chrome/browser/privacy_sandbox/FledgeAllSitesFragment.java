@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
@@ -51,8 +52,8 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateSites);
     }
 
@@ -107,5 +108,10 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

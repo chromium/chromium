@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.util.HashSet;
@@ -53,8 +54,8 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         populateBlockedTopics();
         updateBlockedTopicsDescription();
     }
@@ -105,5 +106,10 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
             mBlockedTopicsCategory.setSummary(
                     R.string.settings_topics_page_blocked_topics_description_empty_text_v2);
         }
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -84,8 +85,8 @@ public class IncognitoTrackingProtectionsFragment extends PrivacySandboxBaseFrag
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updatePreferences();
     }
 
@@ -110,5 +111,10 @@ public class IncognitoTrackingProtectionsFragment extends PrivacySandboxBaseFrag
 
     private void onLearnMoreClicked() {
         getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

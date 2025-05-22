@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -130,5 +131,10 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
                         getPrivacySandboxBridge().shouldUsePrivacyPolicyChinaDomain()
                                 ? UrlConstants.GOOGLE_PRIVACY_POLICY_CHINA
                                 : UrlConstants.GOOGLE_PRIVACY_POLICY);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

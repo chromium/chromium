@@ -13,6 +13,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Settings fragment for privacy sandbox settings. */
@@ -59,8 +60,8 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         updatePrefDescription();
     }
@@ -88,5 +89,10 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                 AdMeasurementFragment.isAdMeasurementPrefEnabled(getProfile())
                         ? R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled
                         : R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }
