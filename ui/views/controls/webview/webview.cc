@@ -201,6 +201,11 @@ base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(
   return web_contents_attached_callbacks_.Add(callback);
 }
 
+base::CallbackListSubscription WebView::AddWebContentsDetachedCallback(
+    WebContentsDetachedCallback callback) {
+  return web_contents_detached_callbacks_.Add(callback);
+}
+
 base::CallbackListSubscription WebView::AddWebContentsFocusedCallback(
     WebContentsFocusedCallback callback) {
   return web_contents_focused_callbacks_.Add(callback);
@@ -475,6 +480,7 @@ void WebView::DetachWebContentsNativeView() {
   TRACE_EVENT0("views", "WebView::DetachWebContentsNativeView");
   if (web_contents()) {
     holder_->Detach();
+    web_contents_detached_callbacks_.Notify(this);
   }
 }
 

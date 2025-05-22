@@ -4063,6 +4063,8 @@ static_library("ui") {
       "views/frame/multi_contents_view.h",
       "views/frame/multi_contents_view_drop_target_controller.cc",
       "views/frame/multi_contents_view_drop_target_controller.h",
+      "views/frame/multi_contents_view_mini_toolbar.cc",
+      "views/frame/multi_contents_view_mini_toolbar.h",
       "views/frame/native_browser_frame.h",
       "views/frame/native_browser_frame_factory.cc",
       "views/frame/native_browser_frame_factory.h",

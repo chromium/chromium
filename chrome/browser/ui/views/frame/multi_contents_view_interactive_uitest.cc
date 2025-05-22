@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -440,6 +441,33 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       WaitForHide(kRightAlignedSidePanelSeparatorViewElementId),
       WaitForHide(kLeftAlignedSidePanelSeparatorViewElementId),
       WaitForHide(kSidePanelRoundedCornerViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       MiniToolbarShownForInactiveContents) {
+  RunTestSequence(
+      // Open split view.
+      CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
+      // Verify the mini toolbar is only visible for the inactive contents.
+      Check([&]() {
+        return !multi_contents_view()
+                    ->mini_toolbar_for_testing(0)
+                    ->GetVisible();
+      }),
+      Check([&]() {
+        return multi_contents_view()->mini_toolbar_for_testing(1)->GetVisible();
+      }),
+      // Focus inactive contents and verify active tab.
+      FocusInactiveTabInSplit(), CheckTabIsActive(1),
+      // Verify the mini toolbar is only visile for the newly inactive contents.
+      Check([&]() {
+        return multi_contents_view()->mini_toolbar_for_testing(0)->GetVisible();
+      }),
+      Check([&]() {
+        return !multi_contents_view()
+                    ->mini_toolbar_for_testing(1)
+                    ->GetVisible();
+      }));
 }
 
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop

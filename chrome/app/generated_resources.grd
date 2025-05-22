@@ -9845,6 +9845,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_NTP_TAB_TITLE" desc="The title of the split view new tab page as displayed in the tab strip.">
         Choose a tab
       </message>
+      <message name="IDS_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON_TOOLTIP" desc="The tooltip for the menu button in the minitoolbar of the inactive view in the split.">
+        More options for split view
+      </message>
 
       <!-- Strings for experimental AI promo -->
       <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO" desc="The title text of the IPH promo for experimental AI." translateable="false">

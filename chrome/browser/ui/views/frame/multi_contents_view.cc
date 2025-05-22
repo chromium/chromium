@@ -14,15 +14,17 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
@@ -38,8 +40,7 @@ MultiContentsView::MultiContentsView(
       inactive_contents_focused_callback_(inactive_contents_focused_callback),
       contents_resize_callback_(contents_resize_callback) {
   contents_container_views_.push_back(
-      AddChildView(std::make_unique<ContentsContainerView>(
-          std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
+      AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[0]
       ->GetContentsView()
       ->set_is_primary_web_contents_for_window(true);
@@ -48,8 +49,7 @@ MultiContentsView::MultiContentsView(
   resize_area_->SetVisible(false);
 
   contents_container_views_.push_back(
-      AddChildView(std::make_unique<ContentsContainerView>(
-          std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
+      AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[1]->SetVisible(false);
 
   for (auto* contents_container_view : contents_container_views_) {
@@ -61,8 +61,6 @@ MultiContentsView::MultiContentsView(
   }
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   views::View* drop_target_view = AddChildView(std::make_unique<views::View>());
   drop_target_view->SetProperty(views::kElementIdentifierKey,
@@ -80,8 +78,7 @@ ContentsWebView* MultiContentsView::GetActiveContentsView() {
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
-  int inactive_index = active_index_ == 0 ? 1 : 0;
-  return contents_container_views_[inactive_index]->GetContentsView();
+  return contents_container_views_[GetInactiveIndex()]->GetContentsView();
 }
 
 bool MultiContentsView::IsInSplitView() {
@@ -98,7 +95,7 @@ void MultiContentsView::SetWebContentsAtIndex(
   if (index == 1 && !contents_container_views_[1]->GetVisible()) {
     contents_container_views_[1]->SetVisible(true);
     resize_area_->SetVisible(true);
-    UpdateContentsBorder();
+    UpdateContentsBorderAndOverlay();
   }
 }
 
@@ -116,7 +113,7 @@ void MultiContentsView::CloseSplitView() {
   contents_container_views_[1]->GetContentsView()->SetWebContents(nullptr);
   contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
-  UpdateContentsBorder();
+  UpdateContentsBorderAndOverlay();
 }
 
 void MultiContentsView::SetActiveIndex(int index) {
@@ -128,7 +125,7 @@ void MultiContentsView::SetActiveIndex(int index) {
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-  UpdateContentsBorder();
+  UpdateContentsBorderAndOverlay();
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
@@ -215,7 +212,11 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
 
 void MultiContentsView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  UpdateContentsBorder();
+  UpdateContentsBorderAndOverlay();
+}
+
+int MultiContentsView::GetInactiveIndex() {
+  return active_index_ == 0 ? 1 : 0;
 }
 
 void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
@@ -227,9 +228,46 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
 }
 
 MultiContentsView::ContentsContainerView::ContentsContainerView(
-    std::unique_ptr<ContentsWebView> contents_view) {
-  SetUseDefaultFillLayout(true);
-  contents_view_ = AddChildView(std::move(contents_view));
+    BrowserView* browser_view) {
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  contents_view_ = AddChildView(
+      std::make_unique<ContentsWebView>(browser_view->GetProfile()));
+  mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
+      browser_view, contents_view_));
+}
+
+views::ProposedLayout
+MultiContentsView::ContentsContainerView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  if (!size_bounds.is_fully_bounded()) {
+    return layouts;
+  }
+
+  int height = size_bounds.height().value();
+  int width = size_bounds.width().value();
+
+  // |contents_view_| should fill the contents bounds.
+  gfx::Rect contents_rect = GetContentsBounds();
+  layouts.child_layouts.emplace_back(
+      contents_view_.get(), contents_view_->GetVisible(), contents_rect);
+
+  // |mini_toolbar_| should be offset in the bottom right corner, overlapping
+  // the outline.
+  gfx::Size mini_toolbar_size = mini_toolbar_->GetPreferredSize(
+      views::SizeBounds(width - kContentOutlineCornerRadius, height));
+  const int offset_x =
+      width - mini_toolbar_size.width() + (kContentOutlineThickness / 2.0f);
+  const int offset_y =
+      height - mini_toolbar_size.height() + (kContentOutlineThickness / 2.0f);
+  const gfx::Rect mini_toolbar_rect =
+      gfx::Rect(offset_x, offset_y, mini_toolbar_size.width(),
+                mini_toolbar_size.height());
+  layouts.child_layouts.emplace_back(
+      mini_toolbar_.get(), mini_toolbar_->GetVisible(), mini_toolbar_rect);
+
+  layouts.host_size = gfx::Size(width, height);
+  return layouts;
 }
 BEGIN_METADATA(MultiContentsView, ContentsContainerView)
 END_METADATA
@@ -277,18 +315,23 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
   return widths;
 }
 
-void MultiContentsView::UpdateContentsBorder() {
+void MultiContentsView::UpdateContentsBorderAndOverlay() {
   if (!IsInSplitView()) {
     for (auto* contents_container_view : contents_container_views_) {
       if (contents_container_view->GetBorder()) {
         contents_container_view->SetBorder(nullptr);
       }
     }
+    // Update mini toolbar visibility.
+    for (auto* contents_container_view : contents_container_views_) {
+      contents_container_view->GetMiniToolbar()->SetVisible(false);
+    }
     return;
   }
 
-  // Draw active/inactive outlines around the contents areas.
-  const auto set_contents_border =
+  // Draw active/inactive outlines around the contents areas and updates mini
+  // toolbar visibility.
+  const auto set_contents_border_and_mini_toolbar =
       [this](ContentsContainerView* contents_container_view) {
         const bool is_active = contents_container_view->GetContentsView() ==
                                GetActiveContentsView();
@@ -301,9 +344,12 @@ void MultiContentsView::UpdateContentsBorder() {
             views::CreateRoundedRectBorder(kContentOutlineThickness,
                                            kContentOutlineCornerRadius, color),
             gfx::Insets(kSplitViewContentPadding)));
+        // Mini toolbar should only be visible for the inactive contents
+        // container view.
+        contents_container_view->GetMiniToolbar()->SetVisible(!is_active);
       };
   for (auto* contents_container_view : contents_container_views_) {
-    set_contents_border(contents_container_view);
+    set_contents_border_and_mini_toolbar(contents_container_view);
   }
 }
 

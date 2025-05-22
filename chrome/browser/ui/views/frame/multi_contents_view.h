@@ -13,12 +13,14 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 class BrowserView;
 class ContentsWebView;
 class MultiContentsResizeArea;
 class MultiContentsViewDropTargetController;
+class MultiContentsViewMiniToolbar;
 
 namespace blink {
 class WebMouseEvent;
@@ -130,6 +132,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     return contents_container_views_[1]->GetContentsView();
   }
 
+  MultiContentsViewMiniToolbar* mini_toolbar_for_testing(int index) const {
+    return contents_container_views_[index]->GetMiniToolbar();
+  }
+
   static int contents_inset_for_testing() { return kSplitViewContentInset; }
 
  private:
@@ -143,20 +149,28 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   // ContentsContainerView holds the ContentsWebView and the outlines and
   // minitoolbar when in split view.
-  class ContentsContainerView : public views::View {
+  class ContentsContainerView : public views::View,
+                                public views::LayoutDelegate {
     METADATA_HEADER(ContentsContainerView, views::View)
    public:
-    explicit ContentsContainerView(
-        std::unique_ptr<ContentsWebView> contents_view);
+    explicit ContentsContainerView(BrowserView* browser_view);
     ContentsContainerView(ContentsContainerView&) = delete;
     ContentsContainerView& operator=(const ContentsContainerView&) = delete;
     ~ContentsContainerView() override = default;
 
     ContentsWebView* GetContentsView() { return contents_view_; }
+    MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
 
    private:
+    // LayoutDelegate:
+    views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds) const override;
+
     raw_ptr<ContentsWebView> contents_view_;
+    raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_;
   };
+
+  int GetInactiveIndex();
 
   void OnWebContentsFocused(views::WebView*);
 
@@ -167,7 +181,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // for some flexibility when it comes to particularly narrow windows.
   ViewWidths ClampToMinWidth(ViewWidths widths);
 
-  void UpdateContentsBorder();
+  void UpdateContentsBorderAndOverlay();
 
   raw_ptr<BrowserView> browser_view_;
 
