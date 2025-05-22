@@ -1063,6 +1063,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_QUIC_CONNECTION_TIMEOUT,
                 "Enables updating the QUIC connection timeout to a value set by the"
                         + " WebViewUpdateQuicConnectionTimeoutSeconds feature param."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.SHARED_DICTIONARY_CACHE,
+                "When enabled, keep recently-used compression dictionaries in a memory cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
