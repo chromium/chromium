@@ -33,6 +33,8 @@ source_set("controller") {
   deps = [
     ":prefs",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//components/download/public/common:public",

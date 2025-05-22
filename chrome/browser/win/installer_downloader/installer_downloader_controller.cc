@@ -14,6 +14,9 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
@@ -143,16 +146,21 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
     return;
   }
 
-  // TODO(https://crbug.com/417784931): Ensure that profile is not destroyed
-  // during download.
+  // Keep the profile alive until the download completes.
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kDownloadInProgress);
+
   model_->StartDownload(
       installer_url.value(), destination,
-      CHECK_DEREF(contents->GetBrowserContext()->GetDownloadManager()),
+      CHECK_DEREF(profile->GetDownloadManager()),
       base::BindOnce(&InstallerDownloaderController::OnDownloadCompleted,
-                     base::Unretained(this)));
+                     base::Unretained(this), std::move(keep_alive)));
 }
 
-void InstallerDownloaderController::OnDownloadCompleted(bool success) {
+void InstallerDownloaderController::OnDownloadCompleted(
+    std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
+    bool success) {
   // Update local state to indicated that downloaded have been successfully
   // completed.
 }

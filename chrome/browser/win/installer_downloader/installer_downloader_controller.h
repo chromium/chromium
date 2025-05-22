@@ -10,6 +10,8 @@
 
 #include "base/functional/callback.h"
 
+class ScopedProfileKeepAlive;
+
 namespace base {
 class FilePath;
 }
@@ -80,7 +82,8 @@ class InstallerDownloaderController {
 
  private:
   void OnEligibilityReady(const std::optional<base::FilePath>& destination);
-  void OnDownloadCompleted(bool success);
+  void OnDownloadCompleted(std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
+                           bool success);
 
   base::RepeatingCallback<bool()> is_metrics_enabled_callback_;
 
