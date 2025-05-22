@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 
 #include <memory>
@@ -103,10 +98,9 @@ DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(
 
   base::flat_set<std::string> webui_resource_paths;
   // Add required resources.
-  for (size_t i = 0; i < kAshDemoModeAppResourcesSize; ++i) {
-    data_source->AddResourcePath(kAshDemoModeAppResources[i].path,
-                                 kAshDemoModeAppResources[i].id);
-    webui_resource_paths.insert(kAshDemoModeAppResources[i].path);
+  for (const auto& resource : kAshDemoModeAppResources) {
+    data_source->AddResourcePath(resource.path, resource.id);
+    webui_resource_paths.insert(resource.path);
   }
 
   data_source->SetRequestFilter(
