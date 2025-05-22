@@ -268,7 +268,7 @@ void OpenAllIfAllowed(
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
-    OpenAllBookmarksContext context,
+    bookmarks::OpenAllBookmarksContext context,
     page_load_metrics::NavigationHandleUserData::InitiatorLocation
         navigation_type,
     std::optional<BookmarkLaunchAction> launch_action) {
@@ -338,11 +338,12 @@ void OpenAllIfAllowed(
   if (child_count < kNumBookmarkUrlsBeforePrompting) {
     do_open(
         browser, std::move(url_and_ids), initial_disposition,
-        context == OpenAllBookmarksContext::kInGroup
+        context == bookmarks::OpenAllBookmarksContext::kInGroup
             ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
             : std::nullopt,
-        context == OpenAllBookmarksContext::kInSplit, navigation_type,
-        std::move(launch_action), chrome::MESSAGE_BOX_RESULT_YES);
+        context == bookmarks::OpenAllBookmarksContext::kInSplit,
+        navigation_type, std::move(launch_action),
+        chrome::MESSAGE_BOX_RESULT_YES);
     return;
   }
 
@@ -357,11 +358,11 @@ void OpenAllIfAllowed(
                                  base::NumberToString16(child_count)),
       base::BindOnce(
           do_open, browser, std::move(url_and_ids), initial_disposition,
-          context == OpenAllBookmarksContext::kInGroup
+          context == bookmarks::OpenAllBookmarksContext::kInGroup
               ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
               : std::nullopt,
-          context == OpenAllBookmarksContext::kInSplit, navigation_type,
-          std::nullopt));
+          context == bookmarks::OpenAllBookmarksContext::kInSplit,
+          navigation_type, std::nullopt));
 }
 
 int OpenCount(gfx::NativeWindow parent,

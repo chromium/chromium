@@ -357,12 +357,12 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         base::RecordAction(*action);
       }
 
-      chrome::OpenAllBookmarksContext context =
-          chrome::OpenAllBookmarksContext::kNone;
+      bookmarks::OpenAllBookmarksContext context =
+          bookmarks::OpenAllBookmarksContext::kNone;
       if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
-        context = chrome::OpenAllBookmarksContext::kInGroup;
+        context = bookmarks::OpenAllBookmarksContext::kInGroup;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW) {
-        context = chrome::OpenAllBookmarksContext::kInSplit;
+        context = bookmarks::OpenAllBookmarksContext::kInSplit;
       }
       chrome::OpenAllIfAllowed(browser_, selection_, initial_disposition,
                                context);

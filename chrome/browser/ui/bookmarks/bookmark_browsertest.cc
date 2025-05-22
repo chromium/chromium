@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(
 
   chrome::OpenAllIfAllowed(incognito_browser, {incognito_folder},
                            WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                           chrome::OpenAllBookmarksContext::kInGroup);
+                           bookmarks::OpenAllBookmarksContext::kInGroup);
 
   EXPECT_EQ(incognito_tabs,
             incognito_browser->tab_strip_model()->GetTabCount());

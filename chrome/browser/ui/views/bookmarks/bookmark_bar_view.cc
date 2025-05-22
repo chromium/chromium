@@ -1378,7 +1378,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   RecordAppLaunch(browser_->profile(), node->url());
   chrome::OpenAllIfAllowed(
       browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
-      chrome::OpenAllBookmarksContext::kNone,
+      bookmarks::OpenAllBookmarksContext::kNone,
       page_load_metrics::NavigationHandleUserData::InitiatorLocation::
           kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
@@ -1398,7 +1398,7 @@ void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
 
     chrome::OpenAllIfAllowed(
         browser_, nodes, ui::DispositionFromEventFlags(event.flags()),
-        chrome::OpenAllBookmarksContext::kNone,
+        bookmarks::OpenAllBookmarksContext::kNone,
         page_load_metrics::NavigationHandleUserData::InitiatorLocation::
             kBookmarkBar,
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});

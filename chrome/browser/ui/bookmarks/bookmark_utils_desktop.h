@@ -19,16 +19,13 @@
 class Browser;
 struct NavigateParams;
 
-namespace bookmarks {
-class BookmarkNode;
-}
-
 namespace content {
 class BrowserContext;
 class NavigationHandle;
 }  // namespace content
 
-namespace chrome {
+namespace bookmarks {
+class BookmarkNode;
 
 enum OpenAllBookmarksContext {
   kNone = 0,     // Open all bookmarks as separate tabs.
@@ -36,7 +33,9 @@ enum OpenAllBookmarksContext {
   kInSplit = 2,  // Open all bookmarks in a split tab.
   kMaxValue = kInSplit,
 };
+}  // namespace bookmarks
 
+namespace chrome {
 // Wraps bookmark navigations to support view testing.
 class BookmarkNavigationWrapper {
  public:
@@ -75,7 +74,8 @@ void OpenAllIfAllowed(
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
-    OpenAllBookmarksContext context = OpenAllBookmarksContext::kNone,
+    bookmarks::OpenAllBookmarksContext context =
+        bookmarks::OpenAllBookmarksContext::kNone,
     page_load_metrics::NavigationHandleUserData::InitiatorLocation
         navigation_type = page_load_metrics::NavigationHandleUserData::
             InitiatorLocation::kOther,

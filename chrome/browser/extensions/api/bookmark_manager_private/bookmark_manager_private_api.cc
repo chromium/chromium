@@ -787,7 +787,7 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
 
   chrome::OpenAllIfAllowed(browser, nodes,
                            WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                           chrome::OpenAllBookmarksContext::kInGroup);
+                           bookmarks::OpenAllBookmarksContext::kInGroup);
 
   return NoArguments();
 }
