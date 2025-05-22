@@ -2193,6 +2193,15 @@ TabStripModel::TabIterator TabStripModel::end() const {
   return contents_data_->end();
 }
 
+TabStripModel::CollectionIterator TabStripModel::collection_begin(
+    base::PassKey<TabStripServiceImpl> key) const {
+  return contents_data_->collection_begin(key);
+}
+TabStripModel::CollectionIterator TabStripModel::collection_end(
+    base::PassKey<TabStripServiceImpl> key) const {
+  return contents_data_->collection_end(key);
+}
+
 // Context menu functions.
 bool TabStripModel::IsContextMenuCommandEnabled(
     int context_index,

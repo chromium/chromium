@@ -40,11 +40,12 @@
 #error This file should only be included on desktop.
 #endif
 
+class DraggingTabsSession;
 class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
-class DraggingTabsSession;
+class TabStripServiceImpl;
 
 namespace content {
 class WebContents;
@@ -175,7 +176,8 @@ class ScopedTabStripModalUI {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel {
  public:
-  using TabIterator = tabs::TabCollection::Iterator;
+  using TabIterator = tabs::TabCollection::TabIterator;
+  using CollectionIterator = tabs::TabCollection::Iterator;
 
   // TODO(crbug.com/40881446): Remove this, and use std::optional<size_t> (or at
   // least std::optional<int>) in its place.
@@ -672,6 +674,11 @@ class TabStripModel {
   // Returns iterators for traversing through all the tabs in the tabstrip.
   TabIterator begin() const;
   TabIterator end() const;
+
+  CollectionIterator collection_begin(
+      base::PassKey<TabStripServiceImpl> key) const;
+  CollectionIterator collection_end(
+      base::PassKey<TabStripServiceImpl> key) const;
 
   // View API //////////////////////////////////////////////////////////////////
 

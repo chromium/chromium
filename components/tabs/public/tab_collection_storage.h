@@ -23,6 +23,8 @@ using ChildrenVector = std::vector<Child>;
 
 using ChildPtr = std::variant<tabs::TabInterface*, tabs::TabCollection*>;
 using ChildrenPtrs = std::vector<ChildPtr>;
+using ConstChildPtr =
+    std::variant<const tabs::TabInterface*, const tabs::TabCollection*>;
 
 // Provides reusable functionality useful to most TabCollections for storing
 // and manipulating a vector of child tabs and collections.

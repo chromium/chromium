@@ -57,6 +57,10 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  static base::PassKey<TabStripServiceImpl> get_passkey_for_testing() {
+    return base::PassKey<TabStripServiceImpl>();
+  }
+
  private:
   void OnTabStripModelChangeAdded(const TabStripModelChange::Insert& change);
 

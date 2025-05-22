@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -18,6 +19,8 @@
 #include "base/types/pass_key.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
+
+class TabStripServiceImpl;
 
 namespace tabs {
 
@@ -30,12 +33,12 @@ class TabInterface;
 // collection that does not store any collection.
 class TabCollection : public SupportsHandles<TabCollection> {
  public:
-  // Iterator provides a way to traverse all tab objects within this
+  // TabIterator provides a way to traverse all tab objects within this
   // TabCollection and its sub-collections in a depth first inorder traversal
   // manner. This should not be mutated while holding reference to an iterator
   // as otherwise it will break as it is holding access to the index and tab
   // pointer.
-  class Iterator {
+  class TabIterator {
     STACK_ALLOCATED();
 
    public:
@@ -45,31 +48,33 @@ class TabCollection : public SupportsHandles<TabCollection> {
     using pointer = value_type;
     using reference = value_type;
 
-    Iterator();
-    Iterator(base::PassKey<TabCollection>,
-             const tabs::TabCollection* root,
-             bool is_end = false);
-    Iterator(const Iterator& iterator);
-    ~Iterator();
+    TabIterator();
+    TabIterator(base::PassKey<TabCollection>,
+                const tabs::TabCollection* root,
+                bool is_end = false);
+    TabIterator(const TabIterator& iterator);
+    ~TabIterator();
 
     pointer operator->() const { return cur_; }
     reference operator*() const { return cur_; }
 
-    Iterator& operator++() {
+    TabIterator& operator++() {
       Next();
       return *this;
     }
 
-    Iterator operator++(int) {
-      Iterator it(*this);
+    TabIterator operator++(int) {
+      TabIterator it(*this);
       Next();
       return it;
     }
 
-    bool operator==(const Iterator& other) const { return cur_ == other.cur_; }
+    bool operator==(const TabIterator& other) const {
+      return cur_ == other.cur_;
+    }
 
    private:
-    Iterator(const tabs::TabCollection* root, bool is_end);
+    TabIterator(const tabs::TabCollection* root, bool is_end);
     void Next();
 
     // Contains information of the index within a collection to access during
@@ -94,11 +99,80 @@ class TabCollection : public SupportsHandles<TabCollection> {
     std::vector<Frame> stack_;
   };
 
-  using iterator = Iterator;
-  using const_iterator = Iterator;
+  using iterator = TabIterator;
+  using const_iterator = TabIterator;
 
-  const_iterator begin() const { return Iterator(GetPassKey(), this, false); }
-  const_iterator end() const { return Iterator(GetPassKey(), this, true); }
+  const_iterator begin() const {
+    return TabIterator(GetPassKey(), this, false);
+  }
+  const_iterator end() const { return TabIterator(GetPassKey(), this, true); }
+
+  // This is an iterator that iterates a TabCollection with a pre-order DFS
+  // algorithm. collection_begin() starts with the root which is always a
+  // TabCollection. For example, fetching and advancing on the
+  // TabStripCollection would have a sequence like the following:
+  // TabStrip -> Pinned -> PTab1 -> PTab2 -> Unpinned -> UPTab1.
+  //
+  // This tree uses a variant (TabCollection or TabInterface) for its child
+  // nodes. While TabIterator() only iterates through TabInterfaces, Iterator()
+  // will iterate on both child node types.
+  class Iterator {
+    STACK_ALLOCATED();
+
+   public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = tabs::ConstChildPtr;
+    using pointer = value_type;
+    using reference = value_type;
+
+    Iterator();
+    Iterator(base::PassKey<TabCollection>,
+             const TabCollection* root,
+             bool is_end = false);
+    Iterator(const Iterator& other);
+    ~Iterator();
+
+    pointer operator->() const { return cur_; }
+
+    reference operator*() const { return cur_; }
+
+    Iterator& operator++() {
+      Advance();
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      Iterator it(*this);
+      Advance();
+      return it;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return cur_ == other.cur_ && root_collection_ == other.root_collection_ &&
+             is_end_iterator_ == other.is_end_iterator_;
+    }
+
+   private:
+    void Advance();
+
+    struct Frame {
+      raw_ptr<const TabCollection> collection;
+      size_t child_idx;
+    };
+
+    std::vector<Frame> stack_;
+    value_type cur_;
+    raw_ptr<const TabCollection> root_collection_;
+    bool is_end_iterator_;
+  };
+
+  Iterator collection_begin(base::PassKey<TabStripServiceImpl> key) const {
+    return Iterator(GetPassKey(), this, false);
+  }
+
+  Iterator collection_end(base::PassKey<TabStripServiceImpl> key) const {
+    return Iterator(GetPassKey(), this, true);
+  }
 
   // Type describes the various kinds of tab collections:
   // - TABSTRIP:  The main container for tabs in a browser window.

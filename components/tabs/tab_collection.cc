@@ -12,14 +12,15 @@ namespace tabs {
 
 // This does not create a useful iterator, but providing a default constructor
 // is required for forward iterators by the C++ spec.
-TabCollection::Iterator::Iterator() : Iterator(nullptr, true) {}
+TabCollection::TabIterator::TabIterator() : TabIterator(nullptr, true) {}
 
-TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
-                                  const TabCollection* root,
-                                  bool is_end)
-    : Iterator(root, is_end) {}
+TabCollection::TabIterator::TabIterator(base::PassKey<TabCollection>,
+                                        const TabCollection* root,
+                                        bool is_end)
+    : TabIterator(root, is_end) {}
 
-TabCollection::Iterator::Iterator(const tabs::TabCollection* root, bool is_end)
+TabCollection::TabIterator::TabIterator(const tabs::TabCollection* root,
+                                        bool is_end)
     : cur_(nullptr), root_(root) {
   if (!is_end && root) {
     stack_.reserve(10);
@@ -28,11 +29,11 @@ TabCollection::Iterator::Iterator(const tabs::TabCollection* root, bool is_end)
   }
 }
 
-TabCollection::Iterator::Iterator(const Iterator& iterator) = default;
+TabCollection::TabIterator::TabIterator(const TabIterator& iterator) = default;
 
-TabCollection::Iterator::~Iterator() = default;
+TabCollection::TabIterator::~TabIterator() = default;
 
-void TabCollection::Iterator::Next() {
+void TabCollection::TabIterator::Next() {
   DCHECK(cur_ || !stack_.empty()) << "Trying to advance past the end";
   cur_ = nullptr;
   while (!stack_.empty()) {
@@ -59,6 +60,60 @@ void TabCollection::Iterator::Next() {
     } else {
       stack_.pop_back();
     }
+  }
+}
+
+TabCollection::Iterator::Iterator()
+    : root_collection_(nullptr), is_end_iterator_(true) {}
+
+TabCollection::Iterator::Iterator(const Iterator& other) = default;
+TabCollection::Iterator::~Iterator() = default;
+
+TabCollection::Iterator::Iterator(base::PassKey<TabCollection>,
+                                  const TabCollection* root,
+                                  bool is_end /*= false*/)
+    : root_collection_(root) {
+  if (is_end || !root) {
+    cur_ = static_cast<const TabCollection*>(nullptr);
+    is_end_iterator_ = true;
+    if (!root) {
+      root_collection_ = nullptr;
+    }
+  } else {
+    cur_ = root;
+    is_end_iterator_ = false;
+    stack_.push_back({root, 0});
+  }
+}
+
+void TabCollection::Iterator::Advance() {
+  if (stack_.empty()) {
+    cur_ = static_cast<const TabCollection*>(nullptr);
+    is_end_iterator_ = true;
+    return;
+  }
+
+  Frame* current_frame = &stack_.back();
+  const auto& children = current_frame->collection->GetChildren();
+
+  if (current_frame->child_idx < children.size()) {
+    const auto& child_variant = children[current_frame->child_idx];
+    current_frame->child_idx++;
+
+    if (std::holds_alternative<std::unique_ptr<TabInterface>>(child_variant)) {
+      cur_ = std::get<std::unique_ptr<TabInterface>>(child_variant).get();
+      return;
+    } else if (std::holds_alternative<std::unique_ptr<TabCollection>>(
+                   child_variant)) {
+      TabCollection* sub_collection =
+          std::get<std::unique_ptr<TabCollection>>(child_variant).get();
+      stack_.push_back({sub_collection, 0});
+      cur_ = sub_collection;
+      return;
+    }
+  } else {
+    stack_.pop_back();
+    Advance();
   }
 }
 
