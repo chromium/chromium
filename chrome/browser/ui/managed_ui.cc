@@ -175,7 +175,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
          ShouldDisplayManagedByParentUi(profile);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 GURL GetManagedUiUrl(Profile* profile) {
   if (enterprise_util::IsBrowserManaged(profile)) {
@@ -333,7 +333,7 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
   return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDeviceManagedUiWebUILabel() {

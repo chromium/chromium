@@ -419,13 +419,9 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SectionsVisibility) {
   RunTestCase("SectionsVisibility");
 }
 
-// TODO(crbug.com/392777363): Enable this test on desktop android which fails
-// due to missing value for browserManagedByOrg.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, LoadTimeData) {
   RunTestCase("LoadTimeData");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
                        SafetyCheckPanel_EnabledSafetyCheck) {

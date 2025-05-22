@@ -9,6 +9,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 class GURL;
 class Profile;
@@ -46,7 +47,8 @@ std::optional<std::string> GetEnterpriseAccountDomain(const Profile& profile);
 // users.
 bool ShouldDisplayManagedUi(Profile* profile);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 // The URL which management surfaces should link to for more info.
 //
 // Returns an empty string if ShouldDisplayManagedUi(profile) is false.
@@ -80,7 +82,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile);
 // The label for the string describing whether the browser is managed or not, in
 // the chrome://settings/help page.
 std::u16string GetDeviceManagedUiHelpLabel(Profile* profile);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // The label for the WebUI footnote for Managed UI indicating that the device

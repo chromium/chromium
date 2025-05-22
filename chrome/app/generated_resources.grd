@@ -12867,12 +12867,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Restart
           </message>
         </if>
-        <if expr="not is_chromeos">
-          <message name="IDS_HELP_MANAGED_BY_YOUR_PARENT" desc="The text label shown in chrome://settings/help for users subject to parental controls.">
-            Your browser is managed by your parent
-          </message>
-        </if>
       </if> <!-- not is_android -->
+      <if expr="(not is_android or enable_extensions_core) and not is_chromeos">
+        <message name="IDS_HELP_MANAGED_BY_YOUR_PARENT" desc="The text label shown in chrome://settings/help for users subject to parental controls.">
+          Your browser is managed by your parent
+        </message>
+      </if>
 
       <if expr="is_chromeos">
         <message name="IDS_ARC_LABEL" desc="Label for ARC">
@@ -13646,6 +13646,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph><ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> is managed<ph name="END_LINK">&lt;/a&gt;</ph> by <ph name="ENROLLMENT_DOMAIN">$3<ex>example.com</ex></ph>
           </message>
         </if>
+      </if>
+      <if expr="not is_android or enable_extensions_core">
         <message name="IDS_MANAGED_WITH_HYPERLINK" desc="Message to end users in Enterprise/EDU, with a link for more info (non-ChromeOS)">
           Your <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>browser is managed<ph name="END_LINK">&lt;/a&gt;</ph> by your organization
         </message>
