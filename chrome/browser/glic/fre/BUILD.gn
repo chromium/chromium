@@ -28,6 +28,7 @@ source_set("fre") {
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/resources/glic/fre:resources_grit",
     "//chrome/browser/themes",
+    "//components/language/core/common",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
