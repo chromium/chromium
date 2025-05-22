@@ -133,10 +133,10 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   self.headerBackgroundView = [[UIStackView alloc] init];
   self.headerContentView = [[UIStackView alloc] init];
   self.contentView = [[UIView alloc] init];
-  self.backButton = [[UIButton alloc] init];
-  self.forwardButton = [[UIButton alloc] init];
-  self.reloadOrStopButton = [[UIButton alloc] init];
-  self.menuButton = [[UIButton alloc] init];
+  self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  self.forwardButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  self.reloadOrStopButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  self.menuButton = [UIButton buttonWithType:UIButtonTypeSystem];
   self.field = [[UITextField alloc] init];
   self.tracingHandler = [[TracingHandler alloc] init];
 
@@ -177,28 +177,32 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   _backButton.tintColor = [UIColor whiteColor];
   [_backButton addTarget:self
                   action:@selector(back)
-        forControlEvents:UIControlEventTouchUpInside];
+        forControlEvents:UIControlEventTouchUpInside |
+                         UIControlEventPrimaryActionTriggered];
 
   [_forwardButton setImage:[UIImage imageNamed:@"ic_forward"]
                   forState:UIControlStateNormal];
   _forwardButton.tintColor = [UIColor whiteColor];
   [_forwardButton addTarget:self
                      action:@selector(forward)
-           forControlEvents:UIControlEventTouchUpInside];
+           forControlEvents:UIControlEventTouchUpInside |
+                            UIControlEventPrimaryActionTriggered];
 
   [_reloadOrStopButton setImage:[UIImage imageNamed:@"ic_reload"]
                        forState:UIControlStateNormal];
   _reloadOrStopButton.tintColor = [UIColor whiteColor];
   [_reloadOrStopButton addTarget:self
                           action:@selector(reloadOrStop)
-                forControlEvents:UIControlEventTouchUpInside];
+                forControlEvents:UIControlEventTouchUpInside |
+                                 UIControlEventPrimaryActionTriggered];
 
   _menuButton.tintColor = [UIColor whiteColor];
   [_menuButton setImage:[UIImage imageNamed:@"ic_menu"]
                forState:UIControlStateNormal];
   [_menuButton addTarget:self
                   action:@selector(showMainMenu)
-        forControlEvents:UIControlEventTouchUpInside];
+        forControlEvents:UIControlEventTouchUpInside |
+                         UIControlEventPrimaryActionTriggered];
 
   _field.placeholder = @"Search or type URL";
   _field.tintColor = _headerBackgroundView.backgroundColor;
@@ -224,7 +228,14 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 
   _headerContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [_headerContentView.heightAnchor constraintEqualToConstant:56.0],
+    // This height constraint is somewhat arbitrary: the idea is that it gives
+    // us enough space to centralize the buttons inside |_headerContentView|
+    // while having enough top and bottom margins.
+    // Twice the size of a button also accounts for platforms such as tvOS,
+    // where focused buttons are larger and have a drop shadow.
+    [_headerContentView.heightAnchor
+        constraintEqualToAnchor:_backButton.heightAnchor
+                     multiplier:2.0],
   ]];
 
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
