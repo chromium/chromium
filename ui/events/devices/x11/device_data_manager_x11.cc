@@ -226,11 +226,16 @@ DeviceDataManagerX11::DeviceDataManagerX11()
     : high_precision_scrolling_disabled_(IsHighPrecisionScrollingDisabled()) {
   CHECK(x11::Connection::Get());
 
+  SelectDeviceEvents(x11::Input::XIEventMask::Hierarchy |
+                     x11::Input::XIEventMask::DeviceChanged);
+
   UpdateDeviceList(x11::Connection::Get());
   UpdateButtonMap();
 }
 
-DeviceDataManagerX11::~DeviceDataManagerX11() = default;
+DeviceDataManagerX11::~DeviceDataManagerX11() {
+  SelectDeviceEvents({});
+}
 
 bool DeviceDataManagerX11::IsXInput2Available() const {
   return x11::Connection::Get()->xinput_version() >=
@@ -914,6 +919,13 @@ void DeviceDataManagerX11::OnKeyboardDevicesUpdated(
   }
   // Notify base class of updated list.
   DeviceDataManager::OnKeyboardDevicesUpdated(keyboards);
+}
+
+void DeviceDataManagerX11::SelectDeviceEvents(
+    x11::Input::XIEventMask event_mask) {
+  auto* connection = x11::Connection::Get();
+  x11::Input::EventMask mask{x11::Input::DeviceId::All, {event_mask}};
+  connection->xinput().XISelectEvents({connection->default_root(), {mask}});
 }
 
 }  // namespace ui

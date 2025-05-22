@@ -347,6 +347,8 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
       DeviceDataManagerX11::ScrollInfo::AxisInfo* axis,
       double valuator) const;
 
+  void SelectDeviceEvents(x11::Input::XIEventMask event_mask);
+
   static const int kMaxXIEventType = 32;
   static const int kMaxSlotNum = 10;
 
