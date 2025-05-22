@@ -89,12 +89,12 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         // If you need to modify this layout, don't forget to test it with TalkBack and make sure
         // it doesn't regress.
         // http://crbug.com/429364
-        LinearLayout wrapper = (LinearLayout) layout.findViewById(R.id.dropdown_label_wrapper);
+        LinearLayout wrapper = layout.findViewById(R.id.dropdown_label_wrapper);
         wrapper.setOrientation(LinearLayout.VERTICAL);
         wrapper.setLayoutParams(new LinearLayout.LayoutParams(0, height, 1));
 
         // Layout of the main label view.
-        TextView labelView = (TextView) layout.findViewById(R.id.dropdown_label);
+        TextView labelView = layout.findViewById(R.id.dropdown_label);
         labelView.setText(item.getLabel());
         labelView.setSingleLine(true);
 
@@ -112,7 +112,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         // Layout of the sublabel view, which has a smaller font and usually sits below the main
         // label.
-        TextView sublabelView = (TextView) layout.findViewById(R.id.dropdown_sublabel);
+        TextView sublabelView = layout.findViewById(R.id.dropdown_sublabel);
         CharSequence sublabel = item.getSublabel();
         if (TextUtils.isEmpty(sublabel)) {
             sublabelView.setVisibility(View.GONE);
@@ -124,7 +124,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             sublabelView.setVisibility(View.VISIBLE);
         }
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
+        ImageView iconView = layout.findViewById(R.id.end_dropdown_icon);
         if (item.getIconId() == DropdownItem.NO_ICON) {
             iconView.setVisibility(View.GONE);
         } else {

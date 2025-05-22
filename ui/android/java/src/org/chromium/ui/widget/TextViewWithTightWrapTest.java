@@ -106,7 +106,7 @@ public class TextViewWithTightWrapTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testTextViewWithSnooze() throws Exception {
-        Button snoozeButton = (Button) mView.findViewById(R.id.button_snooze);
+        Button snoozeButton = mView.findViewById(R.id.button_snooze);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snoozeButton.setVisibility(View.VISIBLE);
