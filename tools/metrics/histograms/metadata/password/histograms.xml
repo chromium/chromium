@@ -2867,8 +2867,10 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>derinel@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
-    Logs the number of passwords in the password dropdown when it's shown for a
-    WebAuthn request.
+    Logs the number of passwords in the password dropdown when it's shown. This
+    metric is only recorded when the field is not supporting WebAuthn
+    conditional UI, that is the field is not annotated with
+    autocomplete=&quot;webauthn&quot;.
   </summary>
 </histogram>
 
@@ -2883,48 +2885,37 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount"
-    units="credentials" expires_after="2025-11-16">
-  <owner>derinel@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    Logs the number of passkeys in the password dropdown when it's shown for a
-    WebAuthn conditional get request.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount"
-    units="credentials" expires_after="2025-11-16">
-  <owner>derinel@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    Logs the number of passwords in the password dropdown when it's shown for a
-    WebAuthn conditional get request.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount"
-    units="credentials" expires_after="2025-11-16">
-  <owner>derinel@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    Logs the total number of credentials in the password dropdown when it's
-    shown for a WebAuthn conditional get request. This is the sum of
-    &quot;PasskeyCount&quot; and &quot;PasswordCount&quot; with the same prefix.
-  </summary>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordDropdownShown.WebAuthnRequest.UseAnotherDeviceShown"
     enum="Boolean" expires_after="2025-11-16">
   <owner>derinel@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
     Logs whether the password dropdown has the option to use another device for
-    a passkey sign in. This is emitted when the dropdown is displayed.
+    a passkey sign in. Recorded when the dropdown is displayed for a WebAuthn
+    conditional get request.
   </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown.WebAuthnRequest{MetricType}"
+    units="credentials" expires_after="2025-11-16">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <summary>
+    Logs details about the password dropdown when it's shown for a WebAuthn
+    conditional get request. Recorded when the dropdown is displayed.
+    {MetricType}
+  </summary>
+  <token key="MetricType">
+    <variant name=".PasskeyCount"
+        summary="Logs the number of passkeys in the password dropdown."/>
+    <variant name=".PasswordCount"
+        summary="Logs the number of passwords in the password dropdown."/>
+    <variant name=".TotalCount"
+        summary="Logs the total number of credentials in the password
+                 dropdown. This is the sum of PasskeyCount and PasswordCount
+                 for WebAuthn requests."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.PasswordFilling.ReauthPromo"
