@@ -68,8 +68,8 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
                              std::move(default_welcome_back_items));
 }
 
-void MarkWelcomeBackFeatureUsed(PrefService* local_state,
-                                BestFeaturesItemType item_type) {
+void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type) {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
   int pref = static_cast<int>(item_type);
   ScopedListPrefUpdate update(local_state, kWelcomeBackEligibleItems);
   update->EraseValue(base::Value(pref));

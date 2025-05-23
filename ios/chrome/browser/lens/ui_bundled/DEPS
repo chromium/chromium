@@ -9,4 +9,7 @@ include_rules = [
     "+ios/chrome/browser/web/model/web_navigation_util.h",
     "+ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h",
     "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+    "+ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h",
+    "+ios/chrome/browser/first_run/ui_bundled/features.h",
+    "+ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h",
 ]

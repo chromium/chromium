@@ -16,8 +16,7 @@ enum class BestFeaturesItemType;
 void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Erases an item from `kWelcomeBackEligibleItems`.
-void MarkWelcomeBackFeatureUsed(PrefService* local_state,
-                                BestFeaturesItemType item_type);
+void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type);
 
 // Returns a vector of `kWelcomeBackEligibleItems`. This is used to check the
 // current eligible items.

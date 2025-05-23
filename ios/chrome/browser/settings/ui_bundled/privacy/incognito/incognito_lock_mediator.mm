@@ -8,6 +8,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -74,6 +77,11 @@
           IncognitoLockSettingInteraction::kHideWithReauthSelected);
       base::RecordAction(
           base::UserMetricsAction("IOS.Settings.IncognitoLock.HideWithReauth"));
+      // Notify Welcome Back to remove Locked Incognito from the eligible
+      // features.
+      if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+        MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLockedIncognitoTabs);
+      }
       break;
     case IncognitoLockState::kSoftLock:
       _incognitoReauthPref.value = false;
