@@ -109,42 +109,6 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
                                      corner_radius, corner_radius, flags);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// RoundedCornerImageView:
-
-class RoundedCornerImageView : public views::ImageView {
-  METADATA_HEADER(RoundedCornerImageView, views::ImageView)
-
- public:
-  RoundedCornerImageView();
-
-  RoundedCornerImageView(const RoundedCornerImageView&) = delete;
-  RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
-
-  ~RoundedCornerImageView() override = default;
-
- protected:
-  // views::ImageView:
-  void OnPaint(gfx::Canvas* canvas) override;
-};
-
-RoundedCornerImageView::RoundedCornerImageView() {
-  SetCanProcessEventsWithinSubtree(false);
-}
-
-void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
-  SkPath mask;
-  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium);
-  mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()), corner_radius,
-                    corner_radius);
-  canvas->ClipPath(mask, true);
-  ImageView::OnPaint(canvas);
-}
-
-BEGIN_METADATA(RoundedCornerImageView)
-END_METADATA
-
 }  // namespace
 
 // Produces the largest centered square gfx::Rect that fits within a rectangle
@@ -225,7 +189,11 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(int contents_width,
 
 OmniboxMatchCellView::OmniboxMatchCellView(OmniboxResultView* result_view) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  answer_image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
+  answer_image_view_ = AddChildView(std::make_unique<views::ImageView>());
+  answer_image_view_->SetCanProcessEventsWithinSubtree(false);
+  answer_image_view_->SetCornerRadius(
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kMedium));
   tail_suggest_ellipse_view_ =
       AddChildView(std::make_unique<OmniboxTextView>(result_view));
   tail_suggest_ellipse_view_->SetText(AutocompleteMatch::kEllipsis);

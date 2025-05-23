@@ -7,7 +7,6 @@
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
-#include "chrome/browser/ui/views/desktop_capture/rounded_corner_image_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -58,10 +57,13 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaSourceViewStyle style)
     : parent_(parent), source_id_(source_id), selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
+  image_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
+  image_view_->SetCornerRadius(
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kMedium));
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style);
   views::FocusRing::Install(this);

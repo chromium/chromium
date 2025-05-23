@@ -50,6 +50,10 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   ui::ImageModel GetImageModel() const;
 
+  // Set or get the `corner_radius`.
+  void SetCornerRadius(int corner_radius);
+  int GetCornerRadius() const;
+
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -79,10 +83,13 @@ class VIEWS_EXPORT ImageView : public ImageViewBase {
 
   // Caches the scaled image reps.
   gfx::ImageSkia scaled_image_;
+
+  int corner_radius_ = 0;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)
 VIEW_BUILDER_OVERLOAD_METHOD(SetImage, const ui::ImageModel&)
+VIEW_BUILDER_PROPERTY(int, CornerRadius)
 END_VIEW_BUILDER
 
 }  // namespace views

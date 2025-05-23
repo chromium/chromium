@@ -12,9 +12,11 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -50,11 +52,26 @@ gfx::Size ImageView::GetImageSize() const {
   return image_size_.value_or(image_model_.Size());
 }
 
+void ImageView::SetCornerRadius(int corner_radius) {
+  corner_radius_ = corner_radius;
+}
+
+int ImageView::GetCornerRadius() const {
+  return corner_radius_;
+}
+
 void ImageView::OnPaint(gfx::Canvas* canvas) {
   // This inlines View::OnPaint in order to OnPaintBorder() after OnPaintImage
   // so the border can paint over content (for rounded corners that overlap
   // content).
   TRACE_EVENT1("views", "ImageView::OnPaint", "class", GetClassName());
+  if (corner_radius_) {
+    SkPath mask;
+    mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()), corner_radius_,
+                      corner_radius_);
+    canvas->ClipPath(mask, true);
+  }
+
   OnPaintBackground(canvas);
   OnPaintImage(canvas);
   OnPaintBorder(canvas);
