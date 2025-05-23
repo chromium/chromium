@@ -22,6 +22,8 @@ import type {EntryDeletedCustomEvent} from './os_japanese_dictionary_entry_row.j
 import {getTemplate} from './os_japanese_dictionary_expand.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';
 
+export type DictionaryDeletedCustomEvent = CustomEvent<{dictIndex: number}>;
+
 interface OsJapaneseDictionaryExpandElement {
   $: {
     selectFileDialog: HTMLElement,
@@ -52,6 +54,9 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
       statusMessage_: {
         type: String,
       },
+      dictIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -74,6 +79,8 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
 
   // Used for chromevox announcements.
   private statusMessage_ = '';
+
+  private dictIndex = 0;
 
   private onEntryDelete_(event: EntryDeletedCustomEvent): void {
     this.statusMessage_ = '';
@@ -130,6 +137,7 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
              this.dict.id))
             .status.success;
     if (dictionarySaved) {
+      this.dispatchDictionaryDeletedEvent_();
       this.dispatchSavedEvent_();
     }
     this.showingDeleteDialog_ = false;
@@ -212,6 +220,15 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
         new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
   }
 
+  private dispatchDictionaryDeletedEvent_(): void {
+    this.dispatchEvent(new CustomEvent('dictionary-deleted', {
+      bubbles: true,
+      composed: true,
+      detail: {dictIndex: this.dictIndex},
+    }));
+  }
+
+
   private i18nDialogString_(dictName: string): string {
     return this.i18n('japaneseDeleteDictionaryDetail', dictName);
   }
@@ -230,5 +247,6 @@ declare global {
 declare global {
   interface HTMLElementEventMap {
     ['dictionary-saved']: CustomEvent;
+    ['dictionary-deleted']: DictionaryDeletedCustomEvent;
   }
 }

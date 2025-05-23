@@ -20,6 +20,7 @@ import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
 import type {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 import {routes} from '../router.js';
 
+import type {DictionaryDeletedCustomEvent} from './os_japanese_dictionary_expand.js';
 import {getTemplate} from './os_japanese_manage_user_dictionary_page.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';
 
@@ -61,6 +62,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
   override ready(): void {
     super.ready();
     this.addEventListener('dictionary-saved', this.getDictionaries_);
+    this.addEventListener('dictionary-deleted', this.onDictionaryDeleted_);
     this.getDictionaries_();
   }
 
@@ -77,6 +79,21 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
       this.dictionaries_ = [...response.dictionaries];
       this.status = `number of dictionaries=${this.dictionaries_.length}`;
     }
+  }
+
+  private onDictionaryDeleted_(event: DictionaryDeletedCustomEvent): void {
+    afterNextRender(this, () => {
+      const n = event.detail.dictIndex + 1;
+      const nthElement = this.shadowRoot!.querySelector<HTMLElement>(
+          `os-japanese-dictionary-expand:nth-of-type(${n})`);
+      if (nthElement) {
+        nthElement.shadowRoot!.querySelector<HTMLElement>(
+                                  'cr-expand-button')!.focus();
+      } else {
+        this.shadowRoot!.querySelector<HTMLElement>(
+                            '#addDictionaryButton')!.focus();
+      }
+    });
   }
 
   // Adds a new dictionary with the name "New dictionary".
