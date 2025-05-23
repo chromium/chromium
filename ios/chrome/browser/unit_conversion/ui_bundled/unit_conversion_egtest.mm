@@ -106,9 +106,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
 
 #pragma mark - Tests
 
-// TODO(crbug.com/339245132): This test is flaky
+// TODO(crbug.com/419771136): Disable until the unit detection is fixed.
 // Test the elements of the unit conversion view controller
-- (void)FLAKY_testUnitConversionViewController {
+- (void)DISABLED_testUnitConversionViewController {
   [UnitConversionAppInterface presentUnitConversionFeature];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
@@ -136,8 +136,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// TODO(crbug.com/419771136): Disable until the unit detection is fixed.
 // Checks that unit type change is handled correctly.
-- (void)testUnitConversionUnitTypeChange {
+- (void)DISABLED_testUnitConversionUnitTypeChange {
   [UnitConversionAppInterface presentUnitConversionFeature];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
@@ -168,8 +169,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
                             localizedStringWithFormat:@"%g", 35200.0])];
 }
 
+// TODO(crbug.com/419771136): Disable until the unit detection is fixed.
 // Checks that source unit value change is handled correctly.
-- (void)testSourceUnitValueChange {
+- (void)DISABLED_testSourceUnitValueChange {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
   [[EarlGrey selectElementWithMatcher:SourceUnitFieldMatcher()]
@@ -182,8 +184,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
       assertWithMatcher:grey_textFieldValue(@"66.1387")];
 }
 
+// TODO(crbug.com/419771136): Disable until the unit detection is fixed.
 // Checks that the source unit change is handled correctly.
-- (void)testSourceUnitChange {
+- (void)DISABLED_testSourceUnitChange {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
   TapOnButton(SourceUnitMenuButton());
@@ -194,8 +197,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
       assertWithMatcher:grey_textFieldValue(@"20")];
 }
 
+// TODO(crbug.com/419771136): Disable until the unit detection is fixed.
 // Checks that the target unit change is handled correctly.
-- (void)testTargetUnitChange {
+- (void)DISABLED_testTargetUnitChange {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
   TapOnButton(TargetUnitMenuButton());
