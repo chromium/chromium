@@ -78,7 +78,7 @@ cargo_crate("lib") {
   edition = "2021"
   cargo_pkg_name = "clap_builder"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
-  cargo_pkg_version = "4.5.37"
+  cargo_pkg_version = "4.5.38"
 
   allow_unsafe = false
 

@@ -341,11 +341,11 @@ pub enum ArgAction {
     ///             .action(clap::ArgAction::Version)
     ///     );
     ///
-    /// // Existing help still exists
+    /// // Existing version still exists
     /// let err = cmd.clone().try_get_matches_from(["mycmd", "--version"]).unwrap_err();
     /// assert_eq!(err.kind(), clap::error::ErrorKind::DisplayVersion);
     ///
-    /// // New help available
+    /// // New version available
     /// let err = cmd.try_get_matches_from(["mycmd", "--special-version"]).unwrap_err();
     /// assert_eq!(err.kind(), clap::error::ErrorKind::DisplayVersion);
     /// ```

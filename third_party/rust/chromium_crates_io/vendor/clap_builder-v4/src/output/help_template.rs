@@ -789,7 +789,7 @@ impl HelpTemplate<'_, '_> {
             .aliases
             .iter()
             .filter(|&als| als.1) // visible
-            .map(|als| als.0.as_str()) // name
+            .map(|als| format!("--{}", als.0)) // name
             .collect::<Vec<_>>()
             .join(", ");
         if !als.is_empty() {
@@ -801,7 +801,7 @@ impl HelpTemplate<'_, '_> {
             .short_aliases
             .iter()
             .filter(|&als| als.1) // visible
-            .map(|&als| als.0.to_string()) // name
+            .map(|&als| format!("-{}", als.0)) // name
             .collect::<Vec<_>>()
             .join(", ");
         if !als.is_empty() {
