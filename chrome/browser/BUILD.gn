@@ -4016,6 +4016,8 @@ static_library("browser") {
       "passage_embeddings/web_contents_passage_embedder.h",
       "password_manager/generated_password_leak_detection_pref.cc",
       "password_manager/generated_password_leak_detection_pref.h",
+      "password_manager/password_change/button_click_helper.cc",
+      "password_manager/password_change/button_click_helper.h",
       "password_manager/web_app_profile_switcher.cc",
       "password_manager/web_app_profile_switcher.h",
       "payments/chrome_payment_request_delegate.cc",

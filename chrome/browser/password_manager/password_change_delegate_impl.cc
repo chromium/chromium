@@ -131,6 +131,8 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
 
   new_web_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
+  new_web_contents->Resize({0, 0, 1024, 768});
+
   return new_web_contents;
 }
 

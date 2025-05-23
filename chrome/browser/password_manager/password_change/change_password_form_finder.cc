@@ -13,6 +13,10 @@
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "content/public/browser/web_contents.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#endif
+
 namespace {
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
@@ -91,7 +95,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ChangePasswordFormFinder::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetMutableWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 OptimizationGuideKeyedService*
@@ -105,7 +109,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
-  if (!execution_result.response.has_value()) {
+  if (!web_contents_ || !execution_result.response.has_value()) {
     // TODO(crbug.com/407503334): Record metrics here.
     std::move(callback_).Run(nullptr);
     return;
@@ -120,8 +124,42 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
     return;
   }
 
-  // TODO (crbug.com/407485204): Get the dom node id from response and initiate
-  // a click on it.
+  int dom_node_id = response.value().open_form_data().dom_node_id_to_click();
+  if (!dom_node_id) {
+    // TODO(crbug.com/407503334): Record metrics here.
+    std::move(callback_).Run(nullptr);
+    return;
+  }
 
+#if !BUILDFLAG(IS_ANDROID)
+  click_helper_ = std::make_unique<ButtonClickHelper>(
+      web_contents_.get(), dom_node_id,
+      base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,
+                     weak_ptr_factory_.GetWeakPtr()));
+#else
   std::move(callback_).Run(nullptr);
+#endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChangePasswordFormFinder::OnButtonClicked(bool result) {
+  click_helper_.reset();
+
+  if (!result || !web_contents_) {
+    // TODO(crbug.com/407503334): Record metrics here.
+    std::move(callback_).Run(nullptr);
+    return;
+  }
+
+  form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
+      web_contents_.get(),
+      base::BindOnce(&ChangePasswordFormFinder::OnSubsequentFormWaitingResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChangePasswordFormFinder::OnSubsequentFormWaitingResult(
+    password_manager::PasswordFormManager* form_manager) {
+  // TODO(crbug.com/407503334): Record metrics here.
+  std::move(callback_).Run(form_manager);
+}
+#endif

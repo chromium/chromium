@@ -19,6 +19,8 @@ namespace content {
 class WebContents;
 }
 
+class ButtonClickHelper;
+
 // Helper class which searches for a change password form, performs actuation
 // when necessary. Invokes a callback with a form when it's found, or nullptr
 // otherwise.
@@ -41,6 +43,7 @@ class ChangePasswordFormFinder {
   void RespondWithFormNotFound() { std::move(callback_).Run(nullptr); }
 
   ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
+  ButtonClickHelper* click_helper() { return click_helper_.get(); }
 #endif
 
  private:
@@ -59,12 +62,23 @@ class ChangePasswordFormFinder {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void OnButtonClicked(bool result);
+
+  void OnSubsequentFormWaitingResult(
+      password_manager::PasswordFormManager* form_manager);
+#endif
+
   base::WeakPtr<content::WebContents> web_contents_;
   ChangePasswordFormWaiter::PasswordFormFoundCallback callback_;
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
 
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ButtonClickHelper> click_helper_;
+#endif
 
   base::WeakPtrFactory<ChangePasswordFormFinder> weak_ptr_factory_{this};
 };
