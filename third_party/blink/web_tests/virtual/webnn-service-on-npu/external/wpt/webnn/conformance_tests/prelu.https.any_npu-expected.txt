@@ -11,5 +11,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input and slope should have the same last dimension."
 [FAIL] prelu float16 broadcast 4D x 4D slope
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input and slope should have the same last dimension."
+[FAIL] prelu int64 2D constant tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16]."
 Harness: the test ran to completion.
 
