@@ -10,17 +10,19 @@
 #include <wrl.h>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "media/audio/win/core_audio_util_win.h"
 #include "media/audio/win/test_support/fake_iaudio_capture_client.h"
 
 namespace {
 
-// TOOD(crbug.com/418678875): make this configurable.
-constexpr UINT32 kBufferSizeFrames = 256;
-constexpr REFERENCE_TIME kSamplingPeriodMs = 1;
-constexpr REFERENCE_TIME kStreamLatencyMs = 1;
+// The audio engine typically processes events at a rate of 100Hz.
+constexpr base::TimeDelta kSamplingPeriodMs = base::Milliseconds(10);
+// Maximum latency for the current stream.
+constexpr base::TimeDelta kStreamLatencyMs = 10 * kSamplingPeriodMs;
 
 }  // namespace
 
@@ -31,7 +33,7 @@ FakeIAudioClient::DataStreamer::DataStreamer(HANDLE buffer_ready_event_handle)
   // Stream once immediately.
   StreamData();
   // And again every kSamplingPeriodMs milliseconds.
-  timer_.Start(FROM_HERE, base::Milliseconds(kSamplingPeriodMs),
+  timer_.Start(FROM_HERE, kSamplingPeriodMs,
                base::BindRepeating(&FakeIAudioClient::DataStreamer::StreamData,
                                    base::Unretained(this)));
 }
@@ -55,10 +57,7 @@ FakeIAudioClient::FakeIAudioClient(ClientType client_type)
 FakeIAudioClient::~FakeIAudioClient() = default;
 
 IFACEMETHODIMP FakeIAudioClient::GetBufferSize(UINT32* buffer_size) {
-  // TOOD(crbug.com/418678875): Real devices often have a buffer size that is a
-  // multiple of 10ms and depends on the sample rate. Consider making this
-  // configurable and dependent on the sample rate.
-  *buffer_size = kBufferSizeFrames;
+  *buffer_size = buffer_size_frames_;
   return S_OK;
 }
 
@@ -69,8 +68,10 @@ IFACEMETHODIMP FakeIAudioClient::GetCurrentPadding(UINT32* padding) {
 IFACEMETHODIMP FakeIAudioClient::GetDevicePeriod(
     REFERENCE_TIME* default_device_period,
     REFERENCE_TIME* minimum_device_period) {
-  // Convert to 100ns units.
-  *default_device_period = kSamplingPeriodMs * 10000;
+  const REFERENCE_TIME period_in_100ns_units =
+      kSamplingPeriodMs.InMicroseconds() * 10;
+  *default_device_period = period_in_100ns_units;
+  *minimum_device_period = period_in_100ns_units;
   return S_OK;
 }
 
@@ -85,7 +86,7 @@ IFACEMETHODIMP FakeIAudioClient::GetService(REFIID riid, void** service) {
 
   if (riid == __uuidof(IAudioCaptureClient)) {
     audio_capture_client_ = Microsoft::WRL::Make<FakeIAudioCaptureClient>(
-        client_type_, kBufferSizeFrames, frame_size_bytes_);
+        client_type_, buffer_size_frames_, frame_size_bytes_);
     audio_capture_client_.CopyTo(
         reinterpret_cast<IAudioCaptureClient**>(service));
     return S_OK;
@@ -95,8 +96,9 @@ IFACEMETHODIMP FakeIAudioClient::GetService(REFIID riid, void** service) {
 }
 
 IFACEMETHODIMP FakeIAudioClient::GetStreamLatency(REFERENCE_TIME* latency) {
-  // Convert to 100ns units.
-  *latency = kStreamLatencyMs * 10000;
+  const REFERENCE_TIME latency_in_100ns_units =
+      kStreamLatencyMs.InMicroseconds() * 10;
+  *latency = latency_in_100ns_units;
   return S_OK;
 }
 
@@ -106,7 +108,11 @@ IFACEMETHODIMP FakeIAudioClient::Initialize(AUDCLNT_SHAREMODE share_mode,
                                             REFERENCE_TIME periodicity,
                                             const WAVEFORMATEX* format,
                                             LPCGUID audio_session_guid) {
-  // TOOD(crbug.com/418678875): validate the format.
+  VLOG(1) << CoreAudioUtil::WaveFormatToString(
+      const_cast<WAVEFORMATEX*>(format));
+  buffer_size_frames_ = static_cast<UINT32>(
+      (format->nSamplesPerSec * kSamplingPeriodMs.InMicroseconds()) /
+      base::Time::kMicrosecondsPerSecond);
   frame_size_bytes_ = (format->wBitsPerSample / 8) * format->nChannels;
   return S_OK;
 }

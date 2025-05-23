@@ -1346,7 +1346,6 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       fifo_->PushSilence(num_frames_to_read);
     } else {
       const int bytes_per_sample = input_format_.Format.wBitsPerSample / 8;
-
       peak_detector_.FindPeak(data_ptr, num_frames_to_read, bytes_per_sample);
       fifo_->Push(data_ptr, num_frames_to_read, bytes_per_sample);
     }
@@ -1819,7 +1818,7 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   hr_dbg = audio_client_->GetStreamLatency(&latency);
   if (SUCCEEDED(hr_dbg)) {
     // The 5000 addition is to round end result to closest integer.
-    const int latency_ms = (device_period_shared_mode + 5000) / 10000;
+    const int latency_ms = (latency + 5000) / 10000;
     DVLOG(1) << "Stream latency: " << latency_ms << " ms";
   }
 #endif
