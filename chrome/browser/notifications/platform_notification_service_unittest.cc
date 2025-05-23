@@ -424,7 +424,6 @@ TEST_F(PlatformNotificationServiceTest,
                   RevocationState::kProposed,
               .site_engagement = 0.0,
               .daily_notification_count = kDailyNotificationCount,
-              .lifetime = base::Days(30),
           });
 
   PlatformNotificationData data;
@@ -459,7 +458,6 @@ TEST_F(PlatformNotificationServiceTest,
                   RevocationState::kProposed,
               .site_engagement = 0.0,
               .daily_notification_count = kDailyNotificationCount,
-              .lifetime = base::Days(30),
           });
 
   PlatformNotificationData data;

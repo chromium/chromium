@@ -86,12 +86,11 @@ class DisruptiveNotificationPermissionsManager
 
   // LINT.IfChange(RevocationState)
   enum class RevocationState {
-    kNone = 0,
     kProposed = 1,
     kRevoked = 2,
     kIgnore = 3,
-    kUnknown = 4,
-    kMaxValue = kUnknown,
+    kAcknowledged = 4,
+    kMaxValue = kAcknowledged,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationRevocationState)
 
@@ -142,11 +141,6 @@ class DisruptiveNotificationPermissionsManager
   // Clear the list of revoked notification permissions so they will no longer
   // be shown to the user. Does not change permissions themselves.
   void ClearRevokedPermissionsList();
-
-  // Removes the `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS` setting.
-  void DeleteRevokedPermissionContentSetting(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
 
   // Restores REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS entry for the
   // primary_pattern after it was deleted after user has accepted the revocation
@@ -199,18 +193,17 @@ class DisruptiveNotificationPermissionsManager
   // A revocation entry as stored in content settings
   // (ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS).
   struct RevocationEntry {
+    bool operator==(const RevocationEntry& other) const;
+
     RevocationState revocation_state;
     double site_engagement;
     int daily_notification_count;
+
+    // Timestamp of proposed or actual revocation.
     base::Time timestamp;
 
     bool has_reported_proposal = false;
     bool has_reported_false_positive = false;
-
-    base::Time created_at = base::Time::Now();
-
-    // If lifetime is 0, it doesn't expire.
-    base::TimeDelta lifetime;
   };
 
   // Helper class to manage content settings for
@@ -224,19 +217,15 @@ class DisruptiveNotificationPermissionsManager
     std::optional<RevocationEntry> GetRevocationEntry(const GURL& url);
     void PersistRevocationEntry(const GURL& url, const RevocationEntry& entry);
     void DeleteRevocationEntry(const GURL& url);
+    std::vector<std::pair<GURL, RevocationEntry>> GetAllEntries();
 
    private:
+    std::optional<RevocationEntry> ToRevocationEntry(
+        const base::Value& value,
+        const content_settings::RuleMetaData& metadata);
+
     base::raw_ref<HostContentSettingsMap> hcsm_;
   };
-
-  // Process existing content setting value: record false positive, revoke
-  // notifications or report the site as already in the proposed revocation
-  // list. Returns `true` if notifications were actually revoked, `false`
-  // otherwise.
-  bool HandleExistingValueAndMaybeRevoke(
-      const GURL& url,
-      const RevocationEntry& revocation_entry,
-      bool is_disruptive);
 
   // If the notifications should be revoked based on whether the metrics were
   // already reported or the cooldown period has run out.
@@ -267,6 +256,9 @@ class DisruptiveNotificationPermissionsManager
   void OnPermissionRegranted(const GURL& url,
                              RevocationEntry revocation_entry,
                              bool regranted_in_safety_hub);
+
+  // Report metrics for the daily run.
+  void ReportDailyRunMetrics();
 
   scoped_refptr<HostContentSettingsMap> hcsm_;
 

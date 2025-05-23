@@ -850,6 +850,54 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution.{RevocationState}.SiteEngagement"
+    units="EngagementScore" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Records the site engagement for revoked disruptive notification sites.
+    Recorded on every run of the disruptive notification sites Safety Hub check.
+  </summary>
+  <token key="RevocationState">
+    <variant name="Acknowledged"/>
+    <variant name="Proposed"/>
+    <variant name="Regranted"/>
+    <variant name="Revoked"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution.{RevocationState}.SiteEngagement{SiteEngagement}.DaysSinceRevocation"
+    units="days" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Records the number of days since revocation for revoked disruptive
+    notification sites, and their current state and site engagement. Recorded on
+    every run of the disruptive notification sites Safety Hub check. For
+    proposed revocation, days are computed since the proposal.
+  </summary>
+  <token key="RevocationState">
+    <variant name="Acknowledged"/>
+    <variant name="Proposed"/>
+    <variant name="Regranted"/>
+    <variant name="Revoked"/>
+  </token>
+  <token key="SiteEngagement">
+    <variant name="0"/>
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+    <variant name="6-7"/>
+    <variant name="8-10"/>
+    <variant name="11-15"/>
+    <variant name="&gt;15"/>
+  </token>
+</histogram>
+
+<histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.SiteEngagement"
     units="EngagementScore" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>

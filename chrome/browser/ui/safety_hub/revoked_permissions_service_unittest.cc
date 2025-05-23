@@ -26,6 +26,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -92,10 +93,6 @@ const ContentSettingsType revoked_unused_site_type =
     ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS;
 // An arbitrary large number that doesn't match any ContentSettingsType;
 const int32_t unknown_type = 300000;
-
-constexpr std::string_view kRevokedStatus = "revoked_status";
-constexpr std::string_view kProposed = "proposed";
-constexpr std::string_view kRevoke = "revoke";
 
 std::set<ContentSettingsType> abusive_permission_types({notifications_type});
 std::set<ContentSettingsType> unused_permission_types({geolocation_type,
@@ -335,11 +332,17 @@ class RevokedPermissionsServiceTest
     EXPECT_EQ(expected_size, revoked_permissions_list.size());
   }
 
-  void ExpectRevokedDisruptiveNotificationPermissionSize(size_t expected_size) {
-    ContentSettingsForOneType revoked_permissions =
-        hcsm()->GetSettingsForOneType(
-            ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-    EXPECT_EQ(expected_size, revoked_permissions.size());
+  int GetRevokedDisruptiveNotificationPermissionSize() {
+    int count = 0;
+    for (const auto& [url, revocation_entry] :
+         DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
+             .GetAllEntries()) {
+      if (revocation_entry.revocation_state ==
+          DisruptiveNotificationPermissionsManager::RevocationState::kRevoked) {
+        ++count;
+      }
+    }
+    return count;
   }
 
   void SetupRevokedUnusedPermissionSite(
@@ -395,34 +398,24 @@ class RevokedPermissionsServiceTest
         constraint);
   }
 
-  void SetupRevokedDisruptiveNotificationSite(
-      std::string url,
-      base::TimeDelta lifetime =
-          content_settings::features::
-              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                  .Get()) {
-    content_settings::ContentSettingConstraints constraint(clock()->Now());
-    constraint.set_lifetime(lifetime);
-    hcsm()->SetWebsiteSettingDefaultScope(
-        GURL(url), GURL(url),
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(kRevokedStatus, kRevoke)),
-        constraint);
+  void SetupRevokedDisruptiveNotificationSite(std::string url) {
+    DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
+        .PersistRevocationEntry(
+            GURL(url),
+            DisruptiveNotificationPermissionsManager::RevocationEntry{
+                .revocation_state = DisruptiveNotificationPermissionsManager::
+                    RevocationState::kRevoked,
+                .timestamp = clock()->Now()});
   }
 
-  void SetupProposedRevokedDisruptiveNotificationSite(
-      std::string url,
-      base::TimeDelta lifetime =
-          content_settings::features::
-              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
-                  .Get()) {
-    content_settings::ContentSettingConstraints constraint(clock()->Now());
-    constraint.set_lifetime(lifetime);
-    hcsm()->SetWebsiteSettingDefaultScope(
-        GURL(url), GURL(url),
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(kRevokedStatus, kProposed)),
-        constraint);
+  void SetupProposedRevokedDisruptiveNotificationSite(std::string url) {
+    DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
+        .PersistRevocationEntry(
+            GURL(url),
+            DisruptiveNotificationPermissionsManager::RevocationEntry{
+                .revocation_state = DisruptiveNotificationPermissionsManager::
+                    RevocationState::kProposed,
+                .timestamp = clock()->Now()});
   }
 
   void UndoRegrantPermissionsForUrl(
@@ -1278,7 +1271,7 @@ TEST_P(RevokedPermissionsServiceTest, ClearRevokedPermissionsList) {
   service()->ClearRevokedPermissionsList();
   EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   ExpectRevokedAbusiveNotificationPermissionSize(0U);
-  ExpectRevokedDisruptiveNotificationPermissionSize(0U);
+  EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 0);
 }
 
 TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
@@ -1318,7 +1311,7 @@ TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
   service()->ClearRevokedPermissionsList();
   EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   ExpectRevokedAbusiveNotificationPermissionSize(0U);
-  ExpectRevokedDisruptiveNotificationPermissionSize(0U);
+  EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 0);
 
   service()->RestoreDeletedRevokedPermissionsList(revoked_permissions_vector);
 
@@ -1329,7 +1322,7 @@ TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
     ExpectRevokedAbusiveNotificationPermissionSize(2U);
   }
   if (ShouldSetupDisruptiveSites()) {
-    ExpectRevokedDisruptiveNotificationPermissionSize(1U);
+    EXPECT_EQ(GetRevokedDisruptiveNotificationPermissionSize(), 1);
   }
 }
 
@@ -1423,8 +1416,9 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
   const auto default_lifetime =
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
-  const auto shorter_lifetime = base::Days(1);
-  const auto longer_lifetime = base::Days(10);
+  const auto shorter_lifetime = default_lifetime - base::Days(1);
+  const auto longer_lifetime = default_lifetime + base::Days(1);
+  const auto disruptive_revocations_lifetime = default_lifetime;
   if (ShouldSetupAbusiveNotificationSites()) {
     SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
     SetupAbusiveNotificationSite(url3, ContentSetting::CONTENT_SETTING_ASK);
@@ -1441,8 +1435,8 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
     SetupRevokedUnusedPermissionSite(url6, shorter_lifetime);
   }
   if (ShouldSetupDisruptiveSites()) {
-    SetupRevokedDisruptiveNotificationSite(url5, shorter_lifetime);
-    SetupRevokedDisruptiveNotificationSite(url6, longer_lifetime);
+    SetupRevokedDisruptiveNotificationSite(url5);
+    SetupRevokedDisruptiveNotificationSite(url6);
   }
 
   // When we start up a new service instance, the latest result (i.e. the list
@@ -1477,7 +1471,8 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
       EXPECT_EQ(permission_5.constraints.lifetime(), longer_lifetime);
 
       auto permission_6 = GetPermissionsDataByUrl(revoked_permissions, url6);
-      EXPECT_EQ(permission_6.constraints.lifetime(), longer_lifetime);
+      EXPECT_EQ(permission_6.constraints.lifetime(),
+                disruptive_revocations_lifetime);
     } else if (ShouldSetupUnusedSites()) {
       EXPECT_EQ(5U, revoked_permissions.size());
       EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
