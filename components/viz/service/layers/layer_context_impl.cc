@@ -813,6 +813,10 @@ base::expected<void, std::string> DeserializeTiling(
     cc::TileDisplayLayerImpl& layer,
     mojom::Tiling& wire,
     bool update_damage) {
+  if (wire.is_deleted) {
+    layer.RemoveTiling(wire.scale_key);
+    return base::ok();
+  }
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -827,9 +831,9 @@ base::expected<void, std::string> DeserializeTiling(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
         std::move(contents), update_damage);
-    if (tiling.tiles().empty()) {
-      layer.RemoveTiling(tiling.contents_scale_key());
-    }
+  }
+  if (tiling.tiles().empty()) {
+    layer.RemoveTiling(tiling.contents_scale_key());
   }
   return base::ok();
 }

@@ -490,16 +490,6 @@ viz::mojom::TilePtr SerializeTile(
   wire->column_index = tile.tiling_i_index();
   wire->row_index = tile.tiling_j_index();
 
-  // If a Tile is being deleted, mark the reason as deleted. This is essential
-  // to distinguish deleted tiles from OOMed OR RESOURCE_MODE tiles with no
-  // resources. OOMed tiles have no content but are still required in order to
-  // perform checkerboard.
-  if (tile.deleted()) {
-    wire->contents = viz::mojom::TileContents::NewMissingReason(
-        mojom::MissingTileReason::kTileDeleted);
-    return wire;
-  }
-
   switch (tile.draw_info().mode()) {
     case TileDrawInfo::OOM_MODE:
       wire->contents = viz::mojom::TileContents::NewMissingReason(
@@ -525,57 +515,94 @@ viz::mojom::TilePtr SerializeTile(
   return wire;
 }
 
+// Serializes a set of tile updates (live or deleted) into a mojo Tiling object.
+// Handles nullptr tiling as a deleted tiling, and wraps valid and missing
+// tiles.
 viz::mojom::TilingPtr SerializeTiling(
     PictureLayerImpl& layer,
-    const PictureLayerTiling& tiling,
-    base::span<const Tile*> tiles,
+    const PictureLayerTiling* tiling,
+    float scale_key,
+    base::span<const std::pair<TileIndex, const Tile*>> tile_updates,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider) {
+  // Handle the case where the tiling no longer exists (deleted).
+  if (!tiling) {
+    auto deleted_tiling = viz::mojom::Tiling::New();
+    deleted_tiling->layer_id = layer.id();
+    deleted_tiling->scale_key = scale_key;
+    deleted_tiling->is_deleted = true;
+    return deleted_tiling;
+  }
+
   std::vector<viz::mojom::TilePtr> wire_tiles;
-  for (const Tile* tile : tiles) {
-    if (auto wire_tile =
-            SerializeTile(*tile, resource_provider, context_provider)) {
-      wire_tiles.push_back(std::move(wire_tile));
+
+  // Serialize both live and deleted tiles into mojo wire format.
+  for (const auto& [index, tile] : tile_updates) {
+    if (tile && !tile->deleted()) {
+      // Serialize a live tile with content.
+      if (auto wire_tile =
+              SerializeTile(*tile, resource_provider, context_provider)) {
+        wire_tiles.push_back(std::move(wire_tile));
+      }
+    } else {
+      // Tile was deleted or missing, serialize a tile with deletion reason.
+      // Mark the reason as kTileDeleted. This is essential to distinguish
+      // deleted tiles from OOMed OR RESOURCE_MODE tiles with no resources.
+      // OOMed tiles have no content but are still required in order to perform
+      // checkerboard.
+      auto deleted_tile = viz::mojom::Tile::New();
+      deleted_tile->column_index = index.i;
+      deleted_tile->row_index = index.j;
+      deleted_tile->contents = viz::mojom::TileContents::NewMissingReason(
+          mojom::MissingTileReason::kTileDeleted);
+      wire_tiles.push_back(std::move(deleted_tile));
     }
   }
+
   if (wire_tiles.empty()) {
     return nullptr;
   }
 
+  // Wrap into a mojo Tiling object.
   auto wire = viz::mojom::Tiling::New();
   wire->layer_id = layer.id();
-  wire->raster_translation = tiling.raster_transform().translation();
-  wire->raster_scale = tiling.raster_transform().scale();
-  wire->tile_size = tiling.tile_size();
-  wire->tiling_rect = tiling.tiling_rect();
+  wire->scale_key = scale_key;
+  wire->raster_translation = tiling->raster_transform().translation();
+  wire->raster_scale = tiling->raster_transform().scale();
+  wire->tile_size = tiling->tile_size();
+  wire->tiling_rect = tiling->tiling_rect();
   wire->tiles = std::move(wire_tiles);
+  wire->is_deleted = false;
   return wire;
 }
 
+// Collects updated tile indices and serializes them into tilings for the given
+// layer.
 void SerializePictureLayerTileUpdates(
     PictureLayerImpl& layer,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
     std::vector<viz::mojom::TilingPtr>& tilings) {
-  // TODO(vmiura): If needs_full_sync_ is set, all tiles should be
-  // synced, not only updated tiles.
   auto updates = layer.TakeUpdatedTiles();
-  for (const auto& [scale_key, tile_indices] : updates) {
-    if (const auto* tiling =
-            layer.picture_layer_tiling_set()->FindTilingWithScaleKey(
-                scale_key)) {
-      std::vector<const Tile*> tiles;
-      tiles.reserve(tile_indices.size());
-      for (const auto& index : tile_indices) {
-        if (auto* tile = tiling->TileAt(index)) {
-          tiles.push_back(tile);
-        }
-      }
 
-      if (auto wire_tiling = SerializeTiling(
-              layer, *tiling, tiles, resource_provider, context_provider)) {
-        tilings.push_back(std::move(wire_tiling));
-      }
+  for (const auto& [scale_key, tile_indices] : updates) {
+    const auto* tiling =
+        layer.picture_layer_tiling_set()->FindTilingWithScaleKey(scale_key);
+
+    // Create a unified vector of tile updates, marking missing tiles with
+    // nullptr.
+    std::vector<std::pair<TileIndex, const Tile*>> tile_updates;
+    tile_updates.reserve(tile_indices.size());
+    for (const auto& index : tile_indices) {
+      const Tile* tile = tiling ? tiling->TileAt(index) : nullptr;
+      tile_updates.emplace_back(index, tile);
+    }
+
+    // Serialize the tiling and push to output.
+    if (auto wire_tiling =
+            SerializeTiling(layer, tiling, scale_key, tile_updates,
+                            resource_provider, context_provider)) {
+      tilings.push_back(std::move(wire_tiling));
     }
   }
 }
@@ -1234,15 +1261,22 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   needs_full_sync_ = false;
 }
 
+// Sends a single-tile update to the Viz service by serializing it as a tiling.
 void VizLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
     bool update_damage) {
-  const Tile* tiles[] = {&tile};
-  if (auto tiling = SerializeTiling(layer, *tile.tiling(), tiles,
-                                    resource_provider, context_provider)) {
+  // Create a one-element update list for the given tile.
+  TileIndex index(tile.tiling_i_index(), tile.tiling_j_index());
+  const Tile* tile_ptr = &tile;
+  std::pair<TileIndex, const Tile*> tile_updates[] = {{index, tile_ptr}};
+
+  // Serialize the tile and send it to the display service.
+  if (auto tiling =
+          SerializeTiling(layer, tile.tiling(), tile.contents_scale_key(),
+                          tile_updates, resource_provider, context_provider)) {
     service_->UpdateDisplayTiling(std::move(tiling), update_damage);
   }
 }

@@ -60,4 +60,11 @@ struct Tiling {
 
   // New or updated tiles.
   array<Tile> tiles;
+
+  // Used to find a tiling in service side when it's already deleted in client
+  // side.
+  float scale_key;
+
+  // Set to true if the client has deleted this tiling.
+  bool is_deleted;
 };
