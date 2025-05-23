@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -121,6 +122,10 @@ UIColor* DimColorIncognito() {
       detailText = base::SysUTF16ToNSString(_match.contents);
     } else if (_match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       detailText = base::SysUTF16ToNSString(_match.description);
+    } else if (_match.suggest_template &&
+               _match.suggest_template->has_secondary_text()) {
+      detailText = [NSString
+          cr_fromString:_match.suggest_template->secondary_text().text()];
     }
 
     if (!detailText.length) {
