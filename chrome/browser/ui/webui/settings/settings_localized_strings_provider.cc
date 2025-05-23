@@ -154,10 +154,6 @@
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -3800,10 +3796,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddDefaultBrowserStrings(html_source);
   AddImportDataStrings(html_source);
   AddSystemStrings(html_source);
-#endif
-
-#if BUILDFLAG(USE_NSS_CERTS)
-  certificate_manager::AddLocalizedStrings(html_source);
 #endif
 
   policy_indicator::AddLocalizedStrings(html_source);

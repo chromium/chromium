@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/strings.m.js';
+import 'chrome://certificate-manager/strings.m.js';
 import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_list.js';
 import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
 

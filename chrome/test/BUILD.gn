@@ -10337,7 +10337,6 @@ test("unit_tests") {
       if (use_nss_certs) {
         sources += [
           "../browser/ui/views/crypto_module_password_dialog_view_unittest.cc",
-          "../browser/ui/webui/certificates_handler_unittest.cc",
         ]
       }
     }

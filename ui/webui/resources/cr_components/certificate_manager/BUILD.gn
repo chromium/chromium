@@ -4,20 +4,17 @@
 
 import("//chrome/common/features.gni")
 import("//crypto/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(use_nss_certs || chrome_root_store_cert_management_ui)
+assert(chrome_root_store_cert_management_ui)
 
-if (chrome_root_store_cert_management_ui) {
-  import("//mojo/public/tools/bindings/mojom.gni")
+mojom("mojom") {
+  sources = [ "certificate_manager_v2.mojom" ]
 
-  mojom("mojom") {
-    sources = [ "certificate_manager_v2.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 
-    public_deps = [ "//mojo/public/mojom/base" ]
-
-    webui_module_path = "chrome://resources/cr_components/certificate_manager/"
-  }
+  webui_module_path = "chrome://resources/cr_components/certificate_manager/"
 }
 
 build_webui("build") {
@@ -27,25 +24,6 @@ build_webui("build") {
   ts_files = []
   static_files = []
   css_files = []
-
-  if (use_nss_certs) {
-    web_component_files += [
-      "ca_trust_edit_dialog.ts",
-      "certificate_delete_confirmation_dialog.ts",
-      "certificate_entry.ts",
-      "certificate_list.ts",
-      "certificate_manager.ts",
-      "certificate_password_decryption_dialog.ts",
-      "certificate_password_encryption_dialog.ts",
-      "certificate_subentry.ts",
-      "certificates_error_dialog.ts",
-    ]
-    ts_files += [
-      "certificate_manager_types.ts",
-      "certificates_browser_proxy.ts",
-    ]
-    css_files += [ "certificate_shared.css" ]
-  }
 
   if (chrome_root_store_cert_management_ui) {
     static_files += [ "favicon.svg" ]
@@ -82,7 +60,11 @@ build_webui("build") {
       "certificate_provisioning_entry.ts",
       "certificate_provisioning_list.ts",
     ]
-    ts_files += [ "certificate_provisioning_browser_proxy.ts" ]
+    css_files += [ "certificate_shared.css" ]
+    ts_files += [
+      "certificate_provisioning_browser_proxy.ts",
+      "certificate_manager_types.ts",
+    ]
   }
 
   ts_out_dir =

@@ -2118,7 +2118,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   extensions::login_api::RegisterProfilePrefs(registry);
   extensions::platform_keys::EnterprisePlatformKeysRegisterProfilePrefs(
       registry);
-  certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
+  certificate_manager::RegisterProfilePrefs(registry);
   chromeos::cloud_storage::RegisterProfilePrefs(registry);
   chromeos::cloud_upload::RegisterProfilePrefs(registry);
   policy::NetworkAnnotationBlocklistHandler::RegisterPrefs(registry);

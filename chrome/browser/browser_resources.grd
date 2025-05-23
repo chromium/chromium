@@ -234,7 +234,6 @@
         <part file="ui/views/webid/resources/webid_resources.grdp" />
       </if>
       <if expr="chrome_root_store_cert_management_ui">
-        <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\certificate_manager\certificate_manager_dialog.html" type="BINDATA" />
         <include name="IDR_CERT_MANAGER_DIALOG_V2_HTML" file="resources\certificate_manager\certificate_manager_dialog_v2.html" type="BINDATA" />
       </if>
     </includes>

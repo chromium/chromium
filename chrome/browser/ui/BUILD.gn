@@ -5600,10 +5600,6 @@ static_library("ui") {
       "crypto_module_delegate_nss.h",
       "crypto_module_password_dialog_nss.cc",
       "crypto_module_password_dialog_nss.h",
-      "webui/certificate_manager_localized_strings_provider.cc",
-      "webui/certificate_manager_localized_strings_provider.h",
-      "webui/certificates_handler.cc",
-      "webui/certificates_handler.h",
     ]
 
     if (use_aura) {
@@ -5631,7 +5627,12 @@ static_library("ui") {
       "webui/certificate_manager/user_cert_sources.cc",
       "webui/certificate_manager/user_cert_sources.h",
     ]
-    if (!is_chromeos) {
+    if (is_chromeos) {
+      sources += [
+        "webui/certificates_handler.cc",
+        "webui/certificates_handler.h",
+      ]
+    } else {
       sources += [
         "webui/certificate_manager/platform_cert_sources.cc",
         "webui/certificate_manager/platform_cert_sources.h",
