@@ -287,4 +287,9 @@ const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum{
 const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     "WebViewCacheSizeLimitMaximum", 320 * 1024 * 1024};
+
+// The code cache limit is this multiplier times the HTTP cache limit
+const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
+    &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    "WebViewCodeCacheSizeLimitMultiplier", 0.5};
 }  // namespace android_webview::features

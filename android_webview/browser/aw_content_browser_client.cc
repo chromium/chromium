@@ -492,14 +492,21 @@ gfx::ImageSkia AwContentBrowserClient::GetDefaultFavicon() {
 content::GeneratedCodeCacheSettings
 AwContentBrowserClient::GetGeneratedCodeCacheSettings(
     content::BrowserContext* context) {
+  AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
   // We need to set a comparable limit for the code cache since the source file
   // needs to be in the HTTP cache for the code cache entry to be used. There
   // are two code caches that both use this value, so we pass half the the HTTP
   // cache size limit to keep the total cache usage to roughly 2x the HTTP cache
   // limit.
-  AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
+  int code_cache_limit = 0.5 * GetHttpCacheSize();
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
+    code_cache_limit = features::kWebViewCodeCacheSizeLimitMultiplier.Get() *
+                       GetHttpCacheSize();
+  }
+
   return content::GeneratedCodeCacheSettings(
-      true, GetHttpCacheSize() / 2, browser_context->GetHttpCachePath());
+      true, code_cache_limit, browser_context->GetHttpCachePath());
 }
 
 void AwContentBrowserClient::AllowCertificateError(
