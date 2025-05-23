@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_config.h"

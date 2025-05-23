@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/paint_op_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
