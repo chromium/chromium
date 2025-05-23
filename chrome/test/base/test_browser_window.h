@@ -50,6 +50,12 @@ namespace user_education {
 class FeaturePromoController;
 }  // namespace user_education
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details.  Either write a browser test which provides both a "class Browser"
+// and a "class BrowserView" (a subclass of "class BrowserWindow") or a unit
+// test which should require neither.
+//
 // An implementation of BrowserWindow used for testing. TestBrowserWindow only
 // contains a valid LocationBar, all other getters return NULL.
 // However, some of them can be preset to a specific value.
