@@ -44,6 +44,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
+// YES, if the profile's record type is
+// autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
+@property(nonatomic, assign) BOOL isHomeWorkProfile;
+
 // If YES, denotes that the view is laid out for the migration prompt.
 @property(nonatomic, assign) BOOL migrationPrompt;
 
@@ -107,6 +111,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _hasUpdateButton = NO;
     _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
+    _isHomeWorkProfile = NO;
   }
 
   return self;
@@ -158,30 +163,27 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadModel {
   TableViewModel* model = _controller.tableViewModel;
 
-  AutofillProfileDetailsSectionIdentifier nameSection =
-      _dynamicallyLoadInputFieldsEnabled
-          ? AutofillProfileDetailsSectionIdentifierName
-          : AutofillProfileDetailsSectionIdentifierFields;
+  if (!self.isHomeWorkProfile) {
+    AutofillProfileDetailsSectionIdentifier nameSection =
+        _dynamicallyLoadInputFieldsEnabled
+            ? AutofillProfileDetailsSectionIdentifierName
+            : AutofillProfileDetailsSectionIdentifierFields;
+
+    if (![model hasSectionForSectionIdentifier:nameSection]) {
+      [model addSectionWithIdentifier:nameSection];
+    }
+    for (AutofillEditProfileField* nonAddressField in
+         [_delegate inputNonAddressFields]) {
+      [model addItem:[self profileEditItem:nonAddressField.fieldLabel
+                                 fieldType:nonAddressField.fieldType]
+          toSectionWithIdentifier:nameSection];
+    }
+  }
 
   AutofillProfileDetailsSectionIdentifier addressSection =
       _dynamicallyLoadInputFieldsEnabled
           ? AutofillProfileDetailsSectionIdentifierAddress
           : AutofillProfileDetailsSectionIdentifierFields;
-
-  AutofillProfileDetailsSectionIdentifier phoneEmailSection =
-      _dynamicallyLoadInputFieldsEnabled
-          ? AutofillProfileDetailsSectionIdentifierPhoneEmail
-          : AutofillProfileDetailsSectionIdentifierFields;
-
-  if (![model hasSectionForSectionIdentifier:nameSection]) {
-    [model addSectionWithIdentifier:nameSection];
-  }
-  for (AutofillEditProfileField* nonAddressField in
-       [_delegate inputNonAddressFields]) {
-    [model addItem:[self profileEditItem:nonAddressField.fieldLabel
-                               fieldType:nonAddressField.fieldType]
-        toSectionWithIdentifier:nameSection];
-  }
 
   if (![model hasSectionForSectionIdentifier:addressSection]) {
     [model addSectionWithIdentifier:addressSection];
@@ -194,11 +196,18 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
   [model addItem:[self countryItem] toSectionWithIdentifier:addressSection];
 
-  if (![model hasSectionForSectionIdentifier:phoneEmailSection]) {
-    [model addSectionWithIdentifier:phoneEmailSection];
+  if (!self.isHomeWorkProfile) {
+    AutofillProfileDetailsSectionIdentifier phoneEmailSection =
+        _dynamicallyLoadInputFieldsEnabled
+            ? AutofillProfileDetailsSectionIdentifierPhoneEmail
+            : AutofillProfileDetailsSectionIdentifierFields;
+
+    if (![model hasSectionForSectionIdentifier:phoneEmailSection]) {
+      [model addSectionWithIdentifier:phoneEmailSection];
+    }
+    [model addItem:[self phoneItem] toSectionWithIdentifier:phoneEmailSection];
+    [model addItem:[self emailItem] toSectionWithIdentifier:phoneEmailSection];
   }
-  [model addItem:[self phoneItem] toSectionWithIdentifier:phoneEmailSection];
-  [model addItem:[self emailItem] toSectionWithIdentifier:phoneEmailSection];
 }
 
 - (UITableViewCell*)cell:(UITableViewCell*)cell
@@ -287,6 +296,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (_dynamicallyLoadInputFieldsEnabled) {
+    if (self.isHomeWorkProfile) {
+      return sectionIdentifier ==
+             AutofillProfileDetailsSectionIdentifierAddress;
+    }
     return sectionIdentifier ==
            AutofillProfileDetailsSectionIdentifierPhoneEmail;
   }

@@ -44,6 +44,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // autofill::AutofillProfile::RecordType::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
+// YES, if the profile's record type is
+// autofill::AutofillProfile::RecordType::kAccountHome/kAccountWork.
+@property(nonatomic, assign) BOOL isHomeWorkProfile;
+
 @property(nonatomic, copy) NSString* countrySelected;
 @end
 

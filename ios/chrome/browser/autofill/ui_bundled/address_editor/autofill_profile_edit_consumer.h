@@ -17,6 +17,10 @@
 // an account profile or not.
 - (void)setAccountProfile:(BOOL)accountProfile;
 
+// Notifies the class that conforms this delegate to set whether the profile is
+// a Home/Work profile.
+- (void)setIsHomeWorkProfile:(BOOL)isHomeWorkProfile;
+
 // Notifies the consumer to present/remove the error state based on
 // `shouldShowError`.
 - (void)updateErrorStatus:(BOOL)shouldShowError;
