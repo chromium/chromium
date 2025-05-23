@@ -126,39 +126,45 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
 
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl() {
-  if (!ResourceProvider() && !did_fail_to_create_resource_provider_) {
+  auto* provider = ResourceProvider();
+  if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize(Size())) {
       if (IsWebGPU()) {
-        CreateCanvasResourceProviderWebGPU();
+        provider = CreateCanvasResourceProviderWebGPU();
       } else if (IsWebGL()) {
-        CreateCanvasResourceProviderWebGL();
+        provider = CreateCanvasResourceProviderWebGL();
       } else {
-        CreateCanvasResourceProvider2D();
+        provider = CreateCanvasResourceProvider2D();
       }
     }
-    if (!ResourceProvider())
+    if (!provider) {
       did_fail_to_create_resource_provider_ = true;
+    }
   }
-  return ResourceProvider();
+  return provider;
 }
 
-void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
+CanvasResourceProvider*
+CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
         Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
         GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
   }
+  auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
-  if (ResourceProvider() && ResourceProvider()->IsValid()) {
+  if (raw_provider && raw_provider->IsValid()) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               ResourceProvider()->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   ResourceProvider()->GetType());
   }
+  return raw_provider;
 }
 
-void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
+CanvasResourceProvider*
+CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   DCHECK(IsWebGL());
 
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
@@ -239,16 +245,19 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
+  auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
-  if (ResourceProvider() && ResourceProvider()->IsValid()) {
+  if (raw_provider && raw_provider->IsValid()) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               ResourceProvider()->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   ResourceProvider()->GetType());
   }
+  return raw_provider;
 }
 
-void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
+CanvasResourceProvider*
+CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext());
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()
@@ -343,17 +352,19 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
+  auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
 
-  if (ResourceProvider()) {
-    if (ResourceProvider()->IsValid()) {
+  if (raw_provider) {
+    if (raw_provider->IsValid()) {
       base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                                 ResourceProvider()->IsAccelerated());
       base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                     ResourceProvider()->GetType());
     }
-    ResourceProvider()->SetResourceRecyclingEnabled(true);
+    raw_provider->SetResourceRecyclingEnabled(true);
   }
+  return raw_provider;
 }
 
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
