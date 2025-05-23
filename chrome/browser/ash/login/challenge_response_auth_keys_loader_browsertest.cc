@@ -35,12 +35,12 @@ namespace {
 
 constexpr char kUserEmail[] = "testuser@example.com";
 
-Profile* GetProfile() {
+Profile* GetOriginalProfile() {
   return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 extensions::ProcessManager* GetProcessManager() {
-  return extensions::ProcessManager::Get(GetProfile());
+  return extensions::ProcessManager::Get(GetOriginalProfile());
 }
 
 }  // namespace
@@ -65,7 +65,7 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
         base::TimeDelta::Max());
 
     extension_force_install_mixin_.InitWithDeviceStateMixin(
-        GetProfile(), &device_state_mixin_);
+        GetOriginalProfile(), &device_state_mixin_);
 
     // Register the ChallengeResponseKey for the user.
     user_manager::KnownUser(g_browser_process->local_state())
@@ -112,7 +112,8 @@ class ChallengeResponseAuthKeysLoaderBrowserTest : public OobeBaseTest {
 
   void InstallExtension(bool wait_on_extension_loaded) {
     test_certificate_provider_extension_mixin_.ForceInstall(
-        GetProfile(), /*wait_on_extension_loaded=*/wait_on_extension_loaded,
+        GetOriginalProfile(),
+        /*wait_on_extension_loaded=*/wait_on_extension_loaded,
         /*immediately_provide_certificates=*/wait_on_extension_loaded);
   }
 

@@ -25,8 +25,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UpdateShortcut) {
           "runMochaTest('ExtensionShortcutTest', 'UpdateShortcut')");
 }
 
-// TODO(crbug.com/392777363): Compile the test on android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
@@ -40,4 +38,3 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsPageTest, DISABLED_All) {
   InstallExtensionWithInPageOptions();
   RunTest("extensions/extension_options_dialog_test.js", "mocha.run()");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

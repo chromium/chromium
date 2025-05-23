@@ -375,6 +375,8 @@ static_library("test_support") {
       "../browser/extensions/test_extension_environment.h",
       "../browser/extensions/test_extension_prefs.cc",
       "../browser/extensions/test_extension_prefs.h",
+      "../browser/ui/webui/extensions/extension_settings_test_base.cc",
+      "../browser/ui/webui/extensions/extension_settings_test_base.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
@@ -417,8 +419,6 @@ static_library("test_support") {
       "../browser/ui/web_applications/test/web_app_browsertest_util.h",
       "../browser/ui/web_applications/web_app_browsertest_base.cc",
       "../browser/ui/web_applications/web_app_browsertest_base.h",
-      "../browser/ui/webui/extensions/extension_settings_test_base.cc",
-      "../browser/ui/webui/extensions/extension_settings_test_base.h",
     ]
 
     deps += [

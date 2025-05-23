@@ -195,6 +195,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Tests can override this to customize the initial local_state.
   virtual void SetUpLocalStatePrefService(PrefService* local_state);
 
+  // Returns the profile. Prefer this method to browser()->profile() for
+  // cross-platform compatibility.
+  Profile* GetProfile() const;
+
  protected:
   // Closes the given browser and waits for it to release all its resources.
   void CloseBrowserSynchronously(Browser* browser);

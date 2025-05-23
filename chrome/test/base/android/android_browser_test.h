@@ -7,6 +7,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test_base.h"
 
 class PrefService;
@@ -66,6 +67,10 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
+
+  // Returns the profile. If there are multiple profiles, it's not determined
+  // what profile is returned.
+  Profile* GetProfile() const;
 
  private:
   // Temporary user data directory. Used only when a user data directory is not

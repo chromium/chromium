@@ -93,3 +93,12 @@ size_t AndroidBrowserTest::GetTestPreCount() {
 base::FilePath AndroidBrowserTest::GetChromeTestDataDir() const {
   return chrome_test_utils::GetChromeTestDataDir();
 }
+
+Profile* AndroidBrowserTest::GetProfile() const {
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile()) {
+      return model->GetProfile();
+    }
+  }
+  return nullptr;
+}

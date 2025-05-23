@@ -626,6 +626,10 @@ void InProcessBrowserTest::SetUpLocalStatePrefService(
 #endif  // BUILDFLAG(IS_WIN);
 }
 
+Profile* InProcessBrowserTest::GetProfile() const {
+  return browser() ? browser()->profile() : nullptr;
+}
+
 void InProcessBrowserTest::CloseBrowserSynchronously(Browser* browser) {
   CloseBrowserAsynchronously(browser);
   ui_test_utils::WaitForBrowserToClose(browser);
