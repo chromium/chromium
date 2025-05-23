@@ -180,8 +180,6 @@ void FloatingWorkspaceService::Init(
 
   if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
                       kFloatingWorkspaceV1Enabled) {
-    floating_workspace_metrics_util::
-        RecordFloatingWorkspaceV1InitializedHistogram();
     InitForV1();
     return;
   }
@@ -507,16 +505,12 @@ void FloatingWorkspaceService::RestoreForeignSessionWindows(
   }
   SessionRestore::RestoreForeignSessionWindows(
       profile_, session_windows.begin(), session_windows.end());
-  floating_workspace_metrics_util::RecordFloatingWorkspaceV1RestoredSessionType(
-      floating_workspace_metrics_util::RestoredBrowserSessionType::kRemote);
 }
 
 void FloatingWorkspaceService::RestoreLocalSessionWindows() {
   // Restore local session based on user settings in
   // chrome://settings/onStartup.
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
-  floating_workspace_metrics_util::RecordFloatingWorkspaceV1RestoredSessionType(
-      floating_workspace_metrics_util::RestoredBrowserSessionType::kLocal);
 }
 
 sync_sessions::OpenTabsUIDelegate*

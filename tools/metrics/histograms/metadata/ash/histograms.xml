@@ -3038,38 +3038,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceTabCount" units="tabs"
-    expires_after="2024-09-27">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
     Records the number of tabs in a Floating Workspace desk when it is saved.
+
+    Warning: this histogram was expired from 2024-09-27 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowAndTabCount"
-    units="windows and tabs" expires_after="2024-09-27">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    units="windows and tabs" expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
     Records the number of windows and tabs in a Floating Workspace desk when it
     is saved.
+
+    Warning: this histogram was expired from 2024-09-27 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowCount" units="windows"
-    expires_after="2024-09-27">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
     Records the number of windows in a Floating Workspace desk when it is saved.
+
+    Warning: this histogram was expired from 2024-09-27 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.LaunchFloatingWorkspace" enum="BooleanHit"
-    expires_after="2024-09-27">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>Emitted when a Floating Workspace desk is launched.</summary>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
+  <summary>
+    Emitted when a Floating Workspace desk is launched.
+
+    Warning: this histogram was expired from 2024-09-27 to 2025-05-23; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.LaunchFromTemplate" enum="BooleanHit"
@@ -3649,92 +3663,90 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV1Initialized"
-    enum="BooleanHit" expires_after="2024-01-28">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>
-    Recorded when floating workspace service is launched. The false bucket is
-    unused here.
-  </summary>
-</histogram>
-
-<histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV1RestoredSessionType"
-    enum="FloatingWorkspaceV1RestoredSessionType" expires_after="2024-01-28">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>
-    Recorded the browser session type (local or remote) restored by floating
-    workspace service on current device.
-  </summary>
-</histogram>
-
 <histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV2Initialized"
-    enum="BooleanHit" expires_after="2024-08-23">
-  <owner>zhumatthew@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    enum="BooleanHit" expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
     Recorded when floating workspace service V2 is launched. The false bucket is
     unused here.
+
+    Warning: this histogram was expired from 2024-08-23 to 2025-05-23; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.StartupUiClosureReason"
+    enum="FloatingWorkspaceStartupUiClosureReason" expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
+  <summary>
+    Record if Floating Workspace startup UI was closed manually or automatically
+    (once the template was restored).
   </summary>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateLaunchFailureStatus"
     enum="FloatingWorkspaceV2LaunchTemplateFailureType"
-    expires_after="2024-02-08">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>Recorded the reason for template launch failures.</summary>
-</histogram>
-
-<histogram name="Ash.FloatingWorkspace.TemplateLaunchTimeOut"
-    enum="FloatingWorkspaceV2LaunchTemplateTimeoutType"
-    expires_after="2024-02-08">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
-    Recorded the reason for template launch timeouts either when we pass the
-    threshold for waiting for a floating workspace to be downloaded or when
-    there's no floating workspace template to be downloaded after waiting for
-    the set timeout.
+    Recorded the reason for template launch failures.
+
+    Warning: this histogram was expired from 2024-02-08 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateLoadTime" units="seconds"
-    expires_after="2024-02-08">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
-    Indicate the time to download a floating workspace template. If after set
-    timeout is reached and there is no floating workspace template downloaded, a
-    record of the timeout will be recorded in
-    &quot;Ash.FloatingWorkspace.TemplateLaunchTimeOut&quot;.
+    Indicate the time to download and launch a floating workspace template.
+
+    Warning: this histogram was expired from 2024-02-08 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateNotFound" enum="BooleanHit"
-    expires_after="2024-08-23">
-  <owner>zhumatthew@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
   <summary>
     Recorded when floating workspace service V2 is initialized, but no floating
     workspace template was found. The false bucket is unused here.
+
+    Warning: this histogram was expired from 2024-08-23 to 2025-05-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateSize" units="B"
-    expires_after="2024-02-08">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>Record the size of an uploaded floating workspace template.</summary>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
+  <summary>
+    Record the size of an uploaded floating workspace template.
+
+    Warning: this histogram was expired from 2024-02-08 to 2025-05-23; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateUploadStatus"
     enum="FloatingWorkspaceV2UploadTemplateStatusType"
-    expires_after="2024-02-08">
-  <owner>ligeng@google.com</owner>
-  <owner>marcuskoehler@google.com</owner>
-  <summary>Record the floating workspace template upload status.</summary>
+    expires_after="2026-05-23">
+  <owner>andreydav@google.com</owner>
+  <owner>slutskii@google.com</owner>
+  <summary>
+    Record the floating workspace template upload status.
+
+    Warning: this histogram was expired from 2024-02-08 to 2025-05-23; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Latency" units="ms"

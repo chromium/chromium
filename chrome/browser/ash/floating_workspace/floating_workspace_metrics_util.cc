@@ -7,26 +7,15 @@
 
 namespace ash::floating_workspace_metrics_util {
 
-void RecordFloatingWorkspaceV1InitializedHistogram() {
-  base::UmaHistogramBoolean(kFloatingWorkspaceV1Initialized, true);
-}
-
-void RecordFloatingWorkspaceV1RestoredSessionType(
-    RestoredBrowserSessionType type) {
-  base::UmaHistogramEnumeration(kFloatingWorkspaceV1RestoredSessionType, type);
+void RecordFloatingWorkspaceStartupUiClosureReason(
+    StartupUiClosureReason reason) {
+  base::UmaHistogramEnumeration(kFloatingWorkspaceStartupUiClosureReason,
+                                reason);
 }
 
 void RecordFloatingWorkspaceV2TemplateLaunchFailureType(
     LaunchTemplateFailureType type) {
   base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateLaunchFailureStatus,
-                                type);
-}
-
-// TODO(b/274501763): rename for better clarity since this does not just record
-// for timeout reasons.
-void RecordFloatingWorkspaceV2TemplateLaunchTimeout(
-    LaunchTemplateTimeoutType type) {
-  base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateLaunchTimedOut,
                                 type);
 }
 

@@ -10,26 +10,24 @@
 
 namespace ash::floating_workspace_metrics_util {
 
-enum class RestoredBrowserSessionType {
-  // Unknown browser session.
-  kUnknown = 0,
-  // Local session restored.
-  kLocal,
-  // Remote Session restored.
-  kRemote,
-  kMaxValue = kRemote,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(StartupUiClosureReason)
+enum class StartupUiClosureReason {
+  // User manually pressed the button to close the UI without waiting for
+  // sessions to restore.
+  kManual = 0,
+  // UI closed automatically once the session was restored.
+  kAutomatic,
+  kMaxValue = kAutomatic,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:FloatingWorkspaceStartupUiClosureReason)
 
-enum class LaunchTemplateTimeoutType {
-  // Unknown timeout reason.
-  kUnknown = 0,
-  // Passed wait period timeout.
-  kPassedWaitPeriod,
-  // No floating workspace template.
-  kNoFloatingWorkspaceTemplate,
-  kMaxValue = kNoFloatingWorkspaceTemplate,
-};
-
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LaunchTemplateFailureType)
 enum class LaunchTemplateFailureType {
   // Unknown error.
   kUnknownError = 0,
@@ -39,11 +37,10 @@ enum class LaunchTemplateFailureType {
   kDesksCountCheckFailedError,
   kMaxValue = kDesksCountCheckFailedError,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:FloatingWorkspaceV2LaunchTemplateFailureType)
 
-inline constexpr char kFloatingWorkspaceV1Initialized[] =
-    "Ash.FloatingWorkspace.FloatingWorkspaceV1Initialized";
-inline constexpr char kFloatingWorkspaceV1RestoredSessionType[] =
-    "Ash.FloatingWorkspace.FloatingWorkspaceV1RestoredSessionType";
+inline constexpr char kFloatingWorkspaceStartupUiClosureReason[] =
+    "Ash.FloatingWorkspace.StartupUiClosureReason";
 
 inline constexpr char kFloatingWorkspaceV2TemplateLaunchFailureStatus[] =
     "Ash.FloatingWorkspace.TemplateLaunchFailureStatus";
@@ -60,13 +57,11 @@ inline constexpr char kFloatingWorkspaceV2Initialized[] =
 inline constexpr char kFloatingWorkspaceV2TemplateNotFound[] =
     "Ash.FloatingWorkspace.TemplateNotFound";
 
-void RecordFloatingWorkspaceV1InitializedHistogram();
-void RecordFloatingWorkspaceV1RestoredSessionType(
-    RestoredBrowserSessionType type);
+void RecordFloatingWorkspaceStartupUiClosureReason(
+    StartupUiClosureReason reason);
+
 void RecordFloatingWorkspaceV2TemplateLaunchFailureType(
     LaunchTemplateFailureType type);
-void RecordFloatingWorkspaceV2TemplateLaunchTimeout(
-    LaunchTemplateTimeoutType type);
 void RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeDelta duration);
 void RecordFloatingWorkspaceV2TemplateSize(size_t file_size);
 void RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
@@ -72,7 +73,15 @@ void FloatingWorkspaceDialog::OnDialogClosed(const std::string& json_retval) {
     if (service) {
       service->StopRestoringSession();
     }
-  } else if (!json_retval.empty()) {
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceStartupUiClosureReason(
+            floating_workspace_metrics_util::StartupUiClosureReason::kManual);
+  } else if (json_retval.empty()) {
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceStartupUiClosureReason(
+            floating_workspace_metrics_util::StartupUiClosureReason::
+                kAutomatic);
+  } else {
     NOTREACHED();
   }
 
