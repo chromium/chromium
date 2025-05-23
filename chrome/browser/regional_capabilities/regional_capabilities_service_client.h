@@ -26,7 +26,8 @@ enum class ChromeOSFallbackCountry {
   kRegionTooShort = 3,
   kRegionTooLong = 4,
   kValidCountryCode = 5,
-  kMaxValue = kValidCountryCode,
+  kStrippedSubkeyInformation = 6,
+  kMaxValue = kStrippedSubkeyInformation,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos/enums.xml:ChromeOSFallbackCountry)
 #endif

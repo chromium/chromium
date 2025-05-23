@@ -45,7 +45,7 @@ std::optional<CountryId> GetVpdCountry() {
     return {};
   }
 
-  const std::string vpd_region = base::ToUpperASCII(
+  std::string vpd_region = base::ToUpperASCII(
       sys_info->GetMachineStatistic(ash::system::kRegionKey).value_or(""));
   if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
       vpd_region == "NORDIC") {
@@ -58,8 +58,13 @@ std::optional<CountryId> GetVpdCountry() {
     base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooShort);
     return {};
   } else if (vpd_region.size() > 2) {
-    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
-    return {};
+    if (vpd_region[2] != '.') {
+      base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
+      return {};
+    }
+    vpd_region = vpd_region.substr(0, 2);
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
+                                  kStrippedSubkeyInformation);
   }
 
   const CountryId country_code(vpd_region);

@@ -454,6 +454,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Region in VPD is too short for country code"/>
   <int value="4" label="Region in VPD is too long for country code"/>
   <int value="5" label="Valid country code parsed from VPD"/>
+  <int value="6" label="Removed subkey from country information"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/regional_capabilities/regional_capabilities_service_client.h:ChromeOSFallbackCountry) -->
