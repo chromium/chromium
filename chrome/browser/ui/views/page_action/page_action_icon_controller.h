@@ -46,10 +46,6 @@ class PageActionIconController : public PageActionIconViewObserver,
 
   bool IsAnyIconVisible() const;
 
-  // Activates the first visible but inactive icon for accessibility. Returns
-  // whether any icons were activated.
-  bool ActivateFirstInactiveBubbleForAccessibility();
-
   // Update the icons' color.
   void SetIconColor(SkColor icon_color);
 

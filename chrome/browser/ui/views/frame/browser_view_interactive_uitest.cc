@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -28,8 +29,11 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -343,6 +347,46 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
   ASSERT_EQ(2, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 }
 #endif
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40568702) NativeWidgetMac::Deactivate is not implemented on
+// Mac.
+#define MAYBE_FocusInactivePopupForAccessibility \
+  DISABLED_FocusInactivePopupForAccessibility
+#else
+#define MAYBE_FocusInactivePopupForAccessibility \
+  FocusInactivePopupForAccessibility
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       MAYBE_FocusInactivePopupForAccessibility) {
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .SetTitle(u"test")
+          .SetIsAlertDialog()
+          .AddOkButton(base::DoNothing())
+          .Build();
+  views::View* anchor = browser_view()->GetLocationBarView();
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
+  bubble->set_close_on_deactivate(false);
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+
+  widget->Show();
+  views::test::WaitForWidgetActive(widget, true);
+
+  widget->Deactivate();
+  widget->ShowInactive();
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(widget->IsActive());
+
+  browser_view()->FocusInactivePopupForAccessibility();
+  views::test::WaitForWidgetActive(widget, true);
+
+  // Ensure the bubble's widget refreshed appropriately.
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_TRUE(widget->IsActive());
+}
 
 class BrowserViewFullscreenTest : public BrowserViewTest {
  public:

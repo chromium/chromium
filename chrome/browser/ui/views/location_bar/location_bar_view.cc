@@ -1019,11 +1019,6 @@ void LocationBarView::ResetTabState(WebContents* contents) {
   omnibox_view_->ResetTabState(contents);
 }
 
-bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
-  return page_action_icon_controller_
-      ->ActivateFirstInactiveBubbleForAccessibility();
-}
-
 ChipController* LocationBarView::GetChipController() {
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {

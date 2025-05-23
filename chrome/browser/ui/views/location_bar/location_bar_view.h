@@ -196,10 +196,6 @@ class LocationBarView
   // Clears the location bar's state for |contents|.
   void ResetTabState(content::WebContents* contents);
 
-  // Activates the first visible but inactive PageActionIconView for
-  // accessibility.
-  bool ActivateFirstInactiveBubbleForAccessibility();
-
   // Controls the chip in the LocationBarView.
   ChipController* GetChipController();
 

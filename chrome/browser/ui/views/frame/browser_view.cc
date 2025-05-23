@@ -3103,10 +3103,6 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
     return true;
   }
 
-  if (GetLocationBarView()->ActivateFirstInactiveBubbleForAccessibility()) {
-    return true;
-  }
-
   // TODO: this fixes https://crbug.com/40668249 and https://crbug.com/40674460,
   // but a more general solution should be desirable to find any bubbles
   // anchored in the views hierarchy.

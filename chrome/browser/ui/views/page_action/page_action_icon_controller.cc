@@ -348,22 +348,6 @@ bool PageActionIconController::IsAnyIconVisible() const {
   });
 }
 
-bool PageActionIconController::ActivateFirstInactiveBubbleForAccessibility() {
-  for (auto icon_item : page_action_icon_views_) {
-    auto* icon = icon_item.second.get();
-    if (!icon->GetVisible() || !icon->GetBubble()) {
-      continue;
-    }
-
-    views::Widget* widget = icon->GetBubble()->GetWidget();
-    if (widget && widget->IsVisible() && !widget->IsActive()) {
-      widget->Show();
-      return true;
-    }
-  }
-  return false;
-}
-
 void PageActionIconController::SetIconColor(SkColor icon_color) {
   for (auto icon_item : page_action_icon_views_) {
     icon_item.second->SetIconColor(icon_color);
