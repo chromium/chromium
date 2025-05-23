@@ -9,6 +9,10 @@ import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+if (enable_desktop_android_extensions) {
+  import("//build/config/android/rules.gni")
+}
+
 assert(enable_extensions_core)
 
 # If enable_extensions is true then enable_guest_view must also be true.
@@ -1055,6 +1059,12 @@ source_set("unit_tests") {
     "//tools/metrics/histograms/metadata/extensions/enums.xml",
     "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
   ]
+}
+
+if (enable_desktop_android_extensions) {
+  java_cpp_enum("extension_action_enums") {
+    sources = [ "extension_action.h" ]
+  }
 }
 
 # TODO(https://crbug.com/356905053): Gradually include more of these sources

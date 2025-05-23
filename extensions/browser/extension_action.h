@@ -37,6 +37,7 @@ class ExtensionAction {
   using TabID = int;
 
   // The action that the UI should take after the ExtensionAction is clicked.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.extensions
   enum class ShowAction {
     kNone,
     kShowPopup,
