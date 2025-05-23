@@ -98,6 +98,7 @@ test("kiosk_vision_unit_tests") {
     ":vision",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chromeos/ash/components:test_support",
     "//mojo/core/embedder",
     "//testing/gtest",

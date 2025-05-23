@@ -1093,10 +1093,6 @@ component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  # TODO(crbug.com/354842935): Remove this dependency once other modules don't
-  # accidentally (transitively) depend on it anymore.
-  public_deps += [ "//build:chromeos_buildflags" ]
-
   if (!is_nacl) {
     sources += [
       "containers/span_rust.h",

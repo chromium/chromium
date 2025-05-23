@@ -8,6 +8,7 @@ component("memory") {
   defines = [ "IS_ASH_MEMORY_IMPL" ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/resourced:resourced",
     "//chromeos/ash/components/dbus/swap_management",

@@ -168,6 +168,7 @@ component("gl") {
   deps = [
     ":buildflags",
     "//build:android_buildflags",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
