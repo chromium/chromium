@@ -45,6 +45,12 @@ class SamplingState : ThreadLocalState<SamplingState<PA>> {
     TLS::InitIfNeeded();
   }
 
+  void SetSampleSizeRestriction(size_t sampling_min_size,
+                                size_t sampling_max_size) {
+    sampling_min_size_ = sampling_min_size;
+    sampling_max_size_ = sampling_max_size;
+  }
+
   // Return true if this allocation should be sampled.
   ALWAYS_INLINE bool Sample(size_t alloc_size = 0) {
     // For a new thread the initial TLS value will be zero, we do not want to
@@ -53,14 +59,11 @@ class SamplingState : ThreadLocalState<SamplingState<PA>> {
     //
     // Instead, use zero to mean 'get a new counter value' and one to mean
     // that this allocation should be sampled.
-#if BUILDFLAG(IS_IOS)
-    if (alloc_size != 0 && (alloc_size <= 1784 || 2040 < alloc_size)) {
-      // Not a bucket for `password_manager::PasswordForm`.
+    if (alloc_size != 0 &&
+        (alloc_size < sampling_min_size_ || sampling_max_size_ < alloc_size)) {
       // Skip sampling to increase chance of catching an OOB issue
-      // https://crbug.com/346464587.
       return false;
     }
-#endif  // BUILDFLAG(IS_IOS)
 
     size_t samples_left = TLS::GetState();
     if (samples_left == 0) [[unlikely]] {
@@ -81,6 +84,8 @@ class SamplingState : ThreadLocalState<SamplingState<PA>> {
     return distribution(generator) + 1;
   }
 
+  size_t sampling_min_size_ = 0;
+  size_t sampling_max_size_ = std::numeric_limits<size_t>::max();
   double sampling_probability_ = 0;
 };
 

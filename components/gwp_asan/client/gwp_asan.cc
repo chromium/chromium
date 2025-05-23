@@ -310,6 +310,21 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     return std::nullopt;
   }
 
+  const auto sampling_min_size =
+      GetIntParam(feature, "SamplingMinSize", 1, process_type,
+                  [](int /*unused*/) { return false; });
+  if (!sampling_min_size.has_value()) {
+    return std::nullopt;
+  }
+  const auto sampling_max_size =
+      GetIntParam(feature, "SamplingMaxSize", std::numeric_limits<int>::max(),
+                  process_type, [sampling_min_size](int param_int) {
+                    return param_int <= sampling_min_size;
+                  });
+  if (!sampling_max_size.has_value()) {
+    return std::nullopt;
+  }
+
   size_t alloc_sampling_freq =
       AllocationSamplingFrequency(feature, process_type);
   if (!alloc_sampling_freq)
@@ -318,7 +333,9 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
   return AllocatorSettings{static_cast<size_t>(max_allocations.value()),
                            static_cast<size_t>(max_metadata.value()),
                            static_cast<size_t>(total_pages.value()),
-                           alloc_sampling_freq};
+                           alloc_sampling_freq,
+                           static_cast<size_t>(sampling_min_size.value()),
+                           static_cast<size_t>(sampling_max_size.value())};
 }
 
 // Exported for testing.

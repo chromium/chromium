@@ -391,6 +391,9 @@ void InstallMallocHooks(const AllocatorSettings& settings,
   gpa->Init(settings, std::move(callback), false);
   malloc_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(settings.sampling_frequency);
+  sampling_state.SetSampleSizeRestriction(settings.sampling_min_size,
+                                          settings.sampling_max_size);
+
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
 }
 

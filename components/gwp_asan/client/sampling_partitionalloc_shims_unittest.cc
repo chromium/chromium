@@ -57,6 +57,7 @@ constexpr size_t kLoopIterations = kSamplingFrequency * 4;
 
 constexpr int kSuccess = 0;
 constexpr int kFailure = 1;
+constexpr int kSamplingMaxSize = 16;
 
 constexpr partition_alloc::PartitionOptions kAllocatorOptions = {};
 
@@ -75,7 +76,22 @@ class SamplingPartitionAllocShimsTest : public base::MultiProcessTest {
             .num_metadata = AllocatorState::kMaxMetadata,
             .total_pages = AllocatorState::kMaxRequestedSlots,
             .sampling_frequency = kSamplingFrequency,
+            .sampling_min_size = 1,
+            .sampling_max_size = std::numeric_limits<int>::max(),
         },
+        base::DoNothing());
+  }
+
+  static void multiprocessTestSetupWithSamplingMaxSize() {
+    crash_reporter::InitializeCrashKeys();
+    partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+    InstallPartitionAllocHooks(
+        AllocatorSettings{.max_allocated_pages = AllocatorState::kMaxMetadata,
+                          .num_metadata = AllocatorState::kMaxMetadata,
+                          .total_pages = AllocatorState::kMaxRequestedSlots,
+                          .sampling_frequency = kSamplingFrequency,
+                          .sampling_min_size = 1,
+                          .sampling_max_size = kSamplingMaxSize},
         base::DoNothing());
   }
 
@@ -191,6 +207,27 @@ TEST_F(SamplingPartitionAllocShimsTest, CrashKey) {
   runTest("CrashKey");
 }
 #endif  // !defined(COMPONENT_BUILD)
+
+MULTIPROCESS_TEST_MAIN_WITH_SETUP(
+    SamplingRange,
+    SamplingPartitionAllocShimsTest::multiprocessTestSetupWithSamplingMaxSize) {
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kAllocatorOptions);
+
+  for (size_t i = 0; i < kLoopIterations; i++) {
+    void* ptr = allocator.root()->Alloc(kSamplingMaxSize * 2, kFakeType);
+    if (GetPartitionAllocGpaForTesting().PointerIsMine(ptr)) {
+      return kFailure;
+    }
+    allocator.root()->Free(ptr);
+  }
+
+  return kSuccess;
+}
+
+TEST_F(SamplingPartitionAllocShimsTest, SamplingRange) {
+  runTest("SamplingRange");
+}
 
 }  // namespace
 

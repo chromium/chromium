@@ -67,6 +67,7 @@ constexpr size_t kLoopIterations = 100;
 
 constexpr int kSuccess = 0;
 constexpr int kFailure = 1;
+constexpr int kSamplingMaxSize = 16;
 
 class SamplingMallocShimsTest : public base::MultiProcessTest {
  public:
@@ -81,7 +82,24 @@ class SamplingMallocShimsTest : public base::MultiProcessTest {
             .num_metadata = AllocatorState::kMaxMetadata,
             .total_pages = AllocatorState::kMaxRequestedSlots,
             .sampling_frequency = kSamplingFrequency,
+            .sampling_min_size = 1,
+            .sampling_max_size = std::numeric_limits<int>::max(),
         },
+        base::DoNothing());
+  }
+
+  static void multiprocessTestSetupWithSamplingMaxSize() {
+#if BUILDFLAG(IS_APPLE)
+    allocator_shim::InitializeAllocatorShim();
+#endif  // BUILDFLAG(IS_APPLE)
+    crash_reporter::InitializeCrashKeys();
+    InstallMallocHooks(
+        AllocatorSettings{.max_allocated_pages = AllocatorState::kMaxMetadata,
+                          .num_metadata = AllocatorState::kMaxMetadata,
+                          .total_pages = AllocatorState::kMaxRequestedSlots,
+                          .sampling_frequency = kSamplingFrequency,
+                          .sampling_min_size = 1,
+                          .sampling_max_size = kSamplingMaxSize},
         base::DoNothing());
   }
 
@@ -339,7 +357,31 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 TEST_F(SamplingMallocShimsTest, BatchFree) {
   runTest("BatchFree");
 }
+
 #endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+MULTIPROCESS_TEST_MAIN_WITH_SETUP(
+    SamplingRange,
+    SamplingMallocShimsTest::multiprocessTestSetupWithSamplingMaxSize) {
+  for (size_t i = 0; i < kLoopIterations; i++) {
+    unsigned char* alloc =
+        static_cast<unsigned char*>(malloc(kSamplingMaxSize * 2));
+    CHECK_NE(alloc, nullptr);
+
+    if (GetMallocGpaForTesting().PointerIsMine(alloc)) {
+      free(alloc);
+      return kFailure;
+    }
+
+    free(alloc);
+  }
+
+  return kSuccess;
+}
+
+TEST_F(SamplingMallocShimsTest, SamplingRange) {
+  runTest("SamplingRange");
+}
 
 }  // namespace
 
