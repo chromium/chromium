@@ -90,7 +90,7 @@ export function getHtml(this: ToolsElement) {
         <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
         Add audio
       </cr-button>
-      <input id="audioInput" type="file">
+      <input id="audioInput" type="file" accept="audio/*">
     </div>
     ${this.audioFile_ ? html`
       <cr-button class="floating-button" @click="${this.onRemoteAudioClick_}">
