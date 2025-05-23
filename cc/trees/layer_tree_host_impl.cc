@@ -3109,8 +3109,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     auto display_color_spaces = GetDisplayColorSpaces();
     for (auto& request : active_tree_->TakeViewTransitionRequests(
              /*should_set_needs_update_draw_properties=*/true)) {
-      metadata.transition_directives.push_back(request->ConstructDirective(
-          view_transition_element_map, display_color_spaces));
+      if (resourceless_software_draw_) {
+        OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
+      } else {
+        metadata.transition_directives.push_back(request->ConstructDirective(
+            view_transition_element_map, display_color_spaces));
+      }
     }
   } else {
     // In TreesInViz mode, we call TakeViewTransitionRequest() later in
