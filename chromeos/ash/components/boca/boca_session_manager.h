@@ -240,6 +240,7 @@ class BocaSessionManager
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
       std::string connection_code);
   void EndSpotlightSession();
+  std::string GetDeviceRobotEmail();
 
   base::ObserverList<Observer>& observers() { return observers_; }
 

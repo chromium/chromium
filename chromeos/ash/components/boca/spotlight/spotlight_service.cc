@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -72,9 +73,16 @@ void SpotlightService::ViewScreen(std::string student_gaia_id,
 
   // TODO: crbug.com/386420367 - Support multiple devices. Currently only view
   // screen from first device in student device,
+  std::optional<std::string> device_robot_email =
+      ash::features::IsBocaSpotlightRobotRequesterEnabled()
+          ? std::optional(BocaAppClient::Get()
+                              ->GetSessionManager()
+                              ->GetDeviceRobotEmail())
+          : std::nullopt;
   ViewScreenParam view_screen_param{
       current_session->teacher().gaia_id(), BocaAppClient::Get()->GetDeviceId(),
-      std::move(student_gaia_id), std::move(student_device_id.value())};
+      std::move(device_robot_email), std::move(student_gaia_id),
+      std::move(student_device_id.value())};
   auto view_screen_request = std::make_unique<ViewScreenRequest>(
       sender_.get(), current_session->session_id(),
       std::move(view_screen_param), std::move(url_base), std::move(callback));

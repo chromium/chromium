@@ -425,6 +425,10 @@ void BocaSessionManager::EndSpotlightSession() {
   }
 }
 
+std::string BocaSessionManager::GetDeviceRobotEmail() {
+  return spotlight_token_fetcher_->GetDeviceRobotEmail();
+}
+
 void BocaSessionManager::LoadInitialNetworkState() {
   cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(
