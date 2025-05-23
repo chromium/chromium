@@ -255,24 +255,6 @@ public class WebAppLaunchHandlerTest {
     }
 
     @Test
-    public void currentPageVerifierFailed() {
-        when(mCurrentPageVerifierMock.getState())
-                .thenReturn(
-                        new CurrentPageVerifier.VerificationState(
-                                "", "", CurrentPageVerifier.VerificationStatus.FAILURE));
-        doTestHandleIntent(
-                LaunchHandlerClientMode.FOCUS_EXISTING,
-                INITIAL_URL,
-                /* expectedLoadUrl= */ false,
-                /* expectedNotifyQueue= */ true);
-        doTestHandleIntent(
-                LaunchHandlerClientMode.FOCUS_EXISTING,
-                OTHER_URL,
-                /* expectedLoadUrl= */ false,
-                /* expectedNotifyQueue= */ false);
-    }
-
-    @Test
     public void filePath() {
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
         mExpectedFileList = new String[] {CONTENT_URI};
@@ -388,6 +370,40 @@ public class WebAppLaunchHandlerTest {
         mExpectedFileList = new String[] {CONTENT_URI};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
+        verify(mActivityMock, times(1))
+                .grantUriPermission(
+                        eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
+    }
+
+    @Test
+    public void currentPageVerifierFailed() {
+        when(mCurrentPageVerifierMock.getState())
+                .thenReturn(
+                        new CurrentPageVerifier.VerificationState(
+                                "", "", CurrentPageVerifier.VerificationStatus.FAILURE));
+        doTestHandleIntent(
+                LaunchHandlerClientMode.FOCUS_EXISTING,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+
+        doTestNavigateNewNewIntent(
+                LaunchHandlerClientMode.FOCUS_EXISTING, /* expectedStartActivityTimes= */ 1);
+    }
+
+    @Test
+    public void currentPageVerifierFailed_fileData() {
+        doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_EXISTING);
+
+        when(mCurrentPageVerifierMock.getState())
+                .thenReturn(
+                        new CurrentPageVerifier.VerificationState(
+                                "", "", CurrentPageVerifier.VerificationStatus.FAILURE));
+
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
+        mExpectedFileList = new String[] {CONTENT_URI};
+        doTestNavigateNewNewIntent(
+                LaunchHandlerClientMode.NAVIGATE_EXISTING, /* expectedStartActivityTimes= */ 1);
         verify(mActivityMock, times(1))
                 .grantUriPermission(
                         eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());

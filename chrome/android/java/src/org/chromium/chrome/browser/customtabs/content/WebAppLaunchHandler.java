@@ -168,7 +168,10 @@ public class WebAppLaunchHandler {
         recordClientMode(clientModeFromIntent);
         @ClientMode int clientMode = getClientMode(clientModeFromIntent);
 
-        if (clientMode == NAVIGATE_NEW) {
+        CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
+        if (clientMode == NAVIGATE_NEW
+                || state == null
+                || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
             launchNewIntent(
                     intentDataProvider.getUrlToLoad(),
                     intentDataProvider.getClientPackageName(),
