@@ -77,20 +77,12 @@
   [consumer setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                               SyncErrorInfoBarDelegate::BUTTON_OK))];
 
-  if (delegate->DisplayPasswordErrorIcon()) {
-    [consumer
-        setIconImage:DefaultSymbolTemplateWithPointSize(
-                         kSyncPasswordErrorSymbol, kInfobarSymbolPointSize)];
-    [consumer setIconBackgroundColor:[UIColor colorNamed:kRed100Color]];
-    [consumer setIconImageTintColor:[UIColor colorNamed:kRedColor]];
-  } else {
-    [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
-                               kSyncErrorSymbol, kInfobarSymbolPointSize)];
-    [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
-    [consumer
-        setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-  }
-
+  // TODO(crbug.com/408165259): Use a dedicated icon in case when
+  // `delegate->DisplayPasswordErrorIcon()` is true.
+  [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
+                             kSyncErrorSymbol, kInfobarSymbolPointSize)];
+  [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
+  [consumer setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   [consumer setUseIconBackgroundTint:YES];
 
   [consumer setPresentsModal:NO];
