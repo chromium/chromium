@@ -136,6 +136,13 @@ class POLICY_EXPORT RemoteCommandsService
   void EnqueueCommand(const enterprise_management::RemoteCommand& command,
                       const enterprise_management::SignedData& signed_command);
 
+  // Returns true if we can fetch remote commands.
+  // We can't fetch remote command for many reasons, such as
+  // - the client is not registered.
+  // - there is a command fetch on going.
+  // - CEC is not enabled.
+  bool CanFetchRemoteCommands();
+
   // RemoteCommandsQueue::Observer:
   void OnJobStarted(RemoteCommandJob* command) override;
   void OnJobFinished(RemoteCommandJob* command) override;

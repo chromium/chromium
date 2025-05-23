@@ -539,6 +539,8 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   auto data = std::make_unique<enterprise_management::PolicyData>();
   data->set_request_token("fake token");
   data->set_device_id("fake client id");
+  data->set_cec_enabled(true);
+  data->set_command_invalidation_topic("fake-topic");
   mock_store_->set_policy_data_for_testing(std::move(data));
 
   // Since there is a signed-in user expect a policy fetch to be started to
@@ -694,6 +696,8 @@ TEST_F(UserPolicySigninServiceTest,
   auto data = std::make_unique<enterprise_management::PolicyData>();
   data->set_request_token("fake token");
   data->set_device_id("fake client id");
+  data->set_cec_enabled(true);
+  data->set_command_invalidation_topic("fake-topic");
   mock_store_->set_policy_data_for_testing(std::move(data));
 
   // Since there is a signed-in user expect a policy fetch to be started to
@@ -899,9 +903,7 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
 
   // `FetchPolicyForSignedInUser()` will create a new registered client and
   // fetch policies with it.
-  DeviceManagementService::JobConfiguration::JobType job_type_1 =
-      DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobConfiguration::JobType job_type_2 =
+  DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   em::DeviceManagementRequest policy_fetch_request;
   DeviceManagementService::JobForTesting job;
@@ -911,10 +913,8 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
   std::string user_affiliation_id = "user-affiliation_id";
 
   EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type_1),
-                      SaveArg<0>(&job)))
       .WillOnce(DoAll(
-          device_management_service_.CaptureJobType(&job_type_2),
+          device_management_service_.CaptureJobType(&job_type),
           device_management_service_.CaptureRequest(&policy_fetch_request),
           SaveArg<0>(&job)));
   EXPECT_CALL(device_dm_token_callback,
@@ -938,10 +938,8 @@ TEST_F(UserPolicySigninServiceTest, FetchPolicyForSignedInUser) {
   // Let it execute.
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&job_creation_handler_);
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
-            job_type_1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            job_type_2);
+            job_type);
 
   EXPECT_EQ(
       device_dm_token,

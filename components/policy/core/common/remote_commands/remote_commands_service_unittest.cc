@@ -18,12 +18,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
@@ -250,6 +253,8 @@ class RemoteCommandsServiceTest
                                                public_key.end());
     auto policy_data = std::make_unique<em::PolicyData>();
     policy_data->set_device_id("acme-device");
+    policy_data->set_cec_enabled(true);
+    policy_data->set_command_invalidation_topic("test_topic");
     store_.set_policy_data_for_testing(std::move(policy_data));
   }
 
@@ -563,6 +568,41 @@ TEST_P(RemoteCommandsServiceTest,
             em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithCecDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kUseCECFlagInPolicyData);
+  StartServiceWith<MockJobFactory>();
+
+  auto policy_data = std::make_unique<em::PolicyData>();
+  policy_data->set_device_id("acme-device");
+  policy_data->set_cec_enabled(false);
+  store_.set_policy_data_for_testing(std::move(policy_data));
+
+  if (GetScope() == PolicyInvalidationScope::kUser) {
+    EXPECT_FALSE(FetchRemoteCommands());
+  } else {
+    EXPECT_TRUE(FetchRemoteCommands());
+  }
+}
+
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithoutTopic) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kUseCECFlagInPolicyData);
+  StartServiceWith<MockJobFactory>();
+
+  auto policy_data = std::make_unique<em::PolicyData>();
+  policy_data->set_device_id("acme-device");
+  store_.set_policy_data_for_testing(std::move(policy_data));
+
+  if (GetScope() == PolicyInvalidationScope::kUser) {
+    EXPECT_FALSE(FetchRemoteCommands());
+  } else {
+    EXPECT_TRUE(FetchRemoteCommands());
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
  protected:
   using MetricReceivedRemoteCommand =
@@ -676,7 +716,6 @@ TEST_P(RemoteCommandsServiceHistogramTest,
   EXPECT_TRUE(FetchRemoteCommands());
   FlushAllTasks();
 
-  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalid});
   ExpectExecutedCommandsMetrics({});
 }
 

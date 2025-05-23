@@ -929,6 +929,9 @@ message PolicyData {
   // set for User Policy response.
   optional K12AgeClassificationMetricsLogSegment
       k12_age_classification_metrics_log_segment = 39;
+
+  // Indicates whether the domains has CEC enabled.
+  optional bool cec_enabled = 40;
 }
 
 message ClientActionRequired {
