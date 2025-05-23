@@ -1143,6 +1143,11 @@ BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
              "SafetyHubDisruptiveNotificationRevocation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationExperimentVersion{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"experiment_version", /*default_value=*/0};
+
 constexpr base::FeatureParam<bool>
     kSafetyHubDisruptiveNotificationRevocationShadowRun{
         &kSafetyHubDisruptiveNotificationRevocation,

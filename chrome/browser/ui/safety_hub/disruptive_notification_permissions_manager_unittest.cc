@@ -209,6 +209,64 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
   }
 }
 
+TEST_F(DisruptiveNotificationPermissionsManagerTest,
+       ProposedRevocationsWithWrongVersionAreIgnored) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kSafetyHubDisruptiveNotificationRevocation,
+      {{features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
+            .name,
+        "1"}});
+
+  GURL proposed_url("https://www.example1.com");
+  GURL revoked_url("https://www.example2.com");
+  GURL ignore_url("https://www.example3.com");
+  RevocationEntry proposed_entry = RevocationEntry{
+      .revocation_state = RevocationState::kProposed,
+      .site_engagement = 0.0,
+      .daily_notification_count = 3,
+      .timestamp = base::Time::Now(),
+  };
+  RevocationEntry revoked_entry = RevocationEntry{
+      .revocation_state = RevocationState::kRevoked,
+      .site_engagement = 0.0,
+      .daily_notification_count = 3,
+      .timestamp = base::Time::Now(),
+  };
+  RevocationEntry ignore_entry = RevocationEntry{
+      .revocation_state = RevocationState::kIgnore,
+      .site_engagement = 0.0,
+      .daily_notification_count = 3,
+      .timestamp = base::Time::Now(),
+  };
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(proposed_url,
+                                                       proposed_entry);
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(revoked_url,
+                                                       revoked_entry);
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(ignore_url,
+                                                       ignore_entry);
+
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(proposed_url),
+              Optional(Eq(proposed_entry)));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(revoked_url),
+              Optional(Eq(revoked_entry)));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(ignore_url),
+              Optional(Eq(ignore_entry)));
+
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kSafetyHubDisruptiveNotificationRevocation,
+      {{features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
+            .name,
+        "2"}});
+
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(proposed_url),
+              Eq(std::nullopt));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(revoked_url),
+              Optional(Eq(revoked_entry)));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(ignore_url),
+              Optional(Eq(ignore_entry)));
+}
+
 class DisruptiveNotificationPermissionsManagerRevocationTest
     : public DisruptiveNotificationPermissionsManagerTest {
  public:

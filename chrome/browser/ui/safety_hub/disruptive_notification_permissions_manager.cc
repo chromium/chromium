@@ -44,6 +44,7 @@ constexpr char kDailyNotificationCountStr[] = "daily_notification_count";
 constexpr char kHasReportedProposalStr[] = "has_reported_proposal";
 constexpr char kHasReportedFalsePositiveStr[] = "has_reported_false_positive";
 constexpr char kTimestampStr[] = "timestamp";
+constexpr char kVersionStr[] = "version";
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
@@ -124,6 +125,15 @@ DisruptiveNotificationPermissionsManager::ContentSettingHelper::
     return std::nullopt;
   }
 
+  if (*revocation_state == RevocationState::kProposed &&
+      dict.FindInt(kVersionStr).value_or(-1) !=
+          features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
+              .Get()) {
+    // This is a proposed revocation created for a different version of a
+    // revocation experiment. It is outdated, so let's ignore it.
+    return std::nullopt;
+  }
+
   return RevocationEntry{
       .revocation_state = *revocation_state,
       .site_engagement = dict.FindDouble(kSiteEngagementStr).value_or(0),
@@ -144,9 +154,14 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
 
   std::string_view revocation_state_string;
   base::TimeDelta lifetime;
+  base::Value::Dict dict;
   switch (entry.revocation_state) {
     case DisruptiveNotificationPermissionsManager::RevocationState::kProposed:
       revocation_state_string = kProposedStr;
+      dict.Set(
+          kVersionStr,
+          features::kSafetyHubDisruptiveNotificationRevocationExperimentVersion
+              .Get());
       break;
     case DisruptiveNotificationPermissionsManager::RevocationState::kRevoked:
       revocation_state_string = kRevokeStr;
@@ -161,7 +176,6 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
       lifetime = GetRevocationsLifetime();
       break;
   }
-  base::Value::Dict dict;
   dict.Set(kRevokedStatusDictKeyStr, revocation_state_string);
   dict.Set(kSiteEngagementStr, entry.site_engagement);
   dict.Set(kDailyNotificationCountStr, entry.daily_notification_count);
