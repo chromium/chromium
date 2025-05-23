@@ -6611,6 +6611,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "new-content-for-checkerboarded-scrolls",
+    "owners": [
+      "gastonr@microsoft.com",
+      "gerchiko@microsoft.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "new-etc1-encoder",
     "owners": [
       "cros-virt-devices-guests@google.com",

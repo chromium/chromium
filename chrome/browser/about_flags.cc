@@ -12526,6 +12526,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kEnableSiteSearchAllowUserOverridePolicy)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROME_OS)
+    // TODO(crbug.com/40680264): Remove this flag after regression investigation
+    // is finished.
+    {
+        "new-content-for-checkerboarded-scrolls",
+        flag_descriptions::kNewContentForCheckerboardedScrollsName,
+        flag_descriptions::kNewContentForCheckerboardedScrollsDescription,
+        kOsAll,
+        FEATURE_VALUE_TYPE(features::kNewContentForCheckerboardedScrolls),
+    },
 
     {"autofill-enable-multiple-request-in-virtual-card-downstream-enrollment",
      flag_descriptions::

@@ -9131,6 +9131,7 @@ from previous Chrome versions.
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
   <int value="-1808445397" label="ShareByDefaultInCCT:disabled"/>
   <int value="-1807797669" label="google-doodle-url"/>
+  <int value="-1807481332" label="NewContentForCheckerboardedScrolls:disabled"/>
   <int value="-1807092388" label="ReduceUserAgentPlatformOsCpu:enabled"/>
   <int value="-1806998617" label="CCTPredictiveBackGesture:enabled"/>
   <int value="-1806739839"
@@ -9380,6 +9381,7 @@ from previous Chrome versions.
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
   <int value="-1699505493" label="QuickDeleteAndroidFollowup:enabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>
+  <int value="-1698059272" label="NewContentForCheckerboardedScrolls:enabled"/>
   <int value="-1696778023"
       label="HappinessTrackingSurveysForDesktopSettings:disabled"/>
   <int value="-1696619241" label="OmniboxWrapPopupPosition:disabled"/>

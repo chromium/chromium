@@ -122,6 +122,13 @@ const char kAndroidAppIntegrationV2Description[] =
     "If enabled, allows Chrome to integrate with the Android App Search "
     "directly without using internal library.";
 
+const char kNewContentForCheckerboardedScrollsName[] =
+    "Change scrolling scheduling to reduce checkerboarding";
+const char kNewContentForCheckerboardedScrollsDescription[] =
+    "If enabled, scrolling that would generate blank frames will now "
+    "prioritize the new content over scrolling with the intention of "
+    "decreasing the amount of checkerboarded frames.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kNewTabPageCustomizationName[] = "Customize the new tab page";
 const char kNewTabPageCustomizationDescription[] =

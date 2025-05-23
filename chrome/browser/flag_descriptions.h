@@ -896,6 +896,9 @@ extern const char kBiometricAuthIdentityCheckName[];
 extern const char kBiometricAuthIdentityCheckDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kNewContentForCheckerboardedScrollsName[];
+extern const char kNewContentForCheckerboardedScrollsDescription[];
+
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
 
