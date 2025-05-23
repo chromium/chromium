@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -102,6 +103,7 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
+    @DisabledTest(message = "crbug.com/419016470")
     public void testDefaultText() {
         mActivityTestRule.startOnNtp();
 
