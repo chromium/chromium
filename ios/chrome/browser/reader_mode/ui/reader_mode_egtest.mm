@@ -61,4 +61,53 @@
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 }
 
+// Tests that swiping between a Reader Mode web state and a normal web
+// state shows the expected view.
+- (void)testSideSwipeReaderMode {
+  const GURL readerModeURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:readerModeURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Open a new Tab with an article to have a tab to switch to.
+  [ChromeEarlGreyUI openNewTab];
+  const GURL nonReaderModeURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:nonReaderModeURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Side swipe on the toolbar.
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+
+  // Reader Mode view is visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  // Verifies that the navigation to the destination page happened.
+  GREYAssertEqual(readerModeURL, [ChromeEarlGrey webStateVisibleURL],
+                  @"Did not navigate to Reader Mode url.");
+
+  // Side swipe back to the non-Reader mode page on the toolbar.
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
+
+  // Non-Reader Mode view is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verifies that the navigation to the destination page happened.
+  GREYAssertEqual(nonReaderModeURL, [ChromeEarlGrey webStateVisibleURL],
+                  @"Did not navigate to non-Reader Mode url.");
+}
+
 @end

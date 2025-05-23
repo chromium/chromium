@@ -10,6 +10,9 @@
 // Coordinator for the Reader mode UI.
 @interface ReaderModeCoordinator : ChromeCoordinator
 
+// UIView used for snapshot overlay.
+@property(nonatomic, readonly) UIView* viewForSnapshot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_COORDINATOR_READER_MODE_COORDINATOR_H_

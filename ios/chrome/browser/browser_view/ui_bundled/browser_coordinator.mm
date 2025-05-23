@@ -3884,6 +3884,11 @@ enum class ToolbarKind {
     [overlays addObject:sadTabView];
   }
 
+  UIView* readerModeView = _readerModeCoordinator.viewForSnapshot;
+  if (readerModeView) {
+    [overlays addObject:readerModeView];
+  }
+
   BrowserContainerViewController* browserContainerViewController =
       self.browserContainerCoordinator.viewController;
   // The overlay container view controller is presenting something if it has
