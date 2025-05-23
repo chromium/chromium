@@ -123,7 +123,7 @@
 <translation id="2592940277904433508">Chromium を引き続き使用</translation>
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="2629740064077610681">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chromium プロフィールの閲覧データを確認することはできません。</translation>
+<translation id="2629740064077610681">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chromium プロファイルの閲覧データを確認することはできません。</translation>
 <translation id="2635452620547538388">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="264613044588233783">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します（推奨）</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>

@@ -1709,7 +1709,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3949601375789751990">Zde se zobrazuje vaše historie prohlížení</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Žádné uložené platební metody</translation>
-<translation id="3950560191811267370">Spodní tabulka obchodu byla zavřena</translation>
+<translation id="3950560191811267370">Spodní panel obchodu byl zavřen</translation>
 <translation id="3950574001630941635">Spustit výukový program znovu</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3953505489397572035">Tato cena je obvyklá</translation>
@@ -2507,7 +2507,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5331585574693522196">Nastavit jako výchozí</translation>
 <translation id="5332219387342487447">Způsob dopravy</translation>
 <translation id="5332769172018416402">Poslat zprávu s žádostí</translation>
-<translation id="533323551986281710">Spodní tabulka obchodu byla otevřena na celou výšku</translation>
+<translation id="533323551986281710">Spodní panel obchodu byl otevřen přes celou výšku obrazovky</translation>
 <translation id="5334013548165032829">Podrobné systémové protokoly</translation>
 <translation id="5340250774223869109">Aplikace je blokována</translation>
 <translation id="5342693890921195472">min před tímto okamžikem</translation>
@@ -2707,7 +2707,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5675650730144413517">Tato stránka nefunguje</translation>
 <translation id="5675809467256309336">Taneční a elektronická hudba</translation>
 <translation id="5675959228867414813">Zobrazit podle data</translation>
-<translation id="567604591393105935">Spodní tabulka obchodu byla otevřena na polovinu výšky</translation>
+<translation id="567604591393105935">Spodní panel obchodu byl otevřen do poloviny výšky obrazovky</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Fólie</translation>
 <translation id="5680642791693447368">Thrillery, krimi a filmy o záhadách</translation>
@@ -3673,7 +3673,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7374733840632556089">K tomuto problému dochází kvůli certifikátu, který jste vy nebo někdo jiný nainstalovali do zařízení. O certifikátu je známo, že se používá ke sledování a zachytávání provozu v sítích, a Chrome mu nedůvěřuje. Ačkoliv sledování v některých případech (například ve školní nebo firemní síti) může být legitimní a nemůžete mu zabránit, Chrome se chce ujistit, že o něm víte. Ke sledování může docházet v kterémkoliv prohlížeči nebo aplikaci, které přistupují k webu.</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nejsou povoleny žádné weby}=1{Je povolen 1 web}few{Jsou povoleny # weby}many{Je povoleno # webu}other{Je povoleno # webů}}</translation>
 <translation id="7375818412732305729">Připojení souboru</translation>
-<translation id="7376031331622621328">Spodní tabulka obchodu</translation>
+<translation id="7376031331622621328">Spodní panel obchodu</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7377314930809374926">Pohostinství</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>

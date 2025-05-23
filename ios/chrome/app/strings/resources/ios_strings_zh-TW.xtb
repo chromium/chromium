@@ -673,7 +673,7 @@
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪轉介面</translation>
 <translation id="3909222758573607742">將密碼和其他項目儲存到帳戶</translation>
-<translation id="3913463964270756493">隱藏「透過 Google 智慧鏡頭搜尋畫面內容」</translation>
+<translation id="3913463964270756493">隱藏「用 Google 智慧鏡頭搜尋畫面內容」</translation>
 <translation id="3914640181019354363">偵測地址</translation>
 <translation id="391904960191284041">產品評論</translation>
 <translation id="3921585859122905677">網址列位置</translation>
@@ -864,7 +864,7 @@
 <translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
 <translation id="4647758699119474035">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。Google 帳戶錯誤。開啟帳戶選單。</translation>
-<translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分登入繼續使用</translation>
+<translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分繼續</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 分鐘後隱藏}other{{count} 分鐘後隱藏}}</translation>
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否外洩，並取得相關建議，保障上網安全。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">儲存</translation>
@@ -1192,7 +1192,7 @@
 <translation id="6001839398155993679">立即開始</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6012140227487808125">加密中…</translation>
-<translation id="6027619584715411062">只要在裝置上登入帳戶，即可存取你的書籤、密碼等資訊。</translation>
+<translation id="6027619584715411062">登入後，就能從任何裝置存取自己的書籤、密碼等資訊。</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6032845897905314562">新功能</translation>
 <translation id="6038823991892265570">管理 Google 儲存空間</translation>
@@ -1612,7 +1612,7 @@
 <translation id="7679915578945954324">已複製網址</translation>
 <translation id="7695953765525234038">搜尋列</translation>
 <translation id="7696316012653762532">網頁翻譯選項</translation>
-<translation id="7700527812567437847">透過 Google 智慧鏡頭搜尋畫面內容</translation>
+<translation id="7700527812567437847">用 Google 智慧鏡頭搜尋畫面內容</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7711440461521638739">目前未重複使用任何密碼</translation>
 <translation id="7712361583414030698">正在查看離線版本</translation>

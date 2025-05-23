@@ -332,7 +332,7 @@
 <translation id="1217114730239853757">‏لتفعيل قارئ الشاشة ChromeVox المضمّن لنظام التشغيل ChromeOS Flex، يُرجى الضغط على شريط المسافة.</translation>
 <translation id="1217117837721346030">تنزيل ملف مُريب</translation>
 <translation id="1217483152325416304">سيتم قريبًا حذف البيانات المحلية.</translation>
-<translation id="1217668622537098248">إعادة ميزة النقر بزر الماوس الأيسر بعد اتخاذ إجراء</translation>
+<translation id="1217668622537098248">العودة إلى النقر بزر الماوس الأيسر بعد اتخاذ إجراء</translation>
 <translation id="1218015446623563536">‏حذف Linux</translation>
 <translation id="1218839827383191197">‏<ph name="BEGIN_PARAGRAPH1" />تستخدم خدمة الموقع الجغرافي من Google مصادر، مثل شبكات Wi‑Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تقدير الموقع الجغرافي لهذا الجهاز.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />يمكنك إيقاف خدمة "الموقع الجغرافي" من خلال إيقاف إعداد "الموقع الجغرافي" الرئيسي على هذا الجهاز. وبإمكانك أيضًا إيقاف استخدام شبكات Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للموقع الجغرافي من إعدادات الموقع الجغرافي.<ph name="END_PARAGRAPH2" /></translation>
@@ -2623,7 +2623,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
-<translation id="2785267875302712148">التحقّق من كلمة المرور</translation>
+<translation id="2785267875302712148">التحقق من كلمات المرور</translation>
 <translation id="2785279781154577715">مظهر بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
 <translation id="2785873697295365461">أدوات وصف الملفات</translation>
 <translation id="2785975315093449168">GTK</translation>
@@ -4335,7 +4335,7 @@
 <translation id="3983400541576569538">قد يتم فقد البيانات من بعض التطبيقات</translation>
 <translation id="3983586614702900908">أجهزة من مورد غير معروف</translation>
 <translation id="3983764759749072418">‏يمكن لتطبيقات "متجر Play" الوصول إلى هذا الجهاز.</translation>
-<translation id="3983769721878416534">مهلة قبل النقر</translation>
+<translation id="3983769721878416534">المهلة قبل النقر</translation>
 <translation id="3984135167056005094">عدم تضمين عنوان البريد الإلكتروني</translation>
 <translation id="3984159763196946143">تعذَّر بدء الوضع التجريبي</translation>
 <translation id="3984536049089846927">الصفحة التالية</translation>
@@ -6909,7 +6909,7 @@
 <translation id="5857693745746757503">‏يمكنك توفير 50 دولار أمريكي أو أكثر عند شراء جهاز Chromebook جديد اليوم.</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="585979798156957858">‏مفتاح Meta الخارجي</translation>
-<translation id="5860033963881614850">غير مفعّلة</translation>
+<translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860254591544742609">إظهار شريط العناوين</translation>
 <translation id="5860335608673904825">‏مفتاح البحث + ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5860491529813859533">تفعيل</translation>

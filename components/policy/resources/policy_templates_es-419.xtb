@@ -2234,7 +2234,7 @@ función de codificación de contenido de <ph name="ZSTANDARD_SHORTNAME" />.</tr
 <translation id="2520551905471951523">Usa la prioridad alta para el proceso de audio</translation>
 <translation id="2521581787935130926">Muestra el acceso directo a las aplicaciones en la barra de favoritos.</translation>
 <translation id="2522304491589804974">Configura la lista de elementos permitidos para la instalación de extensiones</translation>
-<translation id="2523511232831599126">Habilitar las combinaciones de accesibilidad en la pantalla de acceso</translation>
+<translation id="2523511232831599126">Habilitar los atajos de accesibilidad en la pantalla de acceso</translation>
 <translation id="252742292004421898">Permitir la API de Direct Sockets en estos sitios</translation>
 <translation id="2529880111512635313">Configurar la lista de extensiones y apps que se instalarán obligatoriamente</translation>
 <translation id="253135976343875019">Advertencia de inactividad cuando el dispositivo está conectado a alimentación de CA</translation>
@@ -3692,7 +3692,7 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
       Si estableces esta política como verdadera, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo de invitado.
 
       Ten en cuenta que, si estableces esta política como verdadera, pero se estableció <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> como falsa, el usuario no podrá crear perfiles secundarios. Del mismo modo, si se estableció <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> como falsa, el usuario tampoco podrá usar el modo de invitado.</translation>
-<translation id="3587766503874071316">Inhabilitar las combinaciones de accesibilidad</translation>
+<translation id="3587766503874071316">Inhabilitar los atajos de accesibilidad</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
@@ -4336,7 +4336,7 @@ En <ph name="PRODUCT_OS_NAME" />, esta política está relacionada con la certif
 
 Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varios</translation>
-<translation id="4072225853834793549">Inhabilitar las combinaciones de accesibilidad en la pantalla de acceso</translation>
+<translation id="4072225853834793549">Inhabilitar los atajos de accesibilidad en la pantalla de acceso</translation>
 <translation id="4074922053013383215">Ahorro de memoria moderado.</translation>
 <translation id="4075675819066819571">Ubicar la biblioteca en el lado izquierdo de la pantalla</translation>
 <translation id="4079306023113982053">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> para este usuario.
@@ -4733,7 +4733,7 @@ Nota: Esta política da de baja la política <ph name="ARC_GLS_POLICY_NAME" />. 
 <translation id="4370908590951861085">Extremos de informes</translation>
 <translation id="4370937370030117032">Inhabilitar el envío de nombres de usuarios y nombres de archivos a impresoras nativas</translation>
 <translation id="4372704773119750918">No permitir que el usuario de empresa forme parte de la función de varios perfiles (usuario principal o secundario)</translation>
-<translation id="4373332965635821723">Habilitar las combinaciones de accesibilidad</translation>
+<translation id="4373332965635821723">Habilitar los atajos de accesibilidad</translation>
 <translation id="4377377599658208627">Permitir que los sitios se desplacen a fragmentos de texto específicos mediante la URL</translation>
 <translation id="4377599627073874279">Permitir a todos los sitios que muestren todas las imágenes</translation>
 <translation id="437791893267799639">No se estableció la política; no permitir la migración de datos y ARC</translation>

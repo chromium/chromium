@@ -1057,7 +1057,7 @@
 <translation id="5855546874025048181">تحسين: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">حدث خطأ. تعذّر تحديث ميزة تتبُّع السعر.</translation>
 <translation id="5859968346865909126">يمكنك تفعيل هذه الميزة أو إيقافها في "الإعدادات".</translation>
-<translation id="5860033963881614850">غير مفعّلة</translation>
+<translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5864419784173784555">في انتظار تنزيل آخر…</translation>
 <translation id="5865733239029070421">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
@@ -1757,7 +1757,7 @@
 <translation id="8788968922598763114">إعادة فتح آخر علامة تبويب تم إغلاقها</translation>
 <translation id="8790193082819560975">انقر للبحث عن خيارات شراء المنتج في علامة تبويب جديدة.</translation>
 <translation id="879027982257117598">على سبيل المثال، إذا انتقلت إلى موقع إلكتروني يبيع أحذية الركض لمسافة طويلة، قد يحدِّد هذا الموقع الإلكتروني أنّك مهتم بسباقات الماراثون. وعند زيارة موقع إلكتروني آخر لاحقًا، يمكن أن يعرض هذا الموقع الإلكتروني إعلانًا عن الأحذية المخصّصة للركض مقترَحًا من الموقع الإلكتروني الأول.</translation>
-<translation id="8798449543960971550">مقروءة</translation>
+<translation id="8798449543960971550">الصفحات المقروءة</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{‏تم حفظ عنصر واحد في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}zero{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}two{‏تم حفظ عنصرين في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}few{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}many{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}other{‏تم حفظ عناصر في حسابك على Google،‏ <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">الاحتفاظ بمجموعة علامات التبويب</translation>

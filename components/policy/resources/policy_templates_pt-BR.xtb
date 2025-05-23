@@ -3516,7 +3516,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 
       A disponibilidade da funcionalidade dependerá também da política do usuário correspondente.</translation>
 <translation id="3495602011142234826">Se for definida como verdadeira, essa extensão poderá usar todas as chaves designadas para uso corporativo para assinar dados arbitrários. Se definida como falsa, ela não poderá acessar nenhuma dessas chaves e o usuário também não poderá conceder permissão de acesso. No entanto, uma extensão poderá acessar uma chave uma única vez se a mesma extensão tiver gerado essa chave.</translation>
-<translation id="3496296378755072552">Gerenciador de senhas</translation>
+<translation id="3496296378755072552">Gerenciador de Senhas</translation>
 <translation id="3496519114741602716">Controle se os usuários podem ativar o modo de desenvolvedor em chrome://extensions.
 
 Se a política não for definida, os usuários poderão ativar o modo de desenvolvedor na página da extensão, a menos que a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> seja definida como <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).

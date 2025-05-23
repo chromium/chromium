@@ -219,7 +219,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1147322039136785890">C'est au tour de l'utilisateur <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, contactez l'administrateur de cet appareil.</translation>
 <translation id="1148464196693569530">Autoriser les scripts utilisateur</translation>
-<translation id="1148624853678088576">Vous êtes prêt !</translation>
+<translation id="1148624853678088576">Tout est prêt !</translation>
 <translation id="1148669835763563782">La dernière mise à jour logicielle s'installe pour vous offrir une sécurité renforcée et les dernières fonctionnalités Chromebook. Cette mise à jour inclut une expérience de configuration améliorée pour vous aider à bien démarrer sur votre Chromebook.</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149483087970735785">Technologie d'assistance</translation>
@@ -1027,7 +1027,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Serveur SSH configuré sur l'appareil. Ne vous connectez pas avec un compte sensible.</translation>
 <translation id="1697122132646041614">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas.</translation>
-<translation id="1697532407822776718">Vous êtes prêt !</translation>
+<translation id="1697532407822776718">Tout est prêt !</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Modes de paiement</translation>
 <translation id="1698899521169711967">Navigation au clavier</translation>
@@ -7660,7 +7660,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Autorisés à enregistrer des données sur votre appareil</translation>
-<translation id="6408118934673775994">Accéder aux données des sites <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, et les modifier</translation>
+<translation id="6408118934673775994">Accéder aux données de <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, et les modifier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410328738210026208">Changer de version et Powerwash</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
@@ -9759,7 +9759,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre appareil amovible via l'application Fichiers avant de le retirer afin d'éviter toute perte de données.</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
-<translation id="7900950034255258543">Votre organisation peut consulter des informations concernant cet appareil (système d'exploitation, navigateur, paramètres et logiciels installés) pour s'assurer qu'il peut être utilisé de manière sécurisée</translation>
+<translation id="7900950034255258543">Votre organisation peut consulter des informations sur cet appareil (système d'exploitation, navigateur, paramètres et logiciels installés) pour s'assurer qu'il peut être utilisé de façon sûre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903429136755645827">Cliquer pour personnaliser les commandes de jeu</translation>
 <translation id="7903481341948453971">Utiliser le verrouillage de l'écran pour saisir les mots de passe</translation>

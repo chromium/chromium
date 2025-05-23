@@ -100,7 +100,7 @@
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
-<translation id="139752016751285248">Spodní tabulka s informacemi o ceně otevřená na celou výšku</translation>
+<translation id="139752016751285248">Spodní panel s informacemi o ceně otevřený přes celou výšku obrazovky</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Můžete <ph name="BEGIN_LINK1" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK1" /> do účtu Google.
 
@@ -194,7 +194,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1877073879466606884">Jste přihlášeni ke spravovanému profilu. Administrátor může vzdálené měnit nastavení profilu, analyzovat informace o prohlížeči prostřednictvím přehledů a provádět další nezbytné úkoly.</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
-<translation id="1899175549411605574">Spodní tabulka s informacemi o ceně</translation>
+<translation id="1899175549411605574">Spodní panel s informacemi o ceně</translation>
 <translation id="1900260903084164610">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1910950723001426294">Seznam možností sdílení je zavřený.</translation>
@@ -355,7 +355,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
 <translation id="2630630219780173487">Těmto webům můžete zabránit v odesílání budoucích oznámení</translation>
 <translation id="2634393460268044753">Odesílá adresy URL navštívených webů a malý vzorek obsahu stránek, stažených souborů, aktivity rozšíření a systémových informací do Bezpečného prohlížení Google k ověření, zda nejsou škodlivé.</translation>
-<translation id="2642087927315268160">Spodní tabulka s přihlášením je zavřená.</translation>
+<translation id="2642087927315268160">Spodní panel pro přihlášení je zavřený.</translation>
 <translation id="2643064289437760082">Údaje o měření reklam můžete kdykoli smazat smazáním údajů o prohlížení.</translation>
 <translation id="2647434099613338025">Přidat jazyk</translation>
 <translation id="2650077116157640844">Další informace o synchronizovaných zařízeních</translation>
@@ -533,7 +533,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3487903178221457900">Exportovaný soubor může být přístupný ostatním, včetně aplikací. Po exportu budou vaše hesla z Chromu smazána.</translation>
 <translation id="3488199663160411179">jméno</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
-<translation id="3495219333887281978">Spodní tabulka s přihlášením je otevřená na polovinu výšky</translation>
+<translation id="3495219333887281978">Spodní panel pro přihlášení je otevřená do poloviny výšky obrazovky</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Seřadit od nejstarších</translation>
 <translation id="3507132249039706973">Je zapnutá standardní ochrana</translation>
@@ -576,7 +576,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Přejít na domovskou kartu aplikace Google</translation>
 <translation id="368329460027487650">Jste odhlášeni. Otevře možnosti přihlášení.</translation>
-<translation id="3684540848053703310">Zavřená spodní tabulka s informacemi o ceně</translation>
+<translation id="3684540848053703310">Zavřený spodní panel s informacemi o ceně</translation>
 <translation id="3687645719033307815">Prohlížíte si náhled této stránky</translation>
 <translation id="3692944402865947621">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo, protože umístění úložiště není dostupné.</translation>
 <translation id="3697705478071004188">Seřadit podle webu</translation>
@@ -633,7 +633,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3927692899758076493">Bezpatková</translation>
 <translation id="3928666092801078803">Sloučit má data</translation>
 <translation id="3931947361983910192">z posledních 4 týdnů</translation>
-<translation id="3932390316856284148">Spodní tabulka s přihlášením je otevřená na celou výšku.</translation>
+<translation id="3932390316856284148">Spodní panel pro přihlášení je otevřený přes celou výšku obrazovky.</translation>
 <translation id="393697183122708255">Hlasové vyhledávání není k dispozici</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="395377504920307820">Používat bez účtu</translation>
@@ -653,7 +653,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4024768890073681126">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}few{# h}many{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Pokračujte na web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="4044708993631234325">Spodní tabulka</translation>
+<translation id="4044708993631234325">Spodní panel</translation>
 <translation id="4045441967987592849">Znovu otevřít</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardní karta s novou aktivitou ve sdílených skupinách karet}few{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}many{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}other{<ph name="TABS_COUNT_MANY" /> standardních karet s novou aktivitou ve sdílených skupinách karet}}</translation>
 <translation id="405365679581583349">Aktualizujte Služby Google Play</translation>
@@ -828,7 +828,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4807098396393229769">Jméno na kartě</translation>
 <translation id="480990236307250886">Otevřít domovskou stránku</translation>
 <translation id="4822710610088666676">Skupina karet <ph name="TAB_GROUP_TITLE" /> byla zavřena a uložena</translation>
-<translation id="4826163340425232009">Spodní tabulka s přihlášením.</translation>
+<translation id="4826163340425232009">Spodní panel pro přihlášení.</translation>
 <translation id="4834250788637067901">Platební metody, nabídky a adresy z Google Pay</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Obnovit skupinu karet s <ph name="TAB_COUNT_ONE" /> kartou v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}few{Obnovit skupinu karet se <ph name="TAB_COUNT_MANY" /> kartami v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}many{Obnovit skupinu karet s <ph name="TAB_COUNT_MANY" /> karty v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}other{Obnovit skupinu karet s <ph name="TAB_COUNT_MANY" /> kartami v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}}</translation>

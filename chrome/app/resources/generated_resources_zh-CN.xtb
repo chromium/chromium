@@ -8672,7 +8672,7 @@
 <translation id="7134951043985383439">下载的文件有危险</translation>
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7136694880210472378">设为默认选项</translation>
-<translation id="7137277889990479760">继续以 <ph name="EMAIL" /> 的身份登录</translation>
+<translation id="7137277889990479760">以 <ph name="EMAIL" /> 的身份继续</translation>
 <translation id="7137771508221868414">这会删除由网站和安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
@@ -11547,7 +11547,7 @@
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9129562557082598582">导出全部<ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">输入的模式无效。</translation>
-<translation id="9130135798965366513">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
+<translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9130208109420587135">修改分组名称“<ph name="NAME" />”</translation>
 <translation id="9130364135697530260">此网站上的嵌入式内容可以使用它们保存的与您相关的信息</translation>
 <translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>

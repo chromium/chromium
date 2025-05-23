@@ -791,7 +791,7 @@
 <translation id="1545775234664667895">테마('<ph name="THEME_NAME" />')를 설치했습니다.</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{시크릿 창이 다시 열리지 않습니다.}other{시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
-<translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
+<translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
 <translation id="1547936895218027488">측면 패널 아이콘을 클릭하여 엽니다.</translation>
@@ -2514,7 +2514,7 @@
 <translation id="2715751256863167692">이 업그레이드를 설치하면 Chromebook이 재설정되며, 현재 사용자 데이터가 삭제됩니다.</translation>
 <translation id="2715934493766003251">파일 동기화가 사용 설정되어 있는 동안에는 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2716986496990888774">보호자가 관리하는 설정입니다.</translation>
-<translation id="271749239614426244">미세한 커서 이동 무시</translation>
+<translation id="271749239614426244">미세한 커서 움직임 무시</translation>
 <translation id="2718395828230677721">야간 조명</translation>
 <translation id="2718998670920917754">바이러스 백신 소프트웨어가 바이러스를 감지했습니다.</translation>
 <translation id="2719936478972253983">다음 쿠키가 차단됨</translation>
@@ -2689,7 +2689,7 @@
 <translation id="2819167288942847344">앱이 오작동하지 않도록 휴대전화 및 태블릿용으로 미리 설정된 창 크기나 크기 조절이 가능한 창을 사용</translation>
 <translation id="2819519502129272135">파일 동기화 사용 중지됨</translation>
 <translation id="2820957248982571256">검색 중...</translation>
-<translation id="282230978681804245">조직에서 관리하는 프로필로 다음과 같은 정보를 볼 수 있습니다</translation>
+<translation id="282230978681804245">조직에서 프로필을 관리하며 다음과 같은 일부 정보를 볼 수 있습니다</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2822634587701817431">축소 / 확대</translation>
 <translation id="2822910719211888134">Linux 백업 중에 오류가 발생했습니다.</translation>
@@ -9773,7 +9773,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7898725031477653577">항상 번역</translation>
-<translation id="7900950034255258543">기기를 안전하게 사용하기 위해 조직에서 운영체제, 브라우저, 설정, 기기에 설치된 소프트웨어에 관한 정보를 확인할 수 있습니다.</translation>
+<translation id="7900950034255258543">이 기기를 안전하게 사용하도록 하기 위해 조직에서 운영체제, 브라우저, 설정에 관한 정보와 기기에 설치된 소프트웨어를 확인할 수 있습니다.</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903481341948453971">비밀번호 입력 시 화면 잠금 사용</translation>
@@ -11770,7 +11770,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> 인증서 삭제</translation>
 <translation id="975893173032473675">다음 언어로 번역</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" />에서 <ph name="CORRECTED_WORD" />(으)로 수정된 것과 관련하여 자동 수정 실행취소 대화상자가 표시되었습니다.  액세스하려면 위쪽 화살표를, 무시하려면 Esc를 누르세요.</translation>
-<translation id="976572010712028687">부모임을 확인</translation>
+<translation id="976572010712028687">부모임을 확인해 주세요</translation>
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
 <translation id="978978324795544535">항목을 이동하려면 항목을 두 번 탭하는데 두 번째로 탭할 때 길게 터치한 상태에서 드래그합니다.</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>

@@ -356,7 +356,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
 <translation id="2422174748424038845">Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos os dispositivos.</translation>
-<translation id="2424805048070062787">Continuar com esta guia</translation>
+<translation id="2424805048070062787">Continuar nesta guia</translation>
 <translation id="2426805022920575512">Escolher outra conta</translation>
 <translation id="243275146591958220">Cancelar download</translation>
 <translation id="2434405374328098816">Você já salvou uma senha para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
@@ -739,7 +739,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4148023517926189160">Esse site quer fazer download e adicionar um arquivo à sua agenda.</translation>
 <translation id="4152011295694446843">Seus favoritos aparecem aqui</translation>
 <translation id="4154753961803534698">Pesquisar com a câmera</translation>
-<translation id="4158491215857439601">Gerenciador de senhas</translation>
+<translation id="4158491215857439601">Gerenciador de Senhas</translation>
 <translation id="4159430626587776301">Veja avaliações de produtos que você pesquisou recentemente</translation>
 <translation id="4161488339191275792">Crie grupos de guias para organizar as guias abertas</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}one{{count} favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}other{{count} favoritos salvos em "{title}". Eles ficam salvos apenas neste dispositivo.}}</translation>
@@ -782,7 +782,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="4302061870579014542">Definir posição</translation>
-<translation id="4304713468139749426">Gerenciador de senhas</translation>
+<translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
 <translation id="4320848494125124980">Recentes</translation>
 <translation id="4322394346347055525">Fechar outras guias</translation>
@@ -927,7 +927,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488785315393301722">Mostrar detalhes</translation>
 <translation id="4889521386764567563">Perfil atual</translation>
-<translation id="4893713555726946316">Ocultar "Localizar na página"</translation>
+<translation id="4893713555726946316">Ocultar "Encontrar na página"</translation>
 <translation id="4894963374040315706">Isso permite que você pesquise usando a voz</translation>
 <translation id="4895540042460820904">Aberto pela última vez</translation>
 <translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
@@ -1367,7 +1367,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Sua organização desativou o modo de navegação anônima</translation>
-<translation id="6638511529934826365">Aplicar zoom no texto…</translation>
+<translation id="6638511529934826365">Dar zoom no texto…</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
 <translation id="6641465290890659327">Compartilhe uma cópia da sua senha</translation>
 <translation id="6642362222295953972">Mudar para guia existente</translation>
@@ -1874,7 +1874,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Você poderá compartilhar, participar e colaborar em grupos de guias</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>
-<translation id="8712534545803964353">Localizar na página…</translation>
+<translation id="8712534545803964353">Encontrar na página…</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
@@ -1933,7 +1933,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="890565330728586731">Voltar</translation>
-<translation id="8907722425137681851">Localizar na página…</translation>
+<translation id="8907722425137681851">Encontrar na página…</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
 <translation id="8909459547399237818">Selecione o Gerenciador de senhas e toque em "Adicionar widget".</translation>
 <translation id="891282356902782456">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google <ph name="EMAIL" />.</translation>

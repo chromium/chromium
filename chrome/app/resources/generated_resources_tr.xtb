@@ -4328,7 +4328,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3983400541576569538">Bazı uygulamalara ait veriler kaybolabilir</translation>
 <translation id="3983586614702900908">bilinmeyen bir tedarikçi firmanın cihazları</translation>
 <translation id="3983764759749072418">Play Store uygulamalarının bu cihaza erişim izni var.</translation>
-<translation id="3983769721878416534">Tıklamadan önce gecikme süresi</translation>
+<translation id="3983769721878416534">Tıklamadan önce bekleme süresi</translation>
 <translation id="3984135167056005094">E-posta adresini ekleme</translation>
 <translation id="3984159763196946143">Demo modu başlatılamadı</translation>
 <translation id="3984536049089846927">Sonraki sayfa</translation>
@@ -7658,7 +7658,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6406506848690869874">Senkronizasyon</translation>
 <translation id="6406708970972405507">Ayarlar - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Cihazınıza veri kaydetmesine izin veriliyor</translation>
-<translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve <ph name="WEBSITE_3" /> web sitelerinde verilerinizi okuma ve değiştirme</translation>
+<translation id="6408118934673775994">Şu web sitelerinde verilerinizi okuma ve değiştirme: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="6410328738210026208">Kanal değiştir ve Powerwash işlemini yap</translation>
 <translation id="6410390304316730527">Güvenli Tarama, sizi yanıltarak kötü amaçlı yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanıza neden olabilecek saldırganlara karşı korur. Bu özelliği kapatırsanız tanıdık olmayan veya saygınlığı şüpheli sitelere göz atarken dikkatli olun.</translation>

@@ -2687,7 +2687,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2819167288942847344">Usar os tamanhos predefinidos para evitar problemas em smartphones, tablets ou janelas redimensionáveis</translation>
 <translation id="2819519502129272135">Sincronização de arquivos desativada</translation>
 <translation id="2820957248982571256">Verificando...</translation>
-<translation id="282230978681804245">Seu perfil é gerenciado por sua organização, que pode ver algumas informações, incluindo:</translation>
+<translation id="282230978681804245">O perfil é gerenciado por sua organização, que pode ver algumas informações, incluindo:</translation>
 <translation id="2822551631199737692">Câmera em uso</translation>
 <translation id="2822634587701817431">Encolher / Expandir</translation>
 <translation id="2822910719211888134">Erro ao fazer backup do Linux</translation>
@@ -4782,7 +4782,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
-<translation id="4304713468139749426">Gerenciador de senhas</translation>
+<translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
@@ -6625,7 +6625,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5631272057151918206">Essa ação removerá até <ph name="OFFLINE_STORAGE_SIZE" /> do espaço usado pelos seus arquivos off-line. Alguns arquivos ainda vão estar disponíveis off-line. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais sobre as permissões de extensões</translation>
-<translation id="5632300633605675627">Configuração do seu perfil…</translation>
+<translation id="5632300633605675627">Configurando seu perfil…</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5633149627228920745">Saiba mais sobre os requisitos do sistema</translation>
@@ -9776,7 +9776,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
 <translation id="7897900149154324287">No futuro, não se esqueça de ejetar o dispositivo removível no aplicativo "Arquivos" antes de desconectá-lo. Caso contrário, você poderá perder dados.</translation>
 <translation id="7898725031477653577">Sempre traduzir</translation>
-<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador e as configurações, além de qual software está instalado no dispositivo.</translation>
+<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador e as configurações, além do software que está instalado no dispositivo.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903429136755645827">Clique para personalizar os controles do jogo</translation>
 <translation id="7903481341948453971">Usar o bloqueio de tela ao preencher senhas</translation>
@@ -11104,7 +11104,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8811923271770626905">Esta extensão pode ser executada em segundo plano</translation>
 <translation id="8813199641941291474">Controle e reprogramação bloqueados para dispositivos MIDI</translation>
 <translation id="8813698869395535039">Não é possível fazer login em <ph name="USERNAME" /></translation>
-<translation id="8813872945700551674">Peça para seu familiar responsável aprovar a extensão <ph name="EXTENSION_NAME" /></translation>
+<translation id="8813872945700551674">Peça para o familiar responsável aprovar a extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813937837706331325">Economia média</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">Os idiomas para verificação ortográfica são baseados na sua preferência de idioma</translation>

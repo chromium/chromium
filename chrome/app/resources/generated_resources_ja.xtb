@@ -1755,7 +1755,7 @@
 <translation id="2207116775853792104">この拡張機能を残す</translation>
 <translation id="2209841631181508629">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
-<translation id="2211043920024403606">プロフィール情報</translation>
+<translation id="2211043920024403606">プロファイル情報</translation>
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
@@ -2668,7 +2668,7 @@
 <translation id="2819167288942847344">アプリが誤動作しないように、スマートフォンやタブレットのウィンドウ、サイズ変更可能なウィンドウにプリセットのサイズを使用します</translation>
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
-<translation id="282230978681804245">あなたのプロフィールは組織によって管理されており、この組織は次の情報を見ることができます</translation>
+<translation id="282230978681804245">あなたのプロファイルは組織によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
 <translation id="2822910719211888134">Linux のバックアップ中にエラーが発生しました</translation>
@@ -8832,7 +8832,7 @@
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
-<translation id="7262919421769447042">あなたのプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
+<translation id="7262919421769447042">あなたのプロファイルは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="7264695323040866038">サポートされているウェブリンクを開く際に、常に <ph name="APP" /> アプリを使用しますか？</translation>
 <translation id="7267044199012331848">仮想マシンをインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
@@ -9973,7 +9973,7 @@
 <translation id="804786196054284061">エンドユーザー使用許諾契約</translation>
 <translation id="8048596485169033655">メインノードのアノテーション ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="8048728378294435881">データをバックアップして、他のデバイスで使用</translation>
-<translation id="8048977114738515028">デバイスにデスクトップ ショートカットを作成して、このプロフィールに直接アクセスできるようにします</translation>
+<translation id="8048977114738515028">デバイスにデスクトップ ショートカットを作成して、このプロファイルに直接アクセスできるようにします</translation>
 <translation id="8049029041626250638">キーボードまたはマウスを接続してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="8049122382261047457">Google レンズで画像を検索</translation>
 <translation id="8049705080247101012">「<ph name="EXTENSION_NAME" />」は、不正な拡張機能として認識されているためインストールされませんでした</translation>

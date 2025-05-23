@@ -223,7 +223,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
-<translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
+<translation id="2038563949887743358">Bật Yêu cầu trang web dành cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
 <translation id="2047378580182589770">Chạm và giữ để thoát chế độ Ẩn danh</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1381,7 +1381,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7186568385131859684">Kiểm soát cách Google sử dụng nhật ký duyệt web cùng với các dữ liệu khác của bạn trên các dịch vụ của Google</translation>
 <translation id="7190921792980745354">Chặn <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
-<translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi mật khẩu này ngay bây giờ}other{Bạn nên thay đổi các mật khẩu này ngay bây giờ}}</translation>
+<translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi ngay mật khẩu này}other{Bạn nên thay đổi ngay những mật khẩu này}}</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
@@ -1809,7 +1809,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="9055497320631373736">Đã thêm lại trang web vào danh sách trang tiềm năng</translation>
 <translation id="9057030985451135243">Tìm hiểu về nhóm thẻ được chia sẻ</translation>
-<translation id="9063523880881406963">Tắt Yêu cầu trang web cho máy tính</translation>
+<translation id="9063523880881406963">Tắt Yêu cầu trang web dành cho máy tính</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9065383040763568503">Dữ liệu lưu trữ mà Chrome cho là không quan trọng (ví dụ: những trang web không được lưu tùy chọn cài đặt hoặc những trang web mà bạn không truy cập thường xuyên)</translation>
 <translation id="9067341854474068781">Trang thông báo "Không có khoá truy cập nào" đã mở trên toàn màn hình</translation>

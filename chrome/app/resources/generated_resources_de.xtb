@@ -2671,7 +2671,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2819167288942847344">Voreinstellungen verwenden für Smartphone, Tablet oder anpassbare Fenster, um Fehldarstellung der App zu verhindern</translation>
 <translation id="2819519502129272135">Dateisynchronisierung deaktiviert</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
-<translation id="282230978681804245">Dein Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem</translation>
+<translation id="282230978681804245">Dein Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem:</translation>
 <translation id="2822551631199737692">Kamera aktiv</translation>
 <translation id="2822634587701817431">Reduzieren bzw. erweitern</translation>
 <translation id="2822910719211888134">Fehler beim Sichern von Linux</translation>
@@ -8840,7 +8840,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
-<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem</translation>
+<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem:</translation>
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
 <translation id="7267044199012331848">Die virtuelle Maschine konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lege den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
