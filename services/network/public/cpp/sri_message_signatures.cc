@@ -29,12 +29,12 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@authority", "@query-param", "@query", "@method",
-    "@path",      "@scheme",      "@status"
+    "@authority", "@query-param", "@query",  "@method",
+    "@path",      "@scheme",      "@status", "@target-uri",
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
-    // "@request-target", "@target-uri",
+    // "@request-target"
 };
 
 ParameterType ParamNameToType(std::string_view name) {
@@ -315,6 +315,14 @@ std::string SerializeDerivedComponent(
   } else if (component->name == "@status") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
     return base::NumberToString(response_status_code);
+  } else if (component->name == "@target-uri") {
+    // While we certainly need to clear any fragment component present in the
+    // requested URL, it's unclear whether `@target-uri` is intended to include
+    // the `userinfo` portion of a requested URL. For the moment, we'll strip
+    // those components as well, just as we do for referrers.
+    //
+    // https://datatracker.ietf.org/doc/html/rfc9421#content-target-uri
+    return url_request.url().GetAsReferrer().spec();
   }
 
   // TODO(383409584): Support additional derived components.

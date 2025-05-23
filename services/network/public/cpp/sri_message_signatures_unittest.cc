@@ -1122,6 +1122,51 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
   }
 }
 
+TEST_F(SRIMessageSignatureBaseTest, TargetUriComponent) {
+  struct {
+    std::string_view url;
+    std::string_view target;
+  } cases[] = {
+      {"https://url.test/", "https://url.test/"},
+      {"https://url.test:8080/", "https://url.test:8080/"},
+      {"https://user:pass@url.test/", "https://url.test/"},
+      {"https://url.test/?a=b", "https://url.test/?a=b"},
+      {"https://url.test/#anchor", "https://url.test/"},
+      {"https://url.test/path", "https://url.test/path"},
+      {"https://url.test/path/", "https://url.test/path/"},
+      {"https://url.test/pAtH", "https://url.test/pAtH"},
+      {"https://url.test/%0Apath", "https://url.test/%0Apath"},
+      {"https://url.test/%0apath", "https://url.test/%0apath"},
+      {"https://url.test/path/../", "https://url.test/"},
+      {"https://url.test/ü", "https://url.test/%C3%BC"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    std::string input_header = base::StrCat(
+        {"signature=(\"unencoded-digest\";sf \"@target-uri\";req);", "keyid=\"",
+         kPublicKey, "\";tag=\"ed25519-integrity\""});
+
+    std::stringstream expected_base;
+    expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                  << "\"@target-uri\";req: " << test.target << '\n'
+                  << "\"@signature-params\": (\"unencoded-digest\";sf "
+                     "\"@target-uri\";req);"
+                  << "keyid=\"" << kPublicKey << "\";tag=\"ed25519-integrity\"";
+
+    auto headers = ValidHeadersPlusInput(input_header.c_str());
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    request_ = CreateRequest(*context_, test.url);
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
+  }
+}
+
 TEST_F(SRIMessageSignatureBaseTest, SchemeComponent) {
   struct {
     std::string_view url;
