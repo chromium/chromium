@@ -2382,13 +2382,18 @@ AST_MATCHER_P(clang::Expr,
 class Spanifier {
  public:
   explicit Spanifier(MatchFinder& finder) : match_finder_(finder) {
-    auto exclusions = anyOf(
+    // `raw_ptr` or `span` should not have `.data()` applied.
+    auto frontier_exclusions = anyOf(
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
         raw_ptr_plugin::ImplicitFieldDeclaration(),
         raw_ptr_plugin::isInMacroLocation(),
-        raw_ptr_plugin::isInLocationListedInFilterFile(&paths_to_exclude_),
+        raw_ptr_plugin::isInLocationListedInFilterFile(&paths_to_exclude_));
+
+    // Standard exclusions include `raw_ptr` and `span`.
+    auto exclusions = anyOf(
+        frontier_exclusions,
         hasAncestor(cxxRecordDecl(anyOf(hasName("raw_ptr"), hasName("span")))));
 
     // Exclude literal strings as these need to become string_view
@@ -2681,24 +2686,22 @@ class Spanifier {
     // When passing now-span buffers to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
     // See test: 'array-external-call-original.cc'
+    //
+    // TODO(crbug.com/419598098): we had trouble exercising the "add
+    // `.data()` to frontier calls" logic in our test harness. This
+    // might imply that the exclude logic is broken or works differently
+    // from prod. If we could figure this out, we could test it.
     auto buffer_to_external_func = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(anyOf(
             callExpr(callee(functionDecl(
-                         anyOf(isExpansionInSystemHeader(),
-                               raw_ptr_plugin::isInExternCContext(),
-                               raw_ptr_plugin::isInThirdPartyLocation(),
-                               hasAttr(clang::attr::UnsafeBufferUsage)),
+                         frontier_exclusions,
                          unless(matchesName(
                              "std::(size|begin|end|empty|swap|ranges::)")))),
                      forEachArgumentWithParam(
                          expr(rhs_exprs_without_size_nodes), parmVarDecl())),
             cxxConstructExpr(
-                hasDeclaration(cxxConstructorDecl(
-                    anyOf(isExpansionInSystemHeader(),
-                          raw_ptr_plugin::isInExternCContext(),
-                          raw_ptr_plugin::isInThirdPartyLocation(),
-                          hasAttr(clang::attr::UnsafeBufferUsage)))),
+                hasDeclaration(cxxConstructorDecl(frontier_exclusions)),
                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
                                          parmVarDecl())))));
     Match(buffer_to_external_func, AppendDataCall);
