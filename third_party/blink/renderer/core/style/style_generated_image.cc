@@ -49,7 +49,8 @@ bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
   if (!container_sizes_.SizesEqual(other_generated.container_sizes_)) {
     return false;
   }
-  return image_generator_value_ == other_generated.image_generator_value_;
+  return base::ValuesEquivalent(image_generator_value_,
+                                other_generated.image_generator_value_);
 }
 
 CSSValue* StyleGeneratedImage::CssValue() const {
