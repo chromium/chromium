@@ -389,38 +389,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-15-tablet-x64-dbg",
-    mirrors = [
-        "ci/Android x64 Builder (dbg)",
-        "ci/android-15-tablet-x64-dbg-tests",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Android x64 Builder (dbg)",
-            "debug_try_builder",
-        ],
-    ),
-    contact_team_email = "clank-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-15-tablet-landscape-x64-dbg",
-    mirrors = [
-        "ci/Android x64 Builder (dbg)",
-        "ci/android-15-tablet-landscape-x64-dbg-tests",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Android x64 Builder (dbg)",
-            "debug_try_builder",
-        ],
-    ),
-    contact_team_email = "clank-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "android-arm-compile-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],

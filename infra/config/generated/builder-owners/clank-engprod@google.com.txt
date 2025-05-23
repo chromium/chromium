@@ -22,9 +22,7 @@ ci/android-14-automotive-landscape-x64-rel
 ci/android-14-tablet-landscape-arm64-rel
 ci/android-14-x64-fyi-rel
 ci/android-14-x64-rel
-ci/android-15-tablet-landscape-x64-dbg-tests
 ci/android-15-tablet-landscape-x64-rel
-ci/android-15-tablet-x64-dbg-tests
 ci/android-15-tablet-x64-rel
 ci/android-15-x64-fyi-rel
 ci/android-15-x64-rel
@@ -60,9 +58,7 @@ try/android-14-automotive-landscape-x64-rel
 try/android-14-tablet-landscape-arm64-rel
 try/android-14-x64-fyi-rel
 try/android-14-x64-rel
-try/android-15-tablet-landscape-x64-dbg
 try/android-15-tablet-landscape-x64-rel
-try/android-15-tablet-x64-dbg
 try/android-15-tablet-x64-rel
 try/android-15-x64-fyi-rel
 try/android-15-x64-rel
