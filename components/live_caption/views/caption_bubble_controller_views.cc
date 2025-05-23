@@ -29,10 +29,11 @@ namespace captions {
 // Static
 std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
     CaptionBubbleSettings* caption_bubble_settings,
-    const std::string& application_locale) {
+    const std::string& application_locale,
+    std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper) {
   return std::make_unique<CaptionBubbleControllerViews>(
       caption_bubble_settings, application_locale,
-      std::make_unique<TranslationViewWrapper>(caption_bubble_settings));
+      std::move(translation_view_wrapper));
 }
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(

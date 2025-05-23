@@ -14,6 +14,7 @@
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -73,7 +74,8 @@ FakeCaptionControllerDelegate::~FakeCaptionControllerDelegate() = default;
 std::unique_ptr<captions::CaptionBubbleController>
 FakeCaptionControllerDelegate::CreateCaptionBubbleController(
     captions::CaptionBubbleSettings*,
-    const std::string&) {
+    const std::string&,
+    std::unique_ptr<captions::TranslationViewWrapperBase>) {
   caption_bubble_alive_ = true;
   ++create_bubble_controller_count_;
   return std::make_unique<FakeCaptionBubbleController>(this);

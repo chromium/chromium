@@ -17,6 +17,7 @@
 namespace captions {
 class CaptionBubbleController;
 class CaptionBubbleSettings;
+class TranslationViewWrapperBase;
 }  // namespace captions
 
 namespace media {
@@ -38,8 +39,10 @@ class FakeCaptionControllerDelegate : public CaptionController::Delegate {
   ~FakeCaptionControllerDelegate() override;
 
   std::unique_ptr<captions::CaptionBubbleController>
-  CreateCaptionBubbleController(captions::CaptionBubbleSettings*,
-                                const std::string&) override;
+  CreateCaptionBubbleController(
+      captions::CaptionBubbleSettings*,
+      const std::string&,
+      std::unique_ptr<captions::TranslationViewWrapperBase>) override;
 
   void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) override;
 
