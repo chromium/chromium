@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Tetapan bahasa</translation>
 <translation id="1050693411695664090">Lemah</translation>
+<translation id="1053226848101751430">Entri dipadamkan</translation>
 <translation id="1053898984916097744">Mulakan sesuatu yang baharu atau dapatkan bantuan dalam aliran.</translation>
 <translation id="1054048317165655285">Selesaikan persediaan pada telefon anda</translation>
 <translation id="1054153489933238809">Buka &amp;Imej Asal dalam Tab Baharu</translation>
@@ -2250,6 +2251,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2519250377986324805">Lihat cara</translation>
 <translation id="2519517390894391510">Nama Profil Sijil</translation>
 <translation id="2520644704042891903">Menunggu soket tersedia...</translation>
+<translation id="2520961587246779103">Lagi pilihan untuk paparan pisah</translation>
 <translation id="2521427645491031107">Penyegerakan apl ditetapkan dalam Tetapan peranti</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
 <translation id="2521854691574443804">Menyemak <ph name="FILE_NAME" /> berdasarkan dasar keselamatan organisasi anda...</translation>
@@ -3198,6 +3200,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3202578601642193415">Terbaru</translation>
 <translation id="3204648577100496185">Data yang berkaitan dengan apl ini mungkin dialih keluar daripada peranti ini</translation>
 <translation id="3204717934117444051">Data yang disimpan pada peranti ini sahaja akan kekal dalam profil sedia ada. Data tersebut tidak akan disegerakkan kepada <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Kamus Pengguna <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Anda melihat carian cadangan dan diskaun beli-belah yang mungkin menarik minat anda berdasarkan aktiviti terbaharu anda.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10999,6 +11002,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8729133765463465108">Gunakan kamera untuk mengimbas Kod QR</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731029916209785242">Kebenaran (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entri <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> ingin: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Nombor port</translation>

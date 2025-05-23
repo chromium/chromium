@@ -177,6 +177,7 @@
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7966321538264951561">Tolak cadangan.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Alihkan tab kepada tetingkap baharu}other{Alihkan tab kepada tetingkap lain}}</translation>
 <translation id="799469866974412355">Kumpulan baharu daripada peranti anda yang lain</translation>
 <translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
 <translation id="8053770993984522566">Senarai kumpulan tab, dibuka pada ketinggian separuh</translation>
@@ -198,6 +199,7 @@
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktiviti anda dalam tab Inkognito ini akan dialih keluar daripada peranti ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan yang lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan yang lalu}}</translation>
+<translation id="8813708480179818649">Alih keluar tab daripada kumpulan</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
 <translation id="883379923675618699">Chrome menutup item dalam bahagian tidak aktif yang tidak digunakan selama 3 bulan secara automatik. Anda boleh mematikan pilihan ini sekarang atau pada bila-bila masa dalam Tetapan.</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>

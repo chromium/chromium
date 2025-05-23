@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ನೀವು ಈಗ ಕ್ಲಾಸ್ ಟೂಲ್‌ಗಳನ್ನು ಮಾತ್ರ ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="1762483337755424125">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್</translation>
 <translation id="1765169783255151332">ಕೀಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಬದಲಿಸಿ</translation>
 <translation id="1768959921651994223">ಪ್ರಮಾಣೀಕರಣದ ಪ್ರಕಾರ</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">ರೆಕಾರ್ಡ್ ಮಾಡಲು ಒತ್ತಿರಿ</translation>
 <translation id="8094062939584182041">ಈ ಸಮಸ್ಯೆಯ ಕುರಿತು ನಿಮಗೆ ಇಮೇಲ್ ಮಾಡಲು Google ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="8104083085214006426">ನೀವು ಓಪನ್ ಮತ್ತು ಸುರಕ್ಷಿತವಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ</translation>
+<translation id="8108879170356113798">ನೀವು ಕ್ಲಾಸ್ ಟೂಲ್‌ಗಳನ್ನು <ph name="NUM_SECONDS" /> ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಮಾತ್ರ ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="811820734797650957">(Android) ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>

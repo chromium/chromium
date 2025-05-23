@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">Групе картица се аутоматски чувају</translation>
 <translation id="6054741997831917303">Цена ове ставке је недавно снижена са <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Све дупликате картица ћемо сада архивирати, изузев последње коришћене копије.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Премести групу у нови прозор}one{Премести групу у други прозор}few{Премести групу у други прозор}other{Премести групу у други прозор}}</translation>
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6212567362666004597">Додај картицу у групу</translation>
 <translation id="6220820548421939212">Да. Може</translation>
