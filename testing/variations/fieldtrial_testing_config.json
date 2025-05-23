@@ -9190,24 +9190,6 @@
             ]
         }
     ],
-    "ExtensionsCollapseMainMenu": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtensionsCollapseMainMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionsToolbarAndMenuRedesign": [
         {
             "platforms": [
@@ -9221,6 +9203,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ExtensionsMenuAccessControl"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ExtensionsZeroStatePromo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Variant1",
+                    "params": {
+                        "x_iph-variant": "custom-action-iph"
+                    },
+                    "enable_features": [
+                        "ExtensionsCollapseMainMenu",
+                        "IPH_ExtensionsZeroStatePromo"
                     ]
                 }
             ]
