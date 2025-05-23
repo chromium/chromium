@@ -311,6 +311,12 @@ crbug.com/380039243 crbug.com/382294240 wpt_internal/html/canvas/placeElement/pl
 
 # --- END canvasRenderingContext.placeElement() implementation
 
+# --- canvasRenderingContext.drawElement() implementation: issues.chromium.org/issues/417556295
+
+crbug.com/419363705 wpt_internal/html/canvas/drawElement/svg-foreign-object.html [ Failure ]
+
+# --- END canvasRenderingContext.drawElement() implementation
+
 # --- Skia roll test suppressions
 
 # --- END Skia roll test suppresions
