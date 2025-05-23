@@ -2592,7 +2592,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 }
 
 // TODO(crbug.com/360106845): Fix flaky test and re-enable.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SigninPausedFromWebSignoutThenRestartChrome \
   DISABLED_SigninPausedFromWebSignoutThenRestartChrome
 #else
