@@ -426,8 +426,6 @@ crbug.com/1230619 [ android-chromium android android-pixel-2 angle-disabled no-p
 crbug.com/1230619 [ android-chromium android-pixel-6 angle-disabled arm no-clang-coverage no-passthrough target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 
-# Pixel 6 failures.
-crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -440,7 +438,6 @@ crbug.com/417505381 [ android android-nexus-5x ] Pixel_Canvas2DBlitText [ Failur
 crbug.com/417505381 [ android android-pixel-4 ] Pixel_Canvas2DBlitText [ Failure ]
 crbug.com/417505381 [ linux nvidia ] Pixel_Canvas2DBlitText [ Failure ]
 
-crbug.com/40241616 [ android android-sm-a137f ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
@@ -452,10 +449,6 @@ crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAcceler
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] Pixel_WebGLFloat [ Failure ]
 
-# Flaky failures vulkan queue submission, causing dchecks on CQ
-# finder:disable-narrowing
-crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-# finder:enable-narrowing
 
 # ChromeOS failures
 crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer-skia-gl ] Pixel_RenderPasses [ Failure ]
