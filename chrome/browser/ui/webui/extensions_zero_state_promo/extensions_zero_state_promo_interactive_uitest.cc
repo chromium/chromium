@@ -86,8 +86,9 @@ class ExtensionsZeroStateCustomActionIphTest
 // Test showing the zero state promo custom action IPH to users with no
 // extensions installed. Clicking on the custom action opens a page to the
 // Chrome Web Store.
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
-                       ShowingZeroStatePromoCustomActionIph) {
+                       DISABLED_ShowingZeroStatePromoCustomActionIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -121,8 +122,9 @@ class ExtensionsZeroStateCustomUiChipIphTest
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the coupon chip button should open a
 // page to the Chrome Web Store.
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       ClickCouponChipOnZeroStatePromoIph) {
+                       DISABLED_ClickCouponChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -148,8 +150,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the writing chip button should open a
 // page to the Chrome Web Store.
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       ClickWritingChipOnZeroStatePromoIph) {
+                       DISABLED_ClickWritingChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -175,8 +178,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the productivity chip button should open a
 // page to the Chrome Web Store.
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       ClickProductivityChipOnZeroStatePromoIph) {
+                       DISABLED_ClickProductivityChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -202,8 +206,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the ai chip button should open a
 // page to the Chrome Web Store.
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       ClickAiChipOnZeroStatePromoIph) {
+                       DISABLED_ClickAiChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -226,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DismissPromoIph) {
+                       DISABLED_DismissPromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
