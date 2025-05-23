@@ -207,8 +207,8 @@ public class DOMUtils {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
         sb.append(
-                "  return [document.documentElement.clientWidth,"
-                        + " document.documentElement.clientHeight];");
+                "  return [Math.round(window.visualViewport.width),"
+                        + " Math.round(window.visualViewport.height)];");
         sb.append("})();");
 
         String jsonText =
