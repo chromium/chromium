@@ -57,7 +57,8 @@ class BrowserFeaturePromoController20
   ~BrowserFeaturePromoController20() override;
 
  protected:
-  friend class BrowserFeaturePromoController20CanShowPromoForElementUiTest;
+  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoController20ActivationUiTest,
+                           CanShowPromoForElement);
 
   // FeaturePromoController:
   ui::ElementContext GetAnchorContext() const override;

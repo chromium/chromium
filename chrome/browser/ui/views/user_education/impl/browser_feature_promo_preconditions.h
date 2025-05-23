@@ -24,8 +24,6 @@
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
-    kContentNotFullscreenPrecondition);
-DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kOmniboxNotOpenPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
@@ -45,21 +43,6 @@ class WindowActivePrecondition
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
       ComputedData& data) const override;
-};
-
-// Requires that the window isn't in content-fullscreen.
-class ContentNotFullscreenPrecondition
-    : public user_education::FeaturePromoPreconditionBase {
- public:
-  explicit ContentNotFullscreenPrecondition(Browser& browser);
-  ~ContentNotFullscreenPrecondition() override;
-
-  // FeaturePromoPreconditionBase:
-  user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
-
- private:
-  const raw_ref<Browser> browser_;
 };
 
 // Precondition that the Omnibox isn't open.
