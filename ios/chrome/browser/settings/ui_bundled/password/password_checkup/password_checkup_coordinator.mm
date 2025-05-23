@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -79,6 +80,9 @@ using password_manager::PasswordCheckReferrer;
   // An observer that tracks whether push notification permission settings have
   // been modified.
   NotificationsSettingsObserver* _notificationsSettingsObserver;
+
+  // The service responsible for running the password checks.
+  scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -117,9 +121,11 @@ using password_manager::PasswordCheckReferrer;
   _viewController = [[PasswordCheckupViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.handler = self;
+
+  _passwordCheckManager =
+      IOSChromePasswordCheckManagerFactory::GetForProfile(self.profile);
   _mediator = [[PasswordCheckupMediator alloc]
-      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                       GetForProfile(self.profile)];
+      initWithPasswordCheckManager:_passwordCheckManager];
   _viewController.delegate = _mediator;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
@@ -173,6 +179,7 @@ using password_manager::PasswordCheckReferrer;
 // credentials for `warningType`.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
+  [self logPasswordCheckState];
   DUMP_WILL_BE_CHECK(!_passwordIssuesCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
@@ -396,6 +403,9 @@ using password_manager::PasswordCheckReferrer;
 // Local authentication is required every time the current
 // scene is backgrounded and foregrounded until reauthCoordinator is stopped.
 - (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordCheckupCoordinatorShowReauth"));
+
   DCHECK(!_reauthCoordinator);
 
   _reauthCoordinator = [[ReauthenticationCoordinator alloc]
@@ -448,6 +458,44 @@ using password_manager::PasswordCheckReferrer;
       return YES;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;
+  }
+}
+
+// TODO(crbug.com/409680593): Remove when done with the investigation.
+- (void)logPasswordCheckState {
+  switch (_passwordCheckManager->GetPasswordCheckState()) {
+    case PasswordCheckState::kCanceled:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateCanceled"));
+      return;
+    case PasswordCheckState::kIdle:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateIdle"));
+      return;
+    case PasswordCheckState::kNoPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateNoPasswords"));
+      return;
+    case PasswordCheckState::kOffline:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateOffline"));
+      return;
+    case PasswordCheckState::kOther:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateOther"));
+      return;
+    case PasswordCheckState::kQuotaLimit:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"));
+      return;
+    case PasswordCheckState::kRunning:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateRunning"));
+      return;
+    case PasswordCheckState::kSignedOut:
+      base::RecordAction(base::UserMetricsAction(
+          "MobilePasswordCheckupCoordinatorCheckStateSignedOut"));
+      return;
   }
 }
 

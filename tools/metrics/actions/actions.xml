@@ -25371,6 +25371,104 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePasswordCheckupCoordinatorCheckStateCanceled"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the canceled state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateIdle"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the idle state of the password check upon opening Password
+    Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateNoPasswords"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the no passwords state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateOffline"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the offline state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateOther"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the other state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the quota limit state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateRunning"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the running state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorCheckStateSignedOut"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported to track the signed out state of the password check upon opening
+    Password Issues from the Password Checkup homepage. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordCheckupCoordinatorShowReauth"
+    not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when reauth is requested as a result of entering the Password
+    Checkup homepage. iOS only. TODO(crbug.com/409680593): This user action was
+    added to investigate a crash. Remove when done with the investigation.
+  </description>
+</action>
+
 <action name="MobilePasswordCheckupSettingsBack">
   <owner>noemies@google.com</owner>
   <description>
@@ -25432,6 +25530,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePasswordIssuesCoordinatorStart" not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when the PasswordIssuesCoordinator is started. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
 <action name="MobilePasswordIssuesOpenPasswordDetails">
   <owner>noemies@google.com</owner>
   <description>
@@ -25459,6 +25566,24 @@ should be able to be added at any place in this file.
   <owner>noemies@google.com</owner>
   <description>
     Reported when Password Issues Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesViewDidAppear" not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when the PasswordIssuesTableViewController view has appeared. iOS
+    only. TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesViewDidLoad" not_user_triggered="true">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when the PasswordIssuesTableViewController view has loaded. iOS
+    only. TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
   </description>
 </action>
 
@@ -25757,6 +25882,24 @@ should be able to be added at any place in this file.
 
     This user action is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="MobileReauthFailed">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when reauthentication failed. iOS only. TODO(crbug.com/409680593):
+    This user action was added to investigate a crash. Remove when done with the
+    investigation.
+  </description>
+</action>
+
+<action name="MobileReauthSuccessful">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when reauthentication succeeded. iOS only.
+    TODO(crbug.com/409680593): This user action was added to investigate a
+    crash. Remove when done with the investigation.
   </description>
 </action>
 

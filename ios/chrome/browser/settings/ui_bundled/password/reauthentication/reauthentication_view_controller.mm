@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -123,6 +124,9 @@
 - (void)recordAuthenticationEvent:(ReauthenticationEvent)event {
   UMA_HISTOGRAM_ENUMERATION(password_manager::kReauthenticationUIEventHistogram,
                             event);
+  base::RecordAction(base::UserMetricsAction(
+      event == ReauthenticationEvent::kSuccess ? "MobileReauthSuccessful"
+                                               : "MobileReauthFailed"));
 }
 
 // Starts the native UI for Local Authentication.
