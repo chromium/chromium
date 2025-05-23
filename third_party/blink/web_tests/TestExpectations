@@ -7336,10 +7336,6 @@ crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/perform
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
 
-# Test is flaky with "Illegal invocation" error reading
-# PromiseRejectionEvent.promise
-crbug.com/407400666 external/wpt/html/dom/idlharness.https.html?exclude=(Document|Window|HTML.+) [ Failure Pass ]
-
 # Sheriff 2022-11-15
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
 crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]

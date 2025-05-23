@@ -1,13 +1,11 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
   assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
 [FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
   assert_inherits: property "inBandMetadataTrackDispatchType" not found in prototype chain
 [FAIL] ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type
   assert_inherits: property "data" found on object expected in prototype chain
-[FAIL] CustomElementRegistry interface: existence and properties of interface object
-  assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {\n                new interface_object();\n            }" did not throw
 [FAIL] ElementInternals interface: operation setValidity(optional ValidityStateFlags, optional DOMString, optional HTMLElement)
   assert_equals: property has wrong .length expected 0 but got 1
 [FAIL] VisibilityStateEntry interface: attribute name
