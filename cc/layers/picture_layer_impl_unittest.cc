@@ -2301,13 +2301,14 @@ TEST_F(LegacySWPictureLayerImplTest, RasterInducingScrollPaintCheckerboarding) {
   RecordingSource recording;
   Region invalidation;
   recording.Update(layer_bounds, 1, client, invalidation);
-  SetupPendingTreeWithFixedTileSize(
-      FakeRasterSource::CreateFromRecordingSource(recording), tile_size,
-      Region());
+  SetupPendingTreeWithFixedTileSize(nullptr, tile_size, Region());
+  pending_layer()->SetBounds(layer_bounds);
   CreateScrollNodeForNonCompositedScroller(
       host_impl()->pending_tree()->property_trees(),
       pending_layer()->scroll_tree_index(), scroll_element_id,
       scroll_contents_bounds, scroll_container_bounds, scroll_container_origin);
+  pending_layer()->SetRasterSource(
+      FakeRasterSource::CreateFromRecordingSource(recording), invalidation);
   ScrollTree& pending_scroll_tree =
       host_impl()->pending_tree()->property_trees()->scroll_tree_mutable();
   pending_scroll_tree.SetScrollingContentsCullRect(scroll_element_id,
@@ -6702,14 +6703,36 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   EXPECT_EQ(gfx::Rect(100, 300, 200, 200), info2.visual_rect);
   EXPECT_FALSE(info2.has_discardable_images);
 
+  gfx::Size layer_bounds(500, 500);
+  SetupPendingTree();
+  pending_layer()->SetBounds(layer_bounds);
+  auto* property_trees = host_impl()->pending_tree()->property_trees();
+  auto& scroll_tree = property_trees->scroll_tree_mutable();
+  int scroll_node_id1 =
+      CreateScrollNodeForNonCompositedScroller(
+          property_trees, pending_layer()->scroll_tree_index(),
+          scroll_element_id1, gfx::Size(200, 200), gfx::Size(300, 200),
+          gfx::Point())
+          .id;
+  ASSERT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(
+      *scroll_tree.Node(scroll_node_id1)));
+  int scroll_node_id2 =
+      CreateScrollNodeForNonCompositedScroller(
+          property_trees, scroll_node_id1, scroll_element_id2,
+          gfx::Size(200, 200), gfx::Size(1000, 1000), gfx::Point(100, 300))
+          .id;
+  ASSERT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(
+      *scroll_tree.Node(scroll_node_id2)));
+
   FakeContentLayerClient client;
   client.set_display_item_list(display_list);
-  gfx::Size layer_bounds(500, 500);
   RecordingSource recording;
   Region invalidation;
   recording.Update(layer_bounds, 1, client, invalidation);
   auto raster = FakeRasterSource::CreateFromRecordingSource(recording);
-  SetupTreesWithInvalidation(raster, raster, invalidation);
+  pending_layer()->SetRasterSource(raster, Region());
+  ActivateTree();
+  SetupPendingTree(raster, layer_bounds, invalidation);
   pending_layer()->set_invalidation(Region());
 
   auto pending_image_map = pending_layer()->discardable_image_map();
@@ -6720,12 +6743,12 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
               ElementsAre(gfx::Rect(-1, -1, 202, 202)));
 
   // Simulate a raster-inducing scroll.
-  host_impl()
-      ->pending_tree()
-      ->property_trees()
-      ->scroll_tree_mutable()
-      .GetOrCreateSyncedScrollOffsetForTesting(scroll_element_id1)
-      ->SetCurrent(gfx::PointF(0, 100));
+  scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(scroll_element_id1)
+      ->SetCurrent(gfx::PointF(0, 100.25f));
+  host_impl()->pending_tree()->DidUpdateScrollOffset(scroll_element_id1, false);
+  property_trees->transform_tree_mutable().UpdateTransforms(
+      scroll_tree.Node(scroll_node_id1)->transform_id);
+
   // Invalidating scroll_element_id1 will invalidate scroll visual rect.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});
   EXPECT_EQ(info1.visual_rect, pending_layer()->invalidation().bounds());
