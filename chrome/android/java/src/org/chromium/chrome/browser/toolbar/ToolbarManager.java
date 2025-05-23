@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 
 import androidx.activity.BackEventCompat;
@@ -1672,6 +1673,8 @@ public class ToolbarManager
                         mControlContainer.getView());
         ObservableSupplierImpl<Integer> controlContainerTranslationSupplier =
                 new ObservableSupplierImpl<>(0);
+        ObservableSupplierImpl<Integer> controlContainerHeightSupplier =
+                new ObservableSupplierImpl<>(LayoutParams.WRAP_CONTENT);
         new ToolbarPositionController(
                 mBrowserControlsSizer,
                 ContextUtils.getAppSharedPreferences(),
@@ -1687,6 +1690,7 @@ public class ToolbarManager
                 mBottomToolbarControlsOffsetSupplier,
                 mProgressBarContainer,
                 controlContainerTranslationSupplier,
+                controlContainerHeightSupplier,
                 new Handler(Looper.getMainLooper()),
                 mActivity);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
@@ -1701,6 +1705,7 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             mWindowAndroid.getInsetObserver(),
                             controlContainerTranslationSupplier,
+                            controlContainerHeightSupplier,
                             keyboardAccessoryStateSupplier.getIsSheetShowingSupplier());
         }
     }

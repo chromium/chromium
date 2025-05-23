@@ -257,6 +257,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(0);
     private final ObservableSupplierImpl<Integer> mControlContainerTranslationSupplier =
             new ObservableSupplierImpl<>(0);
+    private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier =
+            new ObservableSupplierImpl<>(LayoutParams.WRAP_CONTENT);
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
 
@@ -322,6 +324,7 @@ public class ToolbarPositionControllerTest {
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
                         mControlContainerTranslationSupplier,
+                        mControlContainerHeightSupplier,
                         new Handler(Looper.getMainLooper()),
                         mContext);
     }
@@ -850,6 +853,19 @@ public class ToolbarPositionControllerTest {
         // Run the posted task to complete changing the progress bar layout params.
         ShadowLooper.idleMainLooper();
         assertControlsAtTop();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    public void testControlContainerHeightAdjustments() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertControlsAtBottom();
+        assertEquals(TOOLBAR_HEIGHT, mBottomControlsStacker.getTotalHeight());
+
+        mControlContainerHeightSupplier.set(15);
+        assertEquals(15, mBottomControlsStacker.getTotalHeight());
     }
 
     private void assertControlsAtBottom() {

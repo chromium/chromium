@@ -81,6 +81,9 @@ public class MiniOriginBarControllerTest {
             new ObservableSupplierImpl<>(false);
     ObservableSupplierImpl<Integer> mControlContainerTranslationSupplier =
             new ObservableSupplierImpl<>(0);
+
+    ObservableSupplierImpl<Integer> mControlContainerHeightSupplier =
+            new ObservableSupplierImpl<>(LayoutParams.WRAP_CONTENT);
     private final ObservableSupplierImpl<Boolean> mIsKeyboardAccessorySheetShowing =
             new ObservableSupplierImpl<>(false);
 
@@ -110,6 +113,7 @@ public class MiniOriginBarControllerTest {
                         mBrowserControlsSizer,
                         mInsetObserver,
                         mControlContainerTranslationSupplier,
+                        mControlContainerHeightSupplier,
                         mIsKeyboardAccessorySheetShowing);
     }
 
@@ -133,12 +137,17 @@ public class MiniOriginBarControllerTest {
                 mLayoutParamsCaptor.getValue().height);
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+        Assert.assertEquals(
+                mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
+                mControlContainerHeightSupplier.get().intValue());
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);
         verify(mLocationBar).setUrlBarUsesSmallText(false);
         assertEquals(LayoutParams.WRAP_CONTENT, mControlContainerLayoutParams.height);
         assertEquals(Gravity.TOP, mLocationBarLayoutParams.gravity);
+        Assert.assertEquals(
+                LayoutParams.WRAP_CONTENT, mControlContainerHeightSupplier.get().intValue());
         Assert.assertEquals(
                 MiniOriginState.READY, mMiniOriginBarController.getCurrentStateForTesting());
     }

@@ -90,8 +90,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Context mContext;
     private final ObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
     private final ObservableSupplier<Integer> mControlContainerTranslationSupplier;
+    private final ObservableSupplier<Integer> mControlContainerHeightSupplier;
     private final Handler mHandler;
     @LayerVisibility private int mLayerVisibility;
+    private int mControlContainerHeight;
     private final BottomControlsLayerWithOffset mBottomToolbarLayer;
     private final BottomControlsLayerWithOffset mProgressBarLayer;
 
@@ -115,6 +117,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @param keyboardAccessoryHeightSupplier Supplier of the height of the keyboard accessory,
      *     which stacks on top of the soft keyboard.
      * @param controlContainer The control container for the current context.
+     * @param controlContainerHeightSupplier Supplier of an override current height of the control
+     *     container. If the value is equal to LayoutParams.WRAP_CONTENT, it should be understood as
+     *     meaning that the height should no longer be overridden.
      * @param bottomControlsStacker {@link BottomControlsStacker} used to harmonize the position of
      *     the bottom toolbar with other bottom-anchored UI.
      */
@@ -133,6 +138,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
             View toolbarProgressBarContainer,
             ObservableSupplier<Integer> controlContainerTranslationSupplier,
+            ObservableSupplier<Integer> controlContainerHeightSupplier,
             Handler handler,
             Context context) {
         mBrowserControlsSizer = browserControlsSizer;
@@ -148,6 +154,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
         mToolbarProgressBarContainer = toolbarProgressBarContainer;
         mControlContainerTranslationSupplier = controlContainerTranslationSupplier;
+        mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mContext = context;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
@@ -186,7 +193,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
                     @Override
                     public int getHeight() {
-                        return mControlContainer.getToolbarHeight();
+                        return mControlContainerHeight;
                     }
 
                     @Override
@@ -253,6 +260,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
         mControlContainerTranslationSupplier.addObserver(
                 (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
+        mControlContainerHeightSupplier.addSyncObserverAndCallIfNonNull(
+                this::updateControlContainerHeight);
         updateCurrentPosition();
         mHandler = handler;
     }
@@ -482,6 +491,16 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (layer == mBottomToolbarLayer) {
             mBrowserControlsOffsetSupplier.set(layerYOffset);
         }
+    }
+
+    private void updateControlContainerHeight(int height) {
+        if (height == LayoutParams.WRAP_CONTENT) {
+            mControlContainerHeight = mControlContainer.getToolbarHeight();
+        } else {
+            mControlContainerHeight = height;
+        }
+
+        mBottomControlsStacker.requestLayerUpdate(false);
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */

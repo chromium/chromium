@@ -117,6 +117,7 @@ public class MiniOriginBarController implements Observer {
     private final ControlContainer mControlContainer;
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
+    private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier;
     private final ObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing;
     private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
     private @MiniOriginState int mMiniOriginBarState = MiniOriginState.NOT_READY;
@@ -150,6 +151,7 @@ public class MiniOriginBarController implements Observer {
             BrowserControlsSizer browserControlsSizer,
             InsetObserver insetObserver,
             ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
+            ObservableSupplierImpl<Integer> controlContainerHeightSupplier,
             ObservableSupplier<Boolean> isKeyboardAccessorySheetShowing) {
         mLocationBar = locationBar;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
@@ -158,6 +160,7 @@ public class MiniOriginBarController implements Observer {
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBrowserControlsSizer = browserControlsSizer;
+        mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mIsKeyboardAccessorySheetShowing = isKeyboardAccessorySheetShowing;
         mDefaultLocationBarRightPadding = mLocationBar.getContainerView().getPaddingRight();
         mDefaultLocationBarLayoutParams =
@@ -271,6 +274,7 @@ public class MiniOriginBarController implements Observer {
 
         int newControlContainerHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
+        mControlContainerHeightSupplier.set(newControlContainerHeight);
         mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
         var minifiedLayoutParams =
                 new FrameLayout.LayoutParams(
@@ -304,6 +308,7 @@ public class MiniOriginBarController implements Observer {
         mControlContainer.toggleLocationBarOnlyMode(false);
 
         mControlContainer.mutateLayoutParams().height = LayoutParams.WRAP_CONTENT;
+        mControlContainerHeightSupplier.set(LayoutParams.WRAP_CONTENT);
 
         var locationBarView = mLocationBar.getContainerView();
         locationBarView.setLayoutParams(mDefaultLocationBarLayoutParams);
