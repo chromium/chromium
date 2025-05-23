@@ -44805,6 +44805,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tabs.ArchivedTabAutoDeletePromo">
+  <owner>hitarthkothari@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the user opts in/out of auto delete through the promo.
+  </description>
+</action>
+
 <action name="Tabs.ArchivedTabRescued">
   <owner>wylieb@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -49907,6 +49915,14 @@ should be able to be added at any place in this file.
       label="Recorded when the 'Share' option in the context menu is
              selected."/>
   <affected-action name="TabSwitcher.ContextMenu"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="No"
+      label="Recorded when user opts out of auto delete through the promo."/>
+  <suffix name="Yes"
+      label="Recorded when user opts into auto delete through the promo."/>
+  <affected-action name="Tabs.ArchivedTabAutoDeletePromo"/>
 </action-suffix>
 
 </actions>
