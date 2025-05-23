@@ -18,8 +18,10 @@
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -78,6 +80,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
       test_data_dir_.AppendASCII("crash_on_clear_back_forward_cache"),
       std::nullopt));
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetTabById) {
+  // Browser tests start with 1 tab open.
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+
+  // Get the ID for the active tab.
+  int tab_id = ExtensionTabUtil::GetTabId(active_contents);
+  ASSERT_NE(tab_id, SessionID::InvalidValue().id());
+
+  // Look up the web contents by ID. It should match the active contents.
+  content::WebContents* found_contents = nullptr;
+  EXPECT_TRUE(ExtensionTabUtil::GetTabById(
+      tab_id, profile(), /*include_incognito=*/true, &found_contents));
+  EXPECT_EQ(found_contents, active_contents);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
