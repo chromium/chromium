@@ -96,6 +96,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/vector_icons/vector_icons.h"
+#include "extensions/common/extension_urls.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -609,6 +610,29 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(117, "emiliapaz@chromium.org",
                        "Triggered when an extension "
                        "requests access permission.")));
+
+  // kIPHExtensionsZeroStatePromoFeature
+  switch (feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get()) {
+    case feature_engagement::kCustomActionIph:
+      registry.RegisterFeature(std::move(
+          user_education::FeaturePromoSpecification::CreateForCustomAction(
+              feature_engagement::kIPHExtensionsZeroStatePromoFeature,
+              kToolbarAppMenuButtonElementId,
+              IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_DESCRIPTION,
+              IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT,
+              CreateNavigationAction(extension_urls::GetWebstoreLaunchURL()))
+              .SetCustomActionIsDefault(true)
+              .SetBubbleTitleText(IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE)
+              .SetMetadata(140, "uwyiming@google.com",
+                           "Triggered when a user has no extensions installed.")
+              .SetHighlightedMenuItem(
+                  ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
+      break;
+    case feature_engagement::kCustomUiChipIph:
+    case feature_engagement::kCustomUIPlainLinkIph:
+      // TODO(409573170): add the custom UI variants of the IPH.
+      break;
+  }
 #endif
 
   // kIPHLiveCaptionFeature:

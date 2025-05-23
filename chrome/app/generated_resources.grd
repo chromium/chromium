@@ -10239,6 +10239,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
           =1 {To manage it, open Extensions}
           other {To manage them, open Extensions}}
       </message>
+      <message name="IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE" desc="Title text shown on the promotional UI appearing when the user has no extensions installed.">
+         Enhance your browser with extensions
+      </message>
+      <message name="IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_DESCRIPTION" desc="Body text shown on the promotional UI appearing when the user has no extensions installed.">
+         Extensions are add-ons to Chrome that can help you stay organized, simplify tasks, and customize your browsing
+      </message>
+      <message name="IDS_EXTENSIONS_ZERO_STATE_PROMO_CUSTOM_ACTION_IPH_ACCEPT" desc="Text on the custom action button that opens a new tab to the Chrome Web Store.">
+         Discover extensions
+      </message>
       <message name="IDS_GLOBAL_MEDIA_CONTROLS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls toolbar button.">
         New! Control your music, videos, and more.
       </message>

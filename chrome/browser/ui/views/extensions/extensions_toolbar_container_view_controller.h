@@ -20,6 +20,26 @@ class ExtensionsToolbarContainerViewController final
   static constexpr int kFlexOrderRequestAccessButton = 2;
   static constexpr int kFlexOrderActionView = 3;
 
+  // Returns a scope object to block launching the Extensions Zero State
+  // Promo IPH.
+  //
+  // In a live environment, the Extensions Zero State Promo IPH will only open
+  // after at least 10 minutes into the browsing session.
+  //
+  // When running InProcessBrowserTest, the IPH can trigger as soon as the
+  // browser is constructed. When the IPH is shown, it takes focus away from
+  // the browser, and causes tests to time out, as
+  // InProcessBrowserTest::PreRunTestOnMainThread waits for the browser to
+  // come to focus.
+  //
+  // This global variable allows the In Process Browser Tests that trigger
+  // the IPH to avoid this race condition, by suppressing the IPH until the
+  // browser initialization and set up steps are done.
+  //
+  // TODO(crbug.com/417543907) Move the Zero State Promo IPH trigger to a more
+  // appropriate location to avoid this race condition.
+  static base::AutoReset<bool> BlockZeroStatePromoForTesting();
+
   ExtensionsToolbarContainerViewController(
       Browser* browser,
       ExtensionsToolbarContainer* extensions_container);

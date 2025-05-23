@@ -11267,6 +11267,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/extensions/extension_keybinding_apitest.cc",
         "../browser/extensions/omnibox_focus_interactive_test.cc",
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
+        "../browser/ui/webui/extensions_zero_state_promo/extensions_zero_state_promo_interactive_uitest.cc",
       ]
 
       deps += [

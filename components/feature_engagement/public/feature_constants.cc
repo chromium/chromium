@@ -98,8 +98,8 @@ BASE_FEATURE_ENUM_PARAM(
     IPHExtensionsZeroStatePromoVariant,
     kIPHExtensionsZeroStatePromoVariantParam,
     &feature_engagement::kIPHExtensionsZeroStatePromoFeature,
-    "iph-variant",
-    IPHExtensionsZeroStatePromoVariant::kCustomUiChipIph,
+    "x_iph-variant",
+    IPHExtensionsZeroStatePromoVariant::kCustomActionIph,
     &kIPHExtensionsZeroStatePromoVariantOptions);
 #endif
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
