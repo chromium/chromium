@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -50,15 +52,19 @@ class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TabUIHelperWithPrerenderingTest,
                        ShouldNotAffectTabUIHelperOnPrerendering) {
-  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  GURL prerender_url =
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerender_url =
       embedded_test_server()->GetURL("/favicon/title2_with_favicon.html");
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
 
-  TabUIHelper* tab_ui_helper = TabUIHelper::FromWebContents(GetWebContents());
-  std::u16string primary_title = tab_ui_helper->GetTitle();
-  ui::ImageModel primary_favicon = tab_ui_helper->GetFavicon();
-  bool primary_should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
+  TabUIHelper* const tab_ui_helper = browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveTab()
+                                         ->GetTabFeatures()
+                                         ->tab_ui_helper();
+  const std::u16string primary_title = tab_ui_helper->GetTitle();
+  const ui::ImageModel primary_favicon = tab_ui_helper->GetFavicon();
+  const bool primary_should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
 
   // Set |create_by_session_restore_| to true to check if the value is changed
   // after prerendering. It should not be changed because DidStopLoading is not

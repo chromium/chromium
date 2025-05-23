@@ -7,19 +7,22 @@
 
 #include <string>
 
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "ui/base/models/image_model.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+
+namespace tabs {
+class TabInterface;
+}
+
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 // TabUIHelper is used by UI code to obtain the title and favicon for a
 // WebContents. The values returned by TabUIHelper differ from the WebContents
 // when the WebContents hasn't loaded.
-class TabUIHelper : public content::WebContentsObserver,
-                    public content::WebContentsUserData<TabUIHelper> {
+class TabUIHelper : public tabs::ContentsObservingTabFeature {
  public:
-  TabUIHelper(const TabUIHelper&) = delete;
-  TabUIHelper& operator=(const TabUIHelper&) = delete;
-
+  explicit TabUIHelper(tabs::TabInterface& tab);
   ~TabUIHelper() override;
 
   // Get the title of the tab. When the associated WebContents' title is empty,
@@ -35,7 +38,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   void SetWasActiveAtLeastOnce();
 
-  // content::WebContentsObserver implementation
+  // tabs::ContentsObservingTabFeature override:
   void DidStopLoading() override;
   void OnVisibilityChanged(content::Visibility visiblity) override;
 
@@ -47,14 +50,8 @@ class TabUIHelper : public content::WebContentsObserver,
   }
 
  private:
-  friend class content::WebContentsUserData<TabUIHelper>;
-
-  explicit TabUIHelper(content::WebContents* contents);
-
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_UI_HELPER_H_

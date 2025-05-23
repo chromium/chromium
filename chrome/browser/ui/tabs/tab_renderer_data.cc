@@ -76,13 +76,13 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
       security_interstitial_tab_helper->ShouldDisplayURL();
   TabRendererData data;
-  TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(contents);
 
+  tabs::TabFeatures* const features = tab->GetTabFeatures();
+  TabUIHelper* const tab_ui_helper = features->tab_ui_helper();
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
 
   // If the tab is in a deferred state, override favicon and title data.
-  const tabs::TabFeatures* features = tab->GetTabFeatures();
   if (features) {
     const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
         features->saved_tab_group_web_contents_listener();

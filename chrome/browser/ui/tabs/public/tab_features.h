@@ -26,6 +26,7 @@ class PwaInstallPageActionController;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
+class TabUIHelper;
 class TranslatePageActionController;
 
 namespace commerce {
@@ -243,10 +244,15 @@ class TabFeatures {
     return memory_saver_chip_helper_.get();
   }
 
+  TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
+
   // Note: Temporary until there is a more uniform way to swap out features for
   // testing.
   TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(
       std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper);
+
+  TabUIHelper* SetTabUIHelperForTesting(
+      std::unique_ptr<TabUIHelper> tab_ui_helper);
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicPageContextEligibilityObserver*
@@ -398,6 +404,8 @@ class TabFeatures {
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
 
   std::unique_ptr<TabAlertController> tab_alert_controller_;
+
+  std::unique_ptr<TabUIHelper> tab_ui_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

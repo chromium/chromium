@@ -10,11 +10,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
@@ -23,7 +26,10 @@ namespace {
 
 void UpdateItemForWebContents(NSMenuItem* item,
                               content::WebContents* web_contents) {
-  TabUIHelper* tab_ui_helper = TabUIHelper::FromWebContents(web_contents);
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  TabUIHelper* const tab_ui_helper =
+      tab_interface->GetTabFeatures()->tab_ui_helper();
 
   auto* audio_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audio_helper && audio_helper->WasRecentlyAudible()) {

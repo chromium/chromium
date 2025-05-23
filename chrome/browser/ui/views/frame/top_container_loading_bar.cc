@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -129,8 +131,10 @@ void TopContainerLoadingBar::UpdateLoadingProgress() {
     return;
   }
 
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents());
   TabUIHelper* const tab_ui_helper =
-      TabUIHelper::FromWebContents(web_contents());
+      tab_interface->GetTabFeatures()->tab_ui_helper();
   if (tab_ui_helper->ShouldHideThrobber()) {
     HideImmediately();
     return;

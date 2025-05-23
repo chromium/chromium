@@ -14,10 +14,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -155,7 +157,10 @@ TabListRowView::TabListRowView(
   content::WebContents* const web_contents = tab.GetWebContents();
   CHECK(web_contents);
 
-  TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(web_contents);
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  TabUIHelper* const tab_ui_helper =
+      tab_interface->GetTabFeatures()->tab_ui_helper();
   CHECK(tab_ui_helper);
 
   // The container adds all contents of the row as child views to ensure that we

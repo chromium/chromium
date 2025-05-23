@@ -24,9 +24,8 @@ BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
 
 }  // namespace
 
-TabUIHelper::TabUIHelper(content::WebContents* contents)
-    : WebContentsObserver(contents),
-      content::WebContentsUserData<TabUIHelper>(*contents) {}
+TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
+    : ContentsObservingTabFeature(tab_interface) {}
 
 TabUIHelper::~TabUIHelper() = default;
 
@@ -78,5 +77,3 @@ void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
     was_active_at_least_once_ = true;
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);

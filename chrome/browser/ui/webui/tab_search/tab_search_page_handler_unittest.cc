@@ -22,8 +22,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -969,6 +971,20 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   TabStripModel* fake_tab_strip_model() { return tab_strip_model_.get(); }
   Profile* testing_profile() { return testing_profile_.get(); }
 
+  tabs::TabInterface* AppendBackgroundTab() {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    tabs::TabFeatures* const tab_features = tab_model->GetTabFeatures();
+    tabs::TabInterface* const tab_interface = tab_model.get();
+    tab_features->SetTabUIHelperForTesting(
+        std::make_unique<TabUIHelper>(*tab_interface));
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    return tab_interface;
+  }
+
  private:
   std::unique_ptr<TestingProfile> testing_profile_;
   base::test::ScopedFeatureList feature_list_;
@@ -985,26 +1001,14 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindUnusedTabs) {
   // Create stale tabs.
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
   for (int i = 0; i < 4; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    stale_tabs_raw_ptr.push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    stale_tabs_raw_ptr.push_back(AppendBackgroundTab());
   }
 
   // Create duplicate tabs.
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   GURL duplicate_tabs_url("https://duplicate_url.com");
   for (int i = 0; i < 2; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    duplicate_tabs[duplicate_tabs_url].push_back(AppendBackgroundTab());
   }
 
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
@@ -1035,30 +1039,19 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterExcludeTabs) {
   // Create stale tabs.
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
   for (int i = 0; i < 4; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    stale_tabs_raw_ptr.push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    stale_tabs_raw_ptr.push_back(AppendBackgroundTab());
   }
 
   // Create duplicate tabs.
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   GURL duplicate_tabs_url("https://duplicate_url.com");
   for (int i = 0; i < 2; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
+    tabs::TabInterface* const tab_interface = AppendBackgroundTab();
     auto navigation_simulator =
         content::NavigationSimulator::CreateBrowserInitiated(
-            duplicate_tabs_url, tab_model->GetContents());
+            duplicate_tabs_url, tab_interface->GetContents());
     navigation_simulator->Commit();
-    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_interface);
   }
 
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
@@ -1091,25 +1084,13 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    stale_tabs_raw_ptr.push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    stale_tabs_raw_ptr.push_back(AppendBackgroundTab());
   }
 
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   GURL duplicate_tabs_url("https://duplicate_url.com");
   for (int i = 0; i < 2; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    duplicate_tabs[duplicate_tabs_url].push_back(AppendBackgroundTab());
   }
 
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
@@ -1133,31 +1114,19 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterUnusedTabChanges) {
 
   // Create 10 stale tabs.
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    stale_tabs_raw_ptr.push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    stale_tabs_raw_ptr.push_back(AppendBackgroundTab());
   }
 
   // Create duplicate tabs.
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   GURL duplicate_tabs_url("https://duplicate_url.com");
   for (int i = 0; i < 5; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-
+    tabs::TabInterface* const tab_interface = AppendBackgroundTab();
     auto navigation_simulator =
         content::NavigationSimulator::CreateBrowserInitiated(
-            duplicate_tabs_url, tab_model->GetContents());
+            duplicate_tabs_url, tab_interface->GetContents());
     navigation_simulator->Commit();
-    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_interface);
   }
 
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
@@ -1221,31 +1190,20 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDuplicateURLChanges) {
 
   // Create 10 stale tabs.
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
-    stale_tabs_raw_ptr.push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    stale_tabs_raw_ptr.push_back(AppendBackgroundTab());
   }
 
   // Create duplicate tabs.
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   GURL duplicate_tabs_url("https://duplicate_url.com");
   for (int i = 0; i < 5; ++i) {
-    std::unique_ptr<tabs::TabModel> tab_model =
-        std::make_unique<tabs::TabModel>(
-            content::WebContents::Create(
-                content::WebContents::CreateParams(testing_profile())),
-            fake_tab_strip_model());
+    tabs::TabInterface* const tab_interface = AppendBackgroundTab();
 
     auto navigation_simulator =
         content::NavigationSimulator::CreateBrowserInitiated(
-            duplicate_tabs_url, tab_model->GetContents());
+            duplicate_tabs_url, tab_interface->GetContents());
     navigation_simulator->Commit();
-    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
-    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_interface);
   }
 
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())

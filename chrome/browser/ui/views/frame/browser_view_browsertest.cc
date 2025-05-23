@@ -380,13 +380,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
 // Verifies a tab should show its favicon.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
   // Opens "chrome://version/" page, which uses default favicon.
-  GURL version_url(chrome::kChromeUIVersionURL);
+  const GURL version_url(chrome::kChromeUIVersionURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), version_url));
-  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = TabUIHelper::FromWebContents(contents);
+  auto* const tab_features =
+      browser()->tab_strip_model()->GetActiveTab()->GetTabFeatures();
+  auto* const helper = tab_features->tab_ui_helper();
   ASSERT_TRUE(helper);
 
-  auto favicon = helper->GetFavicon();
+  const auto favicon = helper->GetFavicon();
   ASSERT_FALSE(favicon.IsEmpty());
 }
 

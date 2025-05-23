@@ -13,11 +13,13 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,12 +73,15 @@ class TabRendererDataTest : public testing::Test {
     if (pinned) {
       tab_strip_model_.SetTabPinned(index, true);
     }
+    TabInterface* const tab_interface = tab_strip_model_.GetTabAtIndex(index);
+    tab_interface->GetTabFeatures()->SetTabUIHelperForTesting(
+        std::make_unique<TabUIHelper>(*tab_interface));
     return index;
   }
 };
 
 TEST_F(TabRendererDataTest, FromTabInModel) {
-  int index = AddTab();
+  const int index = AddTab();
 
   TabRendererData data =
       TabRendererData::FromTabInModel(&tab_strip_model_, index);
@@ -88,8 +93,7 @@ TEST_F(TabRendererDataTest, FromTabInModel) {
   EXPECT_EQ(data.visible_url, GURL());
   EXPECT_EQ(data.last_committed_url, GURL());
   EXPECT_EQ(data.title,
-            TabUIHelper::FromWebContents(data.tab_interface->GetContents())
-                ->GetTitle());
+            data.tab_interface->GetTabFeatures()->tab_ui_helper()->GetTitle());
   EXPECT_FALSE(data.incognito);
   EXPECT_FALSE(data.blocked);
   EXPECT_FALSE(data.should_hide_throbber);
@@ -175,11 +179,12 @@ TEST_F(TabRendererDataTest, BlockedState) {
 
 TEST_F(TabRendererDataTest, FaviconAndIconFlags) {
   {  // Initial favicon data matches default
-    int default_index = AddTab();
-    content::WebContents* wc = tab_strip_model_.GetWebContentsAt(default_index);
+    const int default_index = AddTab();
     TabRendererData data =
         TabRendererData::FromTabInModel(&tab_strip_model_, default_index);
-    EXPECT_EQ(data.favicon, TabUIHelper::FromWebContents(wc)->GetFavicon());
+    EXPECT_EQ(
+        data.favicon,
+        data.tab_interface->GetTabFeatures()->tab_ui_helper()->GetFavicon());
     EXPECT_FALSE(data.should_themify_favicon);
     EXPECT_FALSE(data.is_monochrome_favicon);
     EXPECT_TRUE(data.show_icon);
@@ -293,9 +298,9 @@ TEST_F(TabRendererDataTest, AlertStateAudioPlaying) {
 }
 
 TEST_F(TabRendererDataTest, ShouldHideThrobber) {
-  int index = AddTab();
-  content::WebContents* wc = tab_strip_model_.GetWebContentsAt(index);
-  TabUIHelper* helper = TabUIHelper::FromWebContents(wc);
+  const int index = AddTab();
+  TabUIHelper* const helper =
+      tab_strip_model_.GetTabAtIndex(index)->GetTabFeatures()->tab_ui_helper();
   ASSERT_NE(nullptr, helper);
   helper->set_created_by_session_restore(true);
   TabRendererData data =

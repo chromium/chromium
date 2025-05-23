@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -706,8 +707,7 @@ std::u16string BrowserTabStripController::GetGroupContentString(
       IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tab_group->tab_count() - 1);
   std::u16string short_title;
   gfx::ElideString(
-      TabUIHelper::FromWebContents(tab_group->GetFirstTab()->GetContents())
-          ->GetTitle(),
+      tab_group->GetFirstTab()->GetTabFeatures()->tab_ui_helper()->GetTitle(),
       kContextMenuTabTitleMaxLength, &short_title);
   return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
@@ -856,10 +856,13 @@ void BrowserTabStripController::OnTabStripModelChanged(
   if (selection.active_tab_changed()) {
     // It's possible for `new_contents` to be null when the final tab in a tab
     // strip is closed.
-    content::WebContents* new_contents = selection.new_contents;
+    content::WebContents* const new_contents = selection.new_contents;
+    tabs::TabInterface* const new_tab_interface = selection.new_tab;
     std::optional<size_t> index = selection.new_model.active();
-    if (new_contents && index.has_value()) {
-      TabUIHelper::FromWebContents(new_contents)->SetWasActiveAtLeastOnce();
+    if (new_contents && new_tab_interface && index.has_value()) {
+      new_tab_interface->GetTabFeatures()
+          ->tab_ui_helper()
+          ->SetWasActiveAtLeastOnce();
       SetTabDataAt(new_contents, index.value());
     }
   }
