@@ -10,7 +10,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --dropdown-button-size: 40px;
+  --dropdown-button-size: 32px;
+  display: flex;
   position: relative;
 }
 
@@ -20,7 +21,7 @@ cr-button {
   border: none;
   height: var(--dropdown-button-size);
   width: var(--dropdown-button-size);
-  margin: 4px;
+  margin: 0;
   min-width: auto;
 }
 
@@ -31,7 +32,7 @@ cr-button[data-selected="true"] {
 
 div {
   background-color: var(--viewer-side-background-color);
-  bottom: 56px;
+  bottom: 48px;
   border-radius: 8px;
   left: 50%;
   padding: 0 8px;

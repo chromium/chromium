@@ -13,20 +13,21 @@
 
 :host {
   --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
-  display: flex;
+  border-radius: 16px 16px 0 0;
 }
 
 .md-select {
-  --md-select-width: 120px;
-  margin-inline-end: 4px;
+  --md-select-width: 130px;
+  margin-inline-end: 8px;
 }
 
 .md-select.size-select {
-  --md-select-width: 60px;
+  --md-select-width: 64px;
+  margin-inline-end: var(--toolbar-item-gap);
 }
 
 text-styles-selector {
-  padding: 0 12px;
+  --text-styles-selector-gap: 8px;
 }
 
 text-alignment-selector {
