@@ -33,7 +33,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/util/mock_clock.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -90,6 +92,31 @@ class MockBocaWindowObserver : public ash::boca::BocaWindowObserver {
   MOCK_METHOD(void, OnWindowTrackerCleanedup, (), (override));
 };
 
+// Fake delegate implementation for the `OnTaskNotificationsManager` to minimize
+// dependency on Ash UI.
+class FakeOnTaskNotificationsManagerDelegate
+    : public ash::boca::OnTaskNotificationsManager::Delegate {
+ public:
+  FakeOnTaskNotificationsManagerDelegate() = default;
+  FakeOnTaskNotificationsManagerDelegate(
+      const FakeOnTaskNotificationsManagerDelegate&) = delete;
+  FakeOnTaskNotificationsManagerDelegate& operator=(
+      const FakeOnTaskNotificationsManagerDelegate&) = delete;
+  ~FakeOnTaskNotificationsManagerDelegate() override = default;
+
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification) override {
+    notifications_shown_.insert(notification->id());
+  }
+
+  bool WasNotificationShown(const std::string& id) {
+    return notifications_shown_.contains(id);
+  }
+
+ private:
+  std::set<std::string> notifications_shown_;
+};
+
 class OnTaskLockedSessionWindowTrackerBrowserTestBase
     : public InProcessBrowserTest {
  protected:
@@ -108,12 +135,23 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
     ash::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
     system_web_app_manager_ =
         std::make_unique<OnTaskSystemWebAppManagerImpl>(profile());
+
+    // Set up notifications manager with the fake delegate for testing purposes.
+    auto fake_notifications_delegate =
+        std::make_unique<FakeOnTaskNotificationsManagerDelegate>();
+    fake_notifications_delegate_ptr_ = fake_notifications_delegate.get();
+    LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
+        ->SetNotificationManagerForTesting(
+            ash::boca::OnTaskNotificationsManager::CreateForTest(
+                std::move(fake_notifications_delegate)));
+
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     system_web_app_manager_.reset();
+    fake_notifications_delegate_ptr_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -143,9 +181,19 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
     return system_web_app_manager_.get();
   }
 
+  void VerifyResourceNotSupportedNotificationShown() {
+    ash::boca::MockClock::Get().Advance(
+        ash::boca::kOnTaskNotificationCountdownInterval);
+    content::RunAllTasksUntilIdle();
+    EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+        ash::boca::kOnTaskResourceNotSupportedInLockedModeNotificationId));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OnTaskSystemWebAppManagerImpl> system_web_app_manager_;
+  raw_ptr<FakeOnTaskNotificationsManagerDelegate>
+      fake_notifications_delegate_ptr_;
 };
 
 class OnTaskLockedSessionWindowTrackerBrowserTest
@@ -821,6 +869,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(BrowserList::GetInstance()->size(), original_browser_count);
   EXPECT_FALSE(browser_weak_ptr);
+  VerifyResourceNotSupportedNotificationShown();
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,

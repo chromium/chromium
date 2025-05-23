@@ -44,6 +44,11 @@ inline constexpr char kOnTaskBundleContentAddedNotificationId[] =
 inline constexpr char kOnTaskBundleContentRemovedNotificationId[] =
     "boca.on_task.bundle_content_removed_notification";
 
+// Notification id for the notification shown when resource is not supported in
+// locked mode.
+inline constexpr char kOnTaskResourceNotSupportedInLockedModeNotificationId[] =
+    "boca.on_task.resource_not_supported_in_locked_mode_notification";
+
 // Returns the allowlisted notifications for OnTask in locked mode.
 base::flat_set<std::string> GetAllowlistedNotificationIdsForLockedMode();
 

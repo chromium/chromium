@@ -7192,6 +7192,9 @@
       <message name="IDS_ON_TASK_BUNDLE_CONTENT_REMOVED_MESSAGE" desc="Notification message telling students that their teacher has removed content from the bundle.">
         Your teacher has removed content in Class Tools
       </message>
+      <message name="IDS_ON_TASK_CANNOT_OPEN_UNSUPPORTED_RESOURCES_IN_LOCKED_MODE_MESSAGE" desc="Notification message telling students that the provided resource is unsupported in locked mode. Let the students tell the teacher the issue.">
+        Your teacher has sent an unsupported resource. Let them know.
+      </message>
 
       <!-- Strings for the OnTask pod -->
       <message name="IDS_ON_TASK_POD_ACCESSIBLE_NAME" desc="Accessible name for the OnTask pod widget.">

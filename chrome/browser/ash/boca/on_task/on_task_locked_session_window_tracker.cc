@@ -39,6 +39,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 // static
 Browser* LockedSessionWindowTracker::GetBrowserWithTab(
@@ -165,6 +166,19 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
     // no Boca SWA instance being tracked. Skip close for now.
     return;
   }
+  ash::boca::OnTaskNotificationsManager::NotificationCreateParams
+      notification_create_params(
+          ash::boca::kOnTaskResourceNotSupportedInLockedModeNotificationId,
+          /*title=*/l10n_util::GetStringUTF16(IDS_ON_TASK_NOTIFICATION_TITLE),
+          /*message_id=*/
+          IDS_ON_TASK_CANNOT_OPEN_UNSUPPORTED_RESOURCES_IN_LOCKED_MODE_MESSAGE,
+          /*notifier_id=*/
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              ash::boca::kOnTaskNotifierId,
+              ash::NotificationCatalogName::kOnTaskResourceNotSupported));
+  notifications_manager_->CreateNotification(
+      std::move(notification_create_params));
   browser->window()->Close();
 }
 
