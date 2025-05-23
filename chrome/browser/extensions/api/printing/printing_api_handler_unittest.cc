@@ -156,12 +156,6 @@ constexpr char kCjt[] = R"(
         },
         "collate": {
           "collate": false
-        },
-        "margins" : {
-          "top_microns": 500,
-          "right_microns": 800,
-          "bottom_microns": 200,
-          "left_microns": 600
         }
       }
     })";
