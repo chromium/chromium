@@ -606,7 +606,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
       // SAFETY: We have validated above that `ranges_size` elements can be read
       // from the allocation holding `ranges_data`.
       UNSAFE_BUFFERS(base::span(ranges_data, ranges_size)));
-  if (!created_ranges || created_ranges->size() != ranges_size ||
+  if (created_ranges->size() != ranges_size ||
       created_ranges->checksum() != histogram_ranges_checksum ||
       created_ranges->range(1) != histogram_minimum ||
       created_ranges->range(histogram_bucket_count - 1) != histogram_maximum) {
