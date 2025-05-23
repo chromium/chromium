@@ -108,6 +108,24 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the window is visible.
   virtual bool IsVisible() const = 0;
 
+  // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
+  // An appropriate use case is as a variable passed to an asynchronously
+  // invoked PostTask.
+  // An inappropriate use case is to store as a member of an object that can
+  // outlive BrowserWindowInterface. This leads to inconsistent state machines.
+  // For example (don't do this):
+  // class FooOutlivesBrowser {
+  //   base::WeakPtr<BrowserWindowInterface> bwi_;
+  //   // Conceptually, this member should only be set if bwi_ is set.
+  //   std::optional<SkColor> color_of_browser_;
+  // };
+  // For example (do this):
+  // class FooOutlivesBrowser {
+  //   // Use RegisterBrowserDidClose() to clear both bwi_ and
+  //   // color_of_browser_ prior to bwi_ destruction.
+  //   raw_ptr<BrowserWindowInterface> bwi_;
+  //   std::optional<SkColor> color_of_browser_;
+  // };
   virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
 
   // Returns the view that houses the Lens overlay.

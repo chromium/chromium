@@ -72,6 +72,25 @@ class TabInterface : public SupportsHandles<TabInterface> {
   static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
 
   // Returns a weak pointer to `this`.
+  //
+  // WARNING: Many uses of base::WeakPtr are inappropriate and lead to bugs.
+  // An appropriate use case is as a variable passed to an asynchronously
+  // invoked PostTask.
+  // An inappropriate use case is to store as a member of an object that can
+  // outlive TabInterface. This leads to inconsistent state machines.
+  // For example (don't do this):
+  // class FooOutlivesTab{
+  //   base::WeakPtr<TabInterface> tab_;
+  //   // Conceptually, this member should only be set if tab_ is set.
+  //   std::optional<SkColor> color_of_tab_;
+  // };
+  // For example (do this):
+  // class FooOutlivesTab {
+  //   // Use RegisterWillDetach() to clear both tab_ and color_of_tab_ prior
+  //   // to tab_ destruction.
+  //   raw_ptr<TabInterface> tab_;
+  //   std::optional<SkColor> color_of_tab_;
+  // };
   virtual base::WeakPtr<TabInterface> GetWeakPtr() = 0;
 
   // When a tab is in the background, the WebContents may be discarded to save
