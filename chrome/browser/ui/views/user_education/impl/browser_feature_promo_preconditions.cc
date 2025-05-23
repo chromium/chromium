@@ -10,6 +10,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -32,6 +34,8 @@
 #include "ui/views/widget/widget.h"
 
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kContentNotFullscreenPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kOmniboxNotOpenPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
@@ -73,6 +77,24 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
   return widget && widget->ShouldPaintAsActive()
              ? user_education::FeaturePromoResult::Success()
              : user_education::FeaturePromoResult::kAnchorSurfaceNotActive;
+}
+
+ContentNotFullscreenPrecondition::ContentNotFullscreenPrecondition(
+    Browser& browser)
+    : FeaturePromoPreconditionBase(kContentNotFullscreenPrecondition,
+                                   "Content is not fullscreen"),
+      browser_(browser) {}
+ContentNotFullscreenPrecondition::~ContentNotFullscreenPrecondition() = default;
+
+user_education::FeaturePromoResult
+ContentNotFullscreenPrecondition::CheckPrecondition(ComputedData& data) const {
+  auto* const fullscreen_controller =
+      browser_->exclusive_access_manager()->fullscreen_controller();
+  if (fullscreen_controller->IsWindowFullscreenForTabOrPending() ||
+      fullscreen_controller->IsExtensionFullscreenOrPending()) {
+    return user_education::FeaturePromoResult::kBlockedByUi;
+  }
+  return user_education::FeaturePromoResult::Success();
 }
 
 OmniboxNotOpenPrecondition::OmniboxNotOpenPrecondition(
