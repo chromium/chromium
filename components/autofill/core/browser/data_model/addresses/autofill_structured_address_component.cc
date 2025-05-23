@@ -26,6 +26,13 @@
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
+namespace {
+
+// The list of countries where the fallback parsing is not supported.
+static constexpr auto countries_not_supporting_fallback_parsing =
+    base::MakeFixedFlatSet<AddressCountryCode>({AddressCountryCode("IN")});
+
+}  // namespace
 
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right) {
@@ -490,7 +497,11 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   }
 
   // As a final fallback, parse using the fallback method.
-  ParseValueAndAssignSubcomponentsByFallbackMethod();
+  // In some countries (e.g. India), the parsing cannot be reliably implemented
+  // and the fallback method does more harm than good.
+  if (!countries_not_supporting_fallback_parsing.contains(GetCountryCode())) {
+    ParseValueAndAssignSubcomponentsByFallbackMethod();
+  }
 }
 
 bool AddressComponent::ParseValueAndAssignSubcomponentsByI18nParsingRules() {
