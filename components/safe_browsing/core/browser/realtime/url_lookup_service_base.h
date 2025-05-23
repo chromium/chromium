@@ -194,8 +194,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
  private:
   class PendingRTLookupRequestData {
    public:
-    explicit PendingRTLookupRequestData(
-        std::unique_ptr<network::SimpleURLLoader> loader);
+    PendingRTLookupRequestData();
     PendingRTLookupRequestData(const PendingRTLookupRequestData&) = delete;
     PendingRTLookupRequestData(PendingRTLookupRequestData&&);
     PendingRTLookupRequestData& operator=(const PendingRTLookupRequestData&) =
@@ -205,6 +204,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
     // Adds the callback to the internal list if it is not null.
     void AddCallback(RTLookupResponseCallback callback);
+
+    void SetLoader(std::unique_ptr<network::SimpleURLLoader> loader);
 
     network::SimpleURLLoader* loader() { return loader_.get(); }
     bool has_callbacks() { return !callbacks_.empty(); }
@@ -308,7 +309,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& req_data,
       std::optional<std::string> access_token_string,
-      RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       ChromeUserPopulation::UserPopulation user_population,
       bool is_sampled_report,
@@ -349,7 +349,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   void OnRequestProtoFilled(
       const GURL& sanitized_url,
       const std::string& access_token_string,
-      RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       bool is_sampled_report,
       std::unique_ptr<RTLookupRequest> request);
