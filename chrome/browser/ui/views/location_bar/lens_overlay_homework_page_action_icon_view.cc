@@ -76,6 +76,10 @@ bool LensOverlayHomeworkPageActionIconView::ShouldShow() {
     return false;
   }
 
+  if (browser_->GetProfile()->IsOffTheRecord()) {
+    return false;
+  }
+
   if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
           omnibox::kShowGoogleLensShortcut)) {
     return false;
