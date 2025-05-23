@@ -247,6 +247,7 @@ source_set("unit_tests") {
     "//testing/gtest",
 
     # Test from sub-directories
+    "//chrome/browser/ash/app_mode/arcvm_app:unit_tests",
     "//chrome/browser/ash/app_mode/auto_sleep:unit_tests",
     "//chrome/browser/ash/app_mode/isolated_web_app:unit_tests",
     "//chrome/browser/ash/app_mode/metrics:unit_tests",

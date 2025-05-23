@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -105,6 +106,7 @@ class KioskControllerImpl : public KioskController,
   WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;
   KioskChromeAppManager GUARDED_BY_CONTEXT(sequence_checker_)
       chrome_app_manager_;
+  KioskArcvmAppManager GUARDED_BY_CONTEXT(sequence_checker_) arcvm_app_manager_;
 
   // Created once the Kiosk session launch starts. Only not null during the
   // kiosk launch.

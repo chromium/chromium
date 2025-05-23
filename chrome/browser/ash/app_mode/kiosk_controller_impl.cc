@@ -26,6 +26,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
@@ -91,10 +93,21 @@ std::optional<KioskApp> IsolatedWebAppById(const KioskIwaManager& manager,
                   app_data->icon());
 }
 
+std::optional<KioskApp> ArcvmAppById(const KioskArcvmAppManager& manager,
+                                     const AccountId& account_id) {
+  const KioskArcvmAppData* data = manager.GetAppByAccountId(account_id);
+  if (!data) {
+    return std::nullopt;
+  }
+  return KioskApp(KioskAppId::ForArcvmApp(account_id), data->name(),
+                  data->icon());
+}
+
 KioskApp EmptyKioskApp(const KioskAppId& app_id) {
   switch (app_id.type) {
     case KioskAppType::kChromeApp:
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       return KioskApp{app_id,
                       /*name=*/"",
                       /*icon=*/gfx::ImageSkia(),
@@ -113,7 +126,9 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
 KioskControllerImpl::KioskControllerImpl(
     PrefService& local_state,
     user_manager::UserManager* user_manager)
-    : local_state_(local_state), iwa_manager_(local_state) {
+    : local_state_(local_state),
+      iwa_manager_(local_state),
+      arcvm_app_manager_(&local_state) {
   user_manager_observation_.Observe(user_manager);
 }
 
@@ -138,6 +153,8 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
       return ChromeAppById(chrome_app_manager_, app_id.app_id.value());
     case KioskAppType::kIsolatedWebApp:
       return IsolatedWebAppById(iwa_manager_, app_id.account_id);
+    case KioskAppType::kArcvmApp:
+      return ArcvmAppById(arcvm_app_manager_, app_id.account_id);
   }
 }
 
@@ -157,6 +174,11 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
   if (const auto& iwa_account_id = iwa_manager_.GetAutoLaunchAccountId();
       iwa_account_id.has_value()) {
     return IsolatedWebAppById(iwa_manager_, *iwa_account_id);
+  }
+
+  if (const auto& arc_account_id = arcvm_app_manager_.GetAutoLaunchAccountId();
+      arc_account_id.is_valid()) {
+    return ArcvmAppById(arcvm_app_manager_, arc_account_id);
   }
 
   return std::nullopt;
@@ -183,6 +205,11 @@ void KioskControllerImpl::InitializeKioskSystemSession(
     case KioskAppType::kIsolatedWebApp:
       iwa_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
+    case KioskAppType::kArcvmApp:
+      // TODO(crbug.com/418950414): Add background for Kiosk system session not
+      // getting created for ARCVM Kiosk. We might need Kiosk system session
+      // for ARCVM kiosk.
+      NOTREACHED();
   }
 }
 

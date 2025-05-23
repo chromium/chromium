@@ -96,6 +96,8 @@ KioskSystemSession::KioskSystemSession(
     case KioskAppType::kIsolatedWebApp:
       InitForIwaKiosk(app_name);
       break;
+    case KioskAppType::kArcvmApp:
+      NOTREACHED();
   }
 }
 

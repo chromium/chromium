@@ -34,6 +34,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_service.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -120,8 +121,39 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
       base::UmaHistogramLongTimes("Kiosk.LaunchDuration.IsolatedWebApp",
                                   duration);
       break;
+    case KioskAppType::kArcvmApp:
+      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.ArcvmApp", duration);
+      break;
   }
 }
+
+// This is a not-owning wrapper around ArcKioskAppService which allows to be
+// plugged into a unique_ptr safely.
+// TODO(crbug.com/418950275): Remove this wrapper.
+class KioskArcvmAppServiceWrapper : public KioskAppLauncher {
+ public:
+  KioskArcvmAppServiceWrapper(KioskArcvmAppService* service,
+                              KioskAppLauncher::NetworkDelegate* delegate)
+      : service_(service) {}
+
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override {
+    service_->AddObserver(observer);
+  }
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override {
+    service_->RemoveObserver(observer);
+  }
+  void Initialize() override { service_->Initialize(); }
+  void ContinueWithNetworkReady() override {
+    service_->ContinueWithNetworkReady();
+  }
+  void LaunchApp() override { service_->LaunchApp(); }
+
+ private:
+  // `service_` is externally owned and it's the caller's responsibility to
+  // ensure that it outlives this wrapper.
+  const raw_ptr<KioskArcvmAppService> service_;
+};
 
 std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     Profile* profile,
@@ -138,6 +170,11 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     case KioskAppType::kIsolatedWebApp:
       return std::make_unique<KioskIwaLauncher>(
           profile, kiosk_app_id.account_id, network_delegate);
+    case KioskAppType::kArcvmApp:
+      // KioskArcvmAppService lifetime is bound to the profile, therefore
+      // wrap it into a separate object.
+      return std::make_unique<KioskArcvmAppServiceWrapper>(
+          KioskArcvmAppService::Get(profile), network_delegate);
   }
 }
 

@@ -24,7 +24,7 @@ UserType DeviceLocalAccountTypeToUserType(
       return UserType::kKioskIWA;
     // TODO(crbug.com/388602323): Create new user type for ARCVM Kiosk.
     case policy::DeviceLocalAccountType::kArcvmKioskApp:
-      NOTREACHED();
+      return UserType::kKioskIWA;
   }
 }
 

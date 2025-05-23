@@ -128,6 +128,10 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
       case KioskAppType::kIsolatedWebApp:
         handle->login_performer_->LoginAsIwaKioskAccount(account_id);
         break;
+      case KioskAppType::kArcvmApp:
+        // TODO(crbug.com/388602323): Add profile load and login.
+        NOTIMPLEMENTED();
+        break;
     }
 
     return handle;

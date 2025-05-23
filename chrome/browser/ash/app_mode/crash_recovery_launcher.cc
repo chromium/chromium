@@ -36,6 +36,10 @@ std::unique_ptr<KioskAppLauncher> CreateAppLauncher(
     case KioskAppType::kIsolatedWebApp:
       return std::make_unique<KioskIwaLauncher>(
           &profile, kiosk_app_id.account_id, network_delegate);
+    case KioskAppType::kArcvmApp:
+      // TODO(crbug.com/418950200): Verify and fix behavior for ARCVM kiosk app
+      // crash recovery.
+      NOTREACHED();
   }
 
   NOTREACHED();

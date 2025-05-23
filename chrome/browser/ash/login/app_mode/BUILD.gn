@@ -24,6 +24,7 @@ static_library("app_mode") {
     "//ash",
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login",

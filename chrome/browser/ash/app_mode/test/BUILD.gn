@@ -12,6 +12,7 @@ source_set("browser_tests") {
   sources = [
     "ephemeral_kiosk_browsertest.cc",
     "kiosk_accessibility_extension_browsertest.cc",
+    "kiosk_arcvm_app_manager_browsertest.cc",
     "kiosk_auto_login_bailout_browsertest.cc",
     "kiosk_browsertest.cc",
     "kiosk_chrome_app_browsertest.cc",
@@ -40,8 +41,10 @@ source_set("browser_tests") {
   ]
   deps = [
     ":test_support",
+    "//ash/constants",
     "//chrome/browser",
     "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
@@ -54,6 +57,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/services/app_service/public/cpp:app_types",
     "//components/web_package",
     "//components/web_package/test_support",

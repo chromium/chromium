@@ -24,6 +24,8 @@ std::string ToString(KioskAppType type) {
       return "WebKiosk";
     case KioskAppType::kIsolatedWebApp:
       return "IsolatedWebAppKiosk";
+    case KioskAppType::kArcvmApp:
+      return "ArcvmKiosk";
   }
 }
 
@@ -48,6 +50,12 @@ KioskAppId KioskAppId::ForWebApp(const AccountId& account_id) {
 KioskAppId KioskAppId::ForIsolatedWebApp(const AccountId& account_id) {
   DUMP_WILL_BE_CHECK(account_id.is_valid());
   return {KioskAppType::kIsolatedWebApp, account_id};
+}
+
+// static
+KioskAppId KioskAppId::ForArcvmApp(const AccountId& account_id) {
+  CHECK(account_id.is_valid());
+  return KioskAppId(KioskAppType::kArcvmApp, account_id);
 }
 
 KioskAppId::KioskAppId() = default;

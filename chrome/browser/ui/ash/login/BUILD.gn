@@ -99,6 +99,7 @@ static_library("login") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/optin",

@@ -66,6 +66,7 @@ void AddKioskLaunchTagIdToTestResult(KioskAppType app_type) {
       base::AddFeatureIdTagToTestResult(kLaunchWebAppTag);
       break;
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       break;
   }
 }

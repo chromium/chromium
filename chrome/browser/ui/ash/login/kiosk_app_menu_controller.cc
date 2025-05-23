@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -38,6 +39,8 @@ KioskAppId ToKioskAppId(const KioskAppMenuEntry& menu_entry) {
                                       menu_entry.account_id);
     case KioskAppMenuEntry::AppType::kIsolatedWebApp:
       return KioskAppId::ForIsolatedWebApp(menu_entry.account_id);
+    case KioskAppMenuEntry::AppType::kArcvmApp:
+      return KioskAppId::ForArcvmApp(menu_entry.account_id);
   }
 }
 
@@ -49,6 +52,8 @@ KioskAppMenuEntry::AppType ToMenuEntryType(KioskAppType type) {
       return KioskAppMenuEntry::AppType::kChromeApp;
     case KioskAppType::kIsolatedWebApp:
       return KioskAppMenuEntry::AppType::kIsolatedWebApp;
+    case KioskAppType::kArcvmApp:
+      return KioskAppMenuEntry::AppType::kArcvmApp;
   }
 }
 
@@ -69,6 +74,7 @@ std::string GetMenuItemName(const KioskApp& app) {
   switch (app.id().type) {
     case KioskAppType::kChromeApp:
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       return app.id().app_id.value();
     case KioskAppType::kWebApp:
       return app.url()->spec();
@@ -94,6 +100,7 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 KioskAppMenuController::KioskAppMenuController() {
   kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
   kiosk_observations_.AddObservation(WebKioskAppManager::Get());
+  kiosk_observations_.AddObservation(KioskArcvmAppManager::Get());
   // TODO(crbug.com/372847595): Add IWA manager
 }
 

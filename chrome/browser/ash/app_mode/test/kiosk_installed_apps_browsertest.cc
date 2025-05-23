@@ -50,7 +50,9 @@ bool IsKioskAppInstalledInAppService(const KioskApp& app,
       return registry.IsAppInstalled(
           web_app::GenerateAppId(std::nullopt, app.url().value()));
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       // TODO(crbug.com/379633748): Support IWA in KioskMixin.
+      // TODO(crbug.com/419356153): Support ARCVM in KioskMixin.
       NOTREACHED();
   }
 }

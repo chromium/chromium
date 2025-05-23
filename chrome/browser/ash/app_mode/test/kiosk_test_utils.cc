@@ -164,6 +164,8 @@ std::optional<KioskApp> GetAppByAccountId(std::string_view account_id) {
           return app;
         }
         break;
+      case KioskAppType::kArcvmApp:
+        NOTIMPLEMENTED();
     }
   }
   return std::nullopt;
@@ -182,6 +184,7 @@ bool LaunchAppManually(const KioskApp& app) {
       return LoginScreenTestApi::LaunchApp(app.id().app_id.value());
     case KioskAppType::kWebApp:
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       return LoginScreenTestApi::LaunchApp(app.id().account_id);
   }
 }
@@ -221,6 +224,7 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
     case KioskAppType::kWebApp:
       return IsWebAppInstalled(profile, app.url().value());
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       // TODO(crbug.com/379633748): Support IWA in KioskMixin.
       NOTIMPLEMENTED();
       return false;
@@ -310,6 +314,7 @@ void CloseAppWindow(const KioskApp& app) {
       break;
     }
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       // TODO(crbug.com/379633748): Support IWA in KioskMixin.
       NOTIMPLEMENTED();
       break;

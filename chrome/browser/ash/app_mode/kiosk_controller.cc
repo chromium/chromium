@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_policy_handler.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -44,6 +45,7 @@ void KioskController::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   KioskChromeAppManager::RegisterLocalStatePrefs(registry);
   WebKioskAppManager::RegisterPrefs(registry);
   KioskIwaManager::RegisterPrefs(registry);
+  KioskArcvmAppManager::RegisterPrefs(registry);
   KioskCryptohomeRemover::RegisterPrefs(registry);
 
   kiosk_vision::RegisterLocalStatePrefs(registry);

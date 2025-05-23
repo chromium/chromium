@@ -16,11 +16,13 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/app_mode",
-  "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/arc/policy",
   "+chrome/browser/ash/arc/session",
+  "+chrome/browser/ash/ownership/fake_owner_settings_service.h",
+  "+chrome/browser/ash/policy/core",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/ui/ash/multi_user",
+  "+chrome/test",
   "+chromeos/ash/components/settings",
 ]
