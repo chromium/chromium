@@ -13,9 +13,7 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - run: cargo fmt --check
@@ -24,6 +22,19 @@ jobs:
       run: cargo build --verbose --locked
     - name: Run tests
       run: cargo test --verbose
+
+  msrv:
+    name: MSRV Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@1.80.0
+      with:
+        components: clippy
+    - run: cargo build --verbose --locked
+    - run: cargo test --verbose --locked
+    - run: cargo clippy --all-targets --all-features -- -D warnings
 
   crates:
     name: Upload to crates.io

@@ -1,4 +1,4 @@
-use std::{hint::black_box, panic::AssertUnwindSafe, sync::Arc, time::Duration};
+use std::{fmt::Display, hint::black_box, panic::AssertUnwindSafe, sync::Arc, time::Duration};
 
 use crate::{
     api::{GrammarInit, ParserLimits, StopReason},
@@ -21,6 +21,9 @@ pub struct TokenParser {
     last_step_stats: ParserStats,
     max_step_stats: ParserStats,
     eos_token: TokenId,
+
+    had_rollback: bool,
+    had_backtrack: bool,
 
     is_accepting_cache: Option<bool>,
     ff_tokens_cache: Option<(Vec<TokenId>, Vec<u8>)>,
@@ -110,6 +113,8 @@ impl TokenParser {
             max_tokens_total: max_tokens,
             last_bias_time: Duration::from_secs(0),
             is_fresh: true,
+            had_backtrack: false,
+            had_rollback: false,
         })
     }
 
@@ -268,6 +273,34 @@ impl TokenParser {
         res_prompt
     }
 
+    pub fn augment_err(&self, e: impl Display) -> String {
+        format!("{e}\n<state>\n{}\n</state>", self.dump_state())
+    }
+
+    pub fn dump_state(&self) -> String {
+        format!(
+            "Tokens: {}\n{} tokens, {} bytes; grm_prefix: {:?}\nFlags:{}{}\nLexer: {}\nParser: {}\nStop: {}\nError: {}",
+            self.tok_trie().tokens_dbg(&self.llm_tokens),
+            self.llm_tokens.len(),
+            self.llm_bytes.len(),
+            String::from_utf8_lossy(&self.grm_prefix),
+            if self.had_backtrack {
+                " had_backtrack"
+            } else {
+                ""
+            },
+            if self.had_rollback {
+                " had_rollback"
+            } else {
+                ""
+            },
+            self.parser.lexer_stats(),
+            self.parser.stats(),
+            self.stop_reason,
+            self.error_message.as_deref().unwrap_or("None"),
+        )
+    }
+
     fn clear_caches(&mut self) {
         self.is_accepting_cache = None;
         self.ff_tokens_cache = None;
@@ -331,6 +364,8 @@ impl TokenParser {
 
         // this will fail in case we're in error state or not initialized
         self.check_initialized("rollback")?;
+
+        self.had_rollback = true;
 
         let new_len = self.llm_tokens.len() - n_tokens;
         let mut bytes_to_drop = 0;
@@ -522,6 +557,7 @@ impl TokenParser {
                 self.llm_bytes.extend_from_slice(tok_bytes);
 
                 if backtrack_bytes0 != 0 {
+                    self.had_backtrack = true;
                     let mut backtrack_bytes: isize = backtrack_bytes0.try_into().unwrap();
                     let mut backtrack_tokens = 0;
                     while backtrack_bytes > 0 {

@@ -137,7 +137,7 @@ impl Constraint {
     /// The splice is never returned when ff_tokens are disabled in InferenceCapabilities.
     /// After this returns, commit_token() must be called with the sampled token if any.
     pub fn compute_mask(&mut self) -> Result<&StepResult> {
-        panic_utils::catch_unwind(std::panic::AssertUnwindSafe(|| self.compute_mask_inner()))
+        self.catch_unwind(|s| s.compute_mask_inner())
             .map(|_| &self.last_res)
     }
 
@@ -185,6 +185,14 @@ impl Constraint {
         self.parser.validate_tokens_raw(tokens)
     }
 
+    fn catch_unwind<F, R>(&mut self, f: F) -> Result<R>
+    where
+        F: FnOnce(&mut Self) -> Result<R>,
+    {
+        panic_utils::catch_unwind(std::panic::AssertUnwindSafe(|| f(self)))
+            .map_err(|e| anyhow::anyhow!(self.parser.augment_err(e)))
+    }
+
     /// commit_token() is a top-level method in this file and is called by
     /// the LLInterpreter::commit_token().
     ///
@@ -194,9 +202,7 @@ impl Constraint {
     /// It only returns 'STOP' if previous compute_mask() already returned 'STOP'
     /// (in which case there's little point calling commit_token()).
     pub fn commit_token(&mut self, sampled_token: Option<TokenId>) -> Result<CommitResult> {
-        panic_utils::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            self.commit_token_inner(sampled_token)
-        }))
+        self.catch_unwind(|s| s.commit_token_inner(sampled_token))
     }
 
     fn commit_token_inner(&mut self, sampled_token: Option<TokenId>) -> Result<CommitResult> {
