@@ -53,6 +53,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Connected to service with KeepAlive connection"/>
 </enum>
 
+<!--LINT.IfChange(CustomTabsFeatureUsed) -->
+
 <enum name="CustomTabsFeatureUsed">
   <int value="0" label="Sessions - counter for all sessions"/>
   <int value="1" label="Action button EXTRA_ACTION_BUTTON_BUNDLE"/>
@@ -136,7 +138,11 @@ chromium-metrics-reviews@google.com.
   <int value="63"
       label="Open in Browser button in the toolbar state
              EXTRA_OPEN_IN_BROWSER_STATE"/>
+  <int value="64" label="Launch Handler API usage EXTRA_LAUNCH_HANDLER"/>
+  <int value="65" label="File Handlers API usage EXTRA_FILE_HANDLERS"/>
 </enum>
+
+<!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsage.java:CustomTabsFeature) -->
 
 <enum name="CustomTabsMinimizedEvents">
   <int value="0" label="Minimized into PiP"/>
