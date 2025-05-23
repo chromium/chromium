@@ -348,6 +348,43 @@ browser automation and testing purposes, consuming only trustworthy content.
 `chrome-headless-shell` also lacks auto-updates and so, for the same reason,
 should only be used to consume trusted content.
 
+<a name="TOC-What-makes-a-ui-spoof-interesting-to-report"></a>
+### What makes a UI spoof interesting to report?
+As a general rule, a UI spoof is only a security bug if _either_:
+
+* There is evidence that it is actually being exploited to trick users in the
+  field, or
+* You can make a convincing case that it would mislead a user into making a
+  _security decision_ incorrectly, or otherwise taking an action with actual
+  security consequences for that user
+
+That means that for example these are interesting security bugs:
+
+* A spoof that convinces the user they are currently on origin A when in fact
+  they are on origin B
+* A spoof that convinces the user that a permission request is from origin A
+  when in fact it is from origin B
+* A spoof that convinces the user they are installing extension A when in fact
+  they are installing extension B
+
+and so on, but for example these are **not** interesting security bugs:
+
+* A spoof that convinces the user to copy text they didn't expect to their
+  clipboard
+* A spoof that convinces the user to download a file they didn't expect (simply
+  downloading a file is not a security decision - running it is though!)
+* A spoof that convinces the user to navigate to a link they didn't expect
+* A spoof that convinces the user to click a browser UI element they weren't
+  intending to _unless you can show security consequences for them doing so_.
+
+We often tend to look at what a "reasonable and prudent" user would do in a
+situation, meaning a user who is taking basic security precautions like paying
+attention to security cues given in the product UI and who is, while not a
+security expert or even particularly security-minded, trying to take basic
+precautions to stay safe online. That doesn't mean bugs that require user error
+are always out of scope, but it does mean that spoofs which would not deceive
+a user being reasonable and prudent are out of scope.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
@@ -530,7 +567,9 @@ navigation has started), the loading indicators are present.
 
 The confusion between the non-committed URL and the active page's
 appearance is a consequence of the address bar needing to serve two roles:
-showing both where you are and where you are going.
+showing both where you are and where you are going. In general, we don't think
+this technique can deceive a [reasonable and prudent
+user](#TOC-What-makes-a-ui-spoof-interesting-to-report).
 
 See also https://crbug.com/378932942 for context.
 
