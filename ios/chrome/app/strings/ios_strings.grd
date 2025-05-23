@@ -2454,10 +2454,10 @@ See your search engine’s instructions for deleting your search history, if app
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Browser App<ph name="END_BOLD">END_BOLD</ph>
       </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TEXT" desc="Text of the Guided Tour IPH for the NTP step focusing on the tab grid." meaning="Title-cased">
-          Your open tabs and groups
+          See and manage everything you have open
     </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TITLE" desc="Title of the Guided Tour IPH for the NTP step focusing on the tab grid." meaning="Title-cased">
-          See and manage everything you have open
+          Your open tabs and groups
     </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_PROMPT_BUTTON_TITLE" desc="Title of the button for the user to start the First Run Guided Tour." meaning="Title-cased">
       Show me around

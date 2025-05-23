@@ -13,6 +13,9 @@
 
 namespace {
 
+// Margin between the BubbleView and the trailing screen.
+const CGFloat kBubbleViewTrailingMarginWithBoundingRect = 25;
+
 BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
   switch (step) {
     case GuidedTourStepNTP:
@@ -101,6 +104,15 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
                          }];
   self.presenting = NO;
   _completionCallback();
+}
+
+#pragma mark - BubbleViewControllerPresenter
+
+- (CGRect)frameForBubbleInRect:(CGRect)rect atAnchorPoint:(CGPoint)anchorPoint {
+  // Deduct from the trailing end to ensure the BubbleView has space in between
+  // the screen boundary.
+  rect.size.width -= kBubbleViewTrailingMarginWithBoundingRect;
+  return [super frameForBubbleInRect:rect atAnchorPoint:anchorPoint];
 }
 
 #pragma mark - BubbleViewDelegate
