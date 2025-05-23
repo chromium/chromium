@@ -207,9 +207,11 @@ class CORE_EXPORT CanvasRenderingContext
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
-  // Return true if the content is updated.
-  virtual bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) {
-    return false;
+  // Returns a CanvasResourceProvider containing the updated content, or nullptr
+  // if there is no updated content.
+  virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) {
+    return nullptr;
   }
 
   // Copy the contents of the rendering context to a media::VideoFrame created

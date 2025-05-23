@@ -1259,7 +1259,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   bool IsPaintable() const override;
   bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
-  bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,

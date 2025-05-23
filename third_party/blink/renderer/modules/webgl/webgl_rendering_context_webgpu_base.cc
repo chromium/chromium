@@ -2431,10 +2431,11 @@ void WebGLRenderingContextWebGPUBase::PageVisibilityChanged() {
   NOTIMPLEMENTED();
 }
 
-bool WebGLRenderingContextWebGPUBase::PaintRenderingResultsToCanvas(
+CanvasResourceProvider*
+WebGLRenderingContextWebGPUBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer) {
   NOTIMPLEMENTED();
-  return false;
+  return nullptr;
 }
 
 bool WebGLRenderingContextWebGPUBase::CopyRenderingResultsToVideoFrame(

@@ -1877,12 +1877,13 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
 
-bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
+CanvasResourceProvider*
+WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   TRACE_EVENT0("blink",
                "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
   if (isContextLost() || !GetDrawingBuffer())
-    return false;
+    return nullptr;
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
 
@@ -1895,14 +1896,14 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   // is backgrounded.
 
   if (!must_paint_to_canvas_ && !must_clear_now && Host()->ResourceProvider())
-    return false;
+    return nullptr;
 
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
       Host()->GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
-    return false;
+    return nullptr;
 
   if (resource_provider->GetType() ==
       CanvasResourceProvider::ResourceProviderType::kPassThrough) {
@@ -1915,7 +1916,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     resource_provider->ImportResource(
         GetDrawingBuffer()->ExportLowLatencyCanvasResource(
             resource_provider->CreateWeakPtr()));
-    return true;
+    return resource_provider;
   }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
@@ -1927,15 +1928,15 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   // during the resolve process, specifically during automatic
   // graphics switching. Guard against this.
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
-    return false;
+    return nullptr;
   if (!CopyRenderingResultsFromDrawingBuffer(Host()->ResourceProvider(),
                                              source_buffer)) {
     // CopyRenderingResultsFromDrawingBuffer handles both the
     // hardware-accelerated and software cases, so there is no
     // possible additional fallback for failures seen at this point.
-    return false;
+    return nullptr;
   }
-  return true;
+  return resource_provider;
 }
 
 bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(

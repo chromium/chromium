@@ -710,7 +710,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsComposited() const override { return true; }
   bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
-  bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
+  CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,

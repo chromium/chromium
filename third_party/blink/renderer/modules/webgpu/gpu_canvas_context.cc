@@ -188,10 +188,10 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
   return SnapshotInternal(front_buffer_texture->GetTexture());
 }
 
-bool GPUCanvasContext::PaintRenderingResultsToCanvas(
+CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return false;
+    return nullptr;
   }
 
   if (Host()->ResourceProvider() &&
@@ -202,7 +202,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
   CanvasResourceProvider* resource_provider =
       Host()->GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
-    return false;
+    return nullptr;
   }
 
   if (device_->IsDestroyed()) {
@@ -211,7 +211,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
                           : SkColors::kTransparent;
     resource_provider->Canvas().clear(color);
     resource_provider->FlushCanvas(FlushReason::kClear);
-    return false;
+    return nullptr;
   }
 
   wgpu::Texture texture;
@@ -223,24 +223,26 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     // that copy the front buffer, such as printing.
     // TODO(crbug.com/40902474): Support concurrent SharedImage reads via Dawn
     // on Linux backings and enable the below codepath.
-    return false;
+    return nullptr;
 #else
     // Create a WebGPU texture backed by the front buffer's SharedImage.
     front_buffer_texture = GetFrontBufferMailboxTexture();
     if (!front_buffer_texture) {
-      return false;
+      return nullptr;
     }
 
     texture = front_buffer_texture->GetTexture();
 #endif
   } else {
     if (!texture_) {
-      return false;
+      return nullptr;
     }
     texture = texture_->GetHandle();
   }
 
-  return CopyTextureToResourceProvider(texture, resource_provider);
+  return CopyTextureToResourceProvider(texture, resource_provider)
+             ? resource_provider
+             : nullptr;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
