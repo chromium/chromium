@@ -127,9 +127,7 @@ class CORE_EXPORT WorkerGlobalScope
   DEFINE_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unhandledrejection, kUnhandledrejection)
 
-  // This doesn't take an ExceptionState argument, but actually can throw
-  // exceptions directly to V8 (crbug/1114610).
-  virtual void importScripts(const Vector<String>& urls);
+  virtual void importScripts(const Vector<String>& urls, ExceptionState&);
 
   // ExecutionContext
   const KURL& Url() const final;
@@ -306,14 +304,15 @@ class CORE_EXPORT WorkerGlobalScope
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params_for_modules);
 
+  // Used for importScripts().
+  // Also called by ServiceWorkerGlobalScope::importScripts.
+  void ImportScriptsInternal(const Vector<String>& urls, ExceptionState&);
+
  private:
   void SetWorkerSettings(std::unique_ptr<WorkerSettings>);
 
   // https://html.spec.whatwg.org/C/#run-a-worker Step 24.
   void RunWorkerScript();
-
-  // Used for importScripts().
-  void ImportScriptsInternal(const Vector<String>& urls);
   // ExecutionContext
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }

@@ -381,7 +381,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const override;
 
  private:
-  void importScripts(const Vector<String>& urls) override;
+  void importScripts(const Vector<String>& urls, ExceptionState&) override;
   CachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
       const KURL& script_url,
       std::unique_ptr<Vector<uint8_t>> meta_data) override;
