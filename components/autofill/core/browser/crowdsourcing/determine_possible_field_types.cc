@@ -294,6 +294,7 @@ void DeterminePossibleFieldTypesForUpload(
 FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
+    base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::string& app_locale) {
   FieldTypeSet types;
@@ -308,6 +309,12 @@ FieldTypeSet DetermineAvailableFieldTypes(
       types.contains(CREDIT_CARD_NUMBER)) {
     types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableLoyaltyCardsFilling) &&
+      !loyalty_cards.empty()) {
+    types.insert(LOYALTY_MEMBERSHIP_ID);
+  }
+
   return types;
 }
 

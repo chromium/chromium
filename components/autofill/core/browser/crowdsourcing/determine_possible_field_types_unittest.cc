@@ -990,5 +990,29 @@ TEST_P(DeterminePossibleFormatStringsForUploadTest_MultipleTextInput,
               UnorderedElementsAreArray(expectations));
 }
 
+class DetermineAvailableFieldTypesTest : public ::testing::Test {
+ public:
+  DetermineAvailableFieldTypesTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillEnableLoyaltyCardsFilling,
+         features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+        {});
+  }
+
+ protected:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList features_;
+};
+
+// Tests that loyalty cards are included in the set of available field types.
+TEST_F(DetermineAvailableFieldTypesTest, LoyaltyCards) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  FieldTypeSet available_types =
+      DetermineAvailableFieldTypes(/*profiles=*/{}, /*credit_cards=*/{}, {card},
+                                   /*last_unlocked_credit_card_cvc=*/u"",
+                                   /*app_locale=*/"");
+  EXPECT_TRUE(available_types.contains(LOYALTY_MEMBERSHIP_ID));
+}
+
 }  // namespace
 }  // namespace autofill

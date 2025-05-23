@@ -259,8 +259,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             options.form_associations = std::move(form_associations);
             options.observed_submission = observed_submission;
             options.available_field_types = DetermineAvailableFieldTypes(
-                profiles, credit_cards, last_unlocked_credit_card_cvc,
-                app_locale);
+                profiles, credit_cards, loyalty_cards,
+                last_unlocked_credit_card_cvc, app_locale);
             for (auto& [field_id, format_strings] :
                  DeterminePossibleFormatStringsForUpload(form->fields())) {
               options.fields[field_id].format_strings =

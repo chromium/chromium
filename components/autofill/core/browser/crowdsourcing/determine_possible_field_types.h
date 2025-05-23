@@ -51,6 +51,7 @@ void DeterminePossibleFieldTypesForUpload(
 FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
+    base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::string& app_locale);
 
