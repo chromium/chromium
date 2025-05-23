@@ -674,9 +674,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     // In case the group is empty but should be kept, add a new tab in it
     // to prevent its deletion.
     web_state_to_insert = groups_delegate_->WebStateToAddToEmptyGroup();
-    if (is_active_web_state_detached) {
-      new_active_web_state = web_state_to_insert.get();
-    }
+    new_active_web_state = web_state_to_insert.get();
     insertion_index = InsertWebStateImpl(
         std::move(web_state_to_insert),
         WebStateList::InsertionParams::Automatic().InGroup(group));
@@ -720,9 +718,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     CHECK_GT(active_index_, 0);
     --active_index_;
   }
-  // If a web state is inserted and the previously detached web state was
-  // active, the newly inserted web state should become the active one.
-  if (insertion_index != kInvalidIndex && is_active_web_state_detached) {
+  // If a web state is inserted, the newly inserted web state should become the
+  // active one to avoid crash see crbug.com/419042071.
+  if (insertion_index != kInvalidIndex) {
     // Removes one to `insertion_index`, because the insertion happened before
     // the removal of the web state.
     active_index_ = --insertion_index;
@@ -734,7 +732,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   // Inform the delegate that the active WebState changed (it may decide to
   // force its realization, ...).
-  if (is_active_web_state_detached) {
+  if (is_active_web_state_detached || insertion_index != kInvalidIndex) {
     OnActiveWebStateChanged();
   }
 

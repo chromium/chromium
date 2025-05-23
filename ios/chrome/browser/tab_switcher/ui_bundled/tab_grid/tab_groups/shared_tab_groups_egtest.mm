@@ -902,6 +902,55 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       assertWithMatcher:grey_nil()];
 }
 
+// Ensures the last tab close alert works when the closed tab is not the active
+// one and there is no other NTP tab, see crbug.com/419042071.
+- (void)testNotActiveLastTabClosedAlert {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/NO);
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Close the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  // Tap on "Keep Group"
+  [[EarlGrey selectElementWithMatcher:KeepSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the tab group view is still displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that kSharedTabTitle tab cell is in not in the group anymore.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Ensure the new tab is a new tab page.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL(kChromeUINewTabURL);
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
+
+  [ChromeEarlGrey waitForMainTabCount:2];
+}
+
 // Ensures that closing the last tab in an incognito group works.
 - (void)testCloseLastTabInIncognito {
   if (@available(iOS 17, *)) {

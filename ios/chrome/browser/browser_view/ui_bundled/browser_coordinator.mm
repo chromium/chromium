@@ -3519,7 +3519,7 @@ enum class ToolbarKind {
       groupService->WebStateToAddToEmptyGroup();
   webStateList->InsertWebState(
       std::move(webState),
-      WebStateList::InsertionParams::Automatic().InGroup(group));
+      WebStateList::InsertionParams::Automatic().Activate().InGroup(group));
 
   const WebStateSearchCriteria& searchCriteria = WebStateSearchCriteria{
       .identifier = tabID,
