@@ -29,42 +29,40 @@ suite('ScalingSettingsInteractiveTest', function() {
     document.body.appendChild(scalingSection);
   });
 
-  test(
-      'auto focus input', async () => {
-        const scalingInput =
-            scalingSection.shadowRoot
-                .querySelector('print-preview-number-settings-section')!.$
-                .userValue.inputElement;
-        const collapse =
-            scalingSection.shadowRoot.querySelector('cr-collapse')!;
+  test('auto focus input', async () => {
+    const scalingInput =
+        scalingSection.shadowRoot
+            .querySelector('print-preview-number-settings-section')!.$.userValue
+            .inputElement;
+    const collapse = scalingSection.shadowRoot.querySelector('cr-collapse')!;
 
-        assertFalse(collapse.opened);
-        assertEquals(
-            ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
+    assertFalse(collapse.opened);
+    assertEquals(
+        ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
 
-        // Select custom with the dropdown. This should autofocus the input.
-        await Promise.all([
-          selectOption(scalingSection, ScalingType.CUSTOM.toString()),
-          eventToPromise('transitionend', collapse),
-        ]);
-        assertTrue(collapse.opened);
-        assertEquals(scalingInput, getDeepActiveElement());
+    // Select custom with the dropdown. This should autofocus the input.
+    await Promise.all([
+      selectOption(scalingSection, ScalingType.CUSTOM.toString()),
+      eventToPromise('transitionend', collapse),
+    ]);
+    assertTrue(collapse.opened);
+    assertEquals(scalingInput, getDeepActiveElement());
 
-        // Blur and select default.
-        scalingInput.blur();
-        await Promise.all([
-          selectOption(scalingSection, ScalingType.DEFAULT.toString()),
-          eventToPromise('transitionend', collapse),
-        ]);
-        assertEquals(
-            ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
-        assertFalse(collapse.opened);
+    // Blur and select default.
+    scalingInput.blur();
+    await Promise.all([
+      selectOption(scalingSection, ScalingType.DEFAULT.toString()),
+      eventToPromise('transitionend', collapse),
+    ]);
+    assertEquals(
+        ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
+    assertFalse(collapse.opened);
 
-        // Set custom in JS, which happens when we set the sticky settings. This
-        // should not autofocus the input.
-        scalingSection.setSetting('scalingType', ScalingType.CUSTOM);
-        await eventToPromise('transitionend', collapse);
-        assertTrue(collapse.opened);
-        assertNotEquals(scalingInput, getDeepActiveElement());
-      });
+    // Set custom in JS, which happens when we set the sticky settings. This
+    // should not autofocus the input.
+    scalingSection.setSetting('scalingType', ScalingType.CUSTOM);
+    await eventToPromise('transitionend', collapse);
+    assertTrue(collapse.opened);
+    assertNotEquals(scalingInput, getDeepActiveElement());
+  });
 });

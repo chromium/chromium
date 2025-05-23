@@ -94,20 +94,19 @@ suite('DestinationDialogTest', function() {
   // Test that destinations are correctly displayed in the lists when all
   // printers have been preloaded before the dialog is opened. Regression test
   // for https://crbug.com/1330678.
-  test(
-      'PrinterListPreloaded', async () => {
-        // All printers are fetched at startup since both native and extension
-        // printers are recent.
-        const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);
-        destinationStore.init(
-            false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
-            '' /* serializedDefaultDestinationSelectionRulesStr */, [
-              makeRecentDestination(destinations[4]!),
-              makeRecentDestination(extensionDestinations[0]!),
-            ] /* recentDestinations */);
-        await whenAllPreloaded;
-        finishSetup();
-        await microtasksFinished();
-        validatePrinterList();
-      });
+  test('PrinterListPreloaded', async () => {
+    // All printers are fetched at startup since both native and extension
+    // printers are recent.
+    const whenAllPreloaded = nativeLayer.waitForGetPrinters(2);
+    destinationStore.init(
+        false /* pdfPrinterDisabled */, 'FooDevice' /* printerName */,
+        '' /* serializedDefaultDestinationSelectionRulesStr */, [
+          makeRecentDestination(destinations[4]!),
+          makeRecentDestination(extensionDestinations[0]!),
+        ] /* recentDestinations */);
+    await whenAllPreloaded;
+    finishSetup();
+    await microtasksFinished();
+    validatePrinterList();
+  });
 });

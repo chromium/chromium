@@ -60,23 +60,22 @@ suite('DestinationSearchTest', function() {
 
   // Tests that a destination is selected if the user clicks on it and
   // capabilities fetch succeeds.
-  test(
-      'GetCapabilitiesSucceeds', async function() {
-        const destId = '00112233DEADBEEF';
-        nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
+  test('GetCapabilitiesSucceeds', async function() {
+    const destId = '00112233DEADBEEF';
+    nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
 
-        const waiter = eventToPromise(
-            DestinationStoreEventType.DESTINATION_SELECT, destinationStore);
-        simulateDestinationSelect(destId);
-        const results = await Promise.all(
-            [nativeLayer.whenCalled('getPrinterCapabilities'), waiter]);
-        const actualId = results[0].destinationId;
-        assertEquals(destId, actualId);
-        // After setup or capabilities fetch succeeds, the destination
-        // should be selected.
-        assertNotEquals(null, destinationStore.selectedDestination);
-        assertEquals(destId, destinationStore.selectedDestination!.id);
-      });
+    const waiter = eventToPromise(
+        DestinationStoreEventType.DESTINATION_SELECT, destinationStore);
+    simulateDestinationSelect(destId);
+    const results = await Promise.all(
+        [nativeLayer.whenCalled('getPrinterCapabilities'), waiter]);
+    const actualId = results[0].destinationId;
+    assertEquals(destId, actualId);
+    // After setup or capabilities fetch succeeds, the destination
+    // should be selected.
+    assertNotEquals(null, destinationStore.selectedDestination);
+    assertEquals(destId, destinationStore.selectedDestination!.id);
+  });
 
   // Tests what happens when capabilities cannot be retrieved for the chosen
   // destination. The destination will still be selected in this case.

@@ -97,78 +97,76 @@ suite('RestoreStateTest', function() {
    * Tests state restoration with all boolean settings set to true, scaling =
    * 90, dpi = 100, custom square paper, and custom margins.
    */
-  test(
-      'RestoreTrueValues', async function() {
-        const stickySettings: SerializedSettings = {
-          version: 2,
-          recentDestinations: [],
-          dpi: {horizontal_dpi: 100, vertical_dpi: 100},
-          mediaSize: {
-            name: 'CUSTOM',
-            width_microns: 215900,
-            height_microns: 215900,
-            custom_display_name: 'CUSTOM_SQUARE',
-          },
-          customMargins: {
-            marginTop: 74,
-            marginRight: 74,
-            marginBottom: 74,
-            marginLeft: 74,
-          },
-          vendorOptions: {
-            paperType: 1,
-            printArea: 6,
-          },
-          marginsType: 3, /* custom */
-          scaling: '90',
-          scalingType: ScalingType.CUSTOM,
-          scalingTypePdf: ScalingType.FIT_TO_PAGE,
-          isHeaderFooterEnabled: true,
-          isCssBackgroundEnabled: true,
-          isCollateEnabled: true,
-          isDuplexEnabled: true,
-          isDuplexShortEdge: true,
-          isLandscapeEnabled: true,
-          isColorEnabled: true,
-        };
-        await testInitializeWithStickySettings(stickySettings);
-      });
+  test('RestoreTrueValues', async function() {
+    const stickySettings: SerializedSettings = {
+      version: 2,
+      recentDestinations: [],
+      dpi: {horizontal_dpi: 100, vertical_dpi: 100},
+      mediaSize: {
+        name: 'CUSTOM',
+        width_microns: 215900,
+        height_microns: 215900,
+        custom_display_name: 'CUSTOM_SQUARE',
+      },
+      customMargins: {
+        marginTop: 74,
+        marginRight: 74,
+        marginBottom: 74,
+        marginLeft: 74,
+      },
+      vendorOptions: {
+        paperType: 1,
+        printArea: 6,
+      },
+      marginsType: 3, /* custom */
+      scaling: '90',
+      scalingType: ScalingType.CUSTOM,
+      scalingTypePdf: ScalingType.FIT_TO_PAGE,
+      isHeaderFooterEnabled: true,
+      isCssBackgroundEnabled: true,
+      isCollateEnabled: true,
+      isDuplexEnabled: true,
+      isDuplexShortEdge: true,
+      isLandscapeEnabled: true,
+      isColorEnabled: true,
+    };
+    await testInitializeWithStickySettings(stickySettings);
+  });
 
   /**
    * Tests state restoration with all boolean settings set to false, scaling =
    * 120, dpi = 200, letter paper and default margins.
    */
-  test(
-      'RestoreFalseValues', async function() {
-        const stickySettings: SerializedSettings = {
-          version: 2,
-          recentDestinations: [],
-          dpi: {horizontal_dpi: 200, vertical_dpi: 200},
-          mediaSize: {
-            name: 'NA_LETTER',
-            width_microns: 215900,
-            height_microns: 279400,
-            is_default: true,
-            custom_display_name: 'Letter',
-          },
-          vendorOptions: {
-            paperType: 0,
-            printArea: 4,
-          },
-          marginsType: 0, /* default */
-          scaling: '120',
-          scalingType: ScalingType.DEFAULT,
-          scalingTypePdf: ScalingType.DEFAULT,
-          isHeaderFooterEnabled: false,
-          isCssBackgroundEnabled: false,
-          isCollateEnabled: false,
-          isDuplexEnabled: false,
-          isDuplexShortEdge: false,
-          isLandscapeEnabled: false,
-          isColorEnabled: false,
-        };
-        await testInitializeWithStickySettings(stickySettings);
-      });
+  test('RestoreFalseValues', async function() {
+    const stickySettings: SerializedSettings = {
+      version: 2,
+      recentDestinations: [],
+      dpi: {horizontal_dpi: 200, vertical_dpi: 200},
+      mediaSize: {
+        name: 'NA_LETTER',
+        width_microns: 215900,
+        height_microns: 279400,
+        is_default: true,
+        custom_display_name: 'Letter',
+      },
+      vendorOptions: {
+        paperType: 0,
+        printArea: 4,
+      },
+      marginsType: 0, /* default */
+      scaling: '120',
+      scalingType: ScalingType.DEFAULT,
+      scalingTypePdf: ScalingType.DEFAULT,
+      isHeaderFooterEnabled: false,
+      isCssBackgroundEnabled: false,
+      isCollateEnabled: false,
+      isDuplexEnabled: false,
+      isDuplexShortEdge: false,
+      isLandscapeEnabled: false,
+      isColorEnabled: false,
+    };
+    await testInitializeWithStickySettings(stickySettings);
+  });
 
   /**
    * Tests that setting the settings values results in the correct serialized

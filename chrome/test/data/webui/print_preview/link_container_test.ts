@@ -108,16 +108,15 @@ suite('LinkContainerTest', function() {
    * Test that clicking the open in preview link correctly results in a
    * property change and that the throbber appears. Mac only.
    */
-  test(
-      'OpenInPreviewLinkClick', function() {
-        const throbber = linkContainer.$.openPdfInPreviewThrobber;
-        assertTrue(throbber.hidden);
-        const promise = eventToPromise('open-pdf-in-preview', linkContainer);
+  test('OpenInPreviewLinkClick', function() {
+    const throbber = linkContainer.$.openPdfInPreviewThrobber;
+    assertTrue(throbber.hidden);
+    const promise = eventToPromise('open-pdf-in-preview', linkContainer);
 
-        linkContainer.$.openPdfInPreviewLink.click();
-        return promise.then(function() {
-          assertFalse(throbber.hidden);
-        });
-      });
+    linkContainer.$.openPdfInPreviewLink.click();
+    return promise.then(function() {
+      assertFalse(throbber.hidden);
+    });
+  });
   // </if>
 });
