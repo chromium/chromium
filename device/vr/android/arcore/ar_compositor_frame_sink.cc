@@ -447,16 +447,17 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
-    auto renderer_resource = viz::TransferableResource::MakeGpu(
+    viz::TransferableResource::MetadataOverride render_resource_overrides = {
+        .is_overlay_candidate = false,
+        .origin = frame_type == FrameType::kHasWebGlContent
+                      ? kBottomLeft_GrSurfaceOrigin
+                      : kTopLeft_GrSurfaceOrigin,
+    };
+
+    auto renderer_resource = viz::TransferableResource::Make(
         renderer_buffer->shared_image,
-        renderer_buffer->shared_image->GetTextureTarget(),
-        renderer_buffer->sync_token, renderer_buffer->shared_image->size(),
-        viz::SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false,
-        viz::TransferableResource::ResourceSource::kAR);
-    renderer_resource.origin = frame_type == FrameType::kHasWebGlContent
-                                   ? kBottomLeft_GrSurfaceOrigin
-                                   : kTopLeft_GrSurfaceOrigin;
+        viz::TransferableResource::ResourceSource::kAR,
+        renderer_buffer->sync_token, render_resource_overrides);
 
     renderer_resource.id = renderer_buffer->id;
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -490,15 +491,17 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*nearest_neighbor=*/false,
                       /*secure_output_only=*/false,
                       gfx::ProtectedVideoType::kClear);
+
+  viz::TransferableResource::MetadataOverride camera_resource_overrides = {
+      .is_overlay_candidate = false,
+      .origin = kBottomLeft_GrSurfaceOrigin,
+  };
+
   // Additionally append to the resource_list
-  auto camera_resource = viz::TransferableResource::MakeGpu(
+  auto camera_resource = viz::TransferableResource::Make(
       camera_buffer->shared_image,
-      camera_buffer->shared_image->GetTextureTarget(),
-      camera_buffer->sync_token, camera_buffer->shared_image->size(),
-      viz::SinglePlaneFormat::kRGBA_8888,
-      /*is_overlay_candidate=*/false,
-      viz::TransferableResource::ResourceSource::kAR);
-  camera_resource.origin = kBottomLeft_GrSurfaceOrigin;
+      viz::TransferableResource::ResourceSource::kAR, camera_buffer->sync_token,
+      camera_resource_overrides);
 
   camera_resource.id = camera_buffer->id;
   id_to_frame_map_[camera_buffer->id] = xr_frame;
