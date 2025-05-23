@@ -7,11 +7,20 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/types/id_type.h"
 
 namespace captions {
+
+// This feature enables scrollability in Live Caption.
+BASE_DECLARE_FEATURE(kLiveCaptionScrollable);
+
+// This parameter sets maximum number of lines in the text,
+// if scrollability is enabled.
+BASE_DECLARE_FEATURE_PARAM(size_t, kLiveCaptionScrollableMaxLines);
 
 class CaptionBubble;
 class CaptionBubbleContext;
@@ -67,28 +76,27 @@ class CaptionBubbleModel {
   void SetObserver(CaptionBubble* observer);
   void RemoveObserver();
 
-  // Set the partial text and alert the observer.
+  // Sets the partial text and alerts the observer.
   void SetPartialText(const std::string& partial_text);
 
-  // Set the download progress label and alert the observer.
+  // Sets the download progress label and alerts the observer.
   void SetDownloadProgressText(const std::u16string& download_progress_text);
 
-  // Notify the observer that a language pack was installed.
+  // Notifies the observer that a language pack was installed.
   void OnLanguagePackInstalled();
 
   // Commits the partial text as final text.
   void CommitPartialText();
 
-  // Set that the bubble has an error and alert the observer.
+  // Sets that the bubble has an error and alert the observer.
   void OnError(CaptionBubbleErrorType error_type,
                OnErrorClickedCallback error_clicked_callback,
                OnDoNotShowAgainClickedCallback error_silenced_callback);
 
-  // Mark the bubble as closed.
+  // Marks the bubble as closed.
   void CloseButtonPressed();
 
-  // Clear the partial and final text, and alert the
-  // observer.
+  // Clears the partial and final text and alerts the observer.
   void Close();
 
   // Clears the partial and final text and alerts the observer.

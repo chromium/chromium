@@ -49,6 +49,12 @@
   <message name="IDS_LIVE_CAPTION_BUBBLE_CAPTION_SETTINGS" desc="Tooltip for the caption settings button">
     Caption settings
   </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_SCROLL_BUTTON_SCROLLING" desc="Label for the scroll button in Scrolling state">
+    Scrolling
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_SCROLL_BUTTON_LOCKED" desc="Label for the scroll button in Locked state">
+    Locked
+  </message>
   <message name="IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
    Downloading <ph name="LANGUAGE">$1<ex>Spanish</ex></ph> language pack... <ph name="PERCENT">$2<ex>17</ex></ph>%
   </message>
