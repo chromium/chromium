@@ -542,6 +542,15 @@ class AvatarToolbarButtonBrowserTest
  protected:
   // AvatarToolbarButtonBaseBrowserTest:
   Browser* GetBrowser() const override { return browser(); }
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    if (GetIdentityManager()) {
+      // Puts `IdentityManager` in a known good state to avoid flakiness.
+      signin::WaitForRefreshTokensLoaded(GetIdentityManager());
+    }
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
@@ -742,8 +751,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
 
-  ASSERT_TRUE(GetIdentityManager()->AreRefreshTokensLoaded());
-
   // Creating a new browser while the refresh tokens are already loaded and the
   // name showing should not break/crash.
   Browser* new_browser = CreateBrowser(browser()->profile());
@@ -934,7 +941,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        SignedInWithNewSessionKeepIcon) {
-  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Previously added image on signin should still be shown in the new session.
@@ -992,6 +998,15 @@ class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
 
   // AvatarToolbarButtonBaseBrowserTest:
   Browser* GetBrowser() const override { return browser(); }
+
+  // InteractiveFeaturePromoTest:
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    if (GetIdentityManager()) {
+      // Puts `IdentityManager` in a known good state to avoid flakiness.
+      signin::WaitForRefreshTokensLoaded(GetIdentityManager());
+    }
+  }
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -2421,8 +2436,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
     MAYBE_SignedInWithNewSessionKeepWorkBadge) {
-  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
-
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The greetings are shown due to the management service override (unaware of
   // the management acceptance after restart).
