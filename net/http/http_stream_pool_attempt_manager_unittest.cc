@@ -2102,23 +2102,21 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), kMaxPerGroup);
   ASSERT_EQ(group_a.ActiveStreamSocketCount(), kMaxPerGroup);
 
-  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
-      resolver()->AddFakeRequest();
+  resolver()
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
 
   // Create a HttpStream in group B. It should not be blocked because both
   // per-group and per-pool limits are not reached yet.
-  StreamRequester requester1(key_b);
-  HttpStreamRequest* request1 = requester1.RequestStream(pool());
   auto data1 = std::make_unique<SequencedSocketData>();
   data1->set_connect_data(MockConnect(ASYNC, OK));
   socket_factory()->AddSocketDataProvider(data1.get());
 
-  endpoint_request->add_endpoint(
-      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
-  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
-  RunUntilIdle();
-
-  ASSERT_TRUE(request1->completed());
+  StreamRequester requester1(key_b);
+  requester1.RequestStream(pool());
+  requester1.WaitForResult();
+  ASSERT_TRUE(requester1.result().has_value());
 
   // The pool reached the limit, but it doesn't have any blocked request. Group
   // A reached the group limit. Group B doesn't reach the group limit.
@@ -2139,22 +2137,24 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReachedPoolLimit) {
             LOAD_STATE_WAITING_FOR_STALLED_SOCKET_POOL);
 
   RunUntilIdle();
-  AttemptManager* manager_b = group_b.attempt_manager();
   ASSERT_FALSE(request2->completed());
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_TRUE(pool().IsPoolStalled());
-  ASSERT_EQ(manager_b->TcpBasedAttemptCount(), 0u);
-  ASSERT_EQ(manager_b->PendingRequestJobCount(), 1u);
+  ASSERT_EQ(requester2.associated_attempt_manager()->TcpBasedAttemptCount(),
+            0u);
+  ASSERT_EQ(requester2.associated_attempt_manager()->PendingRequestJobCount(),
+            1u);
 
   // Release one HttpStream from group A. It should unblock the in-flight
   // request in group B.
   std::unique_ptr<HttpStream> released_stream = std::move(streams_a.back());
   streams_a.pop_back();
   released_stream.reset();
-  RunUntilIdle();
+  requester2.WaitForResult();
 
   ASSERT_TRUE(request2->completed());
-  ASSERT_EQ(manager_b->PendingRequestJobCount(), 0u);
+  ASSERT_EQ(requester2.associated_attempt_manager()->PendingRequestJobCount(),
+            0u);
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
   ASSERT_FALSE(pool().IsPoolStalled());
 }
@@ -3867,8 +3867,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   }
 
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CompleteStartSynchronously(OK);
 
   // Preparation: Create an active stream.
@@ -5196,12 +5196,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
   requester.set_destination(kDefaultDestination)
       .set_enable_alternative_services(false)
       .RequestStream(pool());
-  RunUntilIdle();
+  requester.WaitForResult();
 
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  ASSERT_FALSE(pool()
-                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
-                   .attempt_manager()
+  ASSERT_FALSE(requester.associated_attempt_manager()
                    ->GetQuicAttemptResultForTesting()
                    .has_value());
 }
@@ -5300,14 +5298,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
   requester.set_destination(kDefaultDestination)
       .set_quic_version(quic::ParsedQuicVersion::Unsupported())
       .RequestStream(pool());
-  RunUntilIdle();
+  requester.WaitForResult();
 
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  EXPECT_THAT(pool()
-                  .GetOrCreateGroupForTesting(requester.GetStreamKey())
-                  .attempt_manager()
-                  ->GetQuicAttemptResultForTesting(),
-              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+  EXPECT_THAT(
+      requester.associated_attempt_manager()->GetQuicAttemptResultForTesting(),
+      Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
   // No matching ALPN should not update
   // `is_quic_known_to_work_on_current_network()`.
   EXPECT_TRUE(quic_session_pool()->has_quic_ever_worked_on_current_network());
@@ -5674,9 +5670,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSessionDisabled) {
   RunUntilIdle();
 
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  ASSERT_FALSE(pool()
-                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
-                   .attempt_manager()
+  ASSERT_FALSE(requester.associated_attempt_manager()
                    ->GetQuicAttemptResultForTesting()
                    .has_value());
 }
