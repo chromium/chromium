@@ -49,7 +49,8 @@ public class MiniOriginBarController implements Observer {
 
     // Quantity to divide progress % by when deciding the final scale factor. We want our final
     // scale to be 0.75, so we divide progress by 4 and subtract that quantity from 1.0.
-    private static final float SCALE_DENOMINATOR = 4;
+    static final float LOCATION_BAR_SCALE_DENOMINATOR = 4;
+    static final float LOCATION_BAR_FINAL_SCALE = 0.75f;
 
     @IntDef({
         MiniOriginState.NOT_READY,
@@ -291,8 +292,8 @@ public class MiniOriginBarController implements Observer {
                 MeasureSpec.makeMeasureSpec(controlContainerWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(newControlContainerHeight, MeasureSpec.AT_MOST));
         mStartingLocationBarX = mDefaultLocationBarLayoutParams.leftMargin;
-        mFinalLocationBarX =
-                (float) (controlContainerWidth - locationBarView.getMeasuredWidth()) / 2;
+        float finalLocationBarWidth = locationBarView.getMeasuredWidth() * LOCATION_BAR_FINAL_SCALE;
+        mFinalLocationBarX = (controlContainerWidth - finalLocationBarWidth) / 2;
     }
 
     private void hideMiniOriginBar() {
@@ -330,7 +331,8 @@ public class MiniOriginBarController implements Observer {
 
     private boolean waitingForImeAnimationToStart() {
         return mMiniOriginBarState == MiniOriginState.READY
-                || mMiniOriginBarState == MiniOriginState.SHOWING;
+                || mMiniOriginBarState == MiniOriginState.SHOWING
+                || mMiniOriginBarState == MiniOriginState.SUPPRESSED_BY_CLICK;
     }
 
     /**
@@ -442,7 +444,7 @@ public class MiniOriginBarController implements Observer {
                         + minimizationProgress * (mFinalLocationBarX - mStartingLocationBarX);
         mLocationBar.getContainerView().setTranslationX(translationX);
 
-        float scale = 1.0f - minimizationProgress / SCALE_DENOMINATOR;
+        float scale = 1.0f - minimizationProgress / LOCATION_BAR_SCALE_DENOMINATOR;
         mLocationBar.getContainerView().setScaleX(scale);
         mLocationBar.getContainerView().setScaleY(scale);
         mLocationBar.getContainerView().setPivotY(0.5f);
@@ -519,9 +521,16 @@ public class MiniOriginBarController implements Observer {
             if (mAnimation == null) return;
             int currentKeyboardHeight =
                     windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-            mTranslationSupplier.set(
-                    mFinalKeyboardHeight
-                            - windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom);
+            int translation = mFinalKeyboardHeight - currentKeyboardHeight;
+
+            // Compensate for the system bars height only when hiding the keyboard.
+            if (mFinalKeyboardHeight == 0) {
+                int systemBarsHeight =
+                        windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+                translation += systemBarsHeight;
+            }
+
+            mTranslationSupplier.set(translation);
 
             float interpolatedFraction = mAnimation.getInterpolatedFraction();
             mIsCancelledPredictiveBack =

@@ -242,8 +242,10 @@ public class MiniOriginBarControllerTest {
         mLocationBarLayoutParams.leftMargin = locationBarStartPosition;
         final int locationBarMiniWidth = 100;
         doReturn(locationBarMiniWidth).when(mLocationBarView).getMeasuredWidth();
-        final int finalX = (CONTROL_CONTAINER_WIDTH - locationBarMiniWidth) / 2;
-        final int positionDelta = finalX - locationBarStartPosition;
+        float finalLocationBarWidth =
+                locationBarMiniWidth * MiniOriginBarController.LOCATION_BAR_FINAL_SCALE;
+        final float finalX = (CONTROL_CONTAINER_WIDTH - finalLocationBarWidth) / 2;
+        final float positionDelta = finalX - locationBarStartPosition;
 
         animationListener.onPrepare(mImeAnimation);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
@@ -252,12 +254,17 @@ public class MiniOriginBarControllerTest {
                 MiniOriginState.ANIMATING, mMiniOriginBarController.getCurrentStateForTesting());
 
         int currentKeyboardHeight = 10;
-        WindowInsetsCompat insets =
+        final int systemBarsHeight = 13;
+        WindowInsetsCompat.Builder insetsBuilder =
                 new WindowInsetsCompat.Builder()
                         .setInsets(
                                 WindowInsetsCompat.Type.ime(),
                                 Insets.of(0, 0, 0, currentKeyboardHeight))
-                        .build();
+                        .setInsets(
+                                WindowInsetsCompat.Type.systemBars(),
+                                Insets.of(0, 0, 0, systemBarsHeight));
+        WindowInsetsCompat insets = insetsBuilder.build();
+
         mImeAnimation.setFraction(0.1f);
         animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
         assertEquals(
@@ -266,12 +273,20 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBarView)
                 .setTranslationX(
                         locationBarStartPosition + mImeAnimation.getFraction() * positionDelta);
-        verify(mLocationBarView).setScaleX(1.0f - mImeAnimation.getFraction() / 4);
-        verify(mLocationBarView).setScaleY(1.0f - mImeAnimation.getFraction() / 4);
+        verify(mLocationBarView)
+                .setScaleX(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
+        verify(mLocationBarView)
+                .setScaleY(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
         currentKeyboardHeight = 40;
         insets =
-                new WindowInsetsCompat.Builder()
+                insetsBuilder
                         .setInsets(
                                 WindowInsetsCompat.Type.ime(),
                                 Insets.of(0, 0, 0, currentKeyboardHeight))
@@ -284,12 +299,20 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBarView)
                 .setTranslationX(
                         locationBarStartPosition + mImeAnimation.getFraction() * positionDelta);
-        verify(mLocationBarView).setScaleX(1.0f - mImeAnimation.getFraction() / 4);
-        verify(mLocationBarView).setScaleY(1.0f - mImeAnimation.getFraction() / 4);
+        verify(mLocationBarView)
+                .setScaleX(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
+        verify(mLocationBarView)
+                .setScaleY(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
         currentKeyboardHeight = 90;
         insets =
-                new WindowInsetsCompat.Builder()
+                insetsBuilder
                         .setInsets(
                                 WindowInsetsCompat.Type.ime(),
                                 Insets.of(0, 0, 0, currentKeyboardHeight))
@@ -302,16 +325,24 @@ public class MiniOriginBarControllerTest {
         verify(mLocationBarView)
                 .setTranslationX(
                         locationBarStartPosition + mImeAnimation.getFraction() * positionDelta);
-        verify(mLocationBarView).setScaleX(1.0f - mImeAnimation.getFraction() / 4);
-        verify(mLocationBarView).setScaleY(1.0f - mImeAnimation.getFraction() / 4);
+        verify(mLocationBarView)
+                .setScaleX(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
+        verify(mLocationBarView)
+                .setScaleY(
+                        1.0f
+                                - mImeAnimation.getFraction()
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
         animationListener.onEnd(mImeAnimation);
         assertEquals(0, (int) mControlContainerTranslationSupplier.get());
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
         verify(mLocationBarView).setTranslationX(locationBarStartPosition + positionDelta);
-        verify(mLocationBarView).setScaleX(0.75f);
-        verify(mLocationBarView).setScaleY(0.75f);
+        verify(mLocationBarView).setScaleX(MiniOriginBarController.LOCATION_BAR_FINAL_SCALE);
+        verify(mLocationBarView).setScaleY(MiniOriginBarController.LOCATION_BAR_FINAL_SCALE);
 
         Mockito.clearInvocations(mLocationBarView);
         // Simulate hiding the keyboard
@@ -324,30 +355,50 @@ public class MiniOriginBarControllerTest {
                 MiniOriginState.ANIMATING, mMiniOriginBarController.getCurrentStateForTesting());
         mImeAnimation.setFraction(0.1f);
         animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
-        assertEquals(-currentKeyboardHeight, (int) mControlContainerTranslationSupplier.get());
+        assertEquals(
+                -currentKeyboardHeight + systemBarsHeight,
+                (int) mControlContainerTranslationSupplier.get());
         verify(mLocationBarView)
                 .setTranslationX(
                         locationBarStartPosition
                                 + (1.0f - mImeAnimation.getFraction()) * positionDelta);
-        verify(mLocationBarView).setScaleX(1.0f - (1.0f - mImeAnimation.getFraction()) / 4);
-        verify(mLocationBarView).setScaleY(1.0f - (1.0f - mImeAnimation.getFraction()) / 4);
+        verify(mLocationBarView)
+                .setScaleX(
+                        1.0f
+                                - (1.0f - mImeAnimation.getFraction())
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
+        verify(mLocationBarView)
+                .setScaleY(
+                        1.0f
+                                - (1.0f - mImeAnimation.getFraction())
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
         currentKeyboardHeight = 40;
         insets =
-                new WindowInsetsCompat.Builder()
+                insetsBuilder
                         .setInsets(
                                 WindowInsetsCompat.Type.ime(),
                                 Insets.of(0, 0, 0, currentKeyboardHeight))
                         .build();
         mImeAnimation.setFraction(0.6f);
         animationListener.onProgress(insets, Collections.singletonList(mImeAnimation));
-        assertEquals(-currentKeyboardHeight, (int) mControlContainerTranslationSupplier.get());
+        assertEquals(
+                -currentKeyboardHeight + systemBarsHeight,
+                (int) mControlContainerTranslationSupplier.get());
         verify(mLocationBarView)
                 .setTranslationX(
                         locationBarStartPosition
                                 + (1.0f - mImeAnimation.getFraction()) * positionDelta);
-        verify(mLocationBarView).setScaleX(1.0f - (1.0f - mImeAnimation.getFraction()) / 4);
-        verify(mLocationBarView).setScaleY(1.0f - (1.0f - mImeAnimation.getFraction()) / 4);
+        verify(mLocationBarView)
+                .setScaleX(
+                        1.0f
+                                - (1.0f - mImeAnimation.getFraction())
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
+        verify(mLocationBarView)
+                .setScaleY(
+                        1.0f
+                                - (1.0f - mImeAnimation.getFraction())
+                                        / MiniOriginBarController.LOCATION_BAR_SCALE_DENOMINATOR);
 
         Mockito.clearInvocations(mLocationBarView);
         animationListener.onEnd(mImeAnimation);
