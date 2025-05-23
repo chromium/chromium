@@ -42,6 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 public class EdgeToEdgeUtils {
     private static final String TAG = "E2E_Utils";
     private static @Nullable Boolean sIsTargetSdkEnforceEdgeToEdge;
+    private static boolean sObservedTappableNavigationBar;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
@@ -189,7 +190,6 @@ public class EdgeToEdgeUtils {
     public static boolean recordEligibility(Activity activity) {
         boolean eligible = true;
 
-        // TODO(crbug.com/397756951): Replace with hasTappableNavigationBar()
         if (hasTappableNavigationBar(activity.getWindow())) {
             eligible = false;
             RecordHistogram.recordEnumeratedHistogram(
@@ -333,6 +333,11 @@ public class EdgeToEdgeUtils {
      * @return whether the given window's insets indicate a tappable navigation bar.
      */
     static boolean hasTappableNavigationBar(Window window) {
+        if (sObservedTappableNavigationBar
+                && ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
+            return true;
+        }
+
         var rootInsets = window.getDecorView().getRootWindowInsets();
         assert rootInsets != null;
         Insets navigationBarInsets =
@@ -342,9 +347,12 @@ public class EdgeToEdgeUtils {
                 WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
                         .getInsets(WindowInsetsCompat.Type.tappableElement());
         // Return whether there is any overlap in navigation bar and tappable element insets.
-        return (navigationBarInsets.bottom > 0 && tappableElementInsets.bottom > 0)
-                || (navigationBarInsets.left > 0 && tappableElementInsets.left > 0)
-                || (navigationBarInsets.right > 0 && tappableElementInsets.right > 0);
+        boolean hasTappableNavBar =
+                (navigationBarInsets.bottom > 0 && tappableElementInsets.bottom > 0)
+                        || (navigationBarInsets.left > 0 && tappableElementInsets.left > 0)
+                        || (navigationBarInsets.right > 0 && tappableElementInsets.right > 0);
+        sObservedTappableNavigationBar |= hasTappableNavBar;
+        return hasTappableNavBar;
     }
 
     /**
@@ -366,5 +374,10 @@ public class EdgeToEdgeUtils {
     /** Whether push safe-area-insets-bottom to pages that's not using viewport-fit=cover. */
     public static boolean pushSafeAreaInsetsForNonOptInPages() {
         return ChromeFeatureList.sDynamicSafeAreaInsets.isEnabled();
+    }
+
+    public static void setObservedTappableNavigationBarForTesting(boolean observed) {
+        sObservedTappableNavigationBar = observed;
+        ResettersForTesting.register(() -> sObservedTappableNavigationBar = false);
     }
 }
