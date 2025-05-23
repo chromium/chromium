@@ -35,7 +35,6 @@ export enum JapaneseSectionShortcut {
 }
 
 export enum JapaneseKeymapStyle {
-  CUSTOM = 'Custom',
   ATOK = 'Atok',
   MS_IME = 'MsIme',
   KOTOERI = 'Kotoeri',

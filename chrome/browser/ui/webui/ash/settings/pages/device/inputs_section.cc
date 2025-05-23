@@ -261,8 +261,6 @@ void AddInputMethodOptionsLoadTimeData(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_ASDFGHJKL},
       {"inputMethodOptionsJapaneseKeymapStyle",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE},
-      {"inputMethodOptionsJapaneseKeymapStyleCustom",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CUSTOM},
       {"inputMethodOptionsJapaneseKeymapStyleAtok",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_ATOK},
       {"inputMethodOptionsJapaneseKeymapStyleMsIme",

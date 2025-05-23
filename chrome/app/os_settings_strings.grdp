@@ -884,9 +884,6 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE" desc="The label for Japanese keyboard settings dropdown within the settings page to set the keymap style for the Japanese keyboard. The available dropdown values are 'Custom keymap', 'ATOK', 'MS-IME', 'Kotoeri', and 'ChromeOS'. In Japanese, this string should be 'キー設定の選択'.">
     Keymap style
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CUSTOM" desc="The label for Japanese settings page to set the keymap style to use a Custom keymap. This is 'Custom Keymap' in Japanese. In Japanese, this string should be 'カスタム'.">
-    Custom keymap
-  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_ATOK" translateable="false">
     ATOK
   </message>
