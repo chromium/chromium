@@ -17,6 +17,7 @@ source_set("profiles") {
     "incognito_helpers.h",
     "profile_key.cc",
     "profile_key.h",
+    "profiles_state.h",
   ]
 
   if (is_android) {
@@ -24,7 +25,6 @@ source_set("profiles") {
       "profile_android.cc",
       "profile_key_android.cc",
       "profile_key_android.h",
-      "profiles_state.h",
     ]
   }
 
