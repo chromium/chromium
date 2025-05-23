@@ -33,7 +33,7 @@ bool MetadataIsValid(const sync_pb::EntityMetadata& metadata) {
 }
 
 std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  CHECK_GT(specifics.ByteSizeLong(), 0u, base::NotFatalUntil::M141);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return base::Base64Encode(
       base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -64,7 +64,7 @@ std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
 std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateFromMetadata(
     const std::string& storage_key,
     sync_pb::EntityMetadata metadata) {
-  CHECK(!storage_key.empty(), base::NotFatalUntil::M141);
+  DCHECK(!storage_key.empty());
   if (!MetadataIsValid(metadata)) {
     return nullptr;
   }
@@ -83,8 +83,8 @@ ProcessorEntity::ProcessorEntity(const std::string& storage_key,
 ProcessorEntity::~ProcessorEntity() = default;
 
 void ProcessorEntity::SetStorageKey(const std::string& storage_key) {
-  CHECK(storage_key_.empty(), base::NotFatalUntil::M141);
-  CHECK(!storage_key.empty(), base::NotFatalUntil::M141);
+  DCHECK(storage_key_.empty());
+  DCHECK(!storage_key.empty());
   storage_key_ = storage_key;
 }
 
@@ -93,7 +93,7 @@ void ProcessorEntity::ClearStorageKey() {
 }
 
 void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
-  CHECK(data);
+  DCHECK(data);
   // Update data's fields from metadata.
   data->client_tag_hash =
       ClientTagHash::FromHashed(metadata_.client_tag_hash());
@@ -104,7 +104,7 @@ void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
   data->modification_time = ProtoTimeToTime(metadata_.modification_time());
 
   commit_data_ = std::move(data);
-  CHECK(HasCommitData());
+  DCHECK(HasCommitData());
 }
 
 bool ProcessorEntity::HasCommitData() const {
@@ -120,23 +120,20 @@ bool ProcessorEntity::MatchesData(const EntityData& data) const {
   }
   // Do not check for unique position changes explicitly because they are
   // supposed to be in specifics.
-  CHECK_GT(data.specifics.ByteSizeLong(), 0u, base::NotFatalUntil::M141);
-  return HashSpecifics(data.specifics) == metadata_.specifics_hash();
+  return MatchesSpecificsHash(data.specifics);
 }
 
 bool ProcessorEntity::MatchesOwnBaseData() const {
-  // The `base_specifics_hash` is only set if the entity is unsynced.
-  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
+  DCHECK(IsUnsynced());
   if (metadata_.is_deleted()) {
     return false;
   }
-  CHECK(!metadata_.specifics_hash().empty(), base::NotFatalUntil::M141);
+  DCHECK(!metadata_.specifics_hash().empty());
   return metadata_.specifics_hash() == metadata_.base_specifics_hash();
 }
 
 bool ProcessorEntity::MatchesBaseData(const EntityData& data) const {
-  // The `base_specifics_hash` is only set if the entity is unsynced.
-  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
+  DCHECK(IsUnsynced());
   if (data.is_deleted() || metadata_.base_specifics_hash().empty()) {
     return false;
   }
@@ -165,18 +162,17 @@ bool ProcessorEntity::IsVersionAlreadyKnown(int64_t update_version) const {
 
 void ProcessorEntity::RecordIgnoredRemoteUpdate(
     const UpdateResponseData& update) {
-  CHECK(metadata_.server_id().empty() ||
-            metadata_.server_id() == update.entity.id,
-        base::NotFatalUntil::M141);
+  DCHECK(metadata_.server_id().empty() ||
+         metadata_.server_id() == update.entity.id);
   metadata_.set_server_id(update.entity.id);
   metadata_.set_server_version(update.response_version);
   // Either these already matched, acked was just bumped to squash a pending
   // commit and this should follow, or the pending commit needs to be requeued.
   commit_requested_sequence_number_ = metadata_.acked_sequence_number();
-  // If a local change was made while the server assigned a new id to the
-  // entity, update the id in cached commit data.
+  // If local change was made while server assigned a new id to the entity,
+  // update id in cached commit data.
   if (HasCommitData() && commit_data_->id != metadata_.server_id()) {
-    CHECK(commit_data_->id.empty(), base::NotFatalUntil::M141);
+    DCHECK(commit_data_->id.empty());
     commit_data_->id = metadata_.server_id();
   }
 }
@@ -185,7 +181,7 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
     const UpdateResponseData& update,
     sync_pb::EntitySpecifics trimmed_specifics,
     std::optional<sync_pb::UniquePosition> unique_position) {
-  CHECK(!IsUnsynced(), base::NotFatalUntil::M141);
+  DCHECK(!IsUnsynced());
   RecordIgnoredRemoteUpdate(update);
   metadata_.set_is_deleted(update.entity.is_deleted());
   metadata_.set_modification_time(
@@ -234,6 +230,8 @@ void ProcessorEntity::RecordLocalUpdate(
     std::unique_ptr<EntityData> data,
     sync_pb::EntitySpecifics trimmed_specifics,
     std::optional<sync_pb::UniquePosition> unique_position) {
+  DCHECK(!metadata_.client_tag_hash().empty());
+
   // Update metadata fields from updated data.
   base::Time modification_time = !data->modification_time.is_null()
                                      ? data->modification_time
@@ -318,11 +316,10 @@ bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
 
 void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
   if (!metadata_.is_deleted()) {
-    CHECK(HasCommitData(), base::NotFatalUntil::M141);
-    CHECK_EQ(commit_data_->client_tag_hash.value(), metadata_.client_tag_hash(),
-             base::NotFatalUntil::M141);
-    CHECK_EQ(commit_data_->id, metadata_.server_id(),
-             base::NotFatalUntil::M141);
+    DCHECK(HasCommitData());
+    DCHECK_EQ(commit_data_->client_tag_hash.value(),
+              metadata_.client_tag_hash());
+    DCHECK_EQ(commit_data_->id, metadata_.server_id());
     request->entity = std::move(commit_data_);
   } else {
     // Make an EntityData with empty specifics to indicate deletion. This is
@@ -404,6 +401,13 @@ size_t ProcessorEntity::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(metadata_);
   memory_usage += EstimateMemoryUsage(commit_data_);
   return memory_usage;
+}
+
+bool ProcessorEntity::MatchesSpecificsHash(
+    const sync_pb::EntitySpecifics& specifics) const {
+  DCHECK(!metadata_.is_deleted());
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
+  return HashSpecifics(specifics) == metadata_.specifics_hash();
 }
 
 void ProcessorEntity::UpdateSpecificsHash(
