@@ -484,6 +484,11 @@ constexpr base::FeatureParam<bool>
         true};
 
 constexpr base::FeatureParam<bool>
+    kLensOverlayVisualSelectionUpdatesEnableRegionSelectedGlow{
+        &kLensOverlayVisualSelectionUpdates, "enable-region-selected-glow",
+        true};
+
+constexpr base::FeatureParam<bool>
     kLensOverlayVisualSelectionUpdatesCsbThumbnail{
         &kLensOverlayVisualSelectionUpdates, "enable-csb-thumbnail", true};
 
@@ -1035,6 +1040,11 @@ bool GetVisualSelectionUpdatesEnableBorderGlow() {
 bool GetVisualSelectionUpdatesEnableGradientRegionStroke() {
   return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
          kLensOverlayVisualSelectionUpdatesEnableGradientRegionStroke.Get();
+}
+
+bool GetVisualSelectionUpdatesEnableRegionSelectedGlow() {
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) &&
+         kLensOverlayVisualSelectionUpdatesEnableRegionSelectedGlow.Get();
 }
 
 bool GetVisualSelectionUpdatesEnableCsbThumbnail() {

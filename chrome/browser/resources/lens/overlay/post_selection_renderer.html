@@ -10,23 +10,35 @@
     background-color: var(--color-scrim);
     height: 100%;
     opacity: 20%;
-    transition: opacity cubic-bezier(0.2, 0.0, 0, 1.0) 400ms;
+    transition: opacity cubic-bezier(0.2, 0, 0, 1) 400ms;
     width: 100%;
+  }
+
+  :host([region-selected-glow-enabled]) #postSelectionScrim {
+    /* Hide this scrim because its superfluous here - the region_selection scrim
+    * is already active and has transitioned to its post-selection opacity. */
+    display: none;
   }
 
   /** Render the selected part of the image again so it appears glowing over
       the scrim */
   #backgroundImageCanvas {
-    clip-path: rect(var(--selection-top)
-                    calc(var(--selection-left) + var(--selection-width))
-                    calc(var(--selection-top) + var(--selection-height))
-                    var(--selection-left)
-                    round var(--post-selection-cutout-corner-radius));
+    clip-path: rect(
+      var(--selection-top) calc(var(--selection-left) + var(--selection-width))
+        calc(var(--selection-top) + var(--selection-height)) var(--selection-left) round
+        var(--post-selection-cutout-corner-radius)
+    );
     height: 100%;
     inset: 0;
     object-fit: contain;
     position: absolute;
     width: 100%;
+  }
+
+  :host([region-selected-glow-enabled]) #backgroundImageCanvas {
+    /* Do not use z-index once region-selection-glow-enabled is launched.
+     * Instead, move the backgroundImageCanvas higher in the DOM. */
+    z-index: 2;
   }
 
   #postSelection {
@@ -44,6 +56,31 @@
     width: var(--selection-width);
   }
 
+  :host([region-selected-glow-enabled]) #postSelection {
+    background-color: transparent;
+    opacity: 1;
+    transition: none;
+  }
+
+  :host([region-selected-glow-enabled]) #postSelection:before {
+    background: conic-gradient(
+      from 90deg at center,
+      var(--gradient-blue) 0deg,
+      var(--gradient-blue) 162deg,
+      var(--gradient-red) 216deg,
+      var(--gradient-yellow) 274deg,
+      var(--gradient-green) 331deg
+    );
+    content: "";
+    /* Generally blur should be avoided for performance reasons but it's ok here
+     * because it's only being calculated once */
+    filter: blur(40px);
+    inset: 0;
+    opacity: 1;
+    position: absolute;
+    transition: opacity 166ms cubic-bezier(0.3, 0, 1, 1);
+  }
+
   :host([should-darken-scrim]) #postSelection {
     opacity: 20%;
   }
@@ -51,13 +88,11 @@
   #selectionCorners {
     background-image: paint(post-selection);
     forced-color-adjust: none;
-    height: calc(var(--selection-height) +
-                    (2 * var(--post-selection-corner-width)));
+    height: calc(var(--selection-height) + (2 * var(--post-selection-corner-width)));
     left: calc(var(--selection-left) - var(--post-selection-corner-width));
     position: absolute;
     top: calc(var(--selection-top) - var(--post-selection-corner-width));
-    width: calc(var(--selection-width) +
-                   (2 * var(--post-selection-corner-width)));
+    width: calc(var(--selection-width) + (2 * var(--post-selection-corner-width)));
     z-index: 5; /* Position above words. */
   }
 
@@ -80,28 +115,28 @@
     cursor: nw-resize;
     left: 0;
     top: 0;
-    transform: translate(-25%, -25%)
+    transform: translate(-25%, -25%);
   }
 
   #topRight {
     cursor: ne-resize;
     top: 0;
     right: 0;
-    transform: translate(25%, -25%)
+    transform: translate(25%, -25%);
   }
 
   #bottomRight {
     cursor: se-resize;
     bottom: 0;
     right: 0;
-    transform: translate(25%, 25%)
+    transform: translate(25%, 25%);
   }
 
   #bottomLeft {
     cursor: sw-resize;
     bottom: 0;
     left: 0;
-    transform: translate(-25%, 25%)
+    transform: translate(-25%, 25%);
   }
 
   .slider {
@@ -112,22 +147,31 @@
     opacity: 0;
   }
 </style>
-<div id="postSelectionScrim"
-    style$="[[getScrimStyleProperties(height, width)]]">
-</div>
+<div id="postSelectionScrim" style$="[[getScrimStyleProperties(height, width)]]"></div>
 <div hidden$="[[!hasSelection(height, width)]]">
-  <canvas id="backgroundImageCanvas" height="[[canvasPhysicalHeight]]"
-      width="[[canvasPhysicalWidth]]"
-      style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;">
+  <canvas
+    id="backgroundImageCanvas"
+    height="[[canvasPhysicalHeight]]"
+    width="[[canvasPhysicalWidth]]"
+    style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+  >
   </canvas>
-  <div id="postSelection"></div>
+  <div style$="[[getHexColorStyles()]]" id="postSelection"></div>
   <div id="selectionCorners">
     <template is="dom-repeat" items="[[cornerIds]]">
       <div id="[[item]]" class="corner-hit-box">
         <template is="dom-if" if="[[cornerSlidersEnabled]]">
-          <input id="[[item]]Slider" type="range" tabindex="0" min="-1"
-              max="101" step="1" class="slider" on-change="handleSliderChange"
-              data-corner-id$="[[item]]">
+          <input
+            id="[[item]]Slider"
+            type="range"
+            tabindex="0"
+            min="-1"
+            max="101"
+            step="1"
+            class="slider"
+            on-change="handleSliderChange"
+            data-corner-id$="[[item]]"
+          />
         </template>
       </div>
     </template>

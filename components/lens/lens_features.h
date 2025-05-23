@@ -773,6 +773,10 @@ extern bool GetVisualSelectionUpdatesEnableBorderGlow();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableGradientRegionStroke();
 
+// Whether to enable the region selected glow for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableRegionSelectedGlow();
+
 // Whether to enable the thumbnail in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();

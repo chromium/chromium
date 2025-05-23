@@ -10,6 +10,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {GLIF_HEX_COLORS} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
@@ -119,6 +120,11 @@ export class PostSelectionRendererElement extends
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
+      regionSelectedGlowEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enableRegionSelectedGlow'),
+      },
       selectionOverlayRect: Object,
       shouldDarkenScrim: {
         type: Boolean,
@@ -149,6 +155,8 @@ export class PostSelectionRendererElement extends
   declare private canvasPhysicalWidth: number;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect().
+  // Whether the region selected glow is enabled via feature flag.
+  declare private regionSelectedGlowEnabled: boolean;
   declare private selectionOverlayRect: DOMRect;
 
   private context: CanvasRenderingContext2D;
@@ -456,6 +464,16 @@ export class PostSelectionRendererElement extends
       this.sliderChangedTimeoutID = -1;
       this.handleGestureEnd();
     }, this.sliderChangedTimeout);
+  }
+
+  private getHexColorStyles() {
+    const style: string[] = [
+      `--gradient-blue: ${GLIF_HEX_COLORS.blue}`,
+      `--gradient-red: ${GLIF_HEX_COLORS.red}`,
+      `--gradient-yellow: ${GLIF_HEX_COLORS.yellow}`,
+      `--gradient-green: ${GLIF_HEX_COLORS.green}`,
+    ];
+    return style.join('; ');
   }
 
   private setDimensions(
