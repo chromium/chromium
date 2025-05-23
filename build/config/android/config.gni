@@ -161,11 +161,6 @@ if (is_android) {
     public_android_sdk = true
   }
 
-  # For use downstream when we are building with preview Android SDK
-  if (!defined(final_android_sdk)) {
-    final_android_sdk = public_android_sdk
-  }
-
   if (!defined(default_lint_android_sdk_root)) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
