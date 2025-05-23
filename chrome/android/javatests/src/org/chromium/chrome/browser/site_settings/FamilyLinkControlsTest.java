@@ -16,8 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.SmallTest;
@@ -34,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -54,18 +51,15 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /** Tests family link controls are reflected in UI */
 @DoNotBatch(
         reason = "Activity must be destroyed between tests to ensure the child account is removed.")
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41488000")
 public class FamilyLinkControlsTest {
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
-    private CoreAccountInfo mAccountInfo;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -86,7 +80,7 @@ public class FamilyLinkControlsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
-        mAccountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
+        mSigninTestRule.addChildTestAccountThenWaitForSignin();
 
         // Wait for SigninChecker to be initialized
         CriteriaHelper.pollUiThread(
