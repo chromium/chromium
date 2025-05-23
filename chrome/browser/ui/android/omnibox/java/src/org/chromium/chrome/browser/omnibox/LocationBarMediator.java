@@ -289,6 +289,7 @@ class LocationBarMediator
 
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
+        mCallbackController.destroy();
         if (mTemplateUrlServiceSupplier.hasValue()) {
             mTemplateUrlServiceSupplier.get().removeObserver(this);
         }
