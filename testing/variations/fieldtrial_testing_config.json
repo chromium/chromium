@@ -14959,6 +14959,21 @@
             ]
         }
     ],
+    "NewTabPageCustomization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewTabPageCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "NimbleCollisionAvoidanceV1": [
         {
             "platforms": [

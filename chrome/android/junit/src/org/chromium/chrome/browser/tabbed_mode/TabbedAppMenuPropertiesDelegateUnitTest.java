@@ -135,9 +135,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
+// TODO(crbug.com/376238770): Removes ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION from
+// @DisableFeatures() and adds "Customize New Tab Page" to all expectedItems list once the feature
+// flag is turned on by default.
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+    ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {

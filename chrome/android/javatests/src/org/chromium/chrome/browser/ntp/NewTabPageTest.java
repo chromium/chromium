@@ -265,7 +265,7 @@ public class NewTabPageTest {
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         View view = mNtp.getCoordinatorForTesting().getHeaderViewForTesting();
         // Check header is expanded.
-        mRenderTestRule.render(view, "expandable_header_expanded");
+        mRenderTestRule.render(view, "expandable_header_expanded_v2");
 
         // Toggle header on the current tab.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -273,7 +273,7 @@ public class NewTabPageTest {
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());
         // Check header is collapsed.
-        mRenderTestRule.render(view, "expandable_header_collapsed_v2");
+        mRenderTestRule.render(view, "expandable_header_collapsed_v3");
     }
 
     /**
