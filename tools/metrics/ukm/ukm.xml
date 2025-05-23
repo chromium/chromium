@@ -11569,13 +11569,14 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="HistoryApi">
+<event name="HistoryApi.AdvanceMethod">
   <owner>yaoxia@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
-    Records usage of the window.history API, capturing details about the
-    operation type, user activation, and ad-related information. Recorded when
-    window.history API is used.
+    Records usage of `window.history` methods that advance the history position
+    (`pushState()`, `forward()`, and `go()` with positive values), capturing
+    details about user activation and ad-related information. Recorded when
+    these specific methods are invoked.
   </summary>
   <metric name="FromAd" enum="Boolean">
     <summary>
@@ -11589,12 +11590,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether the invoking context has seen user activation.
       (https://mustaqahmed.github.io/user-activation-v2)
-    </summary>
-  </metric>
-  <metric name="IsHistoryModifyingOperation" enum="Boolean">
-    <summary>
-      Whether the operation modifies the history state (i.e., back(), forward(),
-      go(), pushState(), replaceState()).
     </summary>
   </metric>
 </event>
