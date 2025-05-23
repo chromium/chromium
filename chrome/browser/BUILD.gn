@@ -8291,8 +8291,6 @@ static_library("browser") {
 
   if (use_nss_certs) {
     sources += [
-      "certificate_manager_model.cc",
-      "certificate_manager_model.h",
       "net/nss_service.cc",
       "net/nss_service.h",
       "net/nss_service_factory.cc",

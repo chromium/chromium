@@ -3782,7 +3782,6 @@ if (!is_android) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
         "../browser/accessibility/media_app/ax_media_app_untrusted_service_browsertest.cc",
-        "../browser/certificate_manager_model_ash_browsertest.cc",
         "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
         "../browser/media/webrtc/capture_policy_utils_browsertest.cc",
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
@@ -10342,10 +10341,7 @@ test("unit_tests") {
     }
   }
   if (use_nss_certs) {
-    sources += [
-      "../browser/certificate_manager_model_unittest.cc",
-      "../browser/ui/webui/certificate_manager/client_cert_sources_writable_unittest.cc",
-    ]
+    sources += [ "../browser/ui/webui/certificate_manager/client_cert_sources_writable_unittest.cc" ]
     if (is_chromeos) {
       sources += [
         "../browser/net/nss_temp_certs_cache_chromeos_unittest.cc",

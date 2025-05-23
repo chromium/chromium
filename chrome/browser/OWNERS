@@ -29,8 +29,6 @@ per-file browser_close_manager_browsertest.cc=creis@chromium.org
 
 per-file browser_navigator_browsertest.*=file://content/OWNERS
 
-per-file certificate_manager_model*=mattm@chromium.org
-
 per-file chrome_content_browser_client.cc=*
 per-file chrome_content_browser_client.h=*
 per-file chrome_content_browser_client_browsertest.cc=*
