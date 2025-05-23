@@ -2863,15 +2863,6 @@ const CSSValue* StyleResolver::ComputeValue(
     Element* element,
     const CSSPropertyName& property_name,
     const CSSValue& value) {
-  CSSToLengthConversionData::Flags flags;
-  return ComputeValue(element, property_name, value, flags);
-}
-
-const CSSValue* StyleResolver::ComputeValue(
-    Element* element,
-    const CSSPropertyName& property_name,
-    const CSSValue& value,
-    CSSToLengthConversionData::Flags& flags) {
   Document& document = element->GetDocument();
   document.GetStyleEngine().UpdateViewportSize();
   const ComputedStyle* base_style = element->GetComputedStyle();
@@ -2898,7 +2889,6 @@ const CSSValue* StyleResolver::ComputeValue(
     return nullptr;
   }
   CSSPropertyRef property_ref(property_name, document);
-  flags = state.TakeLengthConversionFlags();
   const ComputedStyle* style = state.TakeStyle();
   return ComputedStyleUtils::ComputedPropertyValue(property_ref.GetProperty(),
                                                    *style);

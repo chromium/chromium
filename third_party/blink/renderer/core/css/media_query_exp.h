@@ -149,10 +149,9 @@ class CORE_EXPORT MediaQueryExpValue {
     kDynamicViewport = 1 << 2,
     kStaticViewport = 1 << 3,
     kContainer = 1 << 4,
-    kTreeCounting = 1 << 5,
   };
 
-  static const int kUnitFlagsBits = 6;
+  static const int kUnitFlagsBits = 5;
 
   unsigned GetUnitFlags() const;
 

@@ -1803,10 +1803,8 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     return KleeneValue::kFalse;
   }
 
-  CSSToLengthConversionData::Flags conversion_flags;
-  const CSSValue* query_value =
-      StyleResolver::ComputeValue(container, CSSPropertyName(property_name),
-                                  query_specified, conversion_flags);
+  const CSSValue* query_value = StyleResolver::ComputeValue(
+      container, CSSPropertyName(property_name), query_specified);
 
   if (const auto* decl_value =
           DynamicTo<CSSUnparsedDeclarationValue>(query_value)) {
@@ -1821,14 +1819,6 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
       return KleeneValue::kTrue;
     }
     return KleeneValue::kFalse;
-  }
-
-  if (result_flags) {
-    if (conversion_flags &
-        static_cast<CSSToLengthConversionData::Flags>(
-            CSSToLengthConversionData::Flag::kSiblingRelative)) {
-      result_flags->unit_flags |= MediaQueryExpValue::UnitFlags::kTreeCounting;
-    }
   }
 
   const CSSValue* computed_value =

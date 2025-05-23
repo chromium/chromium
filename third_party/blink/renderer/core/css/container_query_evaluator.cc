@@ -352,15 +352,6 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
           MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
     }
   }
-  if ((unit_flags_ & MediaQueryExpValue::UnitFlags::kTreeCounting) == 0 &&
-      (result.unit_flags & MediaQueryExpValue::UnitFlags::kTreeCounting) != 0) {
-    Element* container = ContainerElement();
-    if (ContainerNode* parent = container->ParentElementOrDocumentFragment()) {
-      parent->SetChildrenAffectedByForwardPositionalRules();
-      parent->SetChildrenAffectedByBackwardPositionalRules();
-      container->GetDocument().GetStyleEngine().SetUsesTreeCountingFunctions();
-    }
-  }
   unit_flags_ |= result.unit_flags;
 
   return result.value;
@@ -950,10 +941,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
       break;
   }
 
-  if (!style_changed && !DependsOnTreeCounting()) {
-    // If some query depends on a tree-counting function (e.g. sibling-index()),
-    // we must re-evaluate the queries even if the style didn't change. This is
-    // because the sibling-index/count isn't stored on ComputedStyle.
+  if (!style_changed) {
     return recalc_change;
   }
 
@@ -973,15 +961,13 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
       MayDependOnWritingDirection() &&
       old_style.GetWritingDirection() != new_style.GetWritingDirection();
 
-  if (invalidate_for_writing_direction || invalidate_for_font ||
-      DependsOnTreeCounting()) {
+  if (invalidate_for_writing_direction || invalidate_for_font) {
     // Writing direction and font sizing are cached on CSSContainerValues. Need
     // to recreate the values based on the current ComputedStyle.
     UpdateContainerValues();
   }
 
-  if (invalidate_for_writing_direction || invalidate_for_font ||
-      DependsOnTreeCounting()) {
+  if (invalidate_for_writing_direction || invalidate_for_font) {
     switch (StyleAffectingSizeChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;
@@ -1009,8 +995,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   if (!base::ValuesEquivalent(old_style.InheritedVariables(),
                               new_style.InheritedVariables()) ||
       !base::ValuesEquivalent(old_style.NonInheritedVariables(),
-                              new_style.NonInheritedVariables()) ||
-      DependsOnTreeCounting()) {
+                              new_style.NonInheritedVariables())) {
     switch (StyleContainerChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;

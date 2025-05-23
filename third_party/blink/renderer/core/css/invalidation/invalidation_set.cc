@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "base/memory/values_equivalent.h"
-#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -165,12 +164,6 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
             element, kInvalidationSetInvalidatesTreeCounting, *this,
             g_empty_atom);
         return true;
-      }
-      if (ContainerQueryEvaluator* evaluator =
-              element.GetContainerQueryEvaluator()) {
-        if (evaluator->DependsOnTreeCounting()) {
-          return true;
-        }
       }
     }
   }

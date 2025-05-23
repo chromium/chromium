@@ -701,16 +701,13 @@ String MediaQueryExpValue::CssText() const {
 unsigned MediaQueryExpValue::GetUnitFlags() const {
   CSSPrimitiveValue::LengthTypeFlags length_type_flags;
 
-  unsigned unit_flags = 0;
-
   if (IsValue()) {
     if (auto* primitive = DynamicTo<CSSPrimitiveValue>(GetCSSValue())) {
       primitive->AccumulateLengthUnitTypes(length_type_flags);
-      if (primitive->IsElementDependent()) {
-        unit_flags |= UnitFlags::kTreeCounting;
-      }
     }
   }
+
+  unsigned unit_flags = 0;
 
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontXSize) ||

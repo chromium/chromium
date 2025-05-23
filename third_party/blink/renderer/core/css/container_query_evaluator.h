@@ -59,9 +59,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
   std::optional<double> Width() const;
   std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
-  bool DependsOnTreeCounting() {
-    return (unit_flags_ & MediaQueryExpValue::UnitFlags::kTreeCounting) != 0;
-  }
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
