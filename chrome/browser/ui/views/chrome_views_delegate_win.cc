@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/browser/win/app_icon.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -151,6 +152,11 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
       native_widget_type = NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
     }
   }
+
+  if (params->delegate && params->delegate->use_desktop_widget_override()) {
+    native_widget_type = NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+  }
+
   return ::CreateNativeWidget(native_widget_type, params, delegate);
 }
 

@@ -262,6 +262,7 @@ class GlicWindowControllerImpl
   gfx::Size GetMaximumDialogSize() override;
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override;
+  bool ShouldDialogBoundsConstrainedByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 

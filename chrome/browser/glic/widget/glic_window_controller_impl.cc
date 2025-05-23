@@ -1461,6 +1461,12 @@ gfx::Point GlicWindowControllerImpl::GetDialogPosition(
   return gfx::Point((client_area_bounds.width() - dialog_size.width()) / 2, 0);
 }
 
+bool GlicWindowControllerImpl::ShouldDialogBoundsConstrainedByHost() {
+  // Allows web modal dialogs to extend beyond the boundary of glic window.
+  // These web modals are usually larger than the glic window.
+  return false;
+}
+
 void GlicWindowControllerImpl::AddObserver(
     web_modal::ModalDialogHostObserver* observer) {
   modal_dialog_host_observers_.AddObserver(observer);
