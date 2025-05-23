@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewBuilderBoundaryInterface.ConfigField;
 
@@ -38,10 +39,11 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
     }
 
     static class Builder implements BiConsumer<@ConfigField Integer, Object> {
-        private Integer mBaseline;
+        private boolean mRestrictJavascriptInterface;
+
         private @Nullable List<Object> mJavascriptInterfaceObjects;
         private @Nullable List<String> mJavascriptInterfaceNames;
-        private @Nullable List<List<String>> mJavascriptInterfaceSitePatterns;
+        private @Nullable List<List<String>> mJavascriptInterfaceOriginPatterns;
 
         @Override
         public void accept(@ConfigField Integer key, Object value) {
@@ -49,7 +51,12 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
                 switch (key) {
                     case ConfigField.BASELINE:
                         {
-                            mBaseline = (Integer) value;
+                            // TODO(crbug.com/419726203): Add baselines.
+                            break;
+                        }
+                    case ConfigField.RESTRICT_JAVASCRIPT_INTERFACE:
+                        {
+                            mRestrictJavascriptInterface = (Boolean) value;
                             break;
                         }
                     case ConfigField.JAVASCRIPT_INTERFACE:
@@ -57,7 +64,7 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
                             Object[] interfaceParams = (Object[]) value;
                             mJavascriptInterfaceObjects = (List<Object>) interfaceParams[0];
                             mJavascriptInterfaceNames = (List<String>) interfaceParams[1];
-                            mJavascriptInterfaceSitePatterns =
+                            mJavascriptInterfaceOriginPatterns =
                                     (List<List<String>>) interfaceParams[2];
                             break;
                         }
@@ -74,18 +81,27 @@ class SupportLibWebViewBuilderAdapter implements WebViewBuilderBoundaryInterface
 
             SharedWebViewChromium sharedWebViewChromium =
                     WebkitToSharedGlueConverter.getSharedWebViewChromium(webview);
+            AwContents awContents = sharedWebViewChromium.getAwContents();
 
-            if (mBaseline != null) {
-                sharedWebViewChromium.configureBaseline(mBaseline);
+            boolean allowlistJavascriptInterfaces =
+                    mJavascriptInterfaceObjects != null
+                            && mJavascriptInterfaceNames != null
+                            && mJavascriptInterfaceOriginPatterns != null
+                            && mJavascriptInterfaceObjects.size() > 0;
+
+            if (mRestrictJavascriptInterface) {
+                awContents.restrictJavascriptInterface();
+            } else if (allowlistJavascriptInterfaces) {
+                throw new IllegalArgumentException(
+                        "JavascriptInterface cannot be allowlisted without first restricting"
+                                + " javascript interface via restrictJavascriptInterface()");
             }
 
-            if (mJavascriptInterfaceObjects != null
-                    && mJavascriptInterfaceNames != null
-                    && mJavascriptInterfaceSitePatterns != null) {
+            if (allowlistJavascriptInterfaces) {
                 sharedWebViewChromium.addJavascriptInterfaces(
                         mJavascriptInterfaceObjects,
                         mJavascriptInterfaceNames,
-                        mJavascriptInterfaceSitePatterns);
+                        mJavascriptInterfaceOriginPatterns);
             }
 
             return webview;

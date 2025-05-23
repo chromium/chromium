@@ -16,7 +16,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -38,23 +40,32 @@ public interface WebViewBuilderBoundaryInterface {
     @IntDef({
         ConfigField.BASELINE,
         ConfigField.JAVASCRIPT_INTERFACE,
+        ConfigField.RESTRICT_JAVASCRIPT_INTERFACE,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ConfigField {
         int BASELINE = 0;
         int JAVASCRIPT_INTERFACE = 1;
+        int RESTRICT_JAVASCRIPT_INTERFACE = 2;
     }
 
     class Config implements Consumer<BiConsumer<@ConfigField Integer, Object>> {
         public int baseline = Baseline.DEFAULT;
-        List<Object> mJavascriptInterfaceObjects = new ArrayList<>();
-        List<String> mJavascriptInterfaceNames = new ArrayList<>();
-        List<List<String>> mJavascriptInterfaceSitePatterns = new ArrayList<>();
+        public boolean restrictJavascriptInterface;
 
-        public void addJavascriptInterface(Object object, String name, List<String> sitePatterns) {
+        List<Object> mJavascriptInterfaceObjects = new ArrayList<>();
+        Map<String, Boolean> mJavascriptInterfaceNames = new LinkedHashMap<>();
+        List<List<String>> mJavascriptInterfaceOriginPatterns = new ArrayList<>();
+
+        public void addJavascriptInterface(
+                Object object, String name, List<String> originPatterns) {
+            if (mJavascriptInterfaceNames.containsKey(name)) {
+                throw new IllegalArgumentException(
+                        "A duplicate JavaScript interface was provided for \"" + name + "\"");
+            }
             mJavascriptInterfaceObjects.add(object);
-            mJavascriptInterfaceNames.add(name);
-            mJavascriptInterfaceSitePatterns.add(sitePatterns);
+            mJavascriptInterfaceNames.put(name, true);
+            mJavascriptInterfaceOriginPatterns.add(originPatterns);
         }
 
         // This method handles reading all config in AndroidX to transfer over to Chromium.
@@ -63,11 +74,16 @@ public interface WebViewBuilderBoundaryInterface {
         public void accept(BiConsumer<@ConfigField Integer, Object> chromiumConfig) {
             chromiumConfig.accept(ConfigField.BASELINE, baseline);
             chromiumConfig.accept(
+                    ConfigField.RESTRICT_JAVASCRIPT_INTERFACE, restrictJavascriptInterface);
+            chromiumConfig.accept(
                     ConfigField.JAVASCRIPT_INTERFACE,
                     new Object[] {
                         mJavascriptInterfaceObjects,
-                        mJavascriptInterfaceNames,
-                        mJavascriptInterfaceSitePatterns
+                        // We only use a Set while adding origin patterns to efficiently validate
+                        // on each origin being added. When we send this to Chromium, we can provide
+                        // this as the list expected.
+                        new ArrayList<String>(mJavascriptInterfaceNames.keySet()),
+                        mJavascriptInterfaceOriginPatterns
                     });
         }
     }

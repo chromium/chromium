@@ -509,6 +509,8 @@ public class AwContents implements SmartClipProvider {
     private boolean mContainerViewFocused;
     private boolean mWindowFocused;
 
+    private boolean mRestrictJavascriptInterface;
+
     // These come from the compositor and are updated synchronously (in contrast to the values in
     // RenderCoordinates, which are updated at end of every frame).
     private float mPageScaleFactor = 1.0f;
@@ -3539,9 +3541,21 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * @see WebViewBuilder#restrictJavascriptInterface()
+     */
+    public void restrictJavascriptInterface() {
+        mRestrictJavascriptInterface = true;
+    }
+
+    /**
      * @see JavascriptInjector#addPossiblyUnsafeInterface(Object, String, Class)
      */
     public void addJavascriptInterface(Object object, String name) {
+        if (mRestrictJavascriptInterface) {
+            throw new IllegalStateException(
+                    "addJavascriptInterface cannot be called on a WebView built with "
+                            + "restrictJavascriptInterface()");
+        }
         addJavascriptInterface(object, name, List.of("*"));
     }
 
@@ -3570,8 +3584,15 @@ public class AwContents implements SmartClipProvider {
                 .addPossiblyUnsafeInterface(object, name, requiredAnnotation, originAllowlist);
     }
 
-    /** @see android.webkit.WebView#removeJavascriptInterface(String) */
+    /**
+     * @see android.webkit.WebView#removeJavascriptInterface(String)
+     */
     public void removeJavascriptInterface(String interfaceName) {
+        if (mRestrictJavascriptInterface) {
+            throw new IllegalStateException(
+                    "removeJavascriptInterface cannot be called on a WebView built with "
+                            + "restrictJavascriptInterface()");
+        }
         if (TRACE) Log.i(TAG, "%s removeInterface=%s", this, interfaceName);
         if (isDestroyed(WARN)) return;
 
