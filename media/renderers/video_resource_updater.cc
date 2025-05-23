@@ -751,22 +751,22 @@ void VideoResourceUpdater::CopyHardwareResource(
   hardware_resource->UpdateSyncToken(sync_token);
   gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
-  auto transferable_resource = viz::TransferableResource::MakeGpu(
-      hardware_resource->shared_image(), GL_TEXTURE_2D,
-      hardware_resource->sync_token(), output_resource_size, copy_si_format,
-      /*is_overlay_candidate=*/false,
-      viz::TransferableResource::ResourceSource::kVideo);
-
-  transferable_resource.origin =
-      hardware_resource->shared_image()->surface_origin();
-  transferable_resource.color_space = copy_color_space;
-  transferable_resource.hdr_metadata =
-      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
-  transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
-  transferable_resource.alpha_type =
+  SkAlphaType alpha_type =
       (external_resource->type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
           ? kPremul_SkAlphaType
           : kUnpremul_SkAlphaType;
+  viz::TransferableResource::MetadataOverride overrides = {
+      .is_overlay_candidate = false,
+      .alpha_type = alpha_type,
+  };
+  auto transferable_resource = viz::TransferableResource::Make(
+      hardware_resource->shared_image(),
+      viz::TransferableResource::ResourceSource::kVideo,
+      hardware_resource->sync_token(), overrides);
+
+  transferable_resource.hdr_metadata =
+      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
 
   external_resource->resource = std::move(transferable_resource);
   external_resource->release_callback =
