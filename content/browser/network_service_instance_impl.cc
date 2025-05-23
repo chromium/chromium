@@ -138,19 +138,9 @@ std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
 
 // If this feature is enabled, the Network Service will run on its own thread
 // when running in-process; otherwise it will run on the IO thread.
-//
-// On Chrome OS, the Network Service must run on the IO thread because
-// ProfileIOData and NetworkContext both try to set up NSS, which has to be
-// called from the IO thread.
-// TODO(crbug.com/390333881): can this chromeos-specific behavior be removed now
-// too? Is there anything that still uses NSS from the network service?
 BASE_FEATURE(kNetworkServiceDedicatedThread,
              "NetworkServiceDedicatedThread",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 base::Thread& GetNetworkServiceDedicatedThread() {
