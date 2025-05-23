@@ -237,15 +237,13 @@ class CharacterPropertyValues {
     // The intersection set of kWide and kConditional is not empty, so remove
     // the chars which have been assigned the kWide property from narrow.
     narrow.removeAll(ideographs);
+    SetForUnicodeSet(narrow,
+                     ToCharacterProperty(EastAsianSpacingType::kNarrow),
+                     CharacterProperty::kEastAsianSpacingShiftedMask);
 
     // The remaining assigned codes are kOther.
-    icu::UnicodeSet all(0, kMaxCodepoint);
-    all.removeAll(unassigned);
-    all.removeAll(narrow);
-    all.removeAll(ideographs);
-    all.removeAll(conditional);
-    SetForUnicodeSet(all, ToCharacterProperty(EastAsianSpacingType::kOther),
-                     CharacterProperty::kEastAsianSpacingShiftedMask);
+    // The flag is initialized by 0, no need to set them.
+    static_assert(static_cast<int>(EastAsianSpacingType::kOther) == 0);
   }
 
   static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
