@@ -121,6 +121,10 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 namespace {
 
 using Platforms = user_education::Metadata::Platforms;
@@ -612,6 +616,10 @@ void MaybeRegisterChromeFeaturePromos(
                        "requests access permission.")));
 
   // kIPHExtensionsZeroStatePromoFeature
+  user_education::Metadata kIPHExtensionsZeroStatePromoFeatureMetaData =
+      user_education::Metadata(
+          140, "uwyiming@google.com",
+          "Triggered when a user has no extensions installed.");
   switch (feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get()) {
     case feature_engagement::kCustomActionIph:
       registry.RegisterFeature(std::move(
@@ -623,14 +631,28 @@ void MaybeRegisterChromeFeaturePromos(
               CreateNavigationAction(extension_urls::GetWebstoreLaunchURL()))
               .SetCustomActionIsDefault(true)
               .SetBubbleTitleText(IDS_EXTENSIONS_ZERO_STATE_PROMO_IPH_TITLE)
-              .SetMetadata(140, "uwyiming@google.com",
-                           "Triggered when a user has no extensions installed.")
+              .SetMetadata(
+                  std::move(kIPHExtensionsZeroStatePromoFeatureMetaData))
               .SetHighlightedMenuItem(
                   ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
       break;
     case feature_engagement::kCustomUiChipIph:
     case feature_engagement::kCustomUIPlainLinkIph:
-      // TODO(409573170): add the custom UI variants of the IPH.
+      registry.RegisterFeature(std::move(
+          user_education::FeaturePromoSpecification::CreateForCustomUi(
+              feature_engagement::kIPHExtensionsZeroStatePromoFeature,
+              kToolbarAppMenuButtonElementId,
+              MakeCustomWebUIHelpBubbleFactoryCallback<
+                  extensions::ZeroStatePromoController>(
+                  GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+              // No op. The individual buttons on the custom UI will perform the
+              // actual actions.
+              base::DoNothing())
+              .SetMetadata(
+                  std::move(kIPHExtensionsZeroStatePromoFeatureMetaData))
+              .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+              .SetHighlightedMenuItem(
+                  ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
       break;
   }
 #endif

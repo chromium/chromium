@@ -298,8 +298,6 @@ std::vector<std::string> GetPromoInstructions(
       instructions.push_back(
           RemoveStringPlaceholders(spec.bubble_title_string_id()));
     }
-    instructions.push_back(
-        RemoveStringPlaceholders(spec.bubble_body_string_id()));
   }
   return instructions;
 }

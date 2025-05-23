@@ -81,10 +81,10 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
   // code for your new Custom UI promo.
   //
   // Add the text names of allowlisted rotating promos here:
-  // static constexpr auto kAllowedPromoNames =
-  //     base::MakeFixedFlatSet<std::string_view>({ });
-  // return kAllowedPromoNames.contains(promo_feature.name);
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"IPH_ExtensionsZeroStatePromo"});
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
