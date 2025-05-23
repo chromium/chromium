@@ -99,20 +99,107 @@
   <message name="IDS_OMNIBOX_READER_MODE" desc="Text shown in the omnibox to indicate a user is viewing the reader mode view of an article.">
     Reader Mode
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DOCUMENT" desc="Google Docs product name, for use in omnibox Docs result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_BUGANIZER" desc="Buganizer issue name, for use in omnibox content suggestion descriptions.">
+    Buganizer Issue
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_COMMA_SEPARATED_VALUES" desc="Comma-separated values file format name, for use in omnibox content suggestion descriptions.">
+    Comma-Separated Values
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_APPS_SCRIPT" desc="Google Apps Script product name, for use in omnibox content suggestion descriptions.">
+    Google Apps Script
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DOCS" desc="Google Docs product name, for use in omnibox content suggestion descriptions.">
     Google Docs
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_FORM" desc="Google Docs product name, for use in omnibox Form result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRAWINGS" desc="Google Drawings product name, for use in omnibox content suggestion descriptions.">
+    Google Drawings
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE" desc="Google Drive product name shown when the file type is unknown, for use in omnibox content suggestion descriptions.">
+    Google Drive
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE_FOLDER" desc="Google Drive product name shown when the file is a folder, for use in omnibox content suggestion descriptions.">
+    Google Drive Folder
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_FORMS" desc="Google Forms product name, for use in omnibox content suggestion descriptions.">
     Google Forms
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_SPREADSHEET" desc="Google Sheets product name, for use in omnibox Sheets result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_JAMBOARD" desc="Google Jamboard product name, for use in omnibox content suggestion descriptions.">
+    Google Jamboard
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_PHOTOS" desc="Google Photos product name, for use in omnibox content suggestion descriptions.">
+    Google Photos
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SITES" desc="Google Sites product name, for use in omnibox content suggestion descriptions.">
+    Google Sites
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SHEETS" desc="Google Sheets product name, for use in omnibox content suggestion descriptions.">
     Google Sheets
   </message>
-    <message name="IDS_DRIVE_SUGGESTION_PRESENTATION" desc="Google Slides product name, for use in omnibox Slides result descriptions.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SLIDES" desc="Google Slides product name, for use in omnibox content suggestion descriptions.">
     Google Slides
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_GENERAL" desc="Google Drive product name, for use in general omnibox Drive file result descriptions.">
-    Google Drive
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_JPEG" desc="JPEG image file format name, for use in omnibox content suggestion descriptions.">
+    JPEG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_PNG" desc="PNG image file format name, for use in omnibox content suggestion descriptions.">
+    PNG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_SVG" desc="SVG image file format name, for use in omnibox content suggestion descriptions.">
+    SVG Image
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_JIRA" desc="Jira issue name, for use in omnibox content suggestion descriptions.">
+    Jira Issue
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_JSON" desc="JSON file format name, for use in omnibox content suggestion descriptions.">
+    JSON
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MARKDOWN" desc="Markdown file format name, for use in omnibox content suggestion descriptions.">
+    Markdown
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_EXCEL" desc="Microsoft Excel product name, for use in omnibox content suggestion descriptions.">
+    Microsoft Excel
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_POWERPOINT" desc="Microsoft PowerPoint product name, for use in omnibox content suggestion descriptions.">
+    Microsoft PowerPoint
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_WORD" desc="Microsoft Word product name, for use in omnibox content suggestion descriptions.">
+    Microsoft Word
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_PRESENTATION" desc="OpenDocument Presentation product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Presentation
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_SPREADSHEET" desc="OpenDocument Spreadsheet product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Spreadsheet
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_TEXT" desc="OpenDocument Text product name, for use in omnibox content suggestion descriptions.">
+    OpenDocument Text
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_PDF" desc="PDF file format name, for use in omnibox content suggestion descriptions.">
+    PDF
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_PLAIN_TEXT" desc="Plain text file format name, for use in omnibox content suggestion descriptions.">
+    Plain Text
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_RICH_TEXT_FORMAT" desc="Rich Text Format file format name, for use in omnibox content suggestion descriptions.">
+    Rich Text Format
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_SALESFORCE" desc="Salesforce product name, for use in omnibox content suggestion descriptions.">
+    Salesforce
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_SLACK" desc="Slack message name, for use in omnibox content suggestion descriptions.">
+    Slack Message
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_MP4" desc="MP4 video file format name, for use in omnibox content suggestion descriptions.">
+    MP4 Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_QUICKTIME" desc="QuickTime video file format name, for use in omnibox content suggestion descriptions.">
+    QuickTime Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_WEBM" desc="WebM video file format name, for use in omnibox content suggestion descriptions.">
+    WebM Video
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_ZIP_FILE" desc="ZIP archive file format name, for use in omnibox content suggestion descriptions.">
+    ZIP Archive
   </message>
   <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$3<ex>Google Docs</ex></ph>

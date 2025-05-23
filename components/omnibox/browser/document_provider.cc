@@ -686,16 +686,25 @@ std::u16string DocumentProvider::GenerateLastModifiedString(
 // static
 std::u16string DocumentProvider::GetProductDescriptionString(
     const std::string& mimetype) {
-  if (mimetype == kDocumentMimetype)
-    return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_DOCUMENT);
-  if (mimetype == kFormMimetype)
-    return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_FORM);
-  if (mimetype == kSpreadsheetMimetype)
-    return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_SPREADSHEET);
-  if (mimetype == kPresentationMimetype)
-    return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_PRESENTATION);
+  if (mimetype == kDocumentMimetype) {
+    return l10n_util::GetStringUTF16(
+        IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DOCS);
+  }
+  if (mimetype == kFormMimetype) {
+    return l10n_util::GetStringUTF16(
+        IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_FORMS);
+  }
+  if (mimetype == kSpreadsheetMimetype) {
+    return l10n_util::GetStringUTF16(
+        IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SHEETS);
+  }
+  if (mimetype == kPresentationMimetype) {
+    return l10n_util::GetStringUTF16(
+        IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SLIDES);
+  }
   // Fallback to "Drive" for other filetypes.
-  return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_GENERAL);
+  return l10n_util::GetStringUTF16(
+      IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE);
 }
 
 // static
