@@ -178,15 +178,17 @@ bool ImageLayerBridge::PrepareTransferableResource(
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
 
-    bool is_overlay_candidate =
-        shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+    viz::TransferableResource::MetadataOverride overrides = {
+        .format = image_for_compositor->GetSharedImageFormat(),
+        .size = size,
+        .color_space = gfx::ColorSpace(),
+        .alpha_type = kPremul_SkAlphaType,
+    };
 
-    *out_resource = viz::TransferableResource::MakeGpu(
-        shared_image, shared_image->GetTextureTarget(),
-        image_for_compositor->GetSyncToken(), size,
-        image_for_compositor->GetSharedImageFormat(), is_overlay_candidate,
-        viz::TransferableResource::ResourceSource::kImageLayerBridge);
-    out_resource->origin = shared_image->surface_origin();
+    *out_resource = viz::TransferableResource::Make(
+        shared_image,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge,
+        image_for_compositor->GetSyncToken(), overrides);
 
     auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
                               WrapWeakPersistent(this),
