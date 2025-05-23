@@ -133,6 +133,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch& operator=(const ContextualSearch&);
   ~ContextualSearch();
 
+  DECLARE_FEATURE(kContextualSuggestionsAblateOthersWhenPresent);
   DECLARE_FEATURE(kOmniboxContextualSuggestions);
   DECLARE_FEATURE(kStarterPackPage);
   DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
@@ -151,6 +152,11 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether to enable prefetching to support this feature's synchronous
   // match production requirement.
   bool IsEnabledWithPrefetch() const;
+
+  // Whether to make contextual suggestions exclusive; that is, remove
+  // other kinds of zero suggest matches when there are any contextual
+  // search matches.
+  bool contextual_suggestions_ablate_others_when_present;
 
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;

@@ -48,6 +48,10 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
+BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
+             "ContextualSuggestionsAblateOthersWhenPresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Meta-feature that enables/disables the other related features if set.
 // When not overridden, each feature is enabled/disabled separately.
 BASE_FEATURE(ContextualSearch::kOmniboxContextualSuggestions,
@@ -111,6 +115,9 @@ ContextualSearch::ContextualSearch() {
     return meta_state.value_or(base::FeatureList::IsEnabled(feature));
   };
 
+  contextual_suggestions_ablate_others_when_present =
+      base::FeatureList::IsEnabled(
+          kContextualSuggestionsAblateOthersWhenPresent);
   starter_pack_page = feature_enabled(kStarterPackPage);
   contextual_zero_suggest_lens_fulfillment =
       feature_enabled(kContextualZeroSuggestLensFulfillment);

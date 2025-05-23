@@ -543,12 +543,24 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       } else {
-        sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
-            suggestion_groups_map_, max_url_suggestions));
-        sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
-            suggestion_groups_map_,
-            max_search_suggestions + contextual_action_limit,
-            contextual_action_limit, contextual_zps_limit));
+        if (contextual_zps_limit > 0u &&
+            omnibox_feature_configs::ContextualSearch::Get()
+                .contextual_suggestions_ablate_others_when_present &&
+            std::ranges::any_of(matches_, [](const auto& match) {
+              return match.IsContextualSearchSuggestion();
+            })) {
+          sections.push_back(
+              std::make_unique<DesktopWebSearchZpsContextualOnlySection>(
+                  suggestion_groups_map_, contextual_action_limit,
+                  contextual_zps_limit));
+        } else {
+          sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
+              suggestion_groups_map_, max_url_suggestions));
+          sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+              suggestion_groups_map_,
+              max_search_suggestions + contextual_action_limit,
+              contextual_action_limit, contextual_zps_limit));
+        }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {

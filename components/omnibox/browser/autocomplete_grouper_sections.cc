@@ -576,6 +576,26 @@ DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
               },
               group_configs) {}
 
+DesktopWebSearchZpsContextualOnlySection::
+    DesktopWebSearchZpsContextualOnlySection(
+        omnibox::GroupConfigMap& group_configs,
+        size_t contextual_action_limit,
+        size_t contextual_search_limit)
+    : Section(contextual_action_limit + contextual_search_limit,
+              {
+                  Group(contextual_action_limit,
+                        {
+                            {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION,
+                             contextual_action_limit},
+                        }),
+                  Group(contextual_search_limit,
+                        {
+                            {omnibox::GROUP_CONTEXTUAL_SEARCH,
+                             contextual_search_limit},
+                        }),
+              },
+              group_configs) {}
+
 DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(5,

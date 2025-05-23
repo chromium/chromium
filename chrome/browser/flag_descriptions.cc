@@ -2992,6 +2992,11 @@ const char kContextualSearchOpenLensActionUsesThumbnailDescription[] =
     "Enables web content thumbnail image to override the Lens icon "
     "for the omnibox entry point action match.";
 
+const char kContextualSuggestionsAblateOthersWhenPresentName[] =
+    "Contextual suggestions ablate others when present";
+const char kContextualSuggestionsAblateOthersWhenPresentDescription[] =
+    "Makes contextual search suggestions exclusive in zero suggest.";
+
 const char kOmniboxContextualSearchOnFocusSuggestionsName[] =
     "Omnibox contextual search on focus suggestions";
 const char kOmniboxContextualSearchOnFocusSuggestionsDescription[] =
