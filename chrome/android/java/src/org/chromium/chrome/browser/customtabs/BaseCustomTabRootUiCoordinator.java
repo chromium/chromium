@@ -405,20 +405,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         : null;
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-            toolbar.initializeToolbar(
-                    mActivity,
-                    mIntentDataProvider.get(),
-                    mFeatureOverridesManagerSupplier.get(),
-                    mMinimizeDelegateSupplier.get(),
-                    omniboxParams);
             mToolbarButtonsCoordinator =
                     new CustomTabToolbarButtonsCoordinator(
+                            mActivity,
                             toolbar,
                             mIntentDataProvider.get(),
                             params -> mToolbarCoordinator.get().onCustomButtonClick(params),
                             mMinimizeDelegateSupplier.get(),
-                            mFeatureOverridesManagerSupplier.get());
-
+                            mFeatureOverridesManagerSupplier.get(),
+                            omniboxParams,
+                            mActivityLifecycleDispatcher);
             super.initializeToolbar();
 
             mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
@@ -844,6 +840,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 && mWebAppHeaderLayoutCoordinator != null) {
             mWebAppHeaderLayoutCoordinator.destroy();
             mWebAppHeaderLayoutCoordinator = null;
+        }
+
+        if (mToolbarButtonsCoordinator != null) {
+            mToolbarButtonsCoordinator.destroy();
+            mToolbarButtonsCoordinator = null;
         }
     }
 

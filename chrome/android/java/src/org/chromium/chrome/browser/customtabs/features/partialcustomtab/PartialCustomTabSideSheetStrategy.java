@@ -171,7 +171,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             }
         }
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            mToolbarButtonsCoordinator.setMinimizeButtonVisible(false);
+            mToolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
         } else {
             toolbar.setMinimizeButtonEnabled(false);
         }

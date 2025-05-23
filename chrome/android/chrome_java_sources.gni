@@ -513,6 +513,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbar.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarAnimationDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsCoordinator.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsMediator.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsProperties.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsViewBinder.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarColorController.java",

@@ -73,7 +73,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
         super.onToolbarInitialized(
                 coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            toolbarButtonsCoordinator.setMinimizeButtonVisible(true);
+            toolbarButtonsCoordinator.setMinimizeButtonEnabled(true);
         } else {
             toolbar.setMinimizeButtonEnabled(true);
         }

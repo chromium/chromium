@@ -33,7 +33,6 @@ import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
@@ -200,23 +199,7 @@ public class CustomTabToolbarUnitTest {
                 null,
                 null);
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            mToolbar.initializeToolbar(
-                    mActivity,
-                    mIntentDataProvider,
-                    mFeatureOverridesManager,
-                    mMinimizeDelegate,
-                    null);
-            var model =
-                    CustomTabToolbarButtonsCoordinator.getCustomActionButtonsModel(
-                            mActivity, mIntentDataProvider, params -> {});
-            mToolbar.setCustomActionButtonsListModel(model);
-            // Minimize button is enabled by default.
-            mToolbar.setMinimizeButtonEnabled(true);
-            mToolbar.reinflateAndRepositionToolbarElements();
-        } else {
-            mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
-        }
+        mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
 
         mLocationBar =
                 (CustomTabLocationBar)
@@ -636,30 +619,25 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_TOOLBAR_REFACTOR})
-    @Config(qualifiers = "w200dp")
-    public void testLayoutForWidth_200dp() {
-        View closeButton = mToolbar.findViewById(R.id.close_button);
-        View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
-        View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
-        ViewGroup actionButtons = mToolbar.findViewById(R.id.action_buttons);
-        assertNotNull(closeButton);
-        assertNotNull(menuButton);
-        assertNull(minimizeButton);
-        assertEquals(0, actionButtons.getChildCount());
-    }
+    public void testInflatesButtons() {
+        assertNull(mToolbar.getMenuButton());
+        assertNotNull(mToolbar.ensureMenuButtonInflated());
+        assertEquals(View.VISIBLE, mToolbar.getMenuButton().getVisibility());
 
-    @Test
-    @EnableFeatures({ChromeFeatureList.CCT_TOOLBAR_REFACTOR})
-    @Config(qualifiers = "w400dp")
-    public void testLayoutForWidth_400dp() {
-        View closeButton = mToolbar.findViewById(R.id.close_button);
-        View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
-        View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
-        ViewGroup actionButtons = mToolbar.findViewById(R.id.action_buttons);
-        assertNotNull(closeButton);
-        assertNotNull(menuButton);
-        assertNotNull(minimizeButton);
-        assertEquals(1, actionButtons.getChildCount());
+        assertNull(mToolbar.getCloseButton());
+        assertNotNull(mToolbar.ensureCloseButtonInflated());
+        assertEquals(View.VISIBLE, mToolbar.getCloseButton().getVisibility());
+
+        assertNull(mToolbar.getMinimizeButton());
+        assertNotNull(mToolbar.ensureMinimizeButtonInflated());
+        assertEquals(View.VISIBLE, mToolbar.getMinimizeButton().getVisibility());
+
+        assertNull(mToolbar.getSideSheetMaximizeButton());
+        assertNotNull(mToolbar.ensureSideSheetMaximizeButtonInflated());
+        assertEquals(View.VISIBLE, mToolbar.getSideSheetMaximizeButton().getVisibility());
+
+        var incognitoImageView = mToolbar.ensureIncognitoImageViewInflated();
+        assertEquals(View.VISIBLE, incognitoImageView.getVisibility());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

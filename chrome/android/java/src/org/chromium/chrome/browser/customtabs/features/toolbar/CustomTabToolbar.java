@@ -7,10 +7,6 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
 
 import static org.chromium.base.MathUtils.interpolate;
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLICK_LISTENER;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -70,10 +66,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
-import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
@@ -136,8 +129,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -194,32 +185,23 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     // region CCTToolbarRefactor
 
     private int mToolbarWidth;
-    private BrowserServicesIntentDataProvider mIntentDataProvider;
-    private CustomTabMinimizeDelegate mMinimizeDelegate;
     private FrameLayout mCustomButtonsParent;
-    private PropertyListModel<PropertyModel, PropertyKey> mCustomActionButtonsListModel;
-    private boolean mIsInMultiWindowMode;
+    private ImageButton mSideSheetMaximizeButton;
 
-    private final int mDefaultButtonWidth =
-            getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-    private final int mDefaultIconWidth =
-            getResources().getDimensionPixelSize(R.dimen.toolbar_icon_default_width);
-    private final int mIconSpacing =
-            getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_icon_spacing);
-
-    private static final class ButtonPositioningParams {
-        public int availableWidth;
-        public int totalStartAlignedButtonWidth;
-        public int spacingFromLastStartAlignedButton;
-        public int totalEndAlignedButtonWidth;
-        public int spacingFromLastEndAlignedButton;
+    /** Listener interface to be notified when the toolbar is measured with a new width. */
+    public interface OnNewWidthMeasuredListener {
+        void onNewWidthMeasured(int width);
     }
+
+    private @Nullable OnNewWidthMeasuredListener mOnNewWidthMeasuredListener;
 
     public static final class OmniboxParams {
         /** The {@link SearchActivityClient} instance used to request Omnibox. */
         public SearchActivityClient searchClient;
+
         /** The package name of the Custom Tabs embedder. */
         public String clientPackageName;
+
         /** A handler for taps on the omnibox, or null if the default handler should be used. */
         @Nullable public Consumer<Tab> tapHandler;
 
@@ -284,7 +266,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
         mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
-        if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            mCustomButtonsParent = findViewById(R.id.action_buttons);
+        } else {
             mCustomActionButtons = findViewById(R.id.action_buttons);
         }
         mCloseButton = findViewById(R.id.close_button);
@@ -305,47 +289,105 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.onNativeLibraryReady();
     }
 
-    /**
-     * Initialize the toolbar with the data newly available.
-     *
-     * @param activity The {@link Activity} that the toolbar is attached to.
-     * @param intentDataProvider {@link BrowserServicesIntentDataProvider} for accessing CCT intent
-     *     data.
-     * @param featureOverridesManager {@link CustomTabFeatureOverridesManager} for accessing CCT
-     *     feature overrides.
-     * @param minimizeDelegate {@link CustomTabMinimizeDelegate} for minimizing the tab.
-     * @param omniboxParams {@link OmniboxParams}, null if omnibox isn't enabled.
-     */
-    public void initializeToolbar(
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabFeatureOverridesManager featureOverridesManager,
-            CustomTabMinimizeDelegate minimizeDelegate,
-            OmniboxParams omniboxParams) {
-        assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
-
-        mIntentDataProvider = intentDataProvider;
-        mFeatureOverridesManager = featureOverridesManager;
-        mMinimizeDelegate = minimizeDelegate;
-        if (omniboxParams != null) {
-            setOmniboxParams(omniboxParams);
+    /** Returns the incognito image view, inflating it first if necessary. */
+    ImageView ensureIncognitoImageViewInflated() {
+        if (mIncognitoImageView != null) {
+            return mIncognitoImageView;
         }
-        calculateToolbarWidthBeforeMeasure(activity, intentDataProvider);
-        inflateAndPositionToolbarElements(mToolbarWidth);
+
+        ViewStub stub = findViewById(R.id.incognito_icon_stub);
+        mIncognitoImageView = (ImageView) stub.inflate();
+        return mIncognitoImageView;
+    }
+
+    /** Returns the close button. */
+    @Nullable
+    ImageButton getCloseButton() {
+        return mCloseButton;
+    }
+
+    /** Returns the close button, inflating and/or making it visible first if necessary. */
+    ImageButton ensureCloseButtonInflated() {
+        if (mCloseButton != null) {
+            mCloseButton.setVisibility(VISIBLE);
+            return mCloseButton;
+        }
+
+        LayoutInflater.from(getContext()).inflate(R.layout.custom_tab_close_button, this, true);
+        mCloseButton = findViewById(R.id.close_button);
+        return mCloseButton;
+    }
+
+    /** Returns the menu button. */
+    @Nullable
+    MenuButton getMenuButton() {
+        return mMenuButton;
+    }
+
+    /** Returns the menu button, inflating and/or making it visible first if necessary. */
+    MenuButton ensureMenuButtonInflated() {
+        if (mMenuButton != null) {
+            mMenuButton.setVisibility(VISIBLE);
+            return mMenuButton;
+        }
+
+        LayoutInflater.from(getContext()).inflate(R.layout.custom_tab_menu_button, this, true);
+        mMenuButton = findViewById(R.id.menu_button_wrapper);
+        return mMenuButton;
+    }
+
+    /** Returns the minimize button. */
+    @Nullable
+    ImageButton getMinimizeButton() {
+        return mMinimizeButton;
+    }
+
+    /** Returns the minimize button, inflating and/or making it visible first if necessary. */
+    ImageButton ensureMinimizeButtonInflated() {
+        if (mMinimizeButton != null) {
+            mMinimizeButton.setVisibility(VISIBLE);
+            return mMinimizeButton;
+        }
+
+        LayoutInflater.from(getContext()).inflate(R.layout.custom_tabs_minimize_button, this, true);
+        mMinimizeButton = findViewById(R.id.custom_tabs_minimize_button);
+        return mMinimizeButton;
+    }
+
+    /** Returns the side-sheet maximize button. */
+    @Nullable
+    ImageButton getSideSheetMaximizeButton() {
+        return mSideSheetMaximizeButton;
     }
 
     /**
-     * Inflates and positions the buttons and the location bar within the toolbar based on the
-     * current toolbar width and the current button model. If there isn't enough space for all
-     * buttons, some buttons may be omitted based on their priority.
+     * Returns the side-sheet maximize button, inflating and/or making it visible first if
+     * necessary.
      */
-    void reinflateAndRepositionToolbarElements() {
-        inflateAndPositionToolbarElements(mToolbarWidth);
+    ImageButton ensureSideSheetMaximizeButtonInflated() {
+        if (mSideSheetMaximizeButton != null) {
+            mSideSheetMaximizeButton.setVisibility(VISIBLE);
+            return mSideSheetMaximizeButton;
+        }
+
+        LayoutInflater.from(getContext())
+                .inflate(R.layout.custom_tabs_sidepanel_maximize, this, true);
+        mSideSheetMaximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
+        return mSideSheetMaximizeButton;
     }
 
-    private void calculateToolbarWidthBeforeMeasure(
-            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
-        mToolbarWidth = CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider);
+    /** Returns the parent view for the custom action buttons. */
+    FrameLayout getCustomActionButtonsParent() {
+        return mCustomButtonsParent;
+    }
+
+    /**
+     * Sets an {@link OnNewWidthMeasuredListener}.
+     *
+     * @param listener The {@link OnNewWidthMeasuredListener}. A null value clears the listener.
+     */
+    public void setOnNewWidthMeasuredListener(@Nullable OnNewWidthMeasuredListener listener) {
+        mOnNewWidthMeasuredListener = listener;
     }
 
     @Override
@@ -356,233 +398,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mCustomActionButtons.setVisibility(visibility);
     }
 
-    /**
-     * Inflates and positions the buttons and the location bar within the toolbar based on the
-     * provided available width and the current button model. If there isn't enough space for all
-     * buttons, some buttons may be omitted based on their priority.
-     *
-     * <p>This method should be called every time the toolbar width changes.
-     *
-     * @param availableWidth The available width of the toolbar in pixels.
-     */
-    private void inflateAndPositionToolbarElements(@Px final int availableWidth) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        int locationBarMinWidth = getLocationBarMinWidth();
-        var posParams = new ButtonPositioningParams();
-        posParams.availableWidth = availableWidth;
-
-        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
-            int incognitoIconWidth =
-                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
-            locationBarMinWidth += incognitoIconWidth;
-
-            ViewStub stub = findViewById(R.id.incognito_icon_stub);
-            mIncognitoImageView = (ImageView) stub.inflate();
-        }
-
-        posParams.availableWidth -= locationBarMinWidth;
-
-        if (mCloseButton == null && mIntentDataProvider.isCloseButtonEnabled()) {
-            layoutInflater.inflate(R.layout.custom_tab_close_button, this, true);
-            mCloseButton = findViewById(R.id.close_button);
-            mCloseButton.setOnLongClickListener(this);
-        }
-
-        if (mCloseButton != null) {
-            boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
-            positionButton(mCloseButton, posParams, mDefaultIconWidth, isEndPosition);
-        }
-
-        if (mMenuButton == null) {
-            layoutInflater.inflate(R.layout.custom_tab_menu_button, this, true);
-            mMenuButton = findViewById(R.id.menu_button_wrapper);
-        }
-
-        // Now position the menu button.
-        {
-            boolean isEndPosition = mCloseButtonPosition != CLOSE_BUTTON_POSITION_END;
-            positionButton(mMenuButton, posParams, mDefaultIconWidth, isEndPosition);
-        }
-
-        // Check if we have space for the minimize button.
-        if (posParams.availableWidth >= mDefaultButtonWidth) {
-            prepareMinimizeButton();
-
-            if (mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE) {
-                // The minimize button is always start aligned.
-                positionButton(mMinimizeButton, posParams, mDefaultIconWidth, false);
-            }
-        }
-
-        View sideSheetMaximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
-        // Check if we have space for the side-sheet maximize button.
-        if (sideSheetMaximizeButton != null
-                && sideSheetMaximizeButton.getVisibility() == VISIBLE
-                && posParams.availableWidth >= mDefaultButtonWidth) {
-            positionButton(sideSheetMaximizeButton, posParams, mDefaultIconWidth, true);
-        }
-
-        // TODO(crbug.com/402213312): We need to think about how this should work with MTB.
-        mCustomButtonsParent = findViewById(R.id.action_buttons);
-        // TODO(crbug.com/402213312): Think of how we can optimize this so we don't reinflate all
-        // buttons any time if we add/remove one.
-        mCustomButtonsParent.removeAllViews();
-
-        if (mCustomActionButtonsListModel != null) {
-            for (var model : mCustomActionButtonsListModel) {
-                if (!maybeInflateAndPositionCustomButton(model, posParams)) break;
-            }
-        }
-
-        positionLocationBar(posParams);
-    }
-
-    /**
-     * Positions a button on the toolbar based on given arguments.
-     *
-     * @param button The button to be positioned.
-     * @param posParams A {@link ButtonPositioningParams} tracking the current state of the
-     *     positioning process. It will be modified by this method.
-     * @param iconWidth The width of the icon within the button.
-     * @param isEndAligned True if the button is aligned to the end of the toolbar, false if aligned
-     *     to the start.
-     */
-    private void positionButton(
-            View button, ButtonPositioningParams posParams, int iconWidth, boolean isEndAligned) {
-        int startPadding;
-        int endPadding;
-        // We calculate this button's padding based on the padding of the button that came before.
-        if (isEndAligned) {
-            assert posParams.spacingFromLastEndAlignedButton <= mIconSpacing;
-            // Remaining space to reach mIconSpacing.
-            endPadding = mIconSpacing - posParams.spacingFromLastEndAlignedButton;
-            // Remaining space to reach the default button width. If the button will be wider than
-            // the default width because its icon is wider, make the start padding 0.
-            startPadding = Math.max(0, mDefaultButtonWidth - iconWidth - endPadding);
-            posParams.spacingFromLastEndAlignedButton = startPadding;
-        } else {
-            assert posParams.spacingFromLastStartAlignedButton <= mIconSpacing;
-            // Similar to the block above, just start and end padding are reversed.
-            startPadding = mIconSpacing - posParams.spacingFromLastStartAlignedButton;
-            endPadding = Math.max(0, mDefaultButtonWidth - iconWidth - startPadding);
-            posParams.spacingFromLastStartAlignedButton = endPadding;
-        }
-        int buttonWidth = iconWidth + startPadding + endPadding;
-        setHorizontalPadding(button, startPadding, endPadding);
-        // Adjust the layout gravity based on where the button is aligned, and offset it by
-        // the total width of the buttons we've previously placed.
-        setHorizontalLayoutParams(
-                button,
-                isEndAligned ? 0 : posParams.totalStartAlignedButtonWidth,
-                isEndAligned ? posParams.totalEndAlignedButtonWidth : 0,
-                isEndAligned);
-        if (isEndAligned) {
-            // We've placed a button at the end.
-            posParams.totalEndAlignedButtonWidth += buttonWidth;
-        } else {
-            // We've placed a button at the start.
-            posParams.totalStartAlignedButtonWidth += buttonWidth;
-        }
-        posParams.availableWidth -= buttonWidth;
-    }
-
-    private void setHorizontalLayoutParams(
-            View view, @Px int startMargin, @Px int endMargin, boolean isEndAligned) {
-        var lp = (FrameLayout.LayoutParams) view.getLayoutParams();
-        lp.setMarginStart(startMargin);
-        lp.setMarginEnd(endMargin);
-        int horizontalGravity = isEndAligned ? Gravity.END : Gravity.START;
-        lp.gravity = Gravity.CENTER_VERTICAL | horizontalGravity;
-        view.setLayoutParams(lp);
-    }
-
     private static void setHorizontalPadding(View view, @Px int startPadding, @Px int endPadding) {
         view.setPaddingRelative(
                 startPadding, view.getPaddingTop(), endPadding, view.getPaddingBottom());
-    }
-
-    @Px
-    private int getLocationBarMinWidth() {
-        int locationBarMinWidth =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
-        if (mLocationBar.mOmniboxEnabled) {
-            locationBarMinWidth +=
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        } else if (mIntentDataProvider.getTitleVisibilityState() == TitleVisibility.HIDDEN) {
-            locationBarMinWidth +=
-                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
-        }
-        return locationBarMinWidth;
-    }
-
-    private void positionLocationBar(ButtonPositioningParams posParams) {
-        var locationBarLp = ((MarginLayoutParams) mLocationBar.getLayout().getLayoutParams());
-        locationBarLp.setMarginStart(posParams.totalStartAlignedButtonWidth);
-        locationBarLp.setMarginEnd(posParams.totalEndAlignedButtonWidth);
-        mLocationBar.getLayout().setLayoutParams(locationBarLp);
-
-        var titleUrlLp = ((MarginLayoutParams) mLocationBar.mTitleUrlContainer.getLayoutParams());
-        if (mLocationBar.mOmniboxEnabled) {
-            // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
-            // The security button is static when omnibox is enabled, so offset the url bar for it.
-            int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-            titleUrlLp.leftMargin += buttonWidth;
-        }
-        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
-            int incognitoIconWidth =
-                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_incognito_icon_width);
-            titleUrlLp.leftMargin += incognitoIconWidth;
-        }
-        mLocationBar.mTitleUrlContainer.setLayoutParams(titleUrlLp);
-
-        // Ensure correct spacing between the last start aligned button and the location bar.
-        int desiredSpace =
-                getResources()
-                        .getDimensionPixelSize(R.dimen.custom_tabs_location_bar_start_spacing);
-        int remainingSpace =
-                Math.max(0, desiredSpace - posParams.spacingFromLastStartAlignedButton);
-        setHorizontalPadding(
-                mLocationBar.getLayout(), remainingSpace, mLocationBar.getLayout().getPaddingEnd());
-    }
-
-    private boolean maybeInflateAndPositionCustomButton(
-            PropertyModel model, ButtonPositioningParams posParams) {
-        Drawable drawable = model.get(ICON);
-        // The height will be scaled to match spec while keeping the aspect ratio, so get the scaled
-        // width through that.
-        int sourceHeight = drawable.getIntrinsicHeight();
-        int sourceScaledHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
-        int sourceWidth = drawable.getIntrinsicWidth();
-        int sourceScaledWidth = sourceWidth * sourceScaledHeight / sourceHeight;
-
-        // Remaining space to reach mIconSpacing to make up to the required spacing.
-        assert posParams.spacingFromLastEndAlignedButton <= mIconSpacing;
-        int endPadding = mIconSpacing - posParams.spacingFromLastEndAlignedButton;
-        // Remaining space to reach at least the default button width. If the button will be wider
-        // than the default width because its icon is wider, make the start padding 0.
-        int startPadding = Math.max(0, mDefaultButtonWidth - sourceScaledWidth - endPadding);
-        int buttonWidth = sourceScaledWidth + startPadding + endPadding;
-
-        if (buttonWidth > posParams.availableWidth) return false;
-
-        ImageButton button =
-                (ImageButton)
-                        LayoutInflater.from(getContext())
-                                .inflate(
-                                        R.layout.custom_tabs_toolbar_button,
-                                        mCustomButtonsParent,
-                                        false);
-        button.setOnLongClickListener(this);
-        button.setOnClickListener(model.get(CLICK_LISTENER));
-
-        updateCustomActionButtonVisuals(button, drawable, model.get(DESCRIPTION));
-
-        // Add the view at the beginning of the list. This isn't reflected in how the button is
-        // positioned; it's only for keeping the index aligned with the params list.
-        mCustomButtonsParent.addView(button, 0);
-        positionButton(button, posParams, sourceScaledWidth, /* isEndAligned= */ true);
-
-        return true;
     }
 
     @Override
@@ -592,12 +410,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (drawable != null) {
             updateButtonTint(mCloseButton);
         }
-    }
-
-    // TODO(crbug.com/402213312): Don't expose the model to this view once we MVC-ify things better.
-    void setCustomActionButtonsListModel(PropertyListModel<PropertyModel, PropertyKey> listModel) {
-        mCustomActionButtonsListModel = listModel;
-        inflateAndPositionToolbarElements(mToolbarWidth);
     }
 
     @Override
@@ -812,36 +624,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
-    }
-
-    /**
-     * Inflates and prepares the minimize button if it should be enabled.
-     *
-     * <p>This is only used when CCTToolbarRefactor is enabled.
-     */
-    private void prepareMinimizeButton() {
-        if (isInMultiWindowMode() || !mMinimizeButtonEnabled) {
-            if (mMinimizeButton != null) {
-                mMinimizeButton.setVisibility(GONE);
-            }
-            return;
-        }
-
-        if (mMinimizeButton != null) {
-            mMinimizeButton.setVisibility(VISIBLE);
-            return;
-        }
-
-        LayoutInflater.from(getContext()).inflate(R.layout.custom_tabs_minimize_button, this, true);
-        mMinimizeButton = findViewById(R.id.custom_tabs_minimize_button);
-        mMinimizeButton.setOnClickListener(view -> mMinimizeDelegate.minimize());
-        var d =
-                UiUtils.getTintedDrawable(
-                        getContext(), MinimizedFeatureUtils.getMinimizeIcon(), mTint);
-        mMinimizeButton.setTag(R.id.custom_tabs_toolbar_tintable, true);
-        mMinimizeButton.setImageDrawable(d);
-        updateButtonTint(mMinimizeButton);
-        mMinimizeButton.setOnLongClickListener(this);
     }
 
     /**
@@ -1260,13 +1042,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBarModel.notifyTitleChanged();
         mLocationBarModel.notifyUrlChanged();
         mLocationBarModel.notifyPrimaryColorChanged();
-
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            if (mIsInMultiWindowMode != isInMultiWindowMode()) {
-                mIsInMultiWindowMode = isInMultiWindowMode();
-                inflateAndPositionToolbarElements(mToolbarWidth);
-            }
-        }
     }
 
     @Override
@@ -1346,13 +1121,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            int measuredWidth = getMeasuredWidth();
-            if (measuredWidth > 0 && mToolbarWidth != measuredWidth) {
-                mToolbarWidth = measuredWidth;
-                inflateAndPositionToolbarElements(mToolbarWidth);
+        int measuredWidth = getMeasuredWidth();
+        if (measuredWidth > 0 && mToolbarWidth != measuredWidth) {
+            mToolbarWidth = measuredWidth;
+            if (mOnNewWidthMeasuredListener != null) {
+                mOnNewWidthMeasuredListener.onNewWidthMeasured(mToolbarWidth);
             }
+        }
 
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }

@@ -348,7 +348,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                         mActivity, this::isFullHeight, () -> mStatus, this);
         toolbar.setHandleStrategy(mHandleStrategy);
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            toolbarButtonsCoordinator.setMinimizeButtonVisible(false);
+            toolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
         } else {
             toolbar.setMinimizeButtonEnabled(false);
         }
