@@ -237,10 +237,15 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             long expiration) {
         if (controlsState == CookieControlsState.ACTIVE_TP
                 || controlsState == CookieControlsState.PAUSED_TP) {
-            // TODO(crbug.com/388294499): Add support for TP UI.
+            updateTrackingProtectionState();
         } else {
             update3pcState(controlsState, enforcement, expiration);
         }
+    }
+
+    public void updateTrackingProtectionState() {
+        // TODO(crbug.com/388294499): Add support for TP UI.
+        mCookieSwitch.setVisible(false);
     }
 
     public void update3pcState(
