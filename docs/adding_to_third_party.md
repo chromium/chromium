@@ -162,25 +162,7 @@ available during checkout.
 
 ### Pulling the code via DEPS
 
-If the code is in a Git repo that you want to mirror, please file an [infra git
-ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
-to get the repo mirrored onto chromium.googlesource.com; we don't allow direct
-dependencies on non-Google-hosted repositories, so that we can still build
-if an external repository goes down.
-
-Once the mirror is set up, add an entry to [//DEPS](../DEPS) so that gclient
-will pull it in. If the code is only needed on some platforms, add a condition
-to the deps entry so that developers on other platforms don't pull in things
-they don't need.
-
-Follow the [standard directory structure](#standard-dep-structure) when creating
-a directory for your dependency. If you have a wrong path in
-DEPS and want to change the path of the existing library in DEPS, please ask the
-infrastructure team before committing the change.
-
-Lastly, add the new directory to Chromium's `//third_party/.gitignore`, so that
-it won't show up as untracked files when you run `git status` on the main
-repository.
+See [here](/docs/dependencies.md#adding-dependencies).
 
 ### Checking in the code directly
 

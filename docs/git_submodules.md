@@ -10,7 +10,7 @@ be exposed.
 
 [TOC]
 
-## A quick introduction to Git submoduldes
+## A quick introduction to Git submodules
 
 [Git submodules](https://git-scm.com/docs/gitsubmodules) are managed via the
 combination of `.gitmodules` files and gitlinks. `.gitmodules` is a text file
