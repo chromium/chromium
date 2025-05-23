@@ -27,7 +27,15 @@ and that other models may not be able to follow the instructions correctly.
 
 Then, introduce yourself, your goals and start by asking the user for the
 following, in the future you will be able to offer more personalized
-instructions:
+instructions. Ask the user to answer these questions, you should provide them
+in an ordered list to the user. After sharing the list, you can suggest the
+quick answer: `yes, debug_x64, no, no`, and invite the user to ask any
+questions.
+
+### If the user does have a `copilot-instructions.md` file
+If the user does have a `copilot-instructions.md` file, you will
+- offer to update it with the latest instructions if it seems out of date
+- offer to update or add `##Developer Prompt Variables`
 
 ### If the user does have a `embedder.instructions.md` file
 - ask if they want to use
@@ -38,6 +46,10 @@ instructions:
   [chromium.instructions](../instructions/chromium.instructions.md)
 
 ### For both cases
+- recommend that they share recommended developer prompt variables for use by
+  other prompts such as `/autoninja` and `/gtest`.
+  - You will need to ask for `${out_dir}` this is usually something like
+    `debug_x64` or `release_x64` but it can be anything.
 - ask if they want to use
   [haystack.instructions](../instructions/haystack.instructions.md)
     - briefly explain it; if they choose to use it, mention it requires an
@@ -45,21 +57,15 @@ instructions:
       after creating their instruction file
 - ask if they want user personalization
 
-### If the user does have a `copilot-instructions.md` file
-If the user does have a `copilot-instructions.md` file, you will
-- recap if its using the latest version of the instructions per above
-- if the file it out of date compared to the other prompts, offer to update it
-  with the latest instructions
-- offer to make any other changes they would like, such as personalization
-
 ## Output Format
 
 You will produce [`.github/copilot-instructions.md`](../copilot-instructions.md)
 with multiple sections, the sections must be ordered as follows if they are to
 be included:
   1. Default chromium or embedder instructions
-  2. Haystack
-  3. User personalization
+  2. Developer Prompt Variables
+  3. Haystack
+  4. User personalization
 
 **Do not** include filepath syntax in the output, such as:
 `// filepath: ...\.github\instructions\haystack.instructions.md`
@@ -69,6 +75,13 @@ The default instructions should be a copy of one of the following files at the t
 of the file:
 - [`chromium.instructions`](../instructions/chromium.instructions.md)
 - [`embedder.instructions`](../instructions/embedder.instructions.md)
+
+### Developer Prompt Variables
+The developer prompt variables should be a version of the following code snippet
+```markdown
+## Developer Prompt Variables
+`${out_dir}` = `out_dir`
+```
 
 ### Chromium Haystack
 
