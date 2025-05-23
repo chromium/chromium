@@ -94,12 +94,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
-  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
-    // If this is coming from the SetUpList, force to go directly to LearnMore.
-    self.promoContext = CredentialProviderPromoContext::kLearnMore;
-  } else {
-    self.promoContext = CredentialProviderPromoContext::kFirstStep;
-  }
+  self.promoContext = [self promoContextFromTrigger:trigger];
   [self.mediator configureConsumerWithTrigger:trigger
                                       context:self.promoContext];
   self.trigger = trigger;
@@ -144,7 +139,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     [self presentLearnMore];
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
-    OpenIOSCredentialProviderSettings();
+    [self openIOSCredentialProviderSettings];
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
     [self promoWasDismissed];
   }
@@ -242,6 +237,24 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     return;
   }
   OpenIOSCredentialProviderSettings();
+}
+
+// Returns the promo context for the given trigger. For SetUpList the first
+// step is skipped because some context is already provided in the SetUpList
+// item's description. But on iOS 18, the first step allows the user to enable
+// the CPE directly in-app, so this is preferred.
+- (CredentialProviderPromoContext)promoContextFromTrigger:
+    (CredentialProviderPromoTrigger)trigger {
+  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
+    if (@available(iOS 18.0, *)) {
+      if (IOSPasskeysM2Enabled() && IsIOSExpandedTipsEnabled()) {
+        // Go to the first step, which allows enabling CPE in-app.
+        return CredentialProviderPromoContext::kFirstStep;
+      }
+    }
+    return CredentialProviderPromoContext::kLearnMore;
+  }
+  return CredentialProviderPromoContext::kFirstStep;
 }
 
 @end
