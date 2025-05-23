@@ -402,8 +402,11 @@ UIColor* DimColorIncognito() {
 }
 
 - (BOOL)isWrapping {
-  BOOL isEntity = _match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-                  _match.suggest_template;
+  // Don't allow wrapping on entities, unless it uses a template icon.
+  BOOL hasTemplateIcon =
+      _match.suggest_template && _match.suggest_template->has_type_icon();
+  BOOL isEntity = _match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
+                  !hasTemplateIcon;
   return self.isMatchTypeSearch && !self.hasAnswer && !isEntity;
 }
 

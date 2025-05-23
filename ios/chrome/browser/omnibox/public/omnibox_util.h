@@ -24,6 +24,12 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
 UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
     AutocompleteMatchType::Type type);
 
+// Converts Suggest proto icon `type` to the appropriate icon type to show in
+// the omnibox.
+OmniboxSuggestionIconType
+GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
+    omnibox::SuggestTemplateInfo::IconType type);
+
 // Converts Suggest proto icon `type` into the appropriate asset.
 UIImage* GetOmniboxSuggestionIconForSuggestTemplateInfoIconType(
     omnibox::SuggestTemplateInfo::IconType type);

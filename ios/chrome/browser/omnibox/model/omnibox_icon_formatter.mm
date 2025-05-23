@@ -44,6 +44,11 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
     }
   }
 
+  if (match.suggest_template && match.suggest_template->has_type_icon()) {
+    return GetOmniboxSuggestionIconTypeForSuggestTemplateInfoIconType(
+        match.suggest_template->type_icon());
+  }
+
   if (match.IsTrendSuggestion()) {
     return OmniboxSuggestionIconType::kSearchTrend;
   }
@@ -63,6 +68,12 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
       GURL(match.answer_template->answers(0).image().url()).is_valid()) {
     imageURL = GURL(match.answer_template->answers(0).image().url());
     iconType = OmniboxIconTypeImage;
+  } else if (match.suggest_template &&
+             match.suggest_template->has_type_icon() &&
+             match.suggest_template->type_icon() !=
+                 omnibox::SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED) {
+    iconType = OmniboxIconTypeSuggestionIcon;
+    imageURL = GURL();
   } else if (!match.image_url.is_empty()) {
     iconType = OmniboxIconTypeImage;
     imageURL = GURL(match.image_url);
