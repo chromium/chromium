@@ -26,10 +26,8 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_approval.h"
@@ -47,6 +45,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -332,8 +331,7 @@ gfx::ImageSkia GetIconImage(const SkBitmap& icon, bool is_app) {
     return gfx::ImageSkia::CreateFrom1xBitmap(icon);
   }
 
-  return is_app ? extensions::util::GetDefaultAppIcon()
-                : extensions::util::GetDefaultExtensionIcon();
+  return is_app ? util::GetDefaultAppIcon() : util::GetDefaultExtensionIcon();
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -445,9 +443,8 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
   InstallTracker* tracker = InstallTracker::Get(browser_context());
   DCHECK(tracker);
   bool is_installed =
-      extensions::ExtensionRegistry::Get(browser_context())
-          ->GetExtensionById(details().id,
-                             extensions::ExtensionRegistry::EVERYTHING) !=
+      ExtensionRegistry::Get(browser_context())
+          ->GetExtensionById(details().id, ExtensionRegistry::EVERYTHING) !=
       nullptr;
   if (is_installed || tracker->GetActiveInstall(details().id)) {
     return RespondNow(
@@ -945,7 +942,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
   std::string message_from_admin =
-      extensions::ExtensionManagementFactory::GetForBrowserContext(profile)
+      ExtensionManagementFactory::GetForBrowserContext(profile)
           ->BlockedInstallMessage(extension->id());
   if (!message_from_admin.empty()) {
     blocked_by_policy_error_message_ =
@@ -955,8 +952,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
   gfx::ImageSkia image = GetIconImage(icon, extension->is_app());
 
-  if (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
-      extensions::ScopedTestDialogAutoConfirm::NONE) {
+  if (ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
+      ScopedTestDialogAutoConfirm::NONE) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(done_callback));
     return;
