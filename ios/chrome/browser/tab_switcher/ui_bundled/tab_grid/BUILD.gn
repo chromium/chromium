@@ -50,6 +50,8 @@ source_set("tab_grid") {
     "//ios/chrome/browser/first_run/ui_bundled/guided_tour",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/history/ui_bundled/public",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",

@@ -44,7 +44,7 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
                withCompletion:(void (^)(void))completion {
   [browser willMoveToParentViewController:nil];
 
-  if (UIAccessibilityIsReduceMotionEnabled()) {
+  if (UIAccessibilityIsReduceMotionEnabled() || self.animationDisabled) {
     __weak __typeof(self) weakSelf = self;
     [self transitionWithFadeForTab:browser.view
                         toTabGroup:toTabGroup
