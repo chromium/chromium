@@ -72,6 +72,12 @@ extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
+extern const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[];
+extern const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription
+        [];
+
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[];
 

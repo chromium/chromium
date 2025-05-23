@@ -2688,6 +2688,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableFpanRiskBasedAuthentication)},
+    {"autofill-enable-multiple-request-in-virtual-card-downstream-enrollment",
+     flag_descriptions::
+         kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName,
+     flag_descriptions::
+         kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -12534,6 +12534,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROME_OS)
 
+    {"autofill-enable-multiple-request-in-virtual-card-downstream-enrollment",
+     flag_descriptions::
+         kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName,
+     flag_descriptions::
+         kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

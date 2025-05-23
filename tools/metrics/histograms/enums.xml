@@ -10093,6 +10093,8 @@ from previous Chrome versions.
       label="SupervisedUserCommittedInterstitials:disabled"/>
   <int value="-1506664186"
       label="SafeBrowsingGooglePlayProtectPrompt:disabled"/>
+  <int value="-1505988176"
+      label="AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment:enabled"/>
   <int value="-1505836593" label="ImprovedIncognitoScreenshot:disabled"/>
   <int value="-1505222604" label="ClearIdentityInCanMakePaymentEvent:disabled"/>
   <int value="-1505076171" label="AutomaticUsbDetach:enabled"/>
@@ -18245,6 +18247,8 @@ from previous Chrome versions.
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1570786077" label="EnableFingerprintingProtectionFilter:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
+  <int value="1571706485"
+      label="AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment:disabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
   <int value="1572371872" label="MostVisitedTilesNewScoring:enabled"/>
   <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>

@@ -102,6 +102,16 @@ const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
     "all credit card form types and address form events will log to all "
     "address form types.";
 
+const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[] =
+        "Enable multiple server request support for virtual card downstream "
+        "enrollment";
+const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription
+        [] = "When enabled, Chrome will be able to send preflight call for "
+             "enrollment earlier in the flow with the multiple server request "
+             "support.";
+
 const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
     "Enable risk-based authentication for FPAN retrieval";
 const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =

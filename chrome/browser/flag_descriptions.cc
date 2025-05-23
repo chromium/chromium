@@ -772,6 +772,16 @@ const char kAutofillEnableLoyaltyCardsFillingDescription[] =
     "When enabled, Autofill will offer support for filling the user's loyalty "
     "cards stored in Google Wallet.";
 
+const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[] =
+        "Enable multiple server request support for virtual card downstream "
+        "enrollment";
+const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription
+        [] = "When enabled, Chrome will be able to send preflight call for "
+             "enrollment earlier in the flow with the multiple server request "
+             "support.";
+
 const char kAutofillEnableNewFopDisplayDesktopName[] =
     "Enable Autofill new FOP display on Desktop";
 const char kAutofillEnableNewFopDisplayDesktopDescription[] =

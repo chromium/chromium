@@ -462,6 +462,12 @@ extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 extern const char kAutofillEnableLoyaltyCardsFillingName[];
 extern const char kAutofillEnableLoyaltyCardsFillingDescription[];
 
+extern const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[];
+extern const char
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentDescription
+        [];
+
 extern const char kAutofillEnableNewFopDisplayDesktopName[];
 extern const char kAutofillEnableNewFopDisplayDesktopDescription[];
 

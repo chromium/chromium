@@ -58,6 +58,9 @@ BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableNewCardBenefitsToggleText);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableNewFopDisplayDesktop);

@@ -162,6 +162,12 @@ BASE_FEATURE(kAutofillEnableLogFormEventsToAllParsedFormTypes,
              "AutofillEnableLogFormEventsToAllParsedFormTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, virtual card downstream enrollment will support multiple
+// requests at a time.
+BASE_FEATURE(kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
+             "AutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the card benefits toggle in settings will show updated text.
 BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,
              "AutofillEnableNewCardBenefitsToggleText",
