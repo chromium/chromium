@@ -312,7 +312,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     if (IsSingleBuffered()) {
       return false;
     }
-    return !canvas_resources_.empty();
+    return !unused_resources_.empty();
   }
   bool unused_resources_reclaim_timer_is_running_for_testing() const override {
     return unused_resources_reclaim_timer_.IsRunning();
@@ -877,7 +877,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource) {
     // We don't want to keep an arbitrary large number of canvases.
-    if (canvas_resources_.size() >
+    if (unused_resources_.size() >
         static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
       return;
     }
@@ -893,12 +893,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
-  void ClearUnusedResources() override { canvas_resources_.clear(); }
+  void ClearUnusedResources() override { unused_resources_.clear(); }
 
   void RegisterUnusedResource(
       scoped_refptr<CanvasResourceSharedImage>&& resource) {
     CHECK(IsResourceUsable(resource.get()));
-    canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
+    unused_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
   }
 
   void MaybePostUnusedResourcesReclaimTask() {
@@ -908,7 +908,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
     if (resource_recycling_enabled_ && !IsSingleBuffered() &&
         !unused_resources_reclaim_timer_.IsRunning() &&
-        !canvas_resources_.empty()) {
+        !unused_resources_.empty()) {
       unused_resources_reclaim_timer_.Start(
           FROM_HERE, kUnusedResourceExpirationTime,
           base::BindOnce(
@@ -918,7 +918,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
   void ClearOldUnusedResources() {
-    WTF::EraseIf(canvas_resources_, [](const UnusedResource& resource) {
+    WTF::EraseIf(unused_resources_, [](const UnusedResource& resource) {
       return base::TimeTicks::Now() - resource.last_use >=
              kUnusedResourceExpirationTime;
     });
@@ -931,7 +931,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() {
-    if (canvas_resources_.empty()) {
+    if (IsSingleBuffered()) {
+      CHECK(unused_resources_.empty());
+      num_inflight_resources_ = max_inflight_resources_ = 1;
+      return CreateResource();
+    }
+
+    if (unused_resources_.empty()) {
       scoped_refptr<CanvasResourceSharedImage> resource = CreateResource();
       if (!resource) {
         return nullptr;
@@ -944,14 +950,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       }
     }
 
-    if (IsSingleBuffered()) {
-      DCHECK_EQ(canvas_resources_.size(), 1u);
-      return canvas_resources_.back().resource;
-    }
-
     scoped_refptr<CanvasResourceSharedImage> resource =
-        std::move(canvas_resources_.back().resource);
-    canvas_resources_.pop_back();
+        std::move(unused_resources_.back().resource);
+    unused_resources_.pop_back();
     DCHECK(resource->HasOneRef());
     return resource;
   }
@@ -976,14 +977,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     resource()->OnMemoryDump(pmd, path);
 
     std::string cached_path = path + "/cached";
-    for (const auto& canvas_resource : canvas_resources_) {
+    for (const auto& unused_resource : unused_resources_) {
       auto* resource_pointer = static_cast<CanvasResourceSharedImage*>(
-          canvas_resource.resource.get());
-      // In single buffered mode, `resource_` is not removed from
-      // `canvas_resources_`.
-      if (resource_pointer == resource()) {
-        continue;
-      }
+          unused_resource.resource.get());
       resource_pointer->OnMemoryDump(pmd, cached_path);
     }
   }
@@ -1000,9 +996,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     scoped_refptr<CanvasResourceSharedImage> resource;
   };
 
-  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
-  // will only hold one resource at most.
-  WTF::Vector<UnusedResource> canvas_resources_;
+  // If this instance is single-buffered or |resource_recycling_enabled_| is
+  // false, |unused_resources_| will be empty.
+  WTF::Vector<UnusedResource> unused_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   base::OneShotTimer unused_resources_reclaim_timer_;
@@ -1022,6 +1018,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   const bool use_oop_rasterization_;
   bool is_software_ = false;
   bool is_cleared_ = false;
+
+  // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
