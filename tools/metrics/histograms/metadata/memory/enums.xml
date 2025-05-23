@@ -56,6 +56,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SelfCompactionCancellationReason">
   <int value="0" label="Frozen by App Freezer"/>
   <int value="1" label="Page resumed"/>
+  <int value="2" label="Timeout"/>
 </enum>
 
 <enum name="VmmmsRequestPriority">
