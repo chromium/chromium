@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/password_manager/core/browser/credential_manager_impl.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace credential_management {
@@ -21,7 +24,43 @@ ContentCredentialManager::ContentCredentialManager(
 ContentCredentialManager::~ContentCredentialManager() = default;
 
 void ContentCredentialManager::BindRequest(
+    content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
+  // Only valid for the main frame.
+  if (frame_host->GetParent()) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(frame_host);
+  DCHECK(web_contents);
+
+  // Only valid for the currently committed RenderFrameHost, and not, e.g. old
+  // zombie RFH's being swapped out following cross-origin navigations.
+  if (web_contents->GetPrimaryMainFrame() != frame_host) {
+    return;
+  }
+
+  // The ContentCredentialManager will not bind the mojo interface for
+  // non-primary frames, e.g. BackForwardCache, Prerenderer, since the
+  // MojoBinderPolicy prevents this interface from being granted.
+  DCHECK_EQ(frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  // Disable BackForwardCache for this page.
+  // This is necessary because ContentCredentialManager::DisconnectBinding()
+  // will be called when the page is navigated away from, leaving it
+  // in an unusable state if the page is restored from the BackForwardCache.
+  //
+  // It looks like in order to remove this workaround, we probably just need to
+  // make the CredentialManager mojo API rebind on the renderer side when the
+  // next call is made, if it has become disconnected.
+  // TODO(crbug.com/40653684): Remove this workaround.
+  content::BackForwardCache::DisableForRenderFrameHost(
+      frame_host, back_forward_cache::DisabledReason(
+                      back_forward_cache::DisabledReasonId::
+                          kContentCredentialManager_BindCredentialManager));
+
   if (receiver_.is_bound()) {
     mojo::ReportBadMessage("CredentialManager is already bound.");
     return;

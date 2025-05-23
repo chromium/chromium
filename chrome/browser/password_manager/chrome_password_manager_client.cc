@@ -62,7 +62,6 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -73,8 +72,8 @@
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
-#include "components/password_manager/core/browser/browser_credential_manager_factory.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/credential_manager_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
@@ -1706,59 +1705,6 @@ void ChromePasswordManagerClient::SetTestObserver(
 }
 
 // static
-void ChromePasswordManagerClient::BindCredentialManager(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
-  // Only valid for the main frame.
-  if (render_frame_host->GetParent()) {
-    return;
-  }
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
-
-  // Only valid for the currently committed RenderFrameHost, and not, e.g. old
-  // zombie RFH's being swapped out following cross-origin navigations.
-  if (web_contents->GetPrimaryMainFrame() != render_frame_host) {
-    return;
-  }
-
-  // The ChromePasswordManagerClient will not bind the mojo interface for
-  // non-primary frames, e.g. BackForwardCache, Prerenderer, since the
-  // MojoBinderPolicy prevents this interface from being granted.
-  DCHECK_EQ(render_frame_host->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kActive);
-
-  ChromePasswordManagerClient* instance =
-      ChromePasswordManagerClient::FromWebContents(web_contents);
-
-  // Try to bind to the driver, but if driver is not available for this render
-  // frame host, the request will be just dropped. This will cause the message
-  // pipe to be closed, which will raise a connection error on the peer side.
-  if (!instance) {
-    return;
-  }
-
-  // Disable BackForwardCache for this page.
-  // This is necessary because ContentCredentialManager::DisconnectBinding()
-  // will be called when the page is navigated away from, leaving it
-  // in an unusable state if the page is restored from the BackForwardCache.
-  //
-  // It looks like in order to remove this workaround, we probably just need to
-  // make the CredentialManager mojo API rebind on the renderer side when the
-  // next call is made, if it has become disconnected.
-  // TODO(crbug.com/40653684): Remove this workaround.
-  content::BackForwardCache::DisableForRenderFrameHost(
-      render_frame_host,
-      back_forward_cache::DisabledReason(
-          back_forward_cache::DisabledReasonId::
-              kChromePasswordManagerClient_BindCredentialManager));
-
-  instance->content_credential_manager_.BindRequest(std::move(receiver));
-}
-
-// static
 bool ChromePasswordManagerClient::CanShowBubbleOnURL(const GURL& url) {
   std::string scheme = url.scheme();
   return (content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
@@ -1834,6 +1780,11 @@ ChromePasswordManagerClient::
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+credential_management::ContentCredentialManager*
+ChromePasswordManagerClient::GetContentCredentialManager() {
+  return &content_credential_manager_;
+}
+
 ChromePasswordManagerClient::ChromePasswordManagerClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -1846,8 +1797,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       httpauth_manager_(this),
       otp_manager_(this),
       content_credential_manager_(
-          password_manager::BrowserCredentialManagerFactory(this)
-              .CreateCredentialManager()),
+          std::make_unique<password_manager::CredentialManagerImpl>(this)),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

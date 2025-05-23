@@ -20,8 +20,6 @@ config("password_reuse_detection_config") {
 
 static_library("browser") {
   sources = [
-    "browser_credential_manager_factory.cc",
-    "browser_credential_manager_factory.h",
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
     "credential_cache.cc",

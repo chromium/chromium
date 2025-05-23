@@ -5,6 +5,7 @@ include_rules = [
   "+components/profile_metrics",
   "+components/services/storage",
   "+components/webauthn",
+  "+components/credential_management",
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
   "+services/device/public",

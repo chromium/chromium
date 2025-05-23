@@ -25,7 +25,7 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "browser::DomDistiller_SelfDeletingRequestDelegate";
     case DisabledReasonId::kOfflinePage:
       return "OfflinePage";
-    case DisabledReasonId::kChromePasswordManagerClient_BindCredentialManager:
+    case DisabledReasonId::kContentCredentialManager_BindCredentialManager:
       return "ChromePasswordManagerClient::BindCredentialManager";
     case DisabledReasonId::kPermissionRequestManager:
       return "PermissionRequestManager";

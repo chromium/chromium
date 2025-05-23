@@ -18,4 +18,9 @@ std::unique_ptr<AutofillManager> TestContentAutofillClient::CreateManager(
   return std::make_unique<BrowserAutofillManager>(&driver);
 }
 
+credential_management::ContentCredentialManager*
+TestContentAutofillClient::GetContentCredentialManager() {
+  return nullptr;
+}
+
 }  // namespace autofill

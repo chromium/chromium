@@ -246,6 +246,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) final;
 
+  // ContentAutofillClient:
+  credential_management::ContentCredentialManager* GetContentCredentialManager()
+      override;
+
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 

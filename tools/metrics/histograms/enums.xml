@@ -935,7 +935,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="196615" label="kEmbedder-kOomInterventionTabHelper"/>
   <int value="196616" label="kEmbedder-kOfflinePage"/>
   <int value="196617"
-      label="kEmbedder-kChromePasswordManagerClient_BindCredentialManager"/>
+      label="kEmbedder-kContentCredentialManager_BindCredentialManager"/>
   <int value="196618" label="kEmbedder-kPermissionRequestManager"/>
   <int value="196619" label="kEmbedder-kModalDialog"/>
   <int value="196620" label="kEmbedder-kExtensions"/>

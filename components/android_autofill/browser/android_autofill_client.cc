@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/credential_management/android/third_party_credential_manager_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/user_prefs/user_prefs.h"
@@ -46,7 +47,11 @@ void AndroidAutofillClient::CreateForWebContents(
 }
 
 AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
-    : autofill::ContentAutofillClient(web_contents) {}
+    : autofill::ContentAutofillClient(web_contents),
+      content_credential_manager_(
+          std::make_unique<
+              credential_management::ThirdPartyCredentialManagerImpl>(
+              web_contents->GetPrimaryMainFrame())) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
@@ -286,6 +291,11 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
     base::PassKey<autofill::ContentAutofillDriver> pass_key,
     autofill::ContentAutofillDriver& driver) {
   return base::WrapUnique(new autofill::AndroidAutofillManager(&driver));
+}
+
+credential_management::ContentCredentialManager*
+AndroidAutofillClient::GetContentCredentialManager() {
+  return &content_credential_manager_;
 }
 
 }  // namespace android_autofill
