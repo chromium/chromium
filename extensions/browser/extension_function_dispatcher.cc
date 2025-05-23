@@ -399,6 +399,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
         function->extension(), Activity::API_FUNCTION, function->name());
   }
 
+  function->set_did_initialize();
+
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
@@ -484,7 +486,9 @@ void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
 
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
   if (extension_function.is_from_service_worker()) {
-    CHECK(extension_function.request_uuid().is_valid());
+    if (extension_function.did_initialize()) {
+      CHECK(extension_function.request_uuid().is_valid());
+    }
     CHECK(extension_function.worker_id());
 
     extension_function.ResetServiceWorkerKeepalive();
