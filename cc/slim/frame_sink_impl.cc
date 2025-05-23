@@ -181,14 +181,11 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
                              resource_bitmap.GetPixels());
   CHECK(uploaded_resource.shared_image);
 
-  viz::TransferableResource::MetadataOverride overrides = {
-      .color_space = gfx::ColorSpace(),
-  };
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::Make(
           uploaded_resource.shared_image,
           viz::TransferableResource::ResourceSource::kUI,
-          uploaded_resource.shared_image->creation_sync_token(), overrides),
+          uploaded_resource.shared_image->creation_sync_token()),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
   uploaded_resource.size = resource_bitmap.GetSize();
