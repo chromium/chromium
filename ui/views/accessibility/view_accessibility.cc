@@ -1538,6 +1538,34 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
   }
 }
 
+void ViewAccessibility::OnWidgetUpdatedRecursive(Widget* widget,
+                                                 Widget* old_widget) {
+  CHECK(widget);
+
+  // If we have already marked `is_widget_closed_` as true, then there's a
+  // chance that the view was reparented to a non-closed widget. If so, we must
+  // update `is_widget_closed_` in case the new widget is not closed.
+  is_widget_closed_ = widget->IsClosed();
+
+  // Initialize the AtomicViewAXTreeManager if necessary when the view gets
+  // added to the widget. We must wait for the widget to become available to
+  // get valid data our of GetData().
+  if (needs_ax_tree_manager()) {
+    EnsureAtomicViewAXTreeManager();
+  }
+
+  if (view_) {
+    internal::ScopedChildrenLock lock(view_);
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().OnWidgetUpdatedRecursive(widget,
+                                                             old_widget);
+    }
+  }
+  for (auto& child : virtual_children()) {
+    child->OnWidgetUpdatedRecursive(widget, old_widget);
+  }
+}
+
 void ViewAccessibility::OnWidgetClosing(Widget* widget) {
   // The RootView's ViewAccessibility should be the only registered
   // WidgetObserver.
@@ -1567,10 +1595,7 @@ void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
     old_widget->RemoveObserver(this);
   }
 
-  // If we have already marked `is_widget_closed_` as true, then there's a
-  // chance that the view was reparented to a non-closed widget. If so, we must
-  // update `is_widget_closed_` in case the new widget is not closed.
-  SetWidgetClosedRecursive(widget, widget->IsClosed());
+  OnWidgetUpdatedRecursive(widget, old_widget);
 }
 
 void ViewAccessibility::CompleteCacheInitialization() {
