@@ -32,12 +32,20 @@ There are two main sources of information about the state of the build:
    fail for many reasons, especially due to failures in the compilers' test
    suites. If the CLs stop being generated, that also needs to be addressed.
 
+Although both of these pull & build the latest version of clang, things may go
+wrong in one place but not the other, so it's important to keep an eye on both.
+In particular, the ToT buildbots don't run the entire clang test suite, and the
+dry run CLs don't build chromium, just clang and rust.
+
 Issues should be filed in the [Chromium > Tools >
 LLVM](https://g-issues.chromium.org/issues?q=status:open%20componentid:1457173)
 bug tracker component, and marked as blockers of the tracking bug for the next
-toolchain update. That bug is typically named "roll clang and rust again"
-[example](https://crbug.com/404285928). The tracking bug should be filed as a
-P1 Process bug, and blockers should be filed and treated as P1 bugs.
+toolchain update. That bug should be named "roll clang and rust again", so that
+it can easily be found by a [search in the LLVM component](https://g-issues.chromium.org/issues?q=componentid:1457173%20%22roll%20clang%20and%20rust%20again%22).
+
+The roll bug should be filed as a P1 Process bug. Anything that blocks the roll
+should should be filed and treated as P1 bugs. Non-blocking issues should be
+logged as a child issue of our [long-term tracking bug](https://g-issues.chromium.org/issues/417753763).
 
 Here is a suggested set of steps to iterate over while gardening:
 
@@ -54,9 +62,11 @@ Here is a suggested set of steps to iterate over while gardening:
   CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py).
   File a bug for any packaging issues. File a bug if the CLs stop being produced.
 
-* When packaging succeeds on a roll CL, follow the instructions in [update the
-  compiler](updating_clang.md) to push the packages to production and do a
-  commit queue dry run. File a bug for any issues that come up.
+* When packaging succeeds on a roll CL, and the ToT waterfall is reasonably
+  green, attempt a clang roll by following the instructions in [update the
+  compiler](updating_clang.md). This will push the packages from the roll CL to
+  production and begin a commit queue dry run. File a bug for any issues that
+  come up.
 
 * If the commit queue dry run was successful, review and land the CL.
 
@@ -204,11 +214,11 @@ Chromium. Once you understand the code pattern Clang is complaining about, file
 a bug to do either fix or silence the new warning.
 
 If this is a completely new warning, disable it by adding `-Wno-NEW-WARNING` to
-[this list of disabled
-warnings](https://cs.chromium.org/chromium/src/build/config/compiler/BUILD.gn?l=1479)
-if `llvm_force_head_revision` is true. Here is [an
-example](https://chromium-review.googlesource.com/1251622). This will keep the
-ToT bots green while you decide what to do.
+the "tot_warnings" config. Here is [an example](https://source.chromium.org/chromium/chromium/src/+/main:build/config/compiler/BUILD.gn;l=1959;drc=b3280fe4347b9093c0e4ef2ff592ee0353037fe7).
+This will keep the ToT bots green while you decide what to do. You may need to
+add additional checks if the warning is only needed for some configurations, but
+you will always need to check `llvm_force_head_revision` to ensure you don't
+pass the warning flag to older versions of clang that don't recognize it.
 
 Sometimes, behavior changes and a pre-existing warning changes to warn on new
 code. In this case, fixing Chromium may be the easiest and quickest fix. If
