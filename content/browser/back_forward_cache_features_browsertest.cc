@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

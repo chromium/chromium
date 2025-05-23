@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"

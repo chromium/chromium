@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/browser/navigation_web_message_sender.h"

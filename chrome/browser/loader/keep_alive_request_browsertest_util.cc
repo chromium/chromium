@@ -5,6 +5,7 @@
 #include "chrome/browser/loader/keep_alive_request_browsertest_util.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/back_forward_cache_util.h"

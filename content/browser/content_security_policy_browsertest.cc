@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

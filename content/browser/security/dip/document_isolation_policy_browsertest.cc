@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"

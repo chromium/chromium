@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"

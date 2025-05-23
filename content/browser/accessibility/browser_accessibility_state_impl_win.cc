@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"

@@ -46,6 +46,10 @@
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/strings/stringprintf.h"
+#endif
+
 namespace content {
 
 namespace {

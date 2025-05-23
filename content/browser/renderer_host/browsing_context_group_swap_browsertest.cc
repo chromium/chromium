@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/web_contents_observer.h"

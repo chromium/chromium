@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"

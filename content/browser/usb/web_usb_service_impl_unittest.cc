@@ -14,6 +14,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
