@@ -95,10 +95,17 @@ using CalculationResultCategorySet =
 class CSSMathType final {
   DISALLOW_NEW();
 
-  using CSSNumericBaseType = std::array<CalculationResultCategory, 6>;
-  static constexpr CSSNumericBaseType kBaseTypes = {
-      kCalcLength,    kCalcAngle,      kCalcTime,
-      kCalcFrequency, kCalcResolution, kCalcPercent};
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-base-type
+  enum BaseType : std::uint8_t {
+    kPercent,
+    kLength,
+    kAngle,
+    kTime,
+    kFrequency,
+    kResolution,
+    kFlex,
+    kNumTypes
+  };
 
  public:
   CSSMathType() = default;
@@ -120,19 +127,25 @@ class CSSMathType final {
                                            CSSMathType type2);
 
  private:
-  using TypesMap = WTF::HashMap<CalculationResultCategory, int>;
-  using PercentageHint = std::optional<CalculationResultCategory>;
+  using BaseTypePowers =
+      std::array<std::int8_t, static_cast<size_t>(BaseType::kNumTypes)>;
+  using PercentageHint = std::optional<BaseType>;
 
   explicit CSSMathType(bool);
-  CSSMathType(TypesMap types_map, PercentageHint percentage_hint);
+  CSSMathType(BaseTypePowers types_map, PercentageHint percentage_hint);
+
+  static CalculationResultCategory BaseTypeToCalculationCategory(
+      BaseType base_type);
+  static BaseType CalculationCategoryToBaseType(
+      CalculationResultCategory catergory);
 
   // https://drafts.css-houdini.org/css-typed-om-1/#apply-the-percent-hint
-  void ApplyHint(CalculationResultCategory hint);
+  void ApplyHint(BaseType hint);
 
   // To represent "failure" in terms of the spec.
   const bool is_valid_ = true;
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type
-  TypesMap types_map_;
+  BaseTypePowers base_type_powers_{};
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-percent-hint
   PercentageHint percentage_hint_;
 };

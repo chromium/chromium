@@ -224,18 +224,66 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
 
 CSSMathType::CSSMathType(CalculationResultCategory category) {
   if (category != kCalcNumber) {
-    types_map_.Set(category, 1);
+    base_type_powers_[CalculationCategoryToBaseType(category)] = 1;
   }
 }
 
 CSSMathType::CSSMathType(bool is_valid) : is_valid_(is_valid) {}
 
-CSSMathType::CSSMathType(TypesMap types_map, PercentageHint percentage_hint)
-    : types_map_(std::move(types_map)),
+CSSMathType::CSSMathType(BaseTypePowers types_map,
+                         PercentageHint percentage_hint)
+    : base_type_powers_(std::move(types_map)),
       percentage_hint_(std::move(percentage_hint)) {}
 
 CSSMathType CSSMathType::InvalidType() {
   return CSSMathType(/*is_valid=*/false);
+}
+
+CalculationResultCategory CSSMathType::BaseTypeToCalculationCategory(
+    BaseType base_type) {
+  using enum BaseType;
+  switch (base_type) {
+    case kLength:
+      return kCalcLength;
+    case BaseType::kPercent:
+      return kCalcPercent;
+    case BaseType::kAngle:
+      return kCalcAngle;
+    case BaseType::kTime:
+      return kCalcTime;
+    case BaseType::kFrequency:
+      return kCalcFrequency;
+    case BaseType::kResolution:
+      return kCalcResolution;
+    case BaseType::kFlex:
+    case BaseType::kNumTypes:
+      NOTREACHED();
+  }
+}
+
+CSSMathType::BaseType CSSMathType::CalculationCategoryToBaseType(
+    CalculationResultCategory category) {
+  using enum BaseType;
+  switch (category) {
+    case kCalcLength:
+      return kLength;
+    case kCalcPercent:
+      return kPercent;
+    case kCalcAngle:
+      return kAngle;
+    case kCalcTime:
+      return kTime;
+    case kCalcFrequency:
+      return kFrequency;
+    case kCalcResolution:
+      return kResolution;
+    case kCalcNumber:
+    case kCalcIdent:
+    case kCalcOther:
+    case kCalcLengthFunction:
+    case kCalcIntrinsicSize:
+      NOTREACHED();
+  }
 }
 
 bool CSSMathType::IsValid() const {
@@ -246,20 +294,26 @@ CalculationResultCategory CSSMathType::Type() const {
   if (!IsValid()) {
     return kCalcOther;
   }
-  if (types_map_.empty()) {
+  BaseType type;
+  std::int16_t types_sum = 0;
+  for (std::uint8_t type_index = 0u; type_index < BaseType::kNumTypes;
+       ++type_index) {
+    std::int8_t type_power = base_type_powers_[type_index];
+    types_sum += type_power;
+    if (type_power != 0) {
+      type = BaseType(type_index);
+    }
+  }
+  if (types_sum == 0) {
     return kCalcNumber;
   }
-  if (types_map_.size() > 1) {
+  if (types_sum != 1) {
     return kCalcOther;
   }
-  auto it = types_map_.begin();
-  if (it->value != 1) {
-    return kCalcOther;
-  }
-  return it->key;
+  return BaseTypeToCalculationCategory(type);
 }
 
-void CSSMathType::ApplyHint(CalculationResultCategory hint) {
+void CSSMathType::ApplyHint(BaseType hint) {
   // To apply the percent hint `hint` to a type without a percent hint, perform
   // the following steps:
   if (percentage_hint_.has_value()) {
@@ -268,21 +322,11 @@ void CSSMathType::ApplyHint(CalculationResultCategory hint) {
   // Set type’s percent hint to hint.
   percentage_hint_ = hint;
   // If hint is anything other than "percent".
-  if (hint != kCalcPercent) {
-    auto percent_it = types_map_.find(kCalcPercent);
-    // And type contains "percent".
-    if (percent_it != types_map_.end()) {
-      int percent_value = percent_it->value;
-      types_map_.erase(percent_it);
-      // Add type["percent"] to type[hint].
-      if (auto hint_it = types_map_.find(hint); hint_it != types_map_.end()) {
-        hint_it->value += percent_value;
-      } else {
-        types_map_.Set(hint, percent_value);
-      }
-      // Then set type["percent"] to 0 (doing it above not to search again after
-      // possible Set call).
-    }
+  if (hint != kPercent) {
+    // Add type["percent"] to type[hint].
+    base_type_powers_[hint] += base_type_powers_[kPercent];
+    // Then set type["percent"] to 0.
+    base_type_powers_[kPercent] = 0;
   }
 }
 
@@ -313,29 +357,34 @@ CSSMathType operator+(CSSMathType type1, CSSMathType type2) {
     // Copy all of type1’s entries to finalType, and then copy all of type2’s
     // entries to finalType that finalType doesn’t already contain. Set
     // finalType’s percent hint to type1’s percent hint. Return finalType.
-    return CSSMathType(std::move(type1.types_map_),
+    return CSSMathType(std::move(type1.base_type_powers_),
                        std::move(type1.percentage_hint_));
   }
   // If type1 and/or type2 contain "percent" with a non-zero value, and type1
   // and/or type2 contain a key other than "percent" with a non-zero value.
-  bool type1_contains_percent = type1.types_map_.Contains(kCalcPercent);
-  bool type2_contains_percent = type2.types_map_.Contains(kCalcPercent);
+  using enum CSSMathType::BaseType;
+  bool type1_contains_percent = type1.base_type_powers_[kPercent] != 0;
+  bool type2_contains_percent = type2.base_type_powers_[kPercent] != 0;
   bool type1_or_type2_contain_percent =
       type1_contains_percent || type2_contains_percent;
   bool type1_contains_key_other_than_percent =
-      (type1_contains_percent && type1.types_map_.size() > 1) ||
-      (!type1_contains_percent && type1.types_map_.size() > 0);
+      type1.base_type_powers_[kPercent] !=
+      std::accumulate(type1.base_type_powers_.begin(),
+                      type1.base_type_powers_.end(), 0);
   bool type2_contains_key_other_than_percent =
-      (type2_contains_percent && type2.types_map_.size() > 1) ||
-      (!type2_contains_percent && type2.types_map_.size() > 0);
+      type2.base_type_powers_[kPercent] !=
+      std::accumulate(type2.base_type_powers_.begin(),
+                      type2.base_type_powers_.end(), 0);
   bool type1_or_type2_contain_key_other_than_percent =
       type1_contains_key_other_than_percent ||
       type2_contains_key_other_than_percent;
   if (type1_or_type2_contain_percent &&
       type1_or_type2_contain_key_other_than_percent) {
     // For each base type other than "percent" hint:
-    for (CalculationResultCategory type : CSSMathType::kBaseTypes) {
-      if (type == kCalcPercent) {
+    for (std::uint8_t type_index = 0;
+         type_index < CSSMathType::BaseType::kNumTypes; ++type_index) {
+      auto type = static_cast<CSSMathType::BaseType>(type_index);
+      if (type == kPercent) {
         continue;
       }
       // 1. Provisionally apply the percent hint hint to both type1 and type2.
@@ -349,7 +398,7 @@ CSSMathType operator+(CSSMathType type1, CSSMathType type2) {
       // to finalType that finalType doesn’t already contain. Set finalType’s
       // percent hint to hint. Return finalType.
       if (temp_type1 == temp_type2) {
-        return CSSMathType(std::move(temp_type1.types_map_),
+        return CSSMathType(std::move(temp_type1.base_type_powers_),
                            std::move(temp_type1.percentage_hint_));
       }
       // 3. Otherwise, revert type1 and type2 to their state at the start of
