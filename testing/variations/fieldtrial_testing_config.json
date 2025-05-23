@@ -8949,21 +8949,6 @@
             ]
         }
     ],
-    "EnableTcpPortRandomization": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableTcpPortRandomization"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableUserSessionActivityReporting": [
         {
             "platforms": [
@@ -23715,6 +23700,24 @@
                     "name": "TaskManagerDesktopRefresh",
                     "enable_features": [
                         "TaskManagerDesktopRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TcpPortRandomizationWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Dogfood",
+                    "params": {
+                        "TcpPortRandomizationWinVersionMinimum": "16"
+                    },
+                    "enable_features": [
+                        "TcpPortRandomizationWin"
                     ]
                 }
             ]

@@ -12,6 +12,10 @@
 #include "net/base/cronet_buildflags.h"
 #include "net/net_buildflags.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace net::features {
 
 BASE_FEATURE(kAlpsForHttp2, "AlpsForHttp2", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -289,9 +293,15 @@ BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
              "EnableGetNetworkConnectivityHintAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableTcpPortRandomization,
-             "EnableTcpPortRandomization",
+BASE_FEATURE(kTcpPortRandomizationWin,
+             "TcpPortRandomizationWin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpPortRandomizationWinVersionMinimum,
+                   &kTcpPortRandomizationWin,
+                   "TcpPortRandomizationWinVersionMinimum",
+                   static_cast<int>(base::win::Version::WIN10_20H1));
 
 BASE_FEATURE(kTcpSocketIoCompletionPortWin,
              "TcpSocketIoCompletionPortWin",

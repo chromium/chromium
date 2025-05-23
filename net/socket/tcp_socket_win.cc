@@ -100,6 +100,13 @@ bool SetNonBlockingAndGetError(int fd, int* os_error) {
   return ret;
 }
 
+bool UseTcpPortRandomization() {
+  return base::FeatureList::IsEnabled(features::kTcpPortRandomizationWin) &&
+         base::win::GetVersion() >=
+             static_cast<base::win::Version>(
+                 features::kTcpPortRandomizationWinVersionMinimum.Get());
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -964,8 +971,7 @@ int TCPSocketWin::DoConnect() {
 
   // Set option to choose a random port, if the socket is not already bound.
   // Ignore failures, which may happen if the socket was already bound.
-  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1 &&
-      base::FeatureList::IsEnabled(features::kEnableTcpPortRandomization)) {
+  if (UseTcpPortRandomization()) {
     BOOL randomize_port = TRUE;
     setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
                reinterpret_cast<const char*>(&randomize_port),
