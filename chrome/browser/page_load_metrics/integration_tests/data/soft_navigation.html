@@ -128,6 +128,9 @@
     }
 
     const waitForSoftNavigationEntry = async () => {
+      if (!PerformanceObserver.supportedEntryTypes.includes('soft-navigation')) {
+        throw new Error("Soft Navigations API not supported");
+      }
       await new Promise(resolve => {
         (new PerformanceObserver(resolve)).observe({
           type: 'soft-navigation', buffered: true

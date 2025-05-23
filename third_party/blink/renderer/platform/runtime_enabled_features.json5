@@ -4575,9 +4575,14 @@
       status: "stable",
     },
     {
+      name: "SoftNavigationDetectionAdvancedPaintAttribution",
+      status: "experimental",
+      depends_on: ["SoftNavigationDetection"],
+    },
+    {
       name: "SoftNavigationHeuristics",
       status: "experimental",
-      depends_on: ["NavigationId","SoftNavigationDetection"],
+      depends_on: ["NavigationId","SoftNavigationDetectionAdvancedPaintAttribution"],
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },

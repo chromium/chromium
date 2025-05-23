@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,7 +23,7 @@ class CORE_EXPORT SoftNavigationContext
   static uint64_t last_context_id_;
 
  public:
-  SoftNavigationContext();
+  explicit SoftNavigationContext(bool advanced_paint_attribution_enabled);
 
   bool IsMostRecentlyCreatedContext() const {
     return context_id_ == last_context_id_;
@@ -68,6 +69,8 @@ class CORE_EXPORT SoftNavigationContext
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
 
+  bool advanced_paint_attribution_enabled_;
+
   base::TimeTicks user_interaction_timestamp_;
   String url_;
   bool was_emitted_ = false;
@@ -86,6 +89,8 @@ class CORE_EXPORT SoftNavigationContext
   size_t num_live_nodes_last_animation_frame_ = 0;
   uint64_t painted_area_last_animation_frame_ = 0;
   uint64_t repainted_area_last_animation_frame_ = 0;
+
+  WeakMember<Node> known_not_related_parent_;
 };
 
 }  // namespace blink

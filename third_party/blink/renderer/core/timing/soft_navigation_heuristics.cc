@@ -252,7 +252,6 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   if (!context) {
     return false;
   }
-  node->SetIsModifiedBySoftNavigation();
   context->AddModifiedNode(node);
 
   EmitSoftNavigationEntryIfAllConditionsMet(context);
@@ -324,29 +323,12 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
 void SoftNavigationHeuristics::RecordPaint(LocalFrame* frame,
                                            const gfx::RectF& rect,
                                            Node* node) {
-  // A node which was created in a different window and transferred to this
-  // window might have modified-bit set, but this SNH class might not actually
-  // be set to detecting softnavs.
-  if (!node->IsModifiedBySoftNavigation()) {
-    return;
-  }
-
-  // First, start with the most likely context.
+  // For now, we only care to map paints for the most recent context to meet
+  // non-paint criteria.
   if (most_recent_context_to_meet_non_paint_criteria_ &&
       most_recent_context_to_meet_non_paint_criteria_->AddPaintedArea(
           node, rect, true)) {
     return;
-  }
-
-  // Then, reverse-iterate the rest of the list.
-  for (auto& context : base::Reversed(potential_soft_navigations_)) {
-    if (context == most_recent_context_to_meet_non_paint_criteria_) {
-      continue;
-    }
-    if (context->AddPaintedArea(node, rect,
-                                context->IsMostRecentlyCreatedContext())) {
-      break;
-    }
   }
 }
 
@@ -528,8 +510,9 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     // "new interaction" (i.e. keydown), but will create a new one if that has
     // been cleared, which can happen in tests.
     if (IsInteractionStart(type) || !active_interaction_context_) {
-      active_interaction_context_ =
-          MakeGarbageCollected<SoftNavigationContext>();
+      active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
+          RuntimeEnabledFeatures::
+              SoftNavigationDetectionAdvancedPaintAttributionEnabled(window_));
       potential_soft_navigations_.push_back(active_interaction_context_);
       TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
                           "SoftNavigationHeuristics::CreateNewContext",

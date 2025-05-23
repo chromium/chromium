@@ -5,17 +5,22 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 namespace blink {
 
 uint64_t SoftNavigationContext::last_context_id_ = 0;
 
-SoftNavigationContext::SoftNavigationContext() = default;
+SoftNavigationContext::SoftNavigationContext(
+    bool advanced_paint_attribution_enabled)
+    : advanced_paint_attribution_enabled_(advanced_paint_attribution_enabled) {}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
-  auto add_result = modified_nodes_.insert(node);
+  node->SetIsModifiedBySoftNavigation();
 
+  auto add_result = modified_nodes_.insert(node);
   if (add_result.is_new_entry) {
     // If this is the first mod this animation frame, trace it.
     if (num_modified_dom_nodes_ ==
@@ -45,20 +50,47 @@ bool SoftNavigationContext::AddPaintedArea(Node* node,
     return false;
   }
 
-  if (modified_nodes_.Contains(node)) {
-    already_painted_modified_nodes_.insert(node);
-    // If this is the first paint this animation frame, trace it.
-    if (painted_area_ == painted_area_last_animation_frame_) {
-      // TODO(crbug.com/353218760): Add support for reporting every single
-      // paint.
+  // For now, we only check paint after we meet other criteria, in order to
+  // reduce the risk of needless tree walks during paint.
+  CHECK(SatisfiesSoftNavNonPaintCriteria());
+
+  // Iterate up the dom tree:
+  for (Node* current_node = node; current_node;
+       current_node = current_node->parentNode()) {
+    if (current_node == known_not_related_parent_) {
       TRACE_EVENT_INSTANT(
           TRACE_DISABLED_BY_DEFAULT("loading"),
-          "SoftNavigationContext::FirstAttributablePaintInAnimationFrame",
+          "SoftNavigationContext::AddPaintedAreaWithEarlyExitTreeWalk",
           "context", this);
+      break;
     }
-    painted_area_ += painted_area;
-    return true;
+    // If the current_node is known modified, it is a container root, and this
+    // paint counts.
+    if (modified_nodes_.Contains(current_node)) {
+      already_painted_modified_nodes_.insert(node);
+      // If this is the first paint this animation frame, trace it.
+      if (painted_area_ == painted_area_last_animation_frame_) {
+        // TODO(crbug.com/353218760): Add support for reporting every single
+        // paint.
+        TRACE_EVENT_INSTANT(
+            TRACE_DISABLED_BY_DEFAULT("loading"),
+            "SoftNavigationContext::FirstAttributablePaintInAnimationFrame",
+            "context", this);
+      }
+      painted_area_ += painted_area;
+      return true;
+    }
+
+    // For now, do not "tree walk" unless this flag is enabled.
+    if (!advanced_paint_attribution_enabled_) {
+      break;
+    }
   }
+
+  // This node was not part of a container root for this context.
+  // Let's cache this node's parent node, so if any of this node's siblings
+  // paint next, we can finish this check quicker for them.
+  known_not_related_parent_ = node->parentNode();
 
   if (is_newest_context) {
     // We want to know how much paint the page is doing that isn't attributed.
@@ -81,6 +113,9 @@ bool SoftNavigationContext::SatisfiesSoftNavPaintCriteria(
 }
 
 bool SoftNavigationContext::OnPaintFinished() {
+  // Reset this with each paint, since the conditions might change.
+  known_not_related_parent_ = nullptr;
+
   auto num_modded_new_nodes =
       num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_;
   auto num_gced_old_nodes = num_live_nodes_last_animation_frame_ +
@@ -126,6 +161,7 @@ void SoftNavigationContext::WriteIntoTrace(
 void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(modified_nodes_);
   visitor->Trace(already_painted_modified_nodes_);
+  visitor->Trace(known_not_related_parent_);
 }
 
 }  // namespace blink
