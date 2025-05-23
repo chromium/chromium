@@ -76,7 +76,6 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_stability_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
-#import "ios/chrome/browser/metrics/model/ios_feed_enabled_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_push_notifications_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
@@ -371,9 +370,6 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSFeedActivityMetricsProvider>());
-
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSFeedEnabledMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSPushNotificationsMetricsProvider>());
