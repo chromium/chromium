@@ -531,3 +531,11 @@ of type cc::SolidColorScrollbarLayer, cc::PaintedScrollbarLayer or
 cc::PaintedOverlayScrollbarLayer depending on the type of the scrollbar.
 
 Custom scrollbars are still painted into drawing display items directly.
+
+## Pixel snapping and bluriness
+
+Bluriness can happen when drawings are not aligned to screen pixels. In
+Chromium, we try to align drawings to screen pixels when possible /
+necessary in almost every stage of rendering.
+[This document](https://docs.google.com/document/d/14qWYuGOJRELueTORi2ais5BIJGdo8HADXe07BjjThIs/edit)
+contains some useful links to related docs and bugs.
