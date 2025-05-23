@@ -16,9 +16,9 @@ supported_on:
 - chrome.*:138-
 - chrome_os:138-
 items:
-- caption: Enable extension theme attribution on NTP Footer
+- caption: Enable extension attribution on NTP Footer
   value: true
-- caption: Disable extension theme attribution on NTP Footer
+- caption: Disable extension attribution on NTP Footer
   value: false
 owners:
 - file://components/policy/OWNERS
