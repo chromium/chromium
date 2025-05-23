@@ -7,6 +7,8 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "components/language/core/common/language_util.h"
 #include "components/live_caption/caption_bubble_settings.h"
@@ -33,17 +35,25 @@
 #include "ui/views/view.h"
 
 namespace captions {
+namespace {
 
-class LanguageTextButton : public views::MdTextButton {
+void InitButton(views::MdTextButton* button, views::Label* label) {
+  button->SetCustomPadding(kLanguageButtonInsets);
+  label->SetMultiLine(false);
+  button->SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
+  button->SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
+  button->SetPaintToLayer();
+}
+
+}  // namespace
+
+class LanguageTextButton : public views::MdTextButton,
+                           public TranslationViewWrapperBase::LanguageButton {
   METADATA_HEADER(LanguageTextButton, views::MdTextButton)
  public:
   explicit LanguageTextButton(views::MdTextButton::PressedCallback callback)
       : views::MdTextButton(std::move(callback)) {
-    SetCustomPadding(kLanguageButtonInsets);
-    label()->SetMultiLine(false);
-    SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
-    SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
-    SetPaintToLayer();
+    InitButton(GetMdTextButton(), GetLabel());
   }
 
   LanguageTextButton(const LanguageTextButton&) = delete;
@@ -54,28 +64,24 @@ class LanguageTextButton : public views::MdTextButton {
     return ui::mojom::CursorType::kHand;
   }
 
-  void SetTextScaleFactor(double text_scale_factor) {
-    SetFocusRingCornerRadius(text_scale_factor * kLineHeightDip / 2);
-  }
+  views::MdTextButton* GetMdTextButton() override { return this; }
 
-  views::Label* GetLabel() { return label(); }
+  views::Label* GetLabel() override { return label(); }
 };
 
 BEGIN_METADATA(LanguageTextButton)
 END_METADATA
 
-class LanguageDropdownButton : public views::MdTextButtonWithDownArrow {
+class LanguageDropdownButton
+    : public views::MdTextButtonWithDownArrow,
+      public TranslationViewWrapperBase::LanguageButton {
   METADATA_HEADER(LanguageDropdownButton, views::MdTextButtonWithDownArrow)
  public:
   LanguageDropdownButton(
       views::MdTextButtonWithDownArrow::PressedCallback callback,
       std::u16string label_text)
       : views::MdTextButtonWithDownArrow(std::move(callback), label_text) {
-    SetCustomPadding(kLanguageButtonInsets);
-    label()->SetMultiLine(false);
-    SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
-    SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
-    SetPaintToLayer();
+    InitButton(GetMdTextButton(), GetLabel());
   }
 
   LanguageDropdownButton(const LanguageDropdownButton&) = delete;
@@ -86,11 +92,9 @@ class LanguageDropdownButton : public views::MdTextButtonWithDownArrow {
     return ui::mojom::CursorType::kHand;
   }
 
-  void SetTextScaleFactor(double text_scale_factor) {
-    SetFocusRingCornerRadius(text_scale_factor * kLineHeightDip / 2);
-  }
+  views::MdTextButton* GetMdTextButton() override { return this; }
 
-  views::Label* GetLabel() { return label(); }
+  views::Label* GetLabel() override { return label(); }
 };
 
 BEGIN_METADATA(LanguageDropdownButton)
@@ -134,29 +138,24 @@ void TranslationViewWrapperBase::Init(views::View* translate_container,
   translation_header_text_ =
       translate_indicator_container->AddChildView(std::move(translation_text));
 
-  auto source_language_button =
-      std::make_unique<LanguageTextButton>(base::BindRepeating(
-          &TranslationViewWrapperBase::OnSourceLanguageButtonPressed,
-          base::Unretained(this)));
-  source_language_button->GetViewAccessibility().SetIsIgnored(true);
-  auto target_language_button = std::make_unique<LanguageDropdownButton>(
-      base::BindRepeating(
-          &TranslationViewWrapperBase::OnTargetLanguageButtonPressed,
-          base::Unretained(this)),
-      target_language_text_);
-  target_language_button->GetViewAccessibility().SetIsIgnored(true);
-
   source_language_text_ = GetSourceLanguageName();
   target_language_text_ = GetTargetLanguageName();
 
   translate_indicator_container_ = translate_container->AddChildView(
       std::move(translate_indicator_container));
-  source_language_button_ =
-      translate_container->AddChildView(std::move(source_language_button));
+  source_language_button_index_ = AddLanguageTextButton(
+      translate_container,
+      base::BindRepeating(
+          &TranslationViewWrapperBase::OnSourceLanguageButtonPressed,
+          base::Unretained(this)));
   translate_arrow_icon_ =
       translate_container->AddChildView(std::make_unique<views::ImageView>());
-  target_language_button_ =
-      translate_container->AddChildView(std::move(target_language_button));
+  target_language_button_index_ = AddLanguageDropdownButton(
+      translate_container,
+      base::BindRepeating(
+          &TranslationViewWrapperBase::OnTargetLanguageButtonPressed,
+          base::Unretained(this)),
+      target_language_text_);
 
   translation_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   // Add 1 to account for unknown language option at index 0 in
@@ -167,13 +166,18 @@ void TranslationViewWrapperBase::Init(views::View* translate_container,
     translation_menu_model_->AddCheckItem(
         i, translate_ui_languages_manager_->GetLanguageNameAt(i));
   }
+  MaybeAddChildViews(translate_container);
   UpdateLanguageLabel();
   delegate_->UpdateLanguageDirection(GetDisplayLanguage());
 }
 
 std::vector<raw_ptr<views::View, VectorExperimental>>
 TranslationViewWrapperBase::GetButtons() {
-  return {source_language_button_.get(), target_language_button_.get()};
+  std::vector<raw_ptr<views::View, VectorExperimental>> buttons;
+  for (auto& language_button : language_buttons_) {
+    buttons.push_back(language_button->GetMdTextButton());
+  }
+  return buttons;
 }
 
 void TranslationViewWrapperBase::SetTextSizeAndFontFamily(
@@ -182,41 +186,36 @@ void TranslationViewWrapperBase::SetTextSizeAndFontFamily(
   translation_header_text_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
                                           text_scale_factor);
   translation_header_text_->SetFontList(font_list);
-  source_language_button_->GetLabel()->SetLineHeight(
-      kLiveTranslateLabelLineHeightDip * text_scale_factor);
-  source_language_button_->GetLabel()->SetFontList(font_list);
-  source_language_button_->SetTextScaleFactor(text_scale_factor);
-  target_language_button_->GetLabel()->SetLineHeight(
-      kLiveTranslateLabelLineHeightDip * text_scale_factor);
-  target_language_button_->GetLabel()->SetFontList(font_list);
-  target_language_button_->SetTextScaleFactor(text_scale_factor);
+  for (auto& language_button : language_buttons_) {
+    language_button->GetLabel()->SetLineHeight(
+        kLiveTranslateLabelLineHeightDip * text_scale_factor);
+    language_button->GetLabel()->SetFontList(font_list);
+    language_button->GetMdTextButton()->SetFocusRingCornerRadius(
+        text_scale_factor * kLineHeightDip / 2);
+  }
 }
 
 void TranslationViewWrapperBase::SetTextColor(
     SkColor language_label_color,
     SkColor language_label_border_color,
     SkColor header_color) {
-  source_language_button_->SetEnabledTextColors(language_label_color);
-  target_language_button_->SetEnabledTextColors(language_label_color);
+  for (auto& language_button : language_buttons_) {
+    views::MdTextButton* const button = language_button->GetMdTextButton();
+    button->SetEnabledTextColors(language_label_color);
 // On macOS whenever the caption bubble is not in main focus the button state
 // is set to disabled. These buttons are never disabled so it is okay to
 // override this state.
 #if BUILDFLAG(IS_MAC)
-  source_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                        language_label_color);
-  target_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                        language_label_color);
+    button->SetTextColor(views::Button::STATE_DISABLED, language_label_color);
 #endif
-  // TODO(crbug.com/40259212): The live caption bubble allows users to set
-  // their own color and alpha value from a predefined list. This SKColor is
-  // calculated during  ParseNonTransparentRGBACSSColorString, however the
-  // equivalent ui::ColorId may not exist. To avoid needing to define around
-  // 40 new color ids to account for each combination, we use the deprecated
-  // SKColor function.
-  source_language_button_->SetStrokeColorOverrideDeprecated(
-      language_label_border_color);
-  target_language_button_->SetStrokeColorOverrideDeprecated(
-      language_label_border_color);
+    // TODO(crbug.com/40259212): The live caption bubble allows users to set
+    // their own color and alpha value from a predefined list. This SKColor is
+    // calculated during  ParseNonTransparentRGBACSSColorString, however the
+    // equivalent ui::ColorId may not exist. To avoid needing to define around
+    // 40 new color ids to account for each combination, we use the deprecated
+    // SKColor function.
+    button->SetStrokeColorOverrideDeprecated(language_label_border_color);
+  }
   translation_header_text_->SetEnabledColor(header_color);
   translate_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kTranslateIcon, header_color, kLiveTranslateImageWidthDip));
@@ -228,37 +227,14 @@ void TranslationViewWrapperBase::SetTextColor(
 }
 
 void TranslationViewWrapperBase::UpdateLanguageLabel() {
-  const bool live_translate_enabled =
-      caption_bubble_settings()->IsLiveTranslateFeatureEnabled();
   // We update the language text and set it whenever live translate OR
   // multilingual live captions are enabled. We early out when both are
   // disabled.
-  if (!live_translate_enabled &&
+  if (!caption_bubble_settings()->IsLiveTranslateFeatureEnabled() &&
       !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return;
   }
-
-  CHECK(source_language_button_ != nullptr);
-  if (auto_detected_source_language_) {
-    source_language_button_->SetText(l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED, source_language_text_));
-  } else {
-    source_language_button_->SetText(source_language_text_);
-  }
-
-  if (live_translate_enabled &&
-      caption_bubble_settings()->GetLiveTranslateEnabled()) {
-    if (SourceAndTargetLanguageCodeMatch() && auto_detected_source_language_) {
-      target_language_button_->SetText(l10n_util::GetStringFUTF16(
-          IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED,
-          target_language_text_));
-    } else {
-      target_language_button_->SetText(target_language_text_);
-    }
-    SetTranslationsViewVisible(true);
-  } else {
-    SetTranslationsViewVisible(false);
-  }
+  UpdateLanguageLabelInternal();
 }
 
 void TranslationViewWrapperBase::OnAutoDetectedLanguageChanged(
@@ -278,30 +254,31 @@ void TranslationViewWrapperBase::OnAutoDetectedLanguageChanged(
 }
 
 void TranslationViewWrapperBase::UpdateContentSize() {
-  source_language_button_->SetMinSize(gfx::Size());
-  source_language_button_->SetPreferredSize(
-      source_language_button_->CalculatePreferredSize({}));
-  target_language_button_->SetMinSize(gfx::Size());
-  target_language_button_->SetPreferredSize(
-      target_language_button_->CalculatePreferredSize({}));
+  for (auto& language_button : language_buttons_) {
+    views::MdTextButton* const button = language_button->GetMdTextButton();
+    button->SetMinSize(gfx::Size());
+    button->SetPreferredSize(button->CalculatePreferredSize({}));
+  }
 }
 
 views::Label* TranslationViewWrapperBase::GetSourceLanguageLabelForTesting() {
-  return views::AsViewClass<views::Label>(source_language_button_->GetLabel());
+  return views::AsViewClass<views::Label>(
+      language_buttons_[source_language_button_index_]->GetLabel());
 }
 
 views::Label* TranslationViewWrapperBase::GetTargetLanguageLabelForTesting() {
-  return views::AsViewClass<views::Label>(target_language_button_->GetLabel());
+  return views::AsViewClass<views::Label>(
+      language_buttons_[target_language_button_index_]->GetLabel());
 }
 
 views::MdTextButton*
 TranslationViewWrapperBase::GetSourceLanguageButtonForTesting() {
-  return source_language_button_.get();
+  return source_language_button();
 }
 
 views::MdTextButton*
 TranslationViewWrapperBase::GetTargetLanguageButtonForTesting() {
-  return target_language_button_.get();
+  return target_language_button();
 }
 
 views::View* TranslationViewWrapperBase::GetTranslateIconAndTextForTesting() {
@@ -323,9 +300,72 @@ void TranslationViewWrapperBase::SetTargetLanguageForTesting(
   }
 }
 
+void TranslationViewWrapperBase::MaybeAddChildViews(
+    views::View* translate_container) {}
+
+void TranslationViewWrapperBase::UpdateLanguageLabelInternal() {
+  if (auto_detected_source_language_) {
+    source_language_button()->SetText(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED, source_language_text_));
+  } else {
+    source_language_button()->SetText(source_language_text_);
+  }
+
+  if (caption_bubble_settings()->IsLiveTranslateFeatureEnabled() &&
+      caption_bubble_settings()->GetLiveTranslateEnabled()) {
+    if (SourceAndTargetLanguageCodeMatch() && auto_detected_source_language_) {
+      target_language_button()->SetText(l10n_util::GetStringFUTF16(
+          IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED,
+          target_language_text_));
+    } else {
+      target_language_button()->SetText(target_language_text_);
+    }
+    SetTranslationsViewVisible(true);
+  } else {
+    SetTranslationsViewVisible(false);
+  }
+}
+
+int TranslationViewWrapperBase::AddLanguageTextButton(
+    views::View* translate_container,
+    views::MdTextButton::PressedCallback callback) {
+  auto language_button =
+      std::make_unique<LanguageTextButton>(std::move(callback));
+  language_button->GetMdTextButton()->GetViewAccessibility().SetIsIgnored(true);
+  language_buttons_.push_back(
+      translate_container->AddChildView(std::move(language_button)));
+  return language_buttons_.size() - 1;
+}
+
+int TranslationViewWrapperBase::AddLanguageDropdownButton(
+    views::View* translate_container,
+    views::MdTextButtonWithDownArrow::PressedCallback callback,
+    const std::u16string& label_text) {
+  auto language_button =
+      std::make_unique<LanguageDropdownButton>(std::move(callback), label_text);
+  language_button->GetMdTextButton()->GetViewAccessibility().SetIsIgnored(true);
+  language_buttons_.push_back(
+      translate_container->AddChildView(std::move(language_button)));
+  return language_buttons_.size() - 1;
+}
+
+views::MdTextButton* TranslationViewWrapperBase::button(int index) const {
+  return language_buttons_.at(index)->GetMdTextButton();
+}
+
+views::MdTextButton* TranslationViewWrapperBase::source_language_button()
+    const {
+  return button(source_language_button_index_);
+}
+
+views::MdTextButton* TranslationViewWrapperBase::target_language_button()
+    const {
+  return button(target_language_button_index_);
+}
+
 void TranslationViewWrapperBase::SetTranslationsViewVisible(
     bool live_translate_enabled) {
-  target_language_button_->SetVisible(live_translate_enabled);
+  target_language_button()->SetVisible(live_translate_enabled);
   translate_indicator_container_->SetVisible(live_translate_enabled);
   translate_arrow_icon_->SetVisible(live_translate_enabled);
 
@@ -336,9 +376,9 @@ void TranslationViewWrapperBase::SetTranslationsViewVisible(
     const bool sourceMatchesTarget = SourceAndTargetLanguageCodeMatch();
     translate_indicator_container_->SetVisible(!sourceMatchesTarget);
     translate_arrow_icon_->SetVisible(!sourceMatchesTarget);
-    source_language_button_->SetVisible(!sourceMatchesTarget);
+    source_language_button()->SetVisible(!sourceMatchesTarget);
   } else {
-    source_language_button_->SetVisible(true);
+    source_language_button()->SetVisible(true);
   }
 }
 
@@ -397,9 +437,10 @@ void TranslationViewWrapperBase::OnSourceLanguageButtonPressed() {
 void TranslationViewWrapperBase::OnTargetLanguageButtonPressed() {
   translation_menu_runner_ = std::make_unique<views::MenuRunner>(
       translation_menu_model_.get(), views::MenuRunner::COMBOBOX);
-  const gfx::Rect& screen_bounds = target_language_button_->GetBoundsInScreen();
+  const gfx::Rect& screen_bounds =
+      target_language_button()->GetBoundsInScreen();
   translation_menu_runner_->RunMenuAt(
-      target_language_button_->GetWidget(), /*button_controller=*/nullptr,
+      target_language_button()->GetWidget(), /*button_controller=*/nullptr,
       screen_bounds, views::MenuAnchorPosition::kTopLeft,
       ui::mojom::MenuSourceType::kMouse);
 }

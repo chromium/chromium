@@ -14,6 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/live_caption/caption_bubble_settings.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace gfx {
@@ -27,16 +29,12 @@ class TranslateUILanguagesManager;
 namespace views {
 class ImageView;
 class Label;
-class MdTextButton;
 class View;
 class MenuRunner;
 
 }  // namespace views
 
 namespace captions {
-
-class LanguageTextButton;
-class LanguageDropdownButton;
 
 class TranslationViewWrapperBase : public ui::SimpleMenuModel::Delegate,
                                    public CaptionBubbleSettings::Observer {
@@ -55,6 +53,19 @@ class TranslationViewWrapperBase : public ui::SimpleMenuModel::Delegate,
 
    protected:
     Delegate() = default;
+  };
+
+  class LanguageButton {
+   public:
+    LanguageButton() = default;
+
+    LanguageButton(const LanguageButton&) = delete;
+    LanguageButton& operator=(const LanguageButton&) = delete;
+
+    virtual ~LanguageButton() = default;
+
+    virtual views::MdTextButton* GetMdTextButton() = 0;
+    virtual views::Label* GetLabel() = 0;
   };
 
   TranslationViewWrapperBase(const TranslationViewWrapperBase&) = delete;
@@ -93,8 +104,24 @@ class TranslationViewWrapperBase : public ui::SimpleMenuModel::Delegate,
 
   virtual CaptionBubbleSettings* caption_bubble_settings() = 0;
 
+  virtual void MaybeAddChildViews(views::View* translate_container);
+
+  virtual void UpdateLanguageLabelInternal();
+
+  virtual void SetTranslationsViewVisible(bool live_translate_enabled);
+
+  int AddLanguageTextButton(views::View* translate_container,
+                            views::MdTextButton::PressedCallback callback);
+
+  views::MdTextButton* button(int index) const;
+  views::MdTextButton* source_language_button() const;
+  views::MdTextButton* target_language_button() const;
+
  private:
-  void SetTranslationsViewVisible(bool live_translate_enabled);
+  int AddLanguageDropdownButton(
+      views::View* translate_container,
+      views::MdTextButtonWithDownArrow::PressedCallback callback,
+      const std::u16string& label_text);
 
   // ui::SimpleMenuModelDelegate:
   void ExecuteCommand(int target_language_code_index, int event_flags) override;
@@ -124,8 +151,9 @@ class TranslationViewWrapperBase : public ui::SimpleMenuModel::Delegate,
       translate_ui_languages_manager_;
 
   raw_ptr<views::Label> translation_header_text_;
-  raw_ptr<LanguageTextButton> source_language_button_;
-  raw_ptr<LanguageDropdownButton> target_language_button_;
+  int source_language_button_index_ = -1;
+  int target_language_button_index_ = -1;
+  std::vector<LanguageButton*> language_buttons_;
   raw_ptr<views::ImageView> translate_icon_;
   raw_ptr<views::View> translate_indicator_container_;
   std::u16string source_language_text_;
