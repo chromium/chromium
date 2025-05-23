@@ -259,7 +259,7 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
 
 void PrintCachedPolicyInfo(
     const device_management_storage::CachedPolicyInfo& cached_info) {
-  constexpr size_t kPrintWidth = 16;
+  static constexpr size_t kPrintWidth = 16;
 
   std::cout << "Cached policy info:" << std::endl;
   std::cout << "  Key version: " << cached_info.key_version() << std::endl;

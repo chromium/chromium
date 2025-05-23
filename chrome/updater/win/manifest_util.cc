@@ -63,7 +63,7 @@ std::optional<ProtocolParserXML::Results> ParseOfflineManifest(
     return std::nullopt;
   }
 
-  constexpr int64_t kMaxManifestSize = 1024 * 1024;
+  static constexpr int64_t kMaxManifestSize = 1024 * 1024;
   if (file_size.value() > kMaxManifestSize) {
     VLOG(2) << "Manifest file is too large.";
     return std::nullopt;

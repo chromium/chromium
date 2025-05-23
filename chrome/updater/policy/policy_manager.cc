@@ -65,7 +65,7 @@ constexpr char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
 
 PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
-  constexpr size_t kInstallAppPrefixLength =
+  static constexpr size_t kInstallAppPrefixLength =
       std::string_view(kInstallAppPrefix).length();
   std::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;

@@ -101,7 +101,7 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
 }
 
 int RunAllResourceScripts() {
-  constexpr char kScriptResourceNameSwitch[] = "script_resource_name";
+  static constexpr char kScriptResourceNameSwitch[] = "script_resource_name";
 
   base::ScopedTempDir working_dir;
   if (!working_dir.CreateUniqueTempDir()) {

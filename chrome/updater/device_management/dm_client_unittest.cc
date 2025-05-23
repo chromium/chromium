@@ -126,8 +126,8 @@ class DMRequestCallbackHandler
 
   void CreateStorage(bool init_dm_token, bool init_cache_info) {
     ASSERT_TRUE(storage_dir_.CreateUniqueTempDir());
-    constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
-    constexpr char kDmToken[] = "test-dm-token";
+    static constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
+    static constexpr char kDmToken[] = "test-dm-token";
     storage_ =
         CreateDMStorage(storage_dir_.GetPath(),
                         std::make_unique<TestTokenService>(

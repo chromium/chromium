@@ -70,10 +70,11 @@ HRESULT LoadAppCommandFormat(UpdaterScope scope,
 HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
                                         const std::wstring& command_id,
                                         std::wstring& command_format) {
-  constexpr wchar_t kAllowedLegacyProcessLauncherAppNamePrefix[] =
+  static constexpr wchar_t kAllowedLegacyProcessLauncherAppNamePrefix[] =
       L"" BROWSER_PRODUCT_NAME_STRING;
-  constexpr char kAllowedLegacyProcessLauncherMaxAppVersion[] = "110.0.5435.0";
-  constexpr wchar_t kAllowedLegacyProcessLauncherCommandId[] = L"cmd";
+  static constexpr char kAllowedLegacyProcessLauncherMaxAppVersion[] =
+      "110.0.5435.0";
+  static constexpr wchar_t kAllowedLegacyProcessLauncherCommandId[] = L"cmd";
 
   std::wstring pv;
   std::wstring name;
@@ -301,7 +302,7 @@ std::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
       return std::nullopt;
     }
 
-    constexpr wchar_t kQuotableCharacters[] = L" \t\\\"";
+    static constexpr wchar_t kQuotableCharacters[] = L" \t\\\"";
     formatted_command_line.append(
         formatted_parameter->find_first_of(kQuotableCharacters) ==
                 std::wstring::npos

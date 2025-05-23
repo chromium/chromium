@@ -229,7 +229,7 @@ Matcher GetMultipartContentMatcher(
     const std::vector<FormExpectations>& form_expections) {
   return base::BindLambdaForTesting([form_expections](
                                         const HttpRequest& request) {
-    constexpr char kMultifpartBoundaryPrefix[] =
+    static constexpr char kMultifpartBoundaryPrefix[] =
         "multipart/form-data; boundary=";
     if (!request.headers.contains("Content-Type")) {
       ADD_FAILURE() << "Content-Type header not found, which is expected "

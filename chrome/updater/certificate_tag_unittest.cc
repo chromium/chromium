@@ -40,7 +40,7 @@ TEST(CertificateTag, RoundTrip) {
   std::optional<std::vector<uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
-  constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
+  static constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
   std::optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
   ASSERT_TRUE(updated_exe);
 
@@ -52,7 +52,7 @@ TEST(CertificateTag, RoundTrip) {
   EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
 
   // Update an existing tag.
-  constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
+  static constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
   std::optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
   ASSERT_TRUE(updated_again_exe);
 
@@ -551,9 +551,9 @@ INSTANTIATE_TEST_SUITE_P(
         {"GUH-multiple.msi",
          [] {
            std::vector<uint8_t> expected_tag(8632);
-           constexpr char magic[] = "Gact2.0Omaha";
+           static constexpr char magic[] = "Gact2.0Omaha";
            std::memcpy(&expected_tag[0], magic, sizeof(magic));
-           constexpr char tag[] =
+           static constexpr char tag[] =
                "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-"
                "8D3A-4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&"
                "appname=Google%20Chrome&needsadmin=prefers&brand=CHMB&"

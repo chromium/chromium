@@ -385,7 +385,7 @@ TEST(WinUtil, IsGuid) {
 }
 
 TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
-  constexpr int kRunEntries = 6;
+  static constexpr int kRunEntries = 6;
   const std::wstring kRunEntryPrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
@@ -411,7 +411,7 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
 }
 
 TEST(WinUtil, DeleteRegValue) {
-  constexpr int kRegValues = 6;
+  static constexpr int kRegValues = 6;
   const std::wstring kRegValuePrefix(base::UTF8ToWide(test::GetTestName()));
 
   base::win::RegKey key;
@@ -436,7 +436,7 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
     return;
   }
 
-  constexpr int kNumServices = 6;
+  static constexpr int kNumServices = 6;
   const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
@@ -462,7 +462,7 @@ TEST(WinUtil, DeleteService) {
     return;
   }
 
-  constexpr int kNumServices = 6;
+  static constexpr int kNumServices = 6;
   const std::wstring kServiceNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {

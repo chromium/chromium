@@ -142,13 +142,13 @@ constexpr uint8_t kSigningKey2Signature[] = {
 }  // namespace
 
 std::unique_ptr<DMSigningKeyForTesting> GetTestKey1() {
-  constexpr int kFakeKeyVersion = 5;
+  static constexpr int kFakeKeyVersion = 5;
   return std::make_unique<DMSigningKeyForTesting>(
       kSigningKey1, kSigningKey1Signature, kFakeKeyVersion, "example.com");
 }
 
 std::unique_ptr<DMSigningKeyForTesting> GetTestKey2() {
-  constexpr int kFakeKeyVersion = 7;
+  static constexpr int kFakeKeyVersion = 7;
   return std::make_unique<DMSigningKeyForTesting>(
       kSigningKey2, kSigningKey2Signature, kFakeKeyVersion, "example.com");
 }

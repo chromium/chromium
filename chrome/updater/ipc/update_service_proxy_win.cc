@@ -323,7 +323,7 @@ class UpdaterAppStatesCallback
       if (FAILED(hr)) {
         return hr;
       }
-      constexpr int kMaxTries = 2;
+      static constexpr int kMaxTries = 2;
       for (int try_count = 0; try_count < kMaxTries; ++try_count) {
         HResultOr<UpdateService::AppState> service_app_states =
             IUpdaterAppStateToAppState(app_state);

@@ -48,10 +48,10 @@ class KeystoneTest : public testing::Test {
 };
 
 TEST_F(KeystoneTest, CreateEmptyPlistFile) {
-  constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
-                                   base::FILE_PERMISSION_WRITE_BY_USER |
-                                   base::FILE_PERMISSION_READ_BY_GROUP |
-                                   base::FILE_PERMISSION_READ_BY_OTHERS;
+  static constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
+                                          base::FILE_PERMISSION_WRITE_BY_USER |
+                                          base::FILE_PERMISSION_READ_BY_GROUP |
+                                          base::FILE_PERMISSION_READ_BY_OTHERS;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 

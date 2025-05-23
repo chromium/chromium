@@ -111,7 +111,7 @@ void CreateAppCommandOSUpgradeRegistry(UpdaterScope scope,
 void SetupCmdExe(UpdaterScope scope,
                  base::CommandLine& cmd_exe_command_line,
                  base::ScopedTempDir& temp_programfiles_dir) {
-  constexpr wchar_t kCmdExe[] = L"cmd.exe";
+  static constexpr wchar_t kCmdExe[] = L"cmd.exe";
 
   base::FilePath system_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));

@@ -19,7 +19,7 @@ namespace {
 
 // Returns true if GoogleUpdateIsMachine=1 is present in the environment.
 bool GetGoogleUpdateIsMachineEnvVar() {
-  constexpr DWORD kBufferSize = 2;
+  static constexpr DWORD kBufferSize = 2;
   StackString<kBufferSize> value;
   const auto length = ::GetEnvironmentVariableW(L"GoogleUpdateIsMachine",
                                                 value.get(), kBufferSize);

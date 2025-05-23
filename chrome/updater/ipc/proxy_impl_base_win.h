@@ -74,7 +74,7 @@ class ProxyImplBase {
     // normal operation and retrying on registration issues does not help.
     const auto create_server =
         [](REFCLSID clsid) -> HResultOr<Microsoft::WRL::ComPtr<IUnknown>> {
-      constexpr int kNumTries = 2;
+      static constexpr int kNumTries = 2;
       HRESULT hr = E_FAIL;
       for (int i = 0; i != kNumTries; ++i) {
         Microsoft::WRL::ComPtr<IUnknown> server;
