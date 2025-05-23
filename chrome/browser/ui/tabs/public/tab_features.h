@@ -102,10 +102,6 @@ namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
 
-namespace new_tab_footer {
-class NewTabFooterController;
-}  // namespace new_tab_footer
-
 namespace tabs {
 
 class TabAlertController;
@@ -230,10 +226,6 @@ class TabFeatures {
 
   InactiveWindowMouseEventController* inactive_window_mouse_event_controller() {
     return inactive_window_mouse_event_controller_.get();
-  }
-
-  new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
-    return new_tab_footer_controller_.get();
   }
 
   TabResourceUsageTabHelper* resource_usage_helper() {
@@ -395,9 +387,6 @@ class TabFeatures {
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;
-
-  std::unique_ptr<new_tab_footer::NewTabFooterController>
-      new_tab_footer_controller_;
 
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 

@@ -37,10 +37,6 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               (),
               (override));
   MOCK_METHOD(views::View*, LensOverlayView, (), (override));
-  MOCK_METHOD(new_tab_footer::NewTabFooterWebView*,
-              NewTabFooterWebView,
-              (),
-              (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActiveTabDidChange,
               (ActiveTabChangeCallback callback),

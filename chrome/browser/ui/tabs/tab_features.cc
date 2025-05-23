@@ -56,7 +56,6 @@
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
-#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
@@ -79,7 +78,6 @@
 #include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
-#include "components/search/ntp_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 
@@ -273,11 +271,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab.GetContents());
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-
-    if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
-      new_tab_footer_controller_ =
-          std::make_unique<new_tab_footer::NewTabFooterController>(&tab);
-    }
   }     // IsInNormalWindow() end.
 
   customize_chrome_side_panel_controller_ =

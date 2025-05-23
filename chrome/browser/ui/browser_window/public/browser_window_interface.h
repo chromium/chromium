@@ -18,10 +18,6 @@
 // your feature needs. This comment will be deleted after there are 10+ features
 // in BrowserWindowFeatures.
 
-namespace new_tab_footer {
-class NewTabFooterWebView;
-}  // namespace new_tab_footer
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -116,9 +112,6 @@ class BrowserWindowInterface : public content::PageNavigator {
 
   // Returns the view that houses the Lens overlay.
   virtual views::View* LensOverlayView() = 0;
-
-  // Returns the view that houses the New Tab Footer.
-  virtual new_tab_footer::NewTabFooterWebView* NewTabFooterWebView() = 0;
 
   using ActiveTabChangeCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;

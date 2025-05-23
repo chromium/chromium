@@ -7,18 +7,22 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+
+class BrowserWindowInterface;
 
 namespace new_tab_footer {
 
 // Class used to manage the state of the new tab footer.
 class NewTabFooterController : public content::WebContentsObserver {
  public:
-  explicit NewTabFooterController(tabs::TabInterface* tab);
+  explicit NewTabFooterController(BrowserWindowInterface* browser,
+                                  NewTabFooterWebView* footer);
   NewTabFooterController(const NewTabFooterController&) = delete;
   NewTabFooterController& operator=(const NewTabFooterController&) = delete;
   ~NewTabFooterController() override;
+
+  void TearDown();
 
  private:
   // content::WebContentsObserver:
@@ -26,14 +30,14 @@ class NewTabFooterController : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
   void UpdateFooterVisibility();
-  // Called when the associated tab enters the foreground.
-  void TabForegrounded(tabs::TabInterface* tab);
+  // Callback for active tab changes from BrowserWindowInterface.
+  void OnActiveTabChanged(BrowserWindowInterface* browser);
   void ShowUI();
   void CloseUI();
 
-  const raw_ptr<tabs::TabInterface> tab_;
-  raw_ptr<new_tab_footer::NewTabFooterWebView> footer_web_view_;
-  base::CallbackListSubscription tab_did_activate_callback_subscription_;
+  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<new_tab_footer::NewTabFooterWebView> footer_;
+  base::CallbackListSubscription tab_activation_subscription_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;

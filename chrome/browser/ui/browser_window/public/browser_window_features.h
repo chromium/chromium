@@ -71,6 +71,10 @@ namespace memory_saver {
 class MemorySaverBubbleController;
 }  // namespace memory_saver
 
+namespace new_tab_footer {
+class NewTabFooterController;
+}  // namespace new_tab_footer
+
 namespace tab_groups {
 class SessionServiceTabGroupSyncObserver;
 class SharedTabGroupFeedbackController;
@@ -234,6 +238,10 @@ class BrowserWindowFeatures {
     return tab_strip_service_.get();
   }
 
+  new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
+    return new_tab_footer_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -320,6 +328,9 @@ class BrowserWindowFeatures {
       cookie_controls_bubble_coordinator_;
 
   std::unique_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
+
+  std::unique_ptr<new_tab_footer::NewTabFooterController>
+      new_tab_footer_controller_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;

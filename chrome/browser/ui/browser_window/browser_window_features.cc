@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -65,6 +66,7 @@
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/search/search.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -324,6 +326,12 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
             browser_view);
   }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
+    new_tab_footer_controller_ =
+        std::make_unique<new_tab_footer::NewTabFooterController>(
+            browser_view->browser(), browser_view->new_tab_footer_web_view());
+  }
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
@@ -355,6 +363,10 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
 
   if (chrome_labs_coordinator_) {
     chrome_labs_coordinator_->TearDown();
+  }
+
+  if (new_tab_footer_controller_) {
+    new_tab_footer_controller_->TearDown();
   }
 }
 

@@ -31,14 +31,16 @@ source_set("new_tab_footer") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
-source_set("unit_tests") {
+source_set("browser_tests") {
   testonly = true
-  sources = [ "footer_controller_unittest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "footer_controller_browsertest.cc" ]
   deps = [
     ":new_tab_footer",
     "//base/test:test_support",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
   ]
 }

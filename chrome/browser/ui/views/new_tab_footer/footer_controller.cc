@@ -9,6 +9,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 
 namespace new_tab_footer {
@@ -36,14 +38,10 @@ bool IsNtp(const GURL& url,
 }
 }  // namespace
 
-NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
-    : tab_(tab) {
-  // TODO(crbug.com/4438803): Support SideBySide.
-  if (features::IsNtpFooterEnabledWithoutSideBySide()) {
-    footer_web_view_ = tab_->GetBrowserWindowInterface()->NewTabFooterWebView();
-  }
-
-  profile_ = tab_->GetBrowserWindowInterface()->GetProfile();
+NewTabFooterController::NewTabFooterController(BrowserWindowInterface* browser,
+                                               NewTabFooterWebView* footer)
+    : browser_(browser), footer_(footer) {
+  profile_ = browser_->GetProfile();
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kNtpFooterVisible,
@@ -61,62 +59,56 @@ NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
                           weak_factory_.GetWeakPtr()));
 #endif
 
-  content::WebContentsObserver::Observe(tab_->GetContents());
-  tab_did_activate_callback_subscription_ = tab_->RegisterDidActivate(
-      base::BindRepeating(&NewTabFooterController::TabForegrounded,
-                          weak_factory_.GetWeakPtr()));
+  tab_activation_subscription_subscription_ =
+      browser_->RegisterActiveTabDidChange(
+          base::BindRepeating(&NewTabFooterController::OnActiveTabChanged,
+                              weak_factory_.GetWeakPtr()));
 }
 
 NewTabFooterController::~NewTabFooterController() = default;
 
+void NewTabFooterController::TearDown() {
+  pref_change_registrar_.Reset();
+  tab_activation_subscription_subscription_ = base::CallbackListSubscription();
+  footer_ = nullptr;
+  browser_ = nullptr;
+  profile_ = nullptr;
+}
+
 void NewTabFooterController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (tab_->IsActivated()) {
     UpdateFooterVisibility();
-  }
 }
 
 void NewTabFooterController::UpdateFooterVisibility() {
-  if (!footer_web_view_) {
+  // TODO(crbug.com/4438803): Support SideBySide. Currently, when it is enabled,
+  // footer_ will have no value.
+  if (!footer_) {
     return;
   }
 
-  GURL url =
-      tab_->GetContents()->GetController().GetLastCommittedEntry()->GetURL();
+  GURL url = web_contents()->GetController().GetLastCommittedEntry()->GetURL();
   if (url.is_empty()) {
-    url = tab_->GetContents()->GetController().GetVisibleEntry()->GetURL();
+    url = web_contents()->GetController().GetVisibleEntry()->GetURL();
   }
 
-  // Always show management notice on NTP.
-  if (IsNtp(url, tab_->GetContents(), profile_) &&
-      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_)) {
-    ShowUI();
-    return;
+  bool managed_ntp =
+      IsNtp(url, web_contents(), profile_) &&
+      enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_);
+  bool show = managed_ntp ||
+              (profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible) &&
+               ntp_footer::CanShowExtensionFooter(url, profile_));
+  if (show) {
+    footer_->ShowUI();
+  } else {
+    footer_->CloseUI();
   }
-
-  bool is_footer_visible =
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible);
-  if (is_footer_visible && ntp_footer::CanShowExtensionFooter(url, profile_)) {
-    ShowUI();
-    return;
-  }
-
-  CloseUI();
 }
 
-void NewTabFooterController::TabForegrounded(tabs::TabInterface* tab) {
+void NewTabFooterController::OnActiveTabChanged(
+    BrowserWindowInterface* browser) {
+  Observe(browser->GetActiveTabInterface()->GetContents());
   UpdateFooterVisibility();
 }
 
-void NewTabFooterController::ShowUI() {
-  if (footer_web_view_) {
-    footer_web_view_->ShowUI();
-  }
-}
-
-void NewTabFooterController::CloseUI() {
-  if (footer_web_view_) {
-    footer_web_view_->CloseUI();
-  }
-}
 }  // namespace new_tab_footer
