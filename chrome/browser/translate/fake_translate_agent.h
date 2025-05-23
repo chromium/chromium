@@ -37,7 +37,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "url/gurl.h"
 
 class FakeTranslateAgent : public translate::mojom::TranslateAgent {
  public:

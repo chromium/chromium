@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "extensions/common/extension_id.h"
-#include "url/gurl.h"
 
 namespace base {
 class CommandLine;

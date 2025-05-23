@@ -23,7 +23,6 @@
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "content/public/browser/browser_thread.h"
-#include "url/gurl.h"
 
 class Profile;
 

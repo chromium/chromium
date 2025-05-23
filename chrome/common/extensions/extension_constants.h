@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "url/gurl.h"
 
 namespace extension_urls {
 

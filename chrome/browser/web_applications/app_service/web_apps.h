@@ -27,7 +27,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#include "url/gurl.h"
 
 class Profile;
 

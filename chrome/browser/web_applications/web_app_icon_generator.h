@@ -15,7 +15,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
 
 namespace web_app {
 

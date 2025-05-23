@@ -20,7 +20,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "url/gurl.h"
 
 namespace extensions {
 class Extension;

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_
 
 #include "chrome/browser/ui/startup/startup_tab.h"
-#include "url/gurl.h"
 
 class Profile;
 

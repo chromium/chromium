@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
-#include "url/gurl.h"
 
 class AccountId;
 

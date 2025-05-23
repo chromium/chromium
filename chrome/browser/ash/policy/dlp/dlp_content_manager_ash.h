@@ -29,7 +29,6 @@
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
-#include "url/gurl.h"
 
 namespace aura {
 class Window;

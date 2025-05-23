@@ -24,7 +24,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
-#include "url/gurl.h"
 
 class Profile;
 

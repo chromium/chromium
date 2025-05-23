@@ -8,7 +8,6 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 class MockChromeComposeClient : public ChromeComposeClient {
  public:

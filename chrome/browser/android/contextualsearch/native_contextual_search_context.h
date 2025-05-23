@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "components/contextual_search/core/browser/contextual_search_context.h"
-#include "url/gurl.h"
 
 // A ContextualSearchContext subclass that is modifiable via JNI. This is the
 // native implementation of the Java ContextualSearchContext; Instance lifetimes

@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 class ManualFillingController;
 

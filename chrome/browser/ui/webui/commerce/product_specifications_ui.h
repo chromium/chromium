@@ -13,7 +13,6 @@
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "url/gurl.h"
 
 namespace base {
 class RefCountedMemory;

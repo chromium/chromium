@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
+#include "url/gurl.h"
 
 namespace test {
 

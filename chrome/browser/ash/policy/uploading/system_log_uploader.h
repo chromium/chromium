@@ -22,6 +22,8 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
+class GURL;
+
 namespace base {
 class SequencedTaskRunner;
 }

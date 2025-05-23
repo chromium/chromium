@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

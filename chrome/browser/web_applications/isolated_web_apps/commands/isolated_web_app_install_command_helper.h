@@ -24,7 +24,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
-#include "url/gurl.h"
 
 class Profile;
 

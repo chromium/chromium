@@ -10,7 +10,6 @@
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;

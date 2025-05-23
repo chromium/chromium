@@ -17,7 +17,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;
