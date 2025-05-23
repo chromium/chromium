@@ -2392,6 +2392,10 @@ blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockPointer(
     return blink::mojom::PointerLockResult::kWrongDocument;
   }
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_RenderWidgetHostViewImpl_showPointerLockToast(
+      env, obj_, window_android->GetJavaObject());
+
   return blink::mojom::PointerLockResult::kSuccess;
 }
 
@@ -2432,6 +2436,8 @@ void RenderWidgetHostViewAndroid::UnlockPointer() {
   }
 
   window_android->ReleasePointerLock(view_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_RenderWidgetHostViewImpl_hidePointerLockToast(env, obj_);
   host_->LostPointerLock();
 }
 
