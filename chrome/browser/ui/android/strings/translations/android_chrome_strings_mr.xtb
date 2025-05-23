@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">पेज इनसाइट पहा</translation>
 <translation id="1108938384783527433">इतिहास सिंक करा</translation>
 <translation id="1111673857033749125">आपल्या इतर डिव्हाइसेेसवर सेव्ह केलेले बुकमार्क येथे दिसतील.</translation>
-<translation id="1113597929977215864">सिंप्लिफाइड व्ह्यू दाखवा</translation>
 <translation id="1126696498560056882">या डिव्हाइसवरील खाती व्यवस्थापित करा</translation>
 <translation id="1129510026454351943">तपशील: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">गुप्त मोड हा तुमचे डिव्हाइस वापरणाऱ्या इतरांपासून तुमचे ब्राउझिंग खाजगी ठेवतो</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">तुमचा काही इतिहास कदाचित इथे दिसणार नाही. तुमचा सर्व Chrome इतिहास पाहण्यासाठी, संपूर्ण Chrome इतिहास उघडा.</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1493287004536771723">तुम्ही <ph name="SITE_NAME" /> ला फॉलो करत आहात</translation>
+<translation id="1496514951988037011">वापरकर्ता नाव</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
 <translation id="1502010315804028179">तुमचे पासवर्ड संपादित करण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">ठेवा</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
+<translation id="1984087999855033707">फोन नंबर</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1986685561493779662">नाव आधीपासून अस्तित्वात आहे</translation>
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
@@ -1876,7 +1877,6 @@
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>
 <translation id="963246339335003378">टास्क मॅनेजर उघडा</translation>
 <translation id="966131775676567255">खाते डेटा हटवत आहे</translation>
-<translation id="96681097142096641">सरलीकृत पेज पाहायचे आहे का?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>

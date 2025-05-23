@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="1045448422538531528">ଗୋଷ୍ଠୀରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_WEEKS_MANY" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1063300264396686489">ଅନ୍ୟ ଡିଭାଇସରୁ ସ୍ୱତଃ ଟାବ ଗ୍ରୁପକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ଟାବକୁ ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_CLOSED" /> ଟାବକୁ ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="2894757982205307093">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍</translation>
 <translation id="2928243913527329289">Google | ଏହି ଷ୍ଟୋର୍ ବିଷୟରେ</translation>
-<translation id="2977480621796371840">ଗୋଷ୍ଠୀରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="29919168204617356">ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକ ସ୍ୱତଃ ବନ୍ଦ ହୋଇଯିବ। ଆପଣ ସର୍ବଦା ଇତିହାସରେ ସେଗୁଡ଼ିକୁ ପାଇପାରିବେ।</translation>
 <translation id="3008554597174452548">ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3026391124054406831">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ବ୍ୟବସ୍ଥିତ କରିବା ପାଇଁ ଗୋଷ୍ଠୀଗୁଡ଼ିକ ତିଆରି କରନ୍ତୁ।</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
+<translation id="6212567362666004597">ଗୋଷ୍ଠୀରେ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6220820548421939212">ହଁ। ମୁଁ ରାଜି ଅଛି</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6271513594716432922">ସମସ୍ତ ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">ଆପଣ 3 ମାସ ଧରି ବ୍ୟବହାର କରିନଥିବା ନିଷ୍କ୍ରିୟ ବିଭାଗର ଆଇଟମଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ବର୍ତ୍ତମାନ କିମ୍ବା ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8887921976452567404">ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ।</translation>
 <translation id="8915916167043355778">ସବୁ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଅନ୍ୟ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="9090098097337832354">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗ ପାଇଁ ଟାବ ଗ୍ରୁପ ଆକ୍ସନ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>

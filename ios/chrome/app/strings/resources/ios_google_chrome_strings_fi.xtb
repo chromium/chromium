@@ -320,6 +320,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="8788269841521769222">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
+<translation id="8796490717897731471"><ph name="EMAIL" />. Chrome on hallinnoitu</translation>
 <translation id="880967149107462122">Siirry Chromen asetuksiin</translation>
 <translation id="8842132678697187091">Voit avata Google Lensin täältä.</translation>
 <translation id="8850736900032787670">Jos haluat saada kiinnostuksen kohteisiisi perustuvaa personoitua sisältöä, kirjaudu Chromeen.</translation>

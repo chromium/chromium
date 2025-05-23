@@ -4769,7 +4769,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="428963538941819373">Hierdie werwe kan inligting wat hulle oor jou gestoor het, gebruik terwyl jy deur <ph name="HOST" /> blaai</translation>
 <translation id="4289732974614035569">Kies 'n PIN</translation>
-<translation id="4290526909608432059">Steun vir Chrome-apps sal binnekort eindig. Kontak die appontwikkelaar of jou IT-steundienste vir meer inligting oor jou opsies.</translation>
 <translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> lid</translation>
 <translation id="4290898381118933198">Swiep om tussen bladsye te navigeer</translation>
@@ -7638,6 +7637,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Voeg familie en vriende by</translation>
 <translation id="6367097275976877956">Wil jy ChromeVox, Chrome-bedryfstelsel se ingeboude skermleser, aktiveer? Indien wel, druk die spasiebalk.</translation>
+<translation id="6367196786591004737">Vee inskrywing uit</translation>
 <translation id="6367396429435748845">Druk <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> om muissleutels te onderbreek en te hervat</translation>
 <translation id="6367985768157257101">Ontvang met Nabydeling?</translation>
 <translation id="6368157733310917710">&amp;Adresse en meer</translation>
@@ -7971,7 +7971,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6610002944194042868">Vertaalopsies</translation>
 <translation id="6610064275805055636">Bestuur geïsoleerde webapps</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> oortjie</translation>
-<translation id="6611972847767394631">Vind jou oortjies hier</translation>
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6613267708691765962">Skandeer tans vir wanware …</translation>
 <translation id="6615455863669487791">Wys my</translation>
@@ -10632,6 +10631,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8472623782143987204">hardeware-gerugsteun</translation>
 <translation id="8473540203671727883">Lees teks onder die muis</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
+<translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8474378002946546633">Laat kennisgewings toe</translation>
 <translation id="8474561048882755118">Help jou om soortgelyke produkte langs mekaar te sien sodat jy die besonderhede wat vir jou saak maak, maklik kan vergelyk</translation>
 <translation id="8475313423285172237">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat Chrome se werkwyse kan verander.</translation>

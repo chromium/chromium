@@ -331,7 +331,7 @@
 <translation id="1217114730239853757">‏لتفعيل قارئ الشاشة ChromeVox المضمّن لنظام التشغيل ChromeOS Flex، يُرجى الضغط على شريط المسافة.</translation>
 <translation id="1217117837721346030">تنزيل ملف مُريب</translation>
 <translation id="1217483152325416304">سيتم قريبًا حذف البيانات المحلية.</translation>
-<translation id="1217668622537098248">إعادة ميزة النقر بزر الماوس الأيسر بعد اتخاذ إجراء</translation>
+<translation id="1217668622537098248">العودة إلى النقر بزر الماوس الأيسر بعد اتخاذ إجراء</translation>
 <translation id="1218015446623563536">‏حذف Linux</translation>
 <translation id="1218839827383191197">‏<ph name="BEGIN_PARAGRAPH1" />تستخدم خدمة الموقع الجغرافي من Google مصادر، مثل شبكات Wi‑Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تقدير الموقع الجغرافي لهذا الجهاز.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />يمكنك إيقاف خدمة "الموقع الجغرافي" من خلال إيقاف إعداد "الموقع الجغرافي" الرئيسي على هذا الجهاز. وبإمكانك أيضًا إيقاف استخدام شبكات Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للموقع الجغرافي من إعدادات الموقع الجغرافي.<ph name="END_PARAGRAPH2" /></translation>
@@ -2625,7 +2625,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783952358106015700">استخدام مفتاح الأمان مع <ph name="APP_NAME" /></translation>
-<translation id="2785267875302712148">التحقّق من كلمة المرور</translation>
+<translation id="2785267875302712148">التحقق من كلمات المرور</translation>
 <translation id="2785279781154577715">مظهر بطاقة المعاينة عند التمرير فوق علامة التبويب</translation>
 <translation id="2785873697295365461">أدوات وصف الملفات</translation>
 <translation id="2785975315093449168">GTK</translation>
@@ -4341,7 +4341,7 @@
 <translation id="3983400541576569538">قد يتم فقد البيانات من بعض التطبيقات</translation>
 <translation id="3983586614702900908">أجهزة من مورد غير معروف</translation>
 <translation id="3983764759749072418">‏يمكن لتطبيقات "متجر Play" الوصول إلى هذا الجهاز.</translation>
-<translation id="3983769721878416534">مهلة قبل النقر</translation>
+<translation id="3983769721878416534">المهلة قبل النقر</translation>
 <translation id="3984135167056005094">عدم تضمين عنوان البريد الإلكتروني</translation>
 <translation id="3984159763196946143">تعذَّر بدء الوضع التجريبي</translation>
 <translation id="3984536049089846927">الصفحة التالية</translation>
@@ -4759,7 +4759,6 @@
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="428963538941819373">يمكن لهذه المواقع الإلكترونية استخدام المعلومات التي تم حفظها عنك أثناء تصفُّح <ph name="HOST" />.</translation>
 <translation id="4289732974614035569">اختيار رقم تعريف شخصي</translation>
-<translation id="4290526909608432059">‏ستتوقف تطبيقات Chrome قريبًا، وللتعرّف على الخيارات المتاحة، يمكنك التواصل مع مطوّر التطبيقات أو فريق دعم تكنولوجيا المعلومات.</translation>
 <translation id="4290791284969893584">بعد إغلاق صفحة، قد لا تكتمل المهام التي بدأتها عليها.</translation>
 <translation id="4290826901752066702">عضو واحد (<ph name="NUM" />)</translation>
 <translation id="4290898381118933198">التمرير سريعًا للتنقّل بين الصفحات</translation>
@@ -7627,6 +7626,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">إضافة العائلة والأصدقاء</translation>
 <translation id="6367097275976877956">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟ اضغط على شريط المسافة لتفعيل ChromeVox.</translation>
+<translation id="6367196786591004737">حذف الإدخال</translation>
 <translation id="6367396429435748845">اضغط على المفاتيح <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> لإيقاف مفاتيح الماوس مؤقتًا أو استئناف استخدامها</translation>
 <translation id="6367985768157257101">هل تريد الاستلام عبر ميزة "المشاركة عن قرب"؟</translation>
 <translation id="6368157733310917710">العناوين والمزيد</translation>
@@ -7968,7 +7968,6 @@
 <translation id="6610002944194042868">خيارات الترجمة</translation>
 <translation id="6610064275805055636">إدارة تطبيقات الويب المعزولة</translation>
 <translation id="6611432349566876829">علامة تبويب واحدة (<ph name="NUM" />)</translation>
-<translation id="6611972847767394631">ستجد علامات التبويب هنا</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6613267708691765962">جارٍ البحث عن برامج ضارة…</translation>
 <translation id="6615455863669487791">عرض</translation>
@@ -10632,6 +10631,7 @@
 <translation id="8472623782143987204">يستند إلى الجهاز</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
+<translation id="847433688444405067">التصفّح على جميع الأجهزة</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
 <translation id="8474561048882755118">تساعدك هذه الميزة في الاطّلاع على المنتجات المشابهة جنبًا إلى جنب وإجراء مقارنة سهلة بين التفاصيل التي تهمّك</translation>
 <translation id="8475313423285172237">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.</translation>

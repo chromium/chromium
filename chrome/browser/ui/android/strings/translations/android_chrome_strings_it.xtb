@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Mostra statistiche pagine</translation>
 <translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
-<translation id="1113597929977215864">Mostra in visualizzazione semplificata</translation>
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1129510026454351943">Dettagli: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">La modalità di navigazione in incognito mantiene la navigazione nascosta agli altri utenti che utilizzano il tuo dispositivo</translation>
@@ -122,6 +121,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1480287803138246127">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser.</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1493287004536771723">Stai seguendo <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nome utente</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1502010315804028179">Per gestire le tue password, aggiorna Google Play Services</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
@@ -221,6 +221,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="197288927597451399">Conserva</translation>
 <translation id="1973912524893600642">Conserva i dati</translation>
 <translation id="1974060860693918893">Avanzate</translation>
+<translation id="1984087999855033707">numero di telefono</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1986685561493779662">Il nome esiste già</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
@@ -1876,7 +1877,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963246339335003378">Apri Task Manager</translation>
 <translation id="966131775676567255">Eliminazione dei dati dell'account in corso…</translation>
-<translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>

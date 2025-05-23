@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Vælg, om du vil inkludere Chromium-historikken for at få mere personligt tilpassede oplevelser i Googles tjenester</translation>
 <translation id="2054039611381840095">Hvis du vil have Chromium-opdateringer fremover, skal du have macOS 12 eller nyere. Denne computer anvender macOS 11.</translation>
 <translation id="2086476982681781442">Chromium har blokeret denne download, fordi filen er vildledende og kan foretage uventede ændringer på din enhed</translation>
-<translation id="2088953378266246249">Oplysninger om, hvordan Chromium administrerer sine rodcertifikater</translation>
 <translation id="2099452623287920103">Dine adgangskoder og andre Chromium-data, som du har gemt på din Google-konto, fjernes fra denne enhed. Hvis du vil bruge dem igen i Chromium, skal du logge ind igen.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}}</translation>
 <translation id="2126108037660393668">Verificering af den downloadede fil mislykkedes.</translation>
@@ -609,7 +608,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Tilpas Chromium</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
-<translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>

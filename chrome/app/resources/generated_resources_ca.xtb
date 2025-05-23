@@ -4753,7 +4753,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="428963538941819373">Aquests llocs web poden utilitzar informació que han desat sobre tu a mesura que navegues per <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Tria un PIN</translation>
-<translation id="4290526909608432059">La compatibilitat amb aplicacions de Chrome finalitzarà aviat. Per obtenir informació sobre les opcions que tens, contacta amb el desenvolupador de l'aplicació o amb el teu equip d'assistència de TI.</translation>
 <translation id="4290791284969893584">En tancar una pàgina, pot ser que les tasques que hagis començat no finalitzin</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Llisca per navegar entre les pàgines</translation>
@@ -7618,6 +7617,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Afegiu familiars i amics</translation>
 <translation id="6367097275976877956">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS? Si és així, prem la barra espaiadora.</translation>
+<translation id="6367196786591004737">Suprimeix l'entrada</translation>
 <translation id="6367396429435748845">Prem <ph name="ALT" />+<ph name="LAUNCHER" />+<ph name="NUM_4" /> per posar en pausa i reprendre les tecles del ratolí</translation>
 <translation id="6367985768157257101">Vols rebre contingut amb Compartició Nearby?</translation>
 <translation id="6368157733310917710">Adreces i més</translation>
@@ -7951,7 +7951,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6610002944194042868">Opcions del Traductor</translation>
 <translation id="6610064275805055636">Gestiona les aplicacions web aïllades</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> pestanya</translation>
-<translation id="6611972847767394631">Aquí trobaràs les teves pestanyes</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6613267708691765962">S'està cercant programari maliciós...</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
@@ -10615,6 +10614,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8472623782143987204">recolzat per maquinari</translation>
 <translation id="8473540203671727883">Llegeix el text que hi ha a sota del cursor del ratolí</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
+<translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8474561048882755118">T'ajuda a veure productes similars en paral·lel i comparar fàcilment els detalls que t'interessen</translation>
 <translation id="8475313423285172237">Un altre programa de l'ordinador ha afegit una extensió que pot canviar el funcionament de Chrome.</translation>

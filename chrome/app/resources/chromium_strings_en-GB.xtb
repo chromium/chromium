@@ -82,7 +82,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2049376729098081731">Choose whether to include Chromium history for more personalised experiences in Google services</translation>
 <translation id="2054039611381840095">To get future Chromium updates, you'll need macOS 12 or later. This computer is using macOS 11.</translation>
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
-<translation id="2088953378266246249">Information about how Chromium manages its root certificates</translation>
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
@@ -611,7 +610,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Make Chromium your own</translation>
 <translation id="93478295209880648">Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista</translation>
-<translation id="942598560705308788">Certificates managed by Chromium</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>

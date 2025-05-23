@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
-<translation id="1045448422538531528">గ్రూప్‌నకు జోడించండి</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="1063300264396686489">ఇతర పరికరాల నుండి ట్యాబ్ గ్రూప్‌లను ఆటోమేటిక్‌గా తెరవండి</translation>
 <translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ట్యాబ్ మూసివేయబడింది}other{<ph name="MANY_CLOSED" /> ట్యాబ్‌లు మూసివేయబడ్డాయి}}</translation>
 <translation id="2894757982205307093">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
 <translation id="2928243913527329289">Google | ఈ స్టోర్ గురించి</translation>
-<translation id="2977480621796371840">గుంపు నుండి తీసివేయండి</translation>
 <translation id="29919168204617356">ఇన్‌యాక్టివ్ ట్యాబ్‌లు ఆటోమేటిక్‌గా మూసివేయబడతాయి. మీరు వాటిని ఎప్పుడు కావాలంటే అప్పుడు హిస్టరీలో చూడవచ్చు.</translation>
 <translation id="3008554597174452548">ప్రోడక్ట్‌ను ట్రాక్ చేయడాన్ని ఆపివేయండి</translation>
 <translation id="3026391124054406831">మీ ట్యాబ్‌లను ఆర్గనైజ్ చేయడానికి గ్రూప్‌లను క్రియేట్ చేయండి.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
+<translation id="6212567362666004597">ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి</translation>
 <translation id="6220820548421939212">అవును. నేను ఆమోదిస్తున్నాను</translation>
 <translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
 <translation id="6271513594716432922">అన్ని ఇన్‌యాక్టివ్ ట్యాబ్‌లను మూసివేయండి</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">మీరు 3 నెలలుగా ఉపయోగించని ఇన్‌యాక్టివ్ విభాగంలోని ఐటెమ్‌లను Chrome ఆటోమేటిక్‌గా మూసివేస్తుంది. మీరు దీన్ని ఇప్పుడు లేదా ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="8887921976452567404">మీ మూసివేసిన ట్యాబ్‌లు, గ్రూప్‌లు ఇటీవలి ట్యాబ్‌ల విభాగం, ట్యాబ్ గ్రూప్‌ల విభాగం నుండి మళ్లీ తెరవబడతాయి.</translation>
 <translation id="8915916167043355778">అన్నింటినీ మూసివేయండి</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{కొత్త విండోకు తరలించండి}other{వేరే విండోకు తరలించండి}}</translation>
 <translation id="9090098097337832354">ఈ స్టోర్ గురించిన సమాచారాన్ని చూపించే స్క్రీన్ మూసివేయబడింది</translation>
 <translation id="9114502155681725011">ట్యాబ్ గ్రూప్ <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> రంగు కోసం ట్యాబ్ గ్రూప్ చర్యల మెనూను తెరవండి.</translation>
 <translation id="9169594135889675189">గ్రూప్‌నకు కొత్త ట్యాబ్‌ను జోడించండి</translation>

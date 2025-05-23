@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="1045448422538531528">Dodaj u grupu</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Izrađeno prije <ph name="NUM_WEEKS_ONE" /> tjedan}one{Izrađeno prije <ph name="NUM_WEEKS_MANY" /> tjedan}few{Izrađeno prije <ph name="NUM_WEEKS_MANY" /> tjedna}other{Izrađeno prije <ph name="NUM_WEEKS_MANY" /> tjedana}}</translation>
 <translation id="1063300264396686489">Automatski otvaraj grupe kartica s drugih uređaja</translation>
 <translation id="1075622780330595106">Broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Zatvorena je <ph name="ONE_CLOSED" /> kartica}one{Zatvorena je <ph name="MANY_CLOSED" /> kartica}few{Zatvorene su <ph name="MANY_CLOSED" /> kartice}other{Zatvoreno je <ph name="MANY_CLOSED" /> kartica}}</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="2928243913527329289">Google | O ovoj trgovini</translation>
-<translation id="2977480621796371840">Ukloni iz grupe</translation>
 <translation id="29919168204617356">Neaktivne kartice automatski će se zatvoriti. Uvijek ih možete pronaći u povijesti.</translation>
 <translation id="3008554597174452548">Zaustavi praćenje proizvoda</translation>
 <translation id="3026391124054406831">Izradite grupe da biste organizirali kartice.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Cijena ovog artikla bila je <ph name="PREVIOUS_PRICE" />, a sada iznosi <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Sve duplicirane kartice sada će se arhivirati, osim posljednje korištene kopije.</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
+<translation id="6212567362666004597">Dodaj karticu grupi</translation>
 <translation id="6220820548421939212">Da. U redu</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6271513594716432922">Zatvori sve anonimne kartice</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome automatski zatvara stavke u neaktivnom odjeljku koje niste koristili tri mjeseca. To možete isključiti u postavkama.</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe mogu se ponovo otvoriti u odjeljku Nedavne kartice i odjeljku Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premjesti u novi prozor}one{Premjesti u druge prozore}few{Premjesti u druge prozore}other{Premjesti u druge prozore}}</translation>
 <translation id="9090098097337832354">Zatvorene su informacije o ovoj trgovini</translation>
 <translation id="9114502155681725011">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja.</translation>
 <translation id="9169594135889675189">Dodajte novu karticu grupi</translation>

@@ -96,7 +96,6 @@
 <translation id="2199691482078155239">O Chrome dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados</translation>
 <translation id="2216543877350048334">Para remover a sua Conta Google do Chrome, termine sessão</translation>
 <translation id="2236949375853147973">A minha atividade</translation>
-<translation id="223889379102603431">Informações sobre como o Chrome gere os certificados de raiz</translation>
 <translation id="2290014774651636340">As chaves da API do Google estão em falta. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
 <translation id="2290095356545025170">Tem a certeza de que quer desinstalar o Google Chrome?</translation>
 <translation id="2309047409763057870">Esta é uma instalação secundária do Google Chrome, pelo que não pode tornar-se o navegador predefinido.</translation>
@@ -242,6 +241,7 @@
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="408393047846373801">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chrome. Esta palavra-passe é guardada na sua Conta Google depois de iniciar sessão.</translation>
+<translation id="409936259433005390">Vai fazer a atualização para o Windows 11 em breve? Transfira o instalador do Chrome para o OneDrive de modo a ter tudo pronto desde o primeiro dia.</translation>
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não consegue validar a origem desta extensão, e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo informações pessoais.</translation>
 <translation id="4128488089242627000">O Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
@@ -564,7 +564,6 @@
 <translation id="8255190535488645436">O Google Chrome está a utilizar a câmara e o microfone.</translation>
 <translation id="8257796129973882597">Pode abrir os marcadores, o modo de leitura e muito mais a partir do menu do Chrome</translation>
 <translation id="8267953129876836456">O Chrome encontrou algumas recomendações de segurança para sua revisão</translation>
-<translation id="8270775718612349140">Certificados geridos pelo Chrome</translation>
 <translation id="8286862437124483331">O Google Chrome está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gestor de Palavras-passe da Google</translation>
 <translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>

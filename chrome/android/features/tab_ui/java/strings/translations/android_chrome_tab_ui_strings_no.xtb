@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1036348656032585052">Slå av</translation>
-<translation id="1045448422538531528">Legg til i gruppe</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Opprettet for <ph name="NUM_WEEKS_ONE" /> uke siden}other{Opprettet for <ph name="NUM_WEEKS_MANY" /> uker siden}}</translation>
 <translation id="1063300264396686489">Åpne fanegrupper fra andre enheter automatisk</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fane er lukket}other{<ph name="MANY_CLOSED" /> faner er lukket}}</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
-<translation id="2977480621796371840">Fjern fra gruppen</translation>
 <translation id="29919168204617356">Inaktive faner lukkes automatisk. Du kan alltid finne dem i loggen.</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3026391124054406831">Opprett grupper for å organisere fanene dine.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
 <translation id="6193448654517602979">Velg faner</translation>
+<translation id="6212567362666004597">Legg fanen til i en gruppe</translation>
 <translation id="6220820548421939212">Ja. Jeg er med</translation>
 <translation id="6228793724645064692">(butikkvurdering)</translation>
 <translation id="6271513594716432922">Lukk alle inaktive faner</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome lukker automatisk elementer i den inaktive delen som du ikke har brukt på tre måneder. Du kan slå dette av nå eller når som helst i innstillingene.</translation>
 <translation id="8887921976452567404">Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen.</translation>
 <translation id="8915916167043355778">Lukk alle</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Flytt til nytt vindu}other{Flytt til et annet vindu}}</translation>
 <translation id="9090098097337832354">Informasjon om denne butikken er lukket</translation>
 <translation id="9114502155681725011">Åpne handlingsmenyen for fanegruppen <ph name="TITLE_OF_GROUP" /> med fargen <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Legg til ny fane i gruppen</translation>

@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Alege dacă se include istoricul Chromium pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="2054039611381840095">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 12 sau o versiune ulterioară. Acest computer folosește macOS 11.</translation>
 <translation id="2086476982681781442">Chromium a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
-<translation id="2088953378266246249">Informații despre modul în care Chromium gestionează certificatele rădăcină</translation>
 <translation id="2099452623287920103">Parolele și alte date Chromium pe care le-ai salvat în Contul Google se vor elimina de pe acest dispozitiv. Pentru a le folosi din nou în Chromium, conectează-te din nou.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}few{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}other{Organizația ta șterge automat datele de navigare când Chromium nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele vor rămâne deschise.}}</translation>
 <translation id="2126108037660393668">Fișierul descărcat nu a putut fi verificat.</translation>
@@ -609,7 +608,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalizează Chromium</translation>
 <translation id="93478295209880648">Este posibil ca Chromium să nu funcționeze corespunzător, deoarece nu mai este acceptat pe Windows XP sau Windows Vista</translation>
-<translation id="942598560705308788">Certificate gestionate de Chromium</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="965162752251293939">Cine folosește Chromium?</translation>
 <translation id="967427899662692980">Beneficiază de cel mai înalt nivel de securitate de la Chromium</translation>

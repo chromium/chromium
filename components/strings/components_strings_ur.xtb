@@ -18,6 +18,7 @@
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1030706264415084469"><ph name="URL" /> آپ کے آلے پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{کوئی نہیں}=1{1 سائٹ سے۔ اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ }other{# سائٹس سے۔ اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ }}</translation>
+<translation id="1035509598913574970">سبزی مائل نیلا 3</translation>
 <translation id="1035709686865413354">پانی کے فلٹرز اور پیوریفائرز</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036881361735705143">‏C4 لفافہ</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">صفحہ ایک سروس ہینڈلر انسٹال کرنا چاہتا ہے۔</translation>
 <translation id="1432581352905426595">سرچ انجنز کا نظم کریں</translation>
 <translation id="1433225466058025572">اپنی فائلز کو دوبارہ منتقل کرنے کی کوشش کریں</translation>
+<translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1436185428532214179">سائٹ آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1442386063175183758">دایاں گیٹ فولڈ</translation>
 <translation id="1442987760062738829">سوراخ کریں</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">ہر ملاحظے پر اجازت دیں</translation>
 <translation id="2085876078937250610">محفوظ کریں…</translation>
+<translation id="2088913896151127116">ٹیکسٹ شامل کریں</translation>
 <translation id="2090451897496479509">مزید معلومات کیلئے فراہم کنندہ سے رابطہ کریں</translation>
 <translation id="2091887806945687916">آواز</translation>
 <translation id="2093982008204312032">‏Google Chrome پاس ورڈز پُر کرنے کے لیے Windows Hello کو آف کرنے کی کوشش کر رہا ہے۔</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">پرانا</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2414886740292270097">گہری</translation>
-<translation id="2418292431699242678">‏آپ کا منتظم کسی بھی ChromeOS آلہ پر آپ کے گزشتہ اور موجودہ سیشنز کے درمیان مطابقت پذیر ہونے کے لیے درج ذیل کو اہل بناتا ہے:</translation>
 <translation id="2429716554270894715">فیبرک (واٹر پروف)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> کو سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2436976580469434549">فائبر اور ٹیکسٹائل آرٹ</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> سے ناکامی</translation>
 <translation id="2915496182262110498">پینٹنگ</translation>
 <translation id="2916038427272391327">دیگر پروگرامز بند کریں</translation>
+<translation id="2917630513638801879">سبزی مائل نیلا 1</translation>
 <translation id="2919185931486062599">شکار اور شوٹنگ</translation>
 <translation id="2922350208395188000">سرور سرٹیفکیٹ کو چیک نہیں کیا جا سکتا ہے۔</translation>
 <translation id="2922792708490674">{0,plural, =1{فائل کو ڈاؤن لوڈ ہونے سے مسدود کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو ڈاؤن لوڈ ہونے سے مسدود کر دیا گیا}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
 <translation id="3039406992698062762">فیملی کے ساتھ سفر</translation>
-<translation id="3040636468789770340">کوکیز (آپ کی حال ہی میں ملاحظہ کردہ ویب سائٹس پر سائن ان کردہ حالت)</translation>
 <translation id="3041176923638368519">کارڈ کے فوائد کی شرائط دیکھیں</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3045769629416806687">خطرناک کھیل</translation>
@@ -1681,7 +1683,6 @@
 <translation id="3869939189466884821">آپ کی مقامی فائلز <ph name="MINUTES" /> منٹ میں حذف ہو جائیں گی</translation>
 <translation id="3872834068356954457">سائنس</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
-<translation id="387681220560687945">ونڈوز (ونڈوز اور ٹیبز کی ترتیب اور تنظیم)</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3880456882942693779">آرٹس اور تفریح</translation>
 <translation id="3880589673277376494">انٹرنیٹ اور ٹیلی کام</translation>
@@ -2083,6 +2084,7 @@
 <translation id="4562155266774382038">تجویز برخاست کریں</translation>
 <translation id="4566017918361049074">آؤٹ ڈورز</translation>
 <translation id="4569155249847375786">توثیق کردہ</translation>
+<translation id="4570008401337135432">ٹیکسٹ کی سیدھ</translation>
 <translation id="457875822857220463">ڈیلیوری</translation>
 <translation id="4579699065574932398">بینکنگ</translation>
 <translation id="4582595824823167856">ٹیکسٹ پیغام حاصل کریں</translation>
@@ -2246,7 +2248,6 @@
 <translation id="4866506163384898554">اپنا کرسر دکھانے کے لیے |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| دبائیں</translation>
 <translation id="4873616204573862158">چشم پوش</translation>
 <translation id="4873807733347502026">اپنے ماؤس کو لاک کریں اور استعمال کریں</translation>
-<translation id="4876188919622883022">سادہ منظر</translation>
 <translation id="4876305945144899064">کوئی صارف نام نہیں ہے</translation>
 <translation id="4876327226315760474">اس کا مطلب ہے کہ سائٹ کی خصوصیات توقع کے مطابق کام کرنی چاہیں لیکن آپ کی براؤزنگ کا تحفظ کم ہو سکتا ہے۔</translation>
 <translation id="4877047577339061095">گھریلو اسٹوریج اور خانہ سازی</translation>
@@ -2606,6 +2607,7 @@
 <translation id="5481682542063333508">'لکھنے میں مدد' سے متعلق پیشکش کریں</translation>
 <translation id="54817484435770891">درست پتہ شامل کریں</translation>
 <translation id="5483838506518938965">آپ پوری طرح سے تیار ہیں</translation>
+<translation id="5484396522446324950">اسٹائلز</translation>
 <translation id="5485100387355669506">بہت موٹا</translation>
 <translation id="5485973315555778056">کلاؤڈ مشین</translation>
 <translation id="5488367146069768854">ویب ایپ انسٹالیشنز</translation>
@@ -2944,6 +2946,7 @@
 <translation id="6062937464449575061">قیمت کو ٹریک کرنا بند کریں</translation>
 <translation id="6063415549109819824">گھر کیلئے سرمایہ کی فراہمی</translation>
 <translation id="6070432475334343308">ایک یا ایک زیادہ فائلز <ph name="CLOUD_PROVIDER" /> پر <ph name="FOLDER_NAME" /> میں اپ لوڈ نہیں ہوئیں</translation>
+<translation id="6078069862923723141">سبزی مائل نیلا 2</translation>
 <translation id="6085149458302186532">لیبلز (رنگین)</translation>
 <translation id="6087312102907839798">متعلقہ تلاشیں</translation>
 <translation id="6089505343295765444">‏آپ اپنے Chrome کی سرگزشت سے جو ٹیبز حذف کرتے ہیں، وہ اب بھی آپ کے موازنہ ٹیبلز میں دکھائی دیں گے</translation>
@@ -3025,7 +3028,6 @@
 <translation id="622039917539443112">متوازی فولڈ</translation>
 <translation id="6221286101741304627">پوری اسکرین سے باہر نکلنے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="6221311046884916259">‏کیا آپ اس کارڈ کو اپنے Google اکاؤنٹ میں محفوظ کرنا چاہتے ہیں؟</translation>
-<translation id="6221892641068781024">سادہ منظر</translation>
 <translation id="6222527803348563979">اسٹیشنری</translation>
 <translation id="62231116988543150">ویب ایپس انسٹال کرنے کے اہل ہوں</translation>
 <translation id="6224281071334553713">جواہرات اور زیورات</translation>
@@ -3845,6 +3847,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> سے کم</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> فی الحال اس درخواست کو نمٹانے سے قاصر ہے۔</translation>
 <translation id="7599089013883397081">ڈاؤن لوڈ کا وقت ختم ہو گیا</translation>
+<translation id="7602868996817972616">‏اس صفحہ کے بارے میں Google سے پوچھیں</translation>
 <translation id="7608583484192556132">آپ جو اشتہار دیکھتے ہیں آیا وہ ذاتی نوعیت کا ہے اس کا انحصار بہت سی چیزوں پر ہو سکتا ہے بشمول یہ ترتیب، <ph name="BEGIN_LINK_1" />سائٹ کے تجویز کردہ اشتہارات<ph name="END_LINK_1" />، آپ کی <ph name="BEGIN_LINK_2" />کوکی کی ترتیبات<ph name="END_LINK_2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی نوعیت کا بناتی ہے۔ <ph name="BEGIN_LINK_3" />اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK_3" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="7610193165460212391">قدر رینج سے باہر کی ہے <ph name="VALUE" />۔</translation>
 <translation id="761261689936461781">موٹا</translation>

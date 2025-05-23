@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Valige, kas Google'i teenustes rohkem isikupärastatud kasutuskogemuse saamiseks kaasata Chromiumi ajalugu</translation>
 <translation id="2054039611381840095">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 12 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 11.</translation>
 <translation id="2086476982681781442">Chromium blokeeris selle allalaadimise, kuna fail on petlik ja võib teie seadmes ootamatuid muudatusi teha</translation>
-<translation id="2088953378266246249">Teave selle kohta, kuidas Chromium oma juursertifikaate haldab</translation>
 <translation id="2099452623287920103">Teie paroolid ja muud Chromiumi andmed, mille olete oma Google'i kontole salvestanud, eemaldatakse sellest seadmest. Selleks et neid Chromiumis uuesti kasutada, logige taas sisse.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
 <translation id="2126108037660393668">Allalaaditud faili kinnitamine ebaõnnestus.</translation>
@@ -609,7 +608,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Isikupärastage Chromium</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
-<translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>
 <translation id="967427899662692980">Hankige Chromiumi parimad turbefunktsioonid</translation>

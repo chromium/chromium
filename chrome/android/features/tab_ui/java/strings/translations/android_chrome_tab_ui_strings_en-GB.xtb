@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1036348656032585052">Turn off</translation>
-<translation id="1045448422538531528">Add to group</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Created <ph name="NUM_WEEKS_ONE" /> week ago}other{Created <ph name="NUM_WEEKS_MANY" /> weeks ago}}</translation>
 <translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab closed}other{<ph name="MANY_CLOSED" /> tabs closed}}</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="2928243913527329289">Google | About this store</translation>
-<translation id="2977480621796371840">Remove from group</translation>
 <translation id="29919168204617356">Inactive tabs will automatically be closed. You can always find them in history.</translation>
 <translation id="3008554597174452548">Stop tracking product</translation>
 <translation id="3026391124054406831">Create groups to organise your tabs.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6193448654517602979">Select tabs</translation>
+<translation id="6212567362666004597">Add tab to group</translation>
 <translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6271513594716432922">Close all inactive tabs</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome automatically closes items in the inactive section that you haven't used in three months. You can turn this off now or at any time in Settings.</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Move to new window}other{Move to other window}}</translation>
 <translation id="9090098097337832354">Information about this shop closed</translation>
 <translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Add new tab to group</translation>

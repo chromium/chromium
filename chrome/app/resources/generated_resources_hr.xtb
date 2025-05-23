@@ -4758,7 +4758,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="428963538941819373">Te web-lokacije mogu upotrebljavati podatke koje su spremile o vama tijekom pregledavanja <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Odaberite PIN</translation>
-<translation id="4290526909608432059">Uskoro će se prestati pružati podrška za Chromeove aplikacije. Da biste saznali više o svojim mogućnostima, obratite se razvojnom programeru aplikacija ili IT korisničkoj podršci.</translation>
 <translation id="4290791284969893584">Nakon zatvaranja stranice zadaci koje ste započeli možda se neće dovršiti</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Prijeđite prstom da biste prelazili s jedne stranice na drugu</translation>
@@ -7621,6 +7620,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Dodavanje članova obitelji i prijatelja</translation>
 <translation id="6367097275976877956">Želite li aktivirati ChromeVox, ugrađeni čitač zaslona za Chrome OS? Ako želite, pritisnite razmaknicu.</translation>
+<translation id="6367196786591004737">Izbrišite unos</translation>
 <translation id="6367396429435748845">Pritisnite <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> da biste pauzirali i nastavili upotrebu tipki za pokrete mišem</translation>
 <translation id="6367985768157257101">Primiti putem dijeljenja u blizini?</translation>
 <translation id="6368157733310917710">&amp;Adrese i više</translation>
@@ -7958,7 +7958,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6610002944194042868">Opcije Prevoditelja</translation>
 <translation id="6610064275805055636">Upravljajte izoliranim web-aplikacijama</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> kartica</translation>
-<translation id="6611972847767394631">Ovdje možete pronaći svoje kartice</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
 <translation id="6613267708691765962">Traženje zlonamjernog softvera...</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
@@ -10621,6 +10620,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8472623782143987204">s hardverskom podlogom</translation>
 <translation id="8473540203671727883">Izgovori tekst ispod pokazivača miša</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
+<translation id="847433688444405067">Pregledajte na različitim uređajima</translation>
 <translation id="8474378002946546633">Dopusti obavijesti</translation>
 <translation id="8474561048882755118">Pomaže vam da usporedno vidite slične proizvode i jednostavno usporedite pojedinosti koje su vam važne</translation>
 <translation id="8475313423285172237">Drugi program na vašem računalu dodao je proširenje koje može promijeniti način na koji radi Chrome.</translation>

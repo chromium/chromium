@@ -1459,7 +1459,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> için diğer seçenekler</translation>
 <translation id="7388959671917308825">Yerleşik dokunmatik alan</translation>
 <translation id="7397270852490618635">Açık temayı kapat</translation>
-<translation id="7400166052988585408">Öğretmeniniz ekranınızı <ph name="NUM_SECONDS" /> saniye içinde kilitleyecek</translation>
 <translation id="7401543881546089382">Kısayolu sil</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncellenmeye hazır</translation>
 <translation id="741244894080940828">dönüştürme</translation>
@@ -1614,7 +1613,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8088963492174775412">Kaydetmek için basın</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
-<translation id="8110942816572072814">Öğretmeniniz ekranınızı kilitledi</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>

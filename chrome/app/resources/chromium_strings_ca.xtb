@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Tria si vols incloure l'historial de Chromium per obtenir experiències més personalitzades als serveis de Google</translation>
 <translation id="2054039611381840095">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 12 o una versió posterior. Aquest ordinador utilitza macOS 11.</translation>
 <translation id="2086476982681781442">Chromium ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
-<translation id="2088953378266246249">Informació sobre com gestiona Chromium els seus certificats arrel</translation>
 <translation id="2099452623287920103">Les contrasenyes i altres dades de Chromium que hagis desat al teu Compte de Google se suprimiran d'aquest dispositiu. Per tornar-les a utilitzar a Chromium, inicia la sessió de nou.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}other{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}}</translation>
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
@@ -609,7 +608,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalitza Chromium</translation>
 <translation id="93478295209880648">Pot ser que Chromium no funcioni correctament perquè ja no és compatible amb Windows XP ni Windows Vista</translation>
-<translation id="942598560705308788">Certificats gestionats per Chromium</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguretat més efectiva de Chromium</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1036348656032585052">Անջատել</translation>
-<translation id="1045448422538531528">Ավելացնել խմբում</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ստեղծվել է <ph name="NUM_WEEKS_ONE" /> շաբաթ առաջ}one{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}other{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}}</translation>
 <translation id="1063300264396686489">Ավտոմատ բացում է ներդիրների խմբերն այլ սարքերից</translation>
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ներդիր փակվել է}one{<ph name="MANY_CLOSED" /> ներդիր փակվել է}other{<ph name="MANY_CLOSED" /> ներդիր փակվել է}}</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
-<translation id="2977480621796371840">Հեռացնել խմբից</translation>
 <translation id="29919168204617356">Անգործուն ներդիրներն ավտոմատ կփակվեն։ Դուք կարող եք գտնել դրանք պատմության մեջ։</translation>
 <translation id="3008554597174452548">Այլևս չհետևել ապրանքին</translation>
 <translation id="3026391124054406831">Ստեղծեք խմբեր՝ ներդիրները դասավորելու համար։</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
+<translation id="6212567362666004597">Ավելացնել ներդիր խմբում</translation>
 <translation id="6220820548421939212">Այո</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6271513594716432922">Փակել բոլոր անգործուն ներդիրները</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome-ն ավտոմատ փակում է ներդիրները, որոնք չեք օգտագործել 3 ամսվա ընթացքում։ Այս գործառույթը ցանկացած ժամանակ կարող եք անջատել Կարգավորումներում։</translation>
 <translation id="8887921976452567404">Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։</translation>
 <translation id="8915916167043355778">Փակել բոլորը</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Տեղափոխել նոր պատուհան}one{Տեղափոխել այլ պատուհան}other{Տեղափոխել այլ պատուհան}}</translation>
 <translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
 <translation id="9114502155681725011">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների խմբի գործողությունների ընտրացանկը, գույնը՝ <ph name="COLOR_NAME" />։</translation>
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>

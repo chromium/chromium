@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
-<translation id="1045448422538531528">အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ပြီးခဲ့သော <ph name="NUM_WEEKS_ONE" /> ပတ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_WEEKS_MANY" /> ပတ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1063300264396686489">အခြားစက်များမှ တဘ်အုပ်စုများကို အလိုအလျောက်ဖွင့်ရန်</translation>
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{တဘ် <ph name="ONE_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
 <translation id="2894757982205307093">အုပ်စုတွင် တဘ်အသစ်ထည့်ရန်</translation>
 <translation id="2928243913527329289">Google | ဤဆိုင်အကြောင်း</translation>
-<translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
 <translation id="29919168204617356">အသုံးမပြုသောတဘ်များကို အလိုအလျောက်ပိတ်ပါမည်။ ‘မှတ်တမ်း’ တွင် ၎င်းတို့ကို အချိန်မရွေးရှာတွေ့နိုင်သည်။</translation>
 <translation id="3008554597174452548">ထုတ်ကုန်စောင့်ကြည့်ခြင်း ရပ်ရန်</translation>
 <translation id="3026391124054406831">သင့်တဘ်များကို စီမံရန် အုပ်စုဖွဲ့ပါ။</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
+<translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>
 <translation id="6220820548421939212">ဟုတ်ပါသည်။ ကျွန်ုပ်ပါဝင်ပါမည်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome သည် ၃ လအတွင်း သင်အသုံးပြုမထားသောအပိုင်းများရှိ အရာများကို အလိုအလျောက်ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ယခု (သို့) အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="8887921976452567404">ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။</translation>
 <translation id="8915916167043355778">အားလုံးပိတ်ရန်</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အခြားဝင်းဒိုးသို့ ရွှေ့ပါ}}</translation>
 <translation id="9090098097337832354">ဤဆိုင် ပိတ်ရသည့်အကြောင်း</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ <ph name="COLOR_NAME" /> အတွက် တဘ်အုပ်စု လုပ်ဆောင်ချက် မီနူးကို ဖွင့်ရန်။</translation>
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>

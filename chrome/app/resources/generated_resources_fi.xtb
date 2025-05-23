@@ -4765,7 +4765,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="428963538941819373">Nämä sivustot voivat käyttää sinusta tallentamiaan tietoja, kun selaat sivustoa <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Valitse PIN-koodi</translation>
-<translation id="4290526909608432059">Chrome-sovellusten tuki päättyy pian. Jos haluat lisätietoa vaihtoehdoista, ota yhteyttä kehittäjään tai IT-tukitiimiin.</translation>
 <translation id="4290791284969893584">Kun sivu on suljettu, aloittamiasi tehtäviä ei välttämättä suoriteta loppuun</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> jäsen</translation>
 <translation id="4290898381118933198">Siirry sivujen välillä pyyhkäisemällä</translation>
@@ -7633,6 +7632,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Lisää perheenjäseniä ja kavereita</translation>
 <translation id="6367097275976877956">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukuohjelman? Jos haluat, paina välilyöntiä.</translation>
+<translation id="6367196786591004737">Poista merkintä</translation>
 <translation id="6367396429435748845">Keskeytä hiiren painikkeiden käyttö ja jatka sitä painamalla <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">Vastaanotetaanko lähijakamisella?</translation>
 <translation id="6368157733310917710">&amp;Osoitteet ja muita tietoja</translation>
@@ -7966,7 +7966,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6610002944194042868">Käännösasetukset</translation>
 <translation id="6610064275805055636">Hallinnoi eristettyjä verkkosovelluksia</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> välilehti</translation>
-<translation id="6611972847767394631">Löydät välilehdet täältä</translation>
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6613267708691765962">Haittaohjelmien tarkistus käynnissä…</translation>
 <translation id="6615455863669487791">Näytä</translation>
@@ -10628,6 +10627,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8472623782143987204">laitteiston tukema</translation>
 <translation id="8473540203671727883">Lue hiiren kohdalla oleva teksti ääneen</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
+<translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8474378002946546633">Salli ilmoitukset</translation>
 <translation id="8474561048882755118">Voit nähdä samankaltaiset tuotteet rinnakkain ja vertailla helposti sinulle tärkeitä tietoja</translation>
 <translation id="8475313423285172237">Toinen tietokoneellasi oleva ohjelma lisäsi laajennuksen, joka voi muuttaa Chromen toimintaa.</translation>

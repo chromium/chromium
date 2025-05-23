@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> запытвае дазволу захоўваць вялікі аб’ём даных на вашай прыладзе</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Няма}=1{З 1 сайта. Будзе выкананы выхад з уліковых запісаў на большасці сайтаў. }one{З # сайта. Будзе выкананы выхад з уліковых запісаў на большасці сайтаў. }few{З # сайтаў. Будзе выкананы выхад з уліковых запісаў на большасці сайтаў. }many{З # сайтаў. Будзе выкананы выхад з уліковых запісаў на большасці сайтаў. }other{З # сайта. Будзе выкананы выхад з уліковых запісаў на большасці сайтаў. }}</translation>
+<translation id="1035509598913574970">Блакітны 3</translation>
 <translation id="1035709686865413354">Фільтры і ачышчальнікі для вады</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036881361735705143">Канверт C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="1432581352905426595">Кіраваць пошукавымі сістэмамі</translation>
 <translation id="1433225466058025572">Паспрабуйце перамясціць файлы яшчэ раз</translation>
+<translation id="1433478348197382180">Рэжым чытання</translation>
 <translation id="1436185428532214179">Сайт можа запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="1442386063175183758">Згіб "вароты" справа</translation>
 <translation id="1442987760062738829">Дзірка</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дазваляць пры кожным наведванні</translation>
 <translation id="2085876078937250610">Захаваць…</translation>
+<translation id="2088913896151127116">Дадаць тэкст</translation>
 <translation id="2090451897496479509">Каб даведацца больш, звярніцеся да пастаўшчыка</translation>
 <translation id="2091887806945687916">Гук</translation>
 <translation id="2093982008204312032">Google Chrome спрабуе выключыць Windows Hello для ўводу пароляў.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2414886740292270097">Цёмная</translation>
-<translation id="2418292431699242678">Ваш адміністратар уключыў сінхранізацыю наступных даных паміж папярэднім і бягучым сеансамі на любой прыладзе з ChromeOS:</translation>
 <translation id="2429716554270894715">Воданепранікальная тканіна</translation>
 <translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="2436976580469434549">Валаконнае і тэкстыльнае мастацтва</translation>
@@ -1094,6 +1096,7 @@
 <translation id="2915068235268646559">Час збою: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Маляванне</translation>
 <translation id="2916038427272391327">Закрыйце іншыя праграмы.</translation>
+<translation id="2917630513638801879">Блакітны 1</translation>
 <translation id="2919185931486062599">Паляванне і стральба</translation>
 <translation id="2922350208395188000">Немагчыма праверыць сертыфікат сервера.</translation>
 <translation id="2922792708490674">{0,plural, =1{Файл не можа быць спампаваны па прычыне блакіроўкі}one{<ph name="FILE_COUNT" /> файл не можа быць спампаваны па прычыне блакіроўкі}few{<ph name="FILE_COUNT" /> файлы не могуць быць спампаваны па прычыне блакіроўкі}many{<ph name="FILE_COUNT" /> файлаў не могуць быць спампаваны па прычыне блакіроўкі}other{<ph name="FILE_COUNT" /> файла не могуць быць спампаваны па прычыне блакіроўкі}}</translation>
@@ -1173,7 +1176,6 @@
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
 <translation id="3039406992698062762">Сямейныя падарожжы</translation>
-<translation id="3040636468789770340">Файлы cookie (стан уваходу на вэб-сайтах, якія вы нядаўна наведалі)</translation>
 <translation id="3041176923638368519">Паглядзець умовы выкарыстання пераваг карткі</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="3045769629416806687">Экстрэмальныя віды спорту</translation>
@@ -1680,7 +1682,6 @@
 <translation id="3869939189466884821">Лакальныя файлы будуць выдалены праз <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Навука</translation>
 <translation id="3875783148670536197">Паказаць</translation>
-<translation id="387681220560687945">Вокны (размяшчэнне і арганізацыя вокнаў і ўкладак)</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
 <translation id="3880589673277376494">Інтэрнэт і тэлекамунікацыі</translation>
@@ -2082,6 +2083,7 @@
 <translation id="4562155266774382038">Адхіліць прапанову</translation>
 <translation id="4566017918361049074">На вольным паветры</translation>
 <translation id="4569155249847375786">Спраўджана</translation>
+<translation id="4570008401337135432">Выраўноўванне тэксту</translation>
 <translation id="457875822857220463">Дастаўка</translation>
 <translation id="4579699065574932398">Банкаўскія паслугі</translation>
 <translation id="4582595824823167856">Атрымаць тэкставае паведамленне</translation>
@@ -2245,7 +2247,6 @@
 <translation id="4866506163384898554">Націсніце "<ph name="ACCELERATOR1" />" + "<ph name="ACCELERATOR2" />", каб убачыць курсор</translation>
 <translation id="4873616204573862158">Акуляры</translation>
 <translation id="4873807733347502026">Заблакіраваць і выкарыстоўваць мыш</translation>
-<translation id="4876188919622883022">Спрошчаны выгляд</translation>
 <translation id="4876305945144899064">Адсутнічае імя карыстальніка</translation>
 <translation id="4876327226315760474">Гэта азначае, што функцыі сайтаў павінны працаваць правільна, але прагляд можа стаць менш бяспечным.</translation>
 <translation id="4877047577339061095">Стэлажы і прыстасаванні для дамашняга захоўвання</translation>
@@ -2604,6 +2605,7 @@
 <translation id="5481682542063333508">Прапаноўваць дапамогу з напісаннем</translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
 <translation id="5483838506518938965">Усё гатова</translation>
+<translation id="5484396522446324950">Стылі</translation>
 <translation id="5485100387355669506">Вельмі тоўстыя рысы</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
 <translation id="5488367146069768854">Усталяванні вэб-праграм</translation>
@@ -2942,6 +2944,7 @@
 <translation id="6062937464449575061">Перастаць адсочваць цану</translation>
 <translation id="6063415549109819824">Жыллёвае фінансаванне</translation>
 <translation id="6070432475334343308">Адзін ці некалькі файлаў не былі запампаваны ў папку "<ph name="FOLDER_NAME" />" (у воблаку "<ph name="CLOUD_PROVIDER" />")</translation>
+<translation id="6078069862923723141">Блакітны 2</translation>
 <translation id="6085149458302186532">Каляровы этыкетачны матэрыял</translation>
 <translation id="6087312102907839798">Падобныя пошукавыя запыты</translation>
 <translation id="6089505343295765444">Укладкі, якія вы выдаляеце з гісторыі Chrome, застануцца ў табліцах параўнання</translation>
@@ -3022,7 +3025,6 @@
 <translation id="622039917539443112">Паралельны згіб</translation>
 <translation id="6221286101741304627">Каб выйсці з поўнаэкраннага рэжыму, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Захаваць гэту картку ў вашым Уліковым запісе Google?</translation>
-<translation id="6221892641068781024">Спрошчаны выгляд</translation>
 <translation id="6222527803348563979">Канцылярская папера</translation>
 <translation id="62231116988543150">Усталёўваць вэб-праграмы</translation>
 <translation id="6224281071334553713">Каштоўныя камяні і ювелірныя вырабы</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7598391785903975535">Менш за <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> пакуль што не можа апрацаваць гэты запыт.</translation>
 <translation id="7599089013883397081">Час чакання спампоўвання перавышаны</translation>
+<translation id="7602868996817972616">Спытаць Google пра гэту старонку</translation>
 <translation id="7608583484192556132">Персаналізацыя рэкламы, якую вы бачыце, залежыць ад мноства фактараў, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK_1" />рэкламы, якая прапануецца сайтамі<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />налад файлаў cookie<ph name="END_LINK_2" /> і ад таго, ці персаналізуецца рэклама на сайце, які вы праглядаеце. <ph name="BEGIN_LINK_3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Значэнне параметра знаходзіцца па-за межамі дыяпазону (<ph name="VALUE" />).</translation>
 <translation id="761261689936461781">Тоўстыя рысы</translation>

@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Aucun}=1{Issus de 1 site. Cette action vous déconnectera de la plupart des sites. }one{Issus de # site. Cette action vous déconnectera de la plupart des sites. }other{Issus de # sites. Cette action vous déconnectera de la plupart des sites. }}</translation>
+<translation id="1035509598913574970">Cyan 3</translation>
 <translation id="1035709686865413354">Purificateurs et filtres à eau</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036881361735705143">Enveloppe C4</translation>
@@ -264,6 +265,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1432187715652018471">Cette page veut installer un gestionnaire de services.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433225466058025572">Réessayez de déplacer vos fichiers</translation>
+<translation id="1433478348197382180">Mode Lecture</translation>
 <translation id="1436185428532214179">Peut demander à modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="1442386063175183758">Pli du volet droit</translation>
 <translation id="1442987760062738829">Perforer</translation>
@@ -631,6 +633,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Autoriser à chaque visite</translation>
 <translation id="2085876078937250610">Enregistrer…</translation>
+<translation id="2088913896151127116">Ajouter du texte</translation>
 <translation id="2090451897496479509">Pour en savoir plus, contactez le fournisseur</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2093982008204312032">Google Chrome tente de désactiver Windows Hello pour saisir les mots de passe.</translation>
@@ -837,7 +840,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2413155254802890957">Ancienne</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Sombre</translation>
-<translation id="2418292431699242678">Votre administrateur autorise la synchronisation des éléments suivants entre vos sessions précédentes et actuelles sur n'importe quel appareil ChromeOS :</translation>
 <translation id="2429716554270894715">Tissu (étanche)</translation>
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> ?</translation>
 <translation id="2436976580469434549">Arts de la fibre et du textile</translation>
@@ -1093,6 +1095,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2915068235268646559">Date et heure du plantage : <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Peinture</translation>
 <translation id="2916038427272391327">Fermez les autres programmes</translation>
+<translation id="2917630513638801879">Cyan 1</translation>
 <translation id="2919185931486062599">Chasse et tir</translation>
 <translation id="2922350208395188000">Impossible de vérifier le certificat du serveur.</translation>
 <translation id="2922792708490674">{0,plural, =1{Téléchargement bloqué pour le fichier}one{Téléchargement bloqué pour <ph name="FILE_COUNT" /> fichier}other{Téléchargement bloqué pour <ph name="FILE_COUNT" /> fichiers}}</translation>
@@ -1172,7 +1175,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037605927509011580">Aïe aïe aïe</translation>
 <translation id="3039406992698062762">Voyages en famille</translation>
-<translation id="3040636468789770340">Cookies (état connecté sur les sites Web que vous avez consultés récemment)</translation>
 <translation id="3041176923638368519">Voir les conditions d'utilisation des avantages de la carte</translation>
 <translation id="3041612393474885105">Informations relatives au certificat</translation>
 <translation id="3045769629416806687">Sports extrêmes</translation>
@@ -1680,7 +1682,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3869939189466884821">Vos fichiers locaux seront supprimés dans <ph name="MINUTES" /> minutes</translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Démonstration</translation>
-<translation id="387681220560687945">Fenêtres (disposition et organisation des fenêtres et des onglets)</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3880456882942693779">Arts et divertissements</translation>
 <translation id="3880589673277376494">Internet et télécoms</translation>
@@ -2082,6 +2083,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4562155266774382038">Fermer la suggestion</translation>
 <translation id="4566017918361049074">Activités de plein air</translation>
 <translation id="4569155249847375786">Validé</translation>
+<translation id="4570008401337135432">Alignement du texte</translation>
 <translation id="457875822857220463">Livraison</translation>
 <translation id="4579699065574932398">Services bancaires</translation>
 <translation id="4582595824823167856">Recevoir un SMS</translation>
@@ -2245,7 +2247,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| pour afficher le curseur</translation>
 <translation id="4873616204573862158">Lunettes</translation>
 <translation id="4873807733347502026">Verrouiller et utiliser votre souris</translation>
-<translation id="4876188919622883022">Vue simplifiée</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876327226315760474">Cela signifie que les fonctionnalités du site devraient fonctionner comme prévu, mais que votre navigation pourrait être moins sécurisée.</translation>
 <translation id="4877047577339061095">Rangements et étagères</translation>
@@ -2605,6 +2606,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5481682542063333508">Obtenir de l'aide pour écrire</translation>
 <translation id="54817484435770891">Ajouter une adresse valide</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
+<translation id="5484396522446324950">Styles</translation>
 <translation id="5485100387355669506">Très épais</translation>
 <translation id="5485973315555778056">Machine du cloud</translation>
 <translation id="5488367146069768854">Installations d'applications Web</translation>
@@ -2943,6 +2945,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6062937464449575061">Ne plus suivre le prix</translation>
 <translation id="6063415549109819824">Crédit immobilier</translation>
 <translation id="6070432475334343308">Un ou plusieurs fichiers n'ont pas été importés dans <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Étiquettes (couleur)</translation>
 <translation id="6087312102907839798">Recherches associées</translation>
 <translation id="6089505343295765444">Les onglets que vous supprimez de l'historique Chrome s'afficheront toujours dans vos tableaux comparatifs</translation>
@@ -3023,7 +3026,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="622039917539443112">Pli parallèle</translation>
 <translation id="6221286101741304627">Pour quitter le mode plein écran, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Voulez-vous enregistrer cette carte dans votre compte Google ?</translation>
-<translation id="6221892641068781024">Vue simplifiée</translation>
 <translation id="6222527803348563979">Papeterie</translation>
 <translation id="62231116988543150">Pouvoir installer des applis Web</translation>
 <translation id="6224281071334553713">Pierres précieuses et bijoux</translation>
@@ -3845,6 +3847,7 @@ Informations supplémentaires :
 <translation id="7598391785903975535">Moins de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Impossible de traiter cette demande via <ph name="HOST_NAME" /> à l'heure actuelle.</translation>
 <translation id="7599089013883397081">Délai de téléchargement dépassé</translation>
+<translation id="7602868996817972616">Poser des questions à Google à propos de cette page</translation>
 <translation id="7608583484192556132">La personnalisation des annonces dépend de nombreux facteurs, y compris de ce paramètre, des <ph name="BEGIN_LINK_1" />annonces suggérées par les sites<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres des cookies<ph name="END_LINK_2" /> et du fait que le site que vous consultez personnalise ou non les annonces. Découvrez comment <ph name="BEGIN_LINK_3" />gérer la confidentialité des annonces<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">La valeur <ph name="VALUE" /> est hors limites.</translation>
 <translation id="761261689936461781">Épais</translation>

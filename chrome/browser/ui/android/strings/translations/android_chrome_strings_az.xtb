@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Səhifə statistikasına baxın</translation>
 <translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1111673857033749125">Digər cihazlarınızda yadda saxlanmış əlfəcinlər burada görünəcək.</translation>
-<translation id="1113597929977215864">Sadə görüntüyə baxın</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1129510026454351943">Detallar: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Anonim rejim baxış tarixçənizi cihazdan istifadə edən digər şəxslərdən gizlədir</translation>
@@ -122,6 +121,7 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1480287803138246127">Tarixçənin bir hissəsi burada görünməyə bilər. Bütün Chrome tarixçənizi görmək üçün tam Chrome tarixçəsini açın.</translation>
 <translation id="1492417797159476138">Hazırda bu istifadəçi adını bu sayt üçün yadda saxlamısınız</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> saytını izləyirsiniz</translation>
+<translation id="1496514951988037011">istifadəçi adı</translation>
 <translation id="1501480321619201731">Qrupu silin</translation>
 <translation id="1502010315804028179">Parollarınızı idarə etmək üçün Google Play xidmətlərini güncəlləyin</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
@@ -221,6 +221,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="197288927597451399">Saxlayın</translation>
 <translation id="1973912524893600642">Datanı saxlayın</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
+<translation id="1984087999855033707">telefon nömrəsi</translation>
 <translation id="1984417487208496350">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="1986685561493779662">Adı artıq mövcuddur</translation>
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
@@ -1872,8 +1873,8 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="939598580284253335">Parol daxil edin</translation>
 <translation id="95817756606698420">Chrome, Çində axtarış üçün <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> istifadə edə bilər. Bunu <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən dəyişə bilərsiniz.</translation>
 <translation id="961856697154696964">Baxış datasını silin</translation>
+<translation id="963246339335003378">Tapşırıq Menecerini açın</translation>
 <translation id="966131775676567255">Hesab datası silinir</translation>
-<translation id="96681097142096641">Sadələşdirilmiş səhifəyə baxmaq istəyirsiniz?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dəqiqə qaldı</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="983192555821071799">Bütün panelləri bağlayın</translation>

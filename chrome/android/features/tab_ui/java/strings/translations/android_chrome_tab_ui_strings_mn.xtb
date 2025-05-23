@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1036348656032585052">Унтраа</translation>
-<translation id="1045448422538531528">Бүлэгт нэмэх</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> долоо хоногийн өмнө үүсгэсэн}other{<ph name="NUM_WEEKS_MANY" /> долоо хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="1063300264396686489">Бусад төхөөрөмжөөс табын бүлгийг автоматаар нээх</translation>
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> табыг хаасан}other{<ph name="MANY_CLOSED" /> табыг хаасан}}</translation>
 <translation id="2894757982205307093">Бүлэг доторх шинэ таб</translation>
 <translation id="2928243913527329289">Google | Энэ дэлгүүрийн тухай</translation>
-<translation id="2977480621796371840">Бүлгээс хасах</translation>
 <translation id="29919168204617356">Идэвхгүй табуудыг автоматаар хаана. Та хүссэн үедээ тухайн табуудыг Түүхээс олох боломжтой.</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3026391124054406831">Табуудаа цэгцлэхийн тулд бүлэг үүсгэнэ үү.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6109251075362363230">Хамгийн сүүлд ашигласан хуулбарыг эс тооцвол бүх давхардсан табыг одоо мөн архивлана.</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
+<translation id="6212567362666004597">Табыг бүлэгт нэмэх</translation>
 <translation id="6220820548421939212">Тийм. Би зөвшөөрч байна</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6271513594716432922">Бүх идэвхгүй табыг хаах</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome таны 3 сарын хугацаанд ашиглаагүй идэвхгүй харилцан үйлдэл дэх зүйлийг автоматаар хаана. Та хүссэн үедээ үүнийг Тохиргооноос унтраах боломжтой.</translation>
 <translation id="8887921976452567404">Та хаасан таб, бүлгээ Саяхны табын хэсэг, Табын бүлгийн хэсгээс дахин нээх боломжтой.</translation>
 <translation id="8915916167043355778">Бүгдийг хаах</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Шинэ цонх руу зөөх}other{Өөр цонх руу зөөх}}</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9114502155681725011">Табын бүлгийн үйлдлийн цэсийг <ph name="COLOR_NAME" /> өнгөтэй, <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү.</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>

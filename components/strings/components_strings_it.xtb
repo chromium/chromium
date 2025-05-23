@@ -265,6 +265,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1432187715652018471">La pagina vuole installare un gestore di servizi.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
 <translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
+<translation id="1433478348197382180">Modalità Lettura</translation>
 <translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
 <translation id="1442386063175183758">Piegatura a finestra a destra</translation>
 <translation id="1442987760062738829">Perforatura</translation>
@@ -635,6 +636,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2088913896151127116">Aggiungi testo</translation>
 <translation id="2090451897496479509">Contatta il fornitore per ulteriori informazioni</translation>
 <translation id="2091887806945687916">Audio</translation>
+<translation id="2093184051799735948">Cerca <ph name="ENGINE_NAME" /> o digita un URL</translation>
 <translation id="2093982008204312032">Google Chrome sta tentando di disattivare Windows Hello per inserire le password.</translation>
 <translation id="2094505752054353250">Dominio non corrispondente</translation>
 <translation id="2094704029599359040">Informazioni sulla versione</translation>
@@ -769,6 +771,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2296331629987861142">Paga in rate semplici (soggette a idoneità, si applicano commissioni)</translation>
 <translation id="2300306941146563769">Non caricato</translation>
 <translation id="2301098101308036335">Quali siti web vengono visitati e quando.</translation>
+<translation id="2302571905116831849">Compila automaticamente i dati della carta fedeltà</translation>
 <translation id="230286397113210245">Pulsante Apri finestra di navigazione in incognito, attiva per aprire una nuova finestra di navigazione in incognito per navigare in privato</translation>
 <translation id="2305294852062272447">Salvare la patente di guida?</translation>
 <translation id="2306124309679506798">Consentire un'esperienza immersiva?</translation>
@@ -839,7 +842,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2413155254802890957">Precedente</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2414886740292270097">Scuro</translation>
-<translation id="2418292431699242678">L'amministratore consente la sincronizzazione dei seguenti elementi tra le sessioni precedenti e attuali su qualsiasi dispositivo ChromeOS:</translation>
 <translation id="2429716554270894715">Tessuto (impermeabile)</translation>
 <translation id="2436186046335138073">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte tessile</translation>
@@ -1175,7 +1177,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037605927509011580">Uffa!</translation>
 <translation id="3039406992698062762">Viaggi per famiglie</translation>
-<translation id="3040636468789770340">Cookie (stato di accesso sui siti web visitati di recente)</translation>
 <translation id="3041176923638368519">Leggi i termini dei vantaggi della carta</translation>
 <translation id="3041612393474885105">Informazioni certificato</translation>
 <translation id="3045769629416806687">Sport estremi</translation>
@@ -1680,7 +1681,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3869939189466884821">I tuoi file locali verranno eliminati tra <ph name="MINUTES" /> minuti</translation>
 <translation id="3872834068356954457">Scienze</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
-<translation id="387681220560687945">Finestre (disposizione e organizzazione di finestre e schede)</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3880456882942693779">Arti e intrattenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicazioni</translation>
@@ -1847,6 +1847,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4165422751765527461">Apre un articolo del Centro assistenza in una nuova scheda</translation>
 <translation id="4165986682804962316">Impostazioni sito</translation>
+<translation id="4169189393773057143">Gestisci le carte fedeltà o disattiva questi suggerimenti in Google Wallet</translation>
 <translation id="4169535189173047238">Non consentire</translation>
 <translation id="4171400957073367226">Firma di verifica non valida</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2245,7 +2246,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4866506163384898554">Premi |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| per mostrare il cursore</translation>
 <translation id="4873616204573862158">Occhiali</translation>
 <translation id="4873807733347502026">Blocca e usa il mouse</translation>
-<translation id="4876188919622883022">Visualizzazione semplificata</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876327226315760474">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione.</translation>
 <translation id="4877047577339061095">Scaffalature e contenitori per lo stoccaggio domestico</translation>
@@ -2395,7 +2395,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5115232566827194440">Override della sessione Ospite gestita limitata</translation>
 <translation id="5115563688576182185">(a 64 bit)</translation>
 <translation id="5120526915373271910">Film per la famiglia</translation>
-<translation id="5121592697493894155">Ricerca Google nel riquadro laterale</translation>
 <translation id="5122786942953798871">Busta (cotone)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basket</translation>
@@ -3025,7 +3024,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="622039917539443112">Piegatura parallela</translation>
 <translation id="6221286101741304627">Per uscire dalla modalità a schermo intero, premi |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Vuoi salvare questa carta nel tuo Account Google?</translation>
-<translation id="6221892641068781024">Visualizzazione semplificata</translation>
 <translation id="6222527803348563979">Carta da lettere</translation>
 <translation id="62231116988543150">Installare le app web</translation>
 <translation id="6224281071334553713">Pietre preziose e gioielli</translation>
@@ -3440,6 +3438,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="692638818576287323">Veicoli commerciali</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Il motore di ricerca predefinito ti consente di eseguire ricerche sul web e supporta le funzionalità di Chrome<ph name="END_BOLD" />, come la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web. Una funzionalità potrebbe non essere disponibile se il tuo motore di ricerca non la supporta.</translation>
 <translation id="6934672428414710184">Questo nome proviene dal tuo Account Google</translation>
+<translation id="6935077351544118151">Ora puoi compilare automaticamente le carte fedeltà da Google Wallet</translation>
 <translation id="6935082727755903526">Offerte di lavoro nel settore contabile e finanziario</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="6936976777388162184">Questo è un dispositivo in bundle e non può essere registrato con Kiosk &amp; Signage Upgrade.</translation>

@@ -265,6 +265,7 @@
 <translation id="1432187715652018471">сторінка хоче встановити обробник сервісів.</translation>
 <translation id="1432581352905426595">Керувати пошуковими системами</translation>
 <translation id="1433225466058025572">Спробуйте повторно перемістити файли</translation>
+<translation id="1433478348197382180">Режим читання</translation>
 <translation id="1436185428532214179">Може просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="1442386063175183758">Зігнути за типом "ворота праворуч"</translation>
 <translation id="1442987760062738829">Пробити отвір</translation>
@@ -839,7 +840,6 @@
 <translation id="2413155254802890957">Старі дані</translation>
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2414886740292270097">Темна</translation>
-<translation id="2418292431699242678">Адміністратор може налаштувати синхронізацію наведених нижче даних між попередніми й поточними сеансами на будь-якому пристрої з ChromeOS.</translation>
 <translation id="2429716554270894715">Тканина (водонепроникна)</translation>
 <translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Текстильне мистецтво</translation>
@@ -1175,7 +1175,6 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037605927509011580">От халепа!</translation>
 <translation id="3039406992698062762">Сімейні подорожі</translation>
-<translation id="3040636468789770340">Файли cookie (вхід на нещодавно відвіданих вебсайтах)</translation>
 <translation id="3041176923638368519">Переглянути умови використання переваг картки</translation>
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3045769629416806687">Екстремальні види спорту</translation>
@@ -1683,7 +1682,6 @@
 <translation id="3869939189466884821">Локальні файли буде видалено через <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Докладніше</translation>
-<translation id="387681220560687945">Вікна (розташування й упорядкування вікон і вкладок)</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3880456882942693779">Мистецтво й розваги</translation>
 <translation id="3880589673277376494">Інтернет і телекомунікації</translation>
@@ -2249,7 +2247,6 @@
 <translation id="4866506163384898554">Натисніть |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, щоб показати курсор</translation>
 <translation id="4873616204573862158">Окуляри</translation>
 <translation id="4873807733347502026">Блокувати й використовувати мишу</translation>
-<translation id="4876188919622883022">Спрощений перегляд</translation>
 <translation id="4876305945144899064">Немає імені користувача</translation>
 <translation id="4876327226315760474">Це означає, що функції сайту з більшою імовірністю працюватимуть належним чином, але рівень захисту під час перегляду може бути меншим.</translation>
 <translation id="4877047577339061095">Засоби для зберігання речей удома</translation>
@@ -2399,7 +2396,6 @@
 <translation id="5115232566827194440">Перевизначення для керованого сеансу в режимі "Гість" з обмеженнями</translation>
 <translation id="5115563688576182185">(64-розрядна версія)</translation>
 <translation id="5120526915373271910">Сімейні фільми</translation>
-<translation id="5121592697493894155">Пошук Google на бічній панелі</translation>
 <translation id="5122786942953798871">Конверт (бавовняний)</translation>
 <translation id="5123063207673082822">Вихідні</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
@@ -3030,7 +3026,6 @@
 <translation id="622039917539443112">Зігнути паралельно</translation>
 <translation id="6221286101741304627">Щоб вийти з повноекранного режиму, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Зберегти дані картки у вашому обліковому записі Google?</translation>
-<translation id="6221892641068781024">Спрощений перегляд</translation>
 <translation id="6222527803348563979">Ділова поліграфія</translation>
 <translation id="62231116988543150">Установлювати вебдодатки</translation>
 <translation id="6224281071334553713">Ювелірні вироби й коштовності</translation>

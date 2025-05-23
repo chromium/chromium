@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1036348656032585052">Matikan</translation>
-<translation id="1045448422538531528">Tambahkan pada kumpulan</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Dibuat <ph name="NUM_WEEKS_ONE" /> minggu yang lalu}other{Dibuat <ph name="NUM_WEEKS_MANY" /> minggu yang lalu}}</translation>
 <translation id="1063300264396686489">Buka kumpulan tab daripada peranti lain secara automatik</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab ditutup}other{<ph name="MANY_CLOSED" /> tab ditutup}}</translation>
 <translation id="2894757982205307093">Tab baharu dalam kumpulan</translation>
 <translation id="2928243913527329289">Google | Perihal kedai ini</translation>
-<translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
 <translation id="29919168204617356">Tab tidak aktif akan ditutup secara automatik. Anda boleh menemukan tab tersebut dalam Sejarah pada bila-bila masa.</translation>
 <translation id="3008554597174452548">Hentikan penjejakan produk</translation>
 <translation id="3026391124054406831">Buat kumpulan untuk menyusun tab anda.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">Tab kumpulan anda disimpan secara automatik</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Kini semua tab pendua akan turut diarkibkan kecuali salinan yang digunakan baru-baru ini.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Alihkan kumpulan kepada tetingkap baharu}other{Alihkan kumpulan kepada tetingkap lain}}</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6212567362666004597">Tambahkan tab pada kumpulan</translation>
 <translation id="6220820548421939212">Ya. Saya mahu</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6271513594716432922">Tutup semua tab tidak aktif</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">Chrome menutup item dalam bahagian tidak aktif yang tidak digunakan selama 3 bulan secara automatik. Anda boleh mematikan pilihan ini sekarang atau pada bila-bila masa dalam Tetapan.</translation>
 <translation id="8887921976452567404">Tab dan kumpulan anda yang ditutup boleh dibuka semula daripada bahagian Tab terbaharu dan bahagian Kumpulan tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Alihkan kepada tetingkap baharu}other{Alihkan kepada tetingkap lain}}</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9114502155681725011">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>

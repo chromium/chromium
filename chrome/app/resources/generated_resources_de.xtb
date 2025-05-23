@@ -718,6 +718,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1494349716233667318">Websites dürfen nachfragen, ob sie auf meinem Gerät installierte Schriftarten verwenden dürfen</translation>
 <translation id="1494429729245089920">Die virtuelle Maschine „<ph name="VM_NAME" />“ existiert, ist aber keine gültige virtuelle Maschine für <ph name="APP_NAME" />. Bitte wende dich an deinen Administrator.</translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
+<translation id="1496514951988037011">Nutzername</translation>
 <translation id="1498498210836053409">Fixierten Modus beim Bearbeiten von Text deaktivieren (intelligenter fixierter Modus)</translation>
 <translation id="1499041187027566160">Lautstärke erhöhen</translation>
 <translation id="1500297251995790841">Unbekanntes Gerät [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1434,6 +1435,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1981434377190976112">Alle deine Daten auf allen Websites lesen</translation>
 <translation id="1982851102516626421">Du bist abgemeldet</translation>
 <translation id="1983612835086592681">Von dir in der letzten Woche geöffnet</translation>
+<translation id="1984087999855033707">Telefonnummer</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1984683754853869253">Möchtest du ein neues Profil einer Bildungseinrichtung erstellen?</translation>
 <translation id="198507684520034826">Hilfe</translation>
@@ -2671,7 +2673,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2819167288942847344">Voreinstellungen verwenden für Smartphone, Tablet oder anpassbare Fenster, um Fehldarstellung der App zu verhindern</translation>
 <translation id="2819519502129272135">Dateisynchronisierung deaktiviert</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
-<translation id="282230978681804245">Dein Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem</translation>
+<translation id="282230978681804245">Dein Profil wird von deiner Organisation verwaltet – bestimmte Informationen sind für deine Organisation sichtbar, unter anderem:</translation>
 <translation id="2822551631199737692">Kamera aktiv</translation>
 <translation id="2822634587701817431">Reduzieren bzw. erweitern</translation>
 <translation id="2822910719211888134">Fehler beim Sichern von Linux</translation>
@@ -4749,7 +4751,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="428963538941819373">Diese Websites dürfen Informationen, die sie zu deiner Person gespeichert haben, nutzen, wenn du auf <ph name="HOST" /> surfst</translation>
 <translation id="4289732974614035569">PIN auswählen</translation>
-<translation id="4290526909608432059">Die Unterstützung für Chrome-Apps wird bald eingestellt. Wende dich an den App-Entwickler oder dein IT‑Supportteam, um mehr über deine Optionen zu erfahren.</translation>
 <translation id="4290791284969893584">Nach dem Schließen einer Seite werden Aufgaben, die du gestartet hast, möglicherweise nicht abgeschlossen</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> Mitglied</translation>
 <translation id="4290898381118933198">Zum Wechseln zwischen Seiten wischen</translation>
@@ -7612,6 +7613,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Kontakte hinzufügen</translation>
 <translation id="6367097275976877956">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, drücke die Leertaste.</translation>
+<translation id="6367196786591004737">Eintrag löschen</translation>
 <translation id="6367396429435748845">Drücke <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" />, um die Tastaturmaus zu pausieren und fortzusetzen</translation>
 <translation id="6367985768157257101">Über Nearby Share empfangen?</translation>
 <translation id="6368157733310917710">&amp;Adressen und mehr</translation>
@@ -7945,7 +7947,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
 <translation id="6610064275805055636">Isolierte Web-Apps verwalten</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> Tab</translation>
-<translation id="6611972847767394631">Hier findest du deine Tabs</translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
 <translation id="6613267708691765962">Nach Malware wird gesucht…</translation>
 <translation id="6615455863669487791">Zeigen</translation>
@@ -8850,7 +8851,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
-<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem</translation>
+<translation id="7262919421769447042">Dieses Profil wird von <ph name="PROFILE_MANAGER" /> verwaltet – bestimmte Informationen sind für diese Person sichtbar, unter anderem:</translation>
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
 <translation id="7267044199012331848">Die virtuelle Maschine konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lege den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
@@ -10608,6 +10609,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8472623782143987204">Hardwaregestützt</translation>
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
+<translation id="847433688444405067">Geräteübergreifend surfen</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8474561048882755118">Hilft dir, ähnliche Produkte nebeneinander zu sehen und die für dich wichtigen Details ganz einfach zu vergleichen</translation>
 <translation id="8475313423285172237">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>

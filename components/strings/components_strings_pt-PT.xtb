@@ -265,6 +265,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os ficheiros novamente</translation>
+<translation id="1433478348197382180">Modo de leitura</translation>
 <translation id="1436185428532214179">Pode solicitar a edição de ficheiros e pastas no seu dispositivo</translation>
 <translation id="1442386063175183758">Dobra simétrica à direita</translation>
 <translation id="1442987760062738829">Perfurar</translation>
@@ -635,6 +636,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2088913896151127116">Adicionar texto</translation>
 <translation id="2090451897496479509">Contacte o fornecedor para mais informações</translation>
 <translation id="2091887806945687916">Som</translation>
+<translation id="2093184051799735948">Pesquise no <ph name="ENGINE_NAME" /> ou escreva o URL</translation>
 <translation id="2093982008204312032">O Google Chrome está a tentar desativar o Windows Hello para preencher palavras-passe.</translation>
 <translation id="2094505752054353250">Falta de correspondência de domínio</translation>
 <translation id="2094704029599359040">Informações da versão</translation>
@@ -839,7 +841,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="2414886740292270097">Escuro</translation>
-<translation id="2418292431699242678">O administrador permite a sincronização dos seguintes itens entre as suas sessões anteriores e atuais em qualquer dispositivo com ChromeOS:</translation>
 <translation id="2429716554270894715">Tecido (à prova de água)</translation>
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte com fibras e têxteis</translation>
@@ -1175,7 +1176,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
 <translation id="3039406992698062762">Viagens familiares</translation>
-<translation id="3040636468789770340">Cookies (estado de sessão iniciada nos Websites visitados recentemente)</translation>
 <translation id="3041176923638368519">Veja os termos das vantagens do cartão</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Desportos radicais</translation>
@@ -1683,7 +1683,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3869939189466884821">Os seus ficheiros locais vão ser eliminados dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
-<translation id="387681220560687945">Janelas (disposição e organização de janelas e separadores)</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
@@ -2249,7 +2248,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4866506163384898554">Prima |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar o cursor</translation>
 <translation id="4873616204573862158">Óculos</translation>
 <translation id="4873807733347502026">Bloquear e usar o rato</translation>
-<translation id="4876188919622883022">Vista simplificada</translation>
 <translation id="4876305945144899064">Sem nome de utilizador</translation>
 <translation id="4876327226315760474">Isto significa que as funcionalidades do site devem funcionar conforme esperado, mas pode ter menos proteção da navegação.</translation>
 <translation id="4877047577339061095">Estantes e arrumação doméstica</translation>
@@ -2399,7 +2397,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5115232566827194440">Substituição de Sessão de convidado gerida restrita</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5120526915373271910">Filmes de família</translation>
-<translation id="5121592697493894155">Pesquisa Google no painel lateral</translation>
 <translation id="5122786942953798871">Envelope (algodão)</translation>
 <translation id="5123063207673082822">Fim de semana</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
@@ -3030,7 +3027,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221286101741304627">Para sair do modo de ecrã inteiro, prima |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Quer guardar este cartão na sua Conta Google?</translation>
-<translation id="6221892641068781024">Vista simplificada</translation>
 <translation id="6222527803348563979">Artigos de papelaria</translation>
 <translation id="62231116988543150">Ter a capacidade de instalar apps Web</translation>
 <translation id="6224281071334553713">Pedras preciosas e jóias</translation>

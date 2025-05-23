@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vol emmagatzemar una gran quantitat de dades al dispositiu de manera permanent</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Cap}=1{D'1 lloc web. Se't tancarà la sessió de la majoria de llocs web. }other{De # llocs web. Se't tancarà la sessió de la majoria de llocs web. }}</translation>
+<translation id="1035509598913574970">Cian 3</translation>
 <translation id="1035709686865413354">Purificadors i filtres d'aigua</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
@@ -264,6 +265,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1432187715652018471">La pàgina vol instal·lar un gestor de serveis</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
 <translation id="1433225466058025572">Prova de tornar a moure els fitxers</translation>
+<translation id="1433478348197382180">Mode de lectura</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
 <translation id="1442987760062738829">Encunyació</translation>
@@ -631,6 +633,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permet en cada visita</translation>
 <translation id="2085876078937250610">Desa…</translation>
+<translation id="2088913896151127116">Afegeix text</translation>
 <translation id="2090451897496479509">Contacta amb el proveïdor per obtenir més informació</translation>
 <translation id="2091887806945687916">So</translation>
 <translation id="2093982008204312032">Google Chrome està provant de desactivar Windows Hello per emplenar contrasenyes.</translation>
@@ -837,7 +840,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2413155254802890957">Anteriors</translation>
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2414886740292270097">Fosc</translation>
-<translation id="2418292431699242678">L'administrador activa la sincronització dels elements següents entre les sessions anteriors i les actuals en qualsevol dispositiu ChromeOS:</translation>
 <translation id="2429716554270894715">Tela (impermeable)</translation>
 <translation id="2436186046335138073">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Fibres i arts tèxtils</translation>
@@ -1093,6 +1095,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2915068235268646559">Inici del bloqueig: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Pintura</translation>
 <translation id="2916038427272391327">Tanca altres programes</translation>
+<translation id="2917630513638801879">Cian 1</translation>
 <translation id="2919185931486062599">Caça i tir</translation>
 <translation id="2922350208395188000">No es pot comprovar el certificat del servidor.</translation>
 <translation id="2922792708490674">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui baixar}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin baixar}}</translation>
@@ -1172,7 +1175,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037605927509011580">Vaja!</translation>
 <translation id="3039406992698062762">Viatges en família</translation>
-<translation id="3040636468789770340">Galetes (estat de sessió iniciada als llocs web que has visitat recentment)</translation>
 <translation id="3041176923638368519">Consulta les condicions de l'avantatge de la targeta</translation>
 <translation id="3041612393474885105">Informació del certificat</translation>
 <translation id="3045769629416806687">Esports de risc</translation>
@@ -1680,7 +1682,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3869939189466884821">Els teus fitxers locals se suprimiran d'aquí a <ph name="MINUTES" /> minuts</translation>
 <translation id="3872834068356954457">Ciència</translation>
 <translation id="3875783148670536197">Mostra'm com</translation>
-<translation id="387681220560687945">Finestres (disposició i organització de finestres i pestanyes)</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3880456882942693779">Art i entreteniment</translation>
 <translation id="3880589673277376494">Internet i telecomunicacions</translation>
@@ -2082,6 +2083,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4562155266774382038">Ignora el suggeriment</translation>
 <translation id="4566017918361049074">Activitats a l'aire lliure</translation>
 <translation id="4569155249847375786">Verificat</translation>
+<translation id="4570008401337135432">Alineació del text</translation>
 <translation id="457875822857220463">Entrega</translation>
 <translation id="4579699065574932398">Banca</translation>
 <translation id="4582595824823167856">Rep un missatge de text</translation>
@@ -2245,7 +2247,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4866506163384898554">Prem |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| perquè es mostri el cursor</translation>
 <translation id="4873616204573862158">Ulleres</translation>
 <translation id="4873807733347502026">Bloquejar i utilitzar el ratolí</translation>
-<translation id="4876188919622883022">Visualització simplificada</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
 <translation id="4876327226315760474">Això significa que les funcions del lloc web haurien de funcionar de la manera prevista, tot i que pot ser que tinguis menys protecció de navegació.</translation>
 <translation id="4877047577339061095">Lleixes i emmagatzematge domèstic</translation>
@@ -2605,6 +2606,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5481682542063333508">Ofereix ajuda per escriure</translation>
 <translation id="54817484435770891">Afegeix una adreça vàlida</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
+<translation id="5484396522446324950">Estils</translation>
 <translation id="5485100387355669506">Molt gruixut</translation>
 <translation id="5485973315555778056">Màquina al núvol</translation>
 <translation id="5488367146069768854">Instal·lacions d'aplicacions web</translation>
@@ -2943,6 +2945,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6062937464449575061">Deixa de seguir el preu</translation>
 <translation id="6063415549109819824">Finançament de l'habitatge</translation>
 <translation id="6070432475334343308">Un o més fitxers no s'han penjat a <ph name="FOLDER_NAME" /> de <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Cian 2</translation>
 <translation id="6085149458302186532">Etiquetes (en color)</translation>
 <translation id="6087312102907839798">Cerques relacionades</translation>
 <translation id="6089505343295765444">Les pestanyes que suprimeixis de l'historial de Chrome es continuaran mostrant a les taules de comparació</translation>
@@ -3023,7 +3026,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="622039917539443112">Plegat en paral·lel</translation>
 <translation id="6221286101741304627">Per sortir de la pantalla completa, prem |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Vols desar aquesta targeta al teu Compte de Google?</translation>
-<translation id="6221892641068781024">Visualització simplificada</translation>
 <translation id="6222527803348563979">Papereria</translation>
 <translation id="62231116988543150">Instal·lar aplicacions web</translation>
 <translation id="6224281071334553713">Pedres precioses i joies</translation>
@@ -3844,6 +3846,7 @@ Detalls addicionals:
 <translation id="7598391785903975535">Menys de: <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> no pot gestionar la sol·licitud en aquest moment.</translation>
 <translation id="7599089013883397081">S'ha esgotat el temps d'espera per a la baixada</translation>
+<translation id="7602868996817972616">Pregunta a Google sobre aquesta pàgina</translation>
 <translation id="7608583484192556132">El fet que els anuncis que veus es personalitzin o no pot dependre de molts factors, com ara d'aquesta opció de configuració, dels <ph name="BEGIN_LINK_1" />anuncis suggerits per llocs web<ph name="END_LINK_1" />, de la <ph name="BEGIN_LINK_2" />configuració de galetes<ph name="END_LINK_2" /> i de si el lloc web que estàs visitant personalitza els anuncis. Obtén més informació sobre com pots <ph name="BEGIN_LINK_3" />gestionar la privadesa d'anuncis<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor es troba fora de l'interval <ph name="VALUE" /> .</translation>
 <translation id="761261689936461781">Gruixut</translation>

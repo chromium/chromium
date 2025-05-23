@@ -4764,7 +4764,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="428963538941819373">Tovuti hizi zinaweza kutumia maelezo ambayo zimehifadhi kukuhusu unapovinjari <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Chagua PIN</translation>
-<translation id="4290526909608432059">Uwezo wa kutumia programu za Chrome utaondolewa hivi karibuni. Ili upate maelezo zaidi kuhusu chaguo ulizonazo, wasiliana na msanidi programu au timu ya usaidizi wa TEHAMA katika shirika lako.</translation>
 <translation id="4290791284969893584">Baada ya kufunga ukurasa, huenda majukumu uliyoyaanza yasimalizike</translation>
 <translation id="4290826901752066702">Mshiriki <ph name="NUM" /></translation>
 <translation id="4290898381118933198">Telezesha kidole ili usogeze kati ya kurasa</translation>
@@ -7632,6 +7631,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ongeza familia na marafiki</translation>
 <translation id="6367097275976877956">Ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa cha Mfumo wa Uendeshaji wa Chrome? Ikiwa ndivyo, bonyeza kitufe cha nafasi.</translation>
+<translation id="6367196786591004737">Futa data</translation>
 <translation id="6367396429435748845">Bonyeza <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> ili usitishe na uendelee kutumia vitufe vya kipanya</translation>
 <translation id="6367985768157257101">Ungependa kupokea ukitumia Uhamishaji wa Karibu?</translation>
 <translation id="6368157733310917710">Anwani na zaidi</translation>
@@ -7965,7 +7965,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6610002944194042868">Chaguo za Tafsiri</translation>
 <translation id="6610064275805055636">Kudhibiti programu za wavuti zilizotengwa</translation>
 <translation id="6611432349566876829">Kichupo <ph name="NUM" /></translation>
-<translation id="6611972847767394631">Pata vichupo vyako hapa</translation>
 <translation id="661266467055912436">Huboresha usalama wako na wa kila mtu kwenye wavuti.</translation>
 <translation id="6613267708691765962">Inakagua ili kubaini programu hasidi...</translation>
 <translation id="6615455863669487791">Nionyeshe</translation>
@@ -10001,6 +10000,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8037801708772278989">Imekaguliwa sasa hivi</translation>
 <translation id="8038111231936746805">(chaguomsingi)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Inanakili faili 1 kwenye <ph name="CLOUD_PROVIDER" />}other{Inanakili faili {NUM_OF_FILES} kwenye <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Programu hii ya Chrome itaacha kufanya kazi baada ya toleo lako la ChromeOS kusasishwa. Hifadhi data yoyote ya programu ambayo ungependa kuendelea kutumia. Ili upate maelezo zaidi kuhusu chaguo ulizonazo, wasiliana na msanidi programu au timu yako ya usaidizi ya TEHAMA.</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="8041093619605951337">Furaha</translation>
 <translation id="8041267120753677077">Tiririsha programu za simu yako</translation>
@@ -10629,6 +10629,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8472623782143987204">maunzi-imechelezwa</translation>
 <translation id="8473540203671727883">Tamka maandishi yaliyo chini ya kipanya</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
+<translation id="847433688444405067">Vinjari kwenye vifaa</translation>
 <translation id="8474378002946546633">Ruhusu arifa</translation>
 <translation id="8474561048882755118">Hukusaidia kuona bidhaa zinazofanana upande kwa upande ili ulinganishe kwa urahisi maelezo ambayo ni muhimu kwako</translation>
 <translation id="8475313423285172237">Programu nyingine kwenye kompyuta yako iliongeza kiendelezi ambacho kinaweza kubadilisha jinsi Chrome inavyofanya kazi.</translation>

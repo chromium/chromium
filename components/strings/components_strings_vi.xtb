@@ -265,6 +265,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1432187715652018471">trang muốn cài đặt trình xử lý dịch vụ.</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1433225466058025572">Hãy thử di chuyển các tệp lần nữa</translation>
+<translation id="1433478348197382180">Chế độ đọc</translation>
 <translation id="1436185428532214179">Trang web có thể yêu cầu chỉnh sửa các tệp và thư mục trên thiết bị của bạn</translation>
 <translation id="1442386063175183758">Gấp dạng cửa bên phải</translation>
 <translation id="1442987760062738829">Đục lỗ</translation>
@@ -635,6 +636,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2088913896151127116">Thêm văn bản</translation>
 <translation id="2090451897496479509">Liên hệ với nhà cung cấp để biết thêm thông tin</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
+<translation id="2093184051799735948">Tìm kiếm trên <ph name="ENGINE_NAME" /> hoặc nhập URL</translation>
 <translation id="2093982008204312032">Google Chrome đang cố gắng tắt Windows Hello để điền mật khẩu.</translation>
 <translation id="2094505752054353250">Miền không khớp</translation>
 <translation id="2094704029599359040">Thông tin phiên bản</translation>
@@ -769,6 +771,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2296331629987861142">Thanh toán theo hình thức trả góp phù hợp với khả năng chi trả (phải đủ điều kiện, có tính phí)</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
 <translation id="2301098101308036335">Những trang web được truy cập và thời điểm truy cập.</translation>
+<translation id="2302571905116831849">Tự động điền thông tin thẻ khách hàng thân thiết</translation>
 <translation id="230286397113210245">Nút Mở cửa sổ ẩn danh, hãy nhấn nút này để mở cửa sổ ẩn danh mới và duyệt web ở chế độ riêng tư</translation>
 <translation id="2305294852062272447">Lưu thông tin giấy phép lái xe?</translation>
 <translation id="2306124309679506798">Cho phép trải nghiệm sống động?</translation>
@@ -839,7 +842,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2413155254802890957">Cũ</translation>
 <translation id="2413528052993050574">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này có thể đã bị thu hồi. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="2414886740292270097">Tối</translation>
-<translation id="2418292431699242678">Quản trị viên của bạn cho phép đồng bộ hoá những nội dung sau giữa phiên trước và phiên hiện tại trên thiết bị ChromeOS bất kỳ:</translation>
 <translation id="2429716554270894715">Vải (Chống thấm nước)</translation>
 <translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Nghệ thuật sợi và dệt</translation>
@@ -1175,7 +1177,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037605927509011580">Ôi, hỏng! </translation>
 <translation id="3039406992698062762">Du lịch gia đình</translation>
-<translation id="3040636468789770340">Cookie (trạng thái đã đăng nhập trên các trang web bạn truy cập gần đây)</translation>
 <translation id="3041176923638368519">Xem các điều khoản về lợi ích của thẻ</translation>
 <translation id="3041612393474885105">Thông tin Chứng chỉ</translation>
 <translation id="3045769629416806687">Thể thao mạo hiểm</translation>
@@ -1683,7 +1684,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3869939189466884821">Các tệp trên máy của bạn sẽ bị xoá sau <ph name="MINUTES" /> phút</translation>
 <translation id="3872834068356954457">Khoa học</translation>
 <translation id="3875783148670536197">Chỉ cho tôi cách làm</translation>
-<translation id="387681220560687945">Windows (cách sắp xếp, tổ chức các cửa sổ và thẻ)</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3880456882942693779">Nghệ thuật và giải trí</translation>
 <translation id="3880589673277376494">Internet và viễn thông</translation>
@@ -2249,7 +2249,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4866506163384898554">Nhấn |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| để con trỏ xuất hiện</translation>
 <translation id="4873616204573862158">Kính mắt</translation>
 <translation id="4873807733347502026">Khoá và sử dụng chuột của bạn</translation>
-<translation id="4876188919622883022">Chế độ xem đơn giản</translation>
 <translation id="4876305945144899064">Không có tên người dùng</translation>
 <translation id="4876327226315760474">Điều này có nghĩa là các tính năng của trang web sẽ hoạt động như mong đợi, nhưng khả năng bảo vệ khi duyệt web có thể bị giảm.</translation>
 <translation id="4877047577339061095">Kệ và nhà kho gia đình</translation>
@@ -2399,7 +2398,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5115232566827194440">Ghi đè phiên khách được quản lý và bị hạn chế</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5120526915373271910">Phim gia đình</translation>
-<translation id="5121592697493894155">Google Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="5122786942953798871">Phong bì (Cotton)</translation>
 <translation id="5123063207673082822">Cuối tuần</translation>
 <translation id="5123433949759960244">Bóng rổ</translation>
@@ -3030,7 +3028,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="622039917539443112">Gấp kiểu song song</translation>
 <translation id="6221286101741304627">Để thoát khỏi chế độ toàn màn hình, hãy nhấn |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Bạn có muốn lưu thông tin thẻ này vào Tài khoản Google không?</translation>
-<translation id="6221892641068781024">Chế độ xem đơn giản</translation>
 <translation id="6222527803348563979">Văn phòng phẩm</translation>
 <translation id="62231116988543150">Có thể cài đặt ứng dụng web</translation>
 <translation id="6224281071334553713">Đá quý và đồ trang sức</translation>

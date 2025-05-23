@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">הצגת התובנות לגבי הדף</translation>
 <translation id="1108938384783527433">סנכרון ההיסטוריה</translation>
 <translation id="1111673857033749125">סימניות שנשמרו במכשירים האחרים שלך יופיעו כאן.</translation>
-<translation id="1113597929977215864">צפייה בתצוגה נקייה</translation>
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
 <translation id="1129510026454351943">פרטים: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">'מצב פרטי' מאפשר לך לגלוש באופן פרטי שלא יהיה גלוי למשתמשים אחרים במכשיר</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">‏יכול להיות שחלק מההיסטוריה שלך לא תוצג כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את כולה.</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1493287004536771723">בחרת לעקוב אחר <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">שם משתמש</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
 <translation id="1502010315804028179">‏כדי לנהל את הסיסמאות, צריך לעדכן את Google Play Services</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">שמירה</translation>
 <translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
+<translation id="1984087999855033707">מספר טלפון</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
@@ -1874,8 +1875,8 @@
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
+<translation id="963246339335003378">פתיחת מנהל המשימות</translation>
 <translation id="966131775676567255">נתוני החשבון נמחקים</translation>
-<translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>

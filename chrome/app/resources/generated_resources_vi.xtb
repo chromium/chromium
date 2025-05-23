@@ -4769,7 +4769,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="428963538941819373">Các trang web này có thể sử dụng thông tin mà họ đã lưu về bạn khi bạn duyệt xem <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Hãy chọn một mã PIN</translation>
-<translation id="4290526909608432059">Chúng tôi sẽ sớm ngừng hỗ trợ ứng dụng Chrome. Để tìm hiểu về các lựa chọn của bạn, hãy liên hệ với nhà phát triển ứng dụng hoặc nhóm hỗ trợ CNTT của bạn.</translation>
 <translation id="4290791284969893584">Sau khi đóng một trang, các thao tác bạn đã bắt đầu có thể không hoàn tất</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> thành viên</translation>
 <translation id="4290898381118933198">Vuốt để điều hướng giữa các trang</translation>
@@ -5821,7 +5820,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5052853071318006357">Nhấp chuột phải vào một thẻ rồi chọn "Thêm thẻ vào nhóm mới"</translation>
 <translation id="5053233576223592551">Thêm tên người dùng</translation>
 <translation id="505347685865235222">Nhóm chưa có tên – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5054634168672649013">{COUNT,plural, =1{Bạn nên thay đổi mật khẩu này ngay bây giờ}other{Bạn nên thay đổi các mật khẩu này ngay bây giờ}}</translation>
+<translation id="5054634168672649013">{COUNT,plural, =1{Bạn nên thay đổi ngay mật khẩu này}other{Bạn nên thay đổi ngay những mật khẩu này}}</translation>
 <translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="5056950756634735043">Đang kết nối với vùng chứa</translation>
 <translation id="5057110919553308744">Khi bạn nhấp vào tiện ích</translation>
@@ -7637,6 +7636,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Thêm gia đình và bạn bè</translation>
 <translation id="6367097275976877956">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không? Nếu có, hãy nhấn phím cách.</translation>
+<translation id="6367196786591004737">Xoá mục</translation>
 <translation id="6367396429435748845">Nhấn <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> để tạm dừng và tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="6367985768157257101">Nhận thông qua tính năng Chia sẻ lân cận?</translation>
 <translation id="6368157733310917710">&amp;Địa chỉ và các mục khác</translation>
@@ -7970,7 +7970,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6610002944194042868">Tùy chọn dịch</translation>
 <translation id="6610064275805055636">Quản lý ứng dụng web tách biệt</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> thẻ</translation>
-<translation id="6611972847767394631">Tìm các thẻ của bạn ở đây</translation>
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6613267708691765962">Đang quét tìm phần mềm độc hại...</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
@@ -10007,6 +10006,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8037801708772278989">Vừa kiểm tra xong</translation>
 <translation id="8038111231936746805">(mặc định)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Đang sao chép 1 tệp vào <ph name="CLOUD_PROVIDER" />}other{Đang sao chép {NUM_OF_FILES} tệp vào <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Ứng dụng Chrome này sẽ ngừng hoạt động sau khi phiên bản ChromeOS của bạn được cập nhật. Hãy lưu mọi dữ liệu ứng dụng mà bạn muốn giữ lại. Để tìm hiểu về các lựa chọn mà bạn có, vui lòng liên hệ với nhà phát triển ứng dụng hoặc nhóm hỗ trợ CNTT của bạn.</translation>
 <translation id="8041089156583427627">Gửi ý kiến phản hồi</translation>
 <translation id="8041093619605951337">Vui vẻ</translation>
 <translation id="8041267120753677077">Truyền trực tiếp ứng dụng trên điện thoại</translation>
@@ -10635,6 +10635,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8472623782143987204">được hỗ trợ bằng phần cứng</translation>
 <translation id="8473540203671727883">Đọc to văn bản bên dưới con trỏ chuột</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
+<translation id="847433688444405067">Duyệt xem trên các thiết bị</translation>
 <translation id="8474378002946546633">Cho phép thông báo</translation>
 <translation id="8474561048882755118">Giúp bạn xem các sản phẩm tương tự nhau ở chế độ song song và dễ dàng so sánh thông tin chi tiết mà bạn quan tâm</translation>
 <translation id="8475313423285172237">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.</translation>

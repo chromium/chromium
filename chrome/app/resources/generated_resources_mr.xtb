@@ -719,6 +719,7 @@
 <translation id="1494349716233667318">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्यासाठी साइट विचारू शकतात</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" व्हर्च्युअल मशीन अस्तित्वात आहे, पण ते वैध <ph name="APP_NAME" /> व्हर्च्युअल मशीन असल्याचे दिसत नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1495677929897281669">टॅबवर परत</translation>
+<translation id="1496514951988037011">वापरकर्ता नाव</translation>
 <translation id="1498498210836053409">मजकूर संपादित करताना स्टिकी मोड बंद करा (स्मार्ट स्टिकी मोड)</translation>
 <translation id="1499041187027566160">आवाज वाढवा</translation>
 <translation id="1500297251995790841">अज्ञात डिव्हाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1446,6 +1447,7 @@
 <translation id="1981434377190976112">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू शकते</translation>
 <translation id="1982851102516626421">तुम्ही साइन आउट केले आहे</translation>
 <translation id="1983612835086592681">तुम्ही मागील आठवड्यामध्ये उघडल्या होत्या</translation>
+<translation id="1984087999855033707">फोन नंबर</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1984683754853869253">शाळेसाठी तुम्हाला नवीन प्रोफाइल तयार करायची का?</translation>
 <translation id="198507684520034826">मदत</translation>
@@ -4764,7 +4766,6 @@
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="428963538941819373">तुम्ही <ph name="HOST" /> ब्राउझ करत असताना या साइटनी तुमच्याविषयी सेव्ह केलेली माहिती त्या वापरू शकतात</translation>
 <translation id="4289732974614035569">एक पिन निवडा</translation>
-<translation id="4290526909608432059">Chrome अ‍ॅप्ससाठीचा सपोर्ट लवकरच संपेल. तुमच्या पर्यायांबद्दल जाणून घेण्यासाठी, अ‍ॅप डेव्हलपरशी किंवा तुमच्या आयटी सपोर्ट टीमशी संपर्क साधा.</translation>
 <translation id="4290791284969893584">पेज बंद केल्यानंतर, तुम्ही सुरू केलेली टास्क कदाचित पूर्ण होणार नाहीत</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> सदस्य</translation>
 <translation id="4290898381118933198">पेजदरम्यान नेव्हिगेट करण्यासाठी स्वाइप करा</translation>
@@ -7635,6 +7636,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">कुटुंब आणि मित्र जोडा</translation>
 <translation id="6367097275976877956">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का? करायचे असल्यास, स्पेस बार प्रेस करा.</translation>
+<translation id="6367196786591004737">एंट्री हटवा</translation>
 <translation id="6367396429435748845">माउस की थांबवण्यासाठी आणि पुन्‍हा सुरू करण्यासाठी <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> प्रेस करा</translation>
 <translation id="6367985768157257101">Nearby सह शेअरिंग वापरून मिळवायचे आहे का?</translation>
 <translation id="6368157733310917710">&amp;पत्ते आणि आणखी बरेच काही</translation>
@@ -7968,7 +7970,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6610002944194042868">भाषांतराचे पर्याय</translation>
 <translation id="6610064275805055636">आयसोलेटेड वेब ॲप्स व्यवस्थापित करा</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> टॅब</translation>
-<translation id="6611972847767394631">येथे तुमचे टॅब शोधा</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6613267708691765962">मालवेअरसाठी स्कॅन करत आहे…</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
@@ -10629,6 +10630,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8472623782143987204">हार्डवेअर-बॅक्ड</translation>
 <translation id="8473540203671727883">माउसखाली मजकूर बोला</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
+<translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8474378002946546633">सूचनांना अनुमती द्या</translation>
 <translation id="8474561048882755118">एकसारखी उत्पादने शेजारी शेजारी पाहण्यात आणि तुमच्यासाठी महत्त्वाच्या असलेल्या तपशिलांची सहजपणे तुलना करण्यात मदत करते</translation>
 <translation id="8475313423285172237">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा एक्स्टेंशन जोडला.</translation>

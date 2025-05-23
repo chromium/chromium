@@ -4769,7 +4769,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4289540628985791613">Overview</translation>
 <translation id="428963538941819373">These sites can use info they've saved about you as you browse <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Choose a PIN</translation>
-<translation id="4290526909608432059">Support for Chrome Apps will end soon. To learn about your options, contact the app developer or your IT support team.</translation>
 <translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> member</translation>
 <translation id="4290898381118933198">Swipe to navigate between pages</translation>
@@ -7637,6 +7636,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Add family and friends</translation>
 <translation id="6367097275976877956">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press the space bar.</translation>
+<translation id="6367196786591004737">Delete entry</translation>
 <translation id="6367396429435748845">Press <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> to pause and resume mouse keys</translation>
 <translation id="6367985768157257101">Receive with Nearby Share?</translation>
 <translation id="6368157733310917710">Addresses and more</translation>
@@ -7970,7 +7970,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6610002944194042868">Translate Options</translation>
 <translation id="6610064275805055636">Manage isolated web apps</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
-<translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6613267708691765962">Scanning for malware...</translation>
 <translation id="6615455863669487791">Show me</translation>
@@ -10633,6 +10632,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473540203671727883">Speak text under the mouse</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
+<translation id="847433688444405067">Browse across devices</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
 <translation id="8474561048882755118">Helps you see similar products side by side and easily compare the details that matter to you</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>

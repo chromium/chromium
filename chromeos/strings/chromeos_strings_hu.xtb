@@ -1459,7 +1459,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7388345524791662148">További lehetőségek a következőhöz: <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Beépített érintőpad</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
-<translation id="7400166052988585408">Tanára <ph name="NUM_SECONDS" /> másodperc múlva zárolni fogja az Ön képernyőjét</translation>
 <translation id="7401543881546089382">Billentyűkód törlése</translation>
 <translation id="7405493795721832710">A(z) <ph name="DEVICE_NAME" /> készen áll a frissítésre</translation>
 <translation id="741244894080940828">Átváltás</translation>
@@ -1614,7 +1613,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8088963492174775412">Nyomja meg a rögzítéshez</translation>
 <translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
-<translation id="8110942816572072814">A tanár zárolta a képernyőt</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Megerősítés</translation>

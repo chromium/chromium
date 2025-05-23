@@ -4760,7 +4760,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="428963538941819373">Kui sirvite saiti <ph name="HOST" />, saavad need saidid kasutada teavet, mille on teie kohta salvestanud</translation>
 <translation id="4289732974614035569">Valige PIN-kood</translation>
-<translation id="4290526909608432059">Chrome'i rakenduste tugi lõpetatakse peagi. Valikute kohta lisateabe saamiseks võtke ühendust rakenduse arendaja või IT-tugitiimiga.</translation>
 <translation id="4290791284969893584">Pärast lehe sulgemist ei pruugita alustatud toiminguid lõpule viia</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> liige</translation>
 <translation id="4290898381118933198">Pühkimine lehtede vahel liikumiseks</translation>
@@ -7628,6 +7627,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Pere ja sõprade lisamine</translation>
 <translation id="6367097275976877956">Kas soovite aktiveerida Chrome OS-i sisseehitatud ekraanilugeja ChromeVox? Kui jah, siis vajutage tühikut.</translation>
+<translation id="6367196786591004737">Kustuta sisestus</translation>
 <translation id="6367396429435748845">Hiireklahvide peatamiseks või jätkamiseks vajutage klahve <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">Kas võtta vastu funktsiooni Läheduses jagamine kaudu?</translation>
 <translation id="6368157733310917710">Aadressid ja muu</translation>
@@ -7961,7 +7961,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6610002944194042868">Tõlkimise valikud</translation>
 <translation id="6610064275805055636">Isoleeritud veebirakenduste haldamine</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> vaheleht</translation>
-<translation id="6611972847767394631">Oma vahekaardid leiate siit</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6613267708691765962">Pahavara otsimine …</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
@@ -10624,6 +10623,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8472623782143987204">riistvaraga toetatud</translation>
 <translation id="8473540203671727883">Hiirekursori all oleva teksti ettelugemine</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
+<translation id="847433688444405067">Sirvige mitmes seadmes</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
 <translation id="8474561048882755118">Aitab teil sarnaseid tooteid kõrvuti vaadata ja teile olulisi üksikasju hõlpsasti võrrelda</translation>
 <translation id="8475313423285172237">Teine programm teie arvutis lisas laienduse, mis võib muuta Chrome'i toimimist.</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">페이지 통계 보기</translation>
 <translation id="1108938384783527433">방문 기록 동기화</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
-<translation id="1113597929977215864">간단히 보기 표시</translation>
 <translation id="1126696498560056882">이 기기에서 계정 관리</translation>
 <translation id="1129510026454351943">세부정보: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">시크릿 모드를 사용하면 내 기기를 사용하는 다른 사용자에게 내 탐색 기록을 비공개로 유지할 수 있습니다</translation>
@@ -1878,7 +1877,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="961856697154696964">인터넷 사용 기록 삭제</translation>
 <translation id="963246339335003378">작업 관리자 열기</translation>
 <translation id="966131775676567255">계정 데이터 삭제 중</translation>
-<translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1036348656032585052">Выключыць</translation>
-<translation id="1045448422538531528">Дадаць да групы</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створана <ph name="NUM_WEEKS_ONE" /> тыдзень таму}one{Створана <ph name="NUM_WEEKS_MANY" /> тыдзень таму}few{Створана <ph name="NUM_WEEKS_MANY" /> тыдні таму}many{Створана <ph name="NUM_WEEKS_MANY" /> тыдняў таму}other{Створана <ph name="NUM_WEEKS_MANY" /> тыдня таму}}</translation>
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Укладак закрыта: <ph name="ONE_CLOSED" />}one{Укладак закрыта: <ph name="MANY_CLOSED" />}few{Укладак закрыта: <ph name="MANY_CLOSED" />}many{Укладак закрыта: <ph name="MANY_CLOSED" />}other{Укладак закрыта: <ph name="MANY_CLOSED" />}}</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
 <translation id="2928243913527329289">Google | Пра гэту краму</translation>
-<translation id="2977480621796371840">Выдаліць з групы</translation>
 <translation id="29919168204617356">Неактыўныя ўкладкі будуць аўтаматычна закрывацца. Іх можна заўсёды знайсці ў раздзеле гісторыі браўзера.</translation>
 <translation id="3008554597174452548">Перастаць адсочваць прадукт</translation>
 <translation id="3026391124054406831">Стварыце групы, каб упарадкаваць укладкі.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
+<translation id="6212567362666004597">Дадаць укладку ў групу</translation>
 <translation id="6220820548421939212">Так. Згаджаюся</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="6271513594716432922">Закрыць усе неактыўныя ўкладкі</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome аўтаматычна выдаляе з раздзела неактыўныя элементы, якімі вы не карысталіся на працягу трох месяцаў. Выключыць гэту функцыю можна ў любы час у наладах.</translation>
 <translation id="8887921976452567404">Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак".</translation>
 <translation id="8915916167043355778">Закрыць усе</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Перамясціць у новае акно}one{Перамясціць у іншае акно}few{Перамясціць у іншае акно}many{Перамясціць у іншае акно}other{Перамясціць у іншае акно}}</translation>
 <translation id="9090098097337832354">Інфармацыя пра гэту краму згорнута</translation>
 <translation id="9114502155681725011">Адкрыць меню дзеянняў для групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>

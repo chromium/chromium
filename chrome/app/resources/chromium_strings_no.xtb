@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Velg om Chromium-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="2054039611381840095">For å få fremtidige Chromium-oppdateringer må du ha macOS 12 eller nyere. Denne datamaskinen bruker macOS 11.</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
-<translation id="2088953378266246249">Informasjon om hvordan Chromium administrerer rotsertifikatene sine</translation>
 <translation id="2099452623287920103">Passordene dine og andre Chromium-data du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på 1 minutt. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}}</translation>
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>
@@ -609,7 +608,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-Inn)</translation>
 <translation id="924957577793602335">Gi Chromium et personlig preg</translation>
 <translation id="93478295209880648">Chromium fungerer kanskje ikke riktig fordi den ikke lenger støttes på Windows XP eller Windows Vista</translation>
-<translation id="942598560705308788">Sertifikater administreres av Chromium</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="965162752251293939">Hvem bruker Chromium?</translation>
 <translation id="967427899662692980">Få den sterkeste sikkerheten i Chromium</translation>

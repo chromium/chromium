@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Ver estatísticas da páxina</translation>
 <translation id="1108938384783527433">Sincronización do historial</translation>
 <translation id="1111673857033749125">Aquí aparecerán os marcadores que gardases noutros dispositivos.</translation>
-<translation id="1113597929977215864">Mostrar vista simplificada</translation>
 <translation id="1126696498560056882">Xestionar contas deste dispositivo</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">O modo de incógnito mantén a túa navegación privada para que outros usuarios que utilicen o teu dispositivo non a poidan ver</translation>
@@ -1878,7 +1877,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963246339335003378">Abrir xestor de tarefas</translation>
 <translation id="966131775676567255">Eliminando datos da conta</translation>
-<translation id="96681097142096641">Queres ver a páxina simplificada?</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="983192555821071799">Pechar todas as pestanas</translation>

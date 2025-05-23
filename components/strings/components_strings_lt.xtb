@@ -265,6 +265,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1432187715652018471">puslapis prašo leidimo įdiegti paslaugos doroklę.</translation>
 <translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
 <translation id="1433225466058025572">Pabandykite dar kartą perkelti failus</translation>
+<translation id="1433478348197382180">Skaitymo režimas</translation>
 <translation id="1436185428532214179">Gali būti prašoma redaguoti failus ir aplankus jūsų įrenginyje</translation>
 <translation id="1442386063175183758">Atvartas dešinėje</translation>
 <translation id="1442987760062738829">Skylių pramušimas</translation>
@@ -839,7 +840,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2413155254802890957">Senas</translation>
 <translation id="2413528052993050574">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti atšauktas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2414886740292270097">Tamsi</translation>
-<translation id="2418292431699242678">Administratorius įgalina sinchronizuoti šiuos elementus tarp ankstesnių ir dabartinių seansų bet kuriame „ChromeOS“ įrenginyje:</translation>
 <translation id="2429716554270894715">Audinys (atsparus vandeniui)</translation>
 <translation id="2436186046335138073">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas?</translation>
 <translation id="2436976580469434549">Pluošto ir audinių menai</translation>
@@ -1175,7 +1175,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037605927509011580">Oi!</translation>
 <translation id="3039406992698062762">Šeimos kelionės</translation>
-<translation id="3040636468789770340">Slapukai (prisijungimo būsena neseniai aplankytose svetainėse)</translation>
 <translation id="3041176923638368519">Žr. kortelės privilegijų sąlygas</translation>
 <translation id="3041612393474885105">Sertifikato informacija</translation>
 <translation id="3045769629416806687">Ekstremalusis sportas</translation>
@@ -1684,7 +1683,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3869939189466884821">Vietiniai failai bus ištrinti po <ph name="MINUTES" /> min.</translation>
 <translation id="3872834068356954457">Mokslas</translation>
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
-<translation id="387681220560687945">Langai (langų ir skirtukų išdėstymas bei tvarkymas)</translation>
 <translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3880456882942693779">Menas ir pramogos</translation>
 <translation id="3880589673277376494">Internetas ir telekomunikacijos</translation>
@@ -2250,7 +2248,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4866506163384898554">Paspauskite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />, kad būtų rodomas žymeklis</translation>
 <translation id="4873616204573862158">Akiniai</translation>
 <translation id="4873807733347502026">Užrakinkite ir naudokite pelę</translation>
-<translation id="4876188919622883022">Supaprastintas rodinys</translation>
 <translation id="4876305945144899064">Nėra naudotojo vardo</translation>
 <translation id="4876327226315760474">Tai reiškia, kad svetainės funkcijos turėtų veikti taip, kaip numatyta, bet gali būti teikiama silpnesnė naršymo apsauga.</translation>
 <translation id="4877047577339061095">Sandėliavimas namuose ir stelažai</translation>
@@ -2400,7 +2397,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5115232566827194440">Apribotos valdomos svečio sesijos nepaisymas</translation>
 <translation id="5115563688576182185">(64 bitų)</translation>
 <translation id="5120526915373271910">Šeimai skirti filmai</translation>
-<translation id="5121592697493894155">„Google“ paieška šoniniame skydelyje</translation>
 <translation id="5122786942953798871">Vokas (medvilninis)</translation>
 <translation id="5123063207673082822">Savaitgalis</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
@@ -3031,7 +3027,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="622039917539443112">Lygiagretus perlenkimas</translation>
 <translation id="6221286101741304627">Jei norite išeiti iš viso ekrano režimo, paspauskite |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Ar norite išsaugoti šios kortelės informaciją „Google“ paskyroje?</translation>
-<translation id="6221892641068781024">Supaprastintas rodinys</translation>
 <translation id="6222527803348563979">Laiškinis popierius</translation>
 <translation id="62231116988543150">Įdiegti žiniatinklio programas</translation>
 <translation id="6224281071334553713">Brangakmeniai ir juvelyriniai dirbiniai</translation>

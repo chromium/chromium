@@ -332,6 +332,7 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="9059693977935746710">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9152995302810511799">Chromium-vinkki: Ota Chromiumin tehokkain suojaus käyttöön</translation>
+<translation id="9177628952266852500"><ph name="EMAIL" />. Chromium on hallinnoitu</translation>
 <translation id="921174536258924340">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Tee Chromiumista näköisesi</translation>
 <translation id="981812233959540767">Pelaa Chromiumin Dino-peliä</translation>

@@ -761,6 +761,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="3552189655002856821">Wi-Fi yoqilmagan</translation>
 <translation id="3554215588514239132">Dasturchi vositalari panelini ochish va yopish</translation>
 <translation id="3554637740840164787">Mahkamlandi: <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Qoʻshimcha USB qurilma kiritish uchun eskilaridan birini oʻchirib, keyin yangisini ulang</translation>
 <translation id="3558768885091059911">Kamera va mikrofondan foydalanish uchun ruxsat berilsinmi?</translation>
 <translation id="3560174576767922131">Videoga olish</translation>
 <translation id="3563775809269155755">Hotspotni yoqish</translation>
@@ -868,6 +869,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3861651314799684201">Butun ekranni yozib olish uchun Enter tugmasini bosing</translation>
 <translation id="3870197372373144624">Qurilmani oʻchirishga urining.</translation>
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
+<translation id="3884007280698606545">USB qurilmalar soni limitiga yetdi</translation>
 <translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3891340733213178823">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>

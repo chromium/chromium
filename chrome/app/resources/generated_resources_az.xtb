@@ -716,6 +716,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1494349716233667318">Saytlar cihazınızda quraşdırılmış şriftləri istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" virtual maşını mövcuddur, lakin etibarlı <ph name="APP_NAME" /> virtual maşını kimi görünmür. Administrator ilə əlaqə saxlayın.</translation>
 <translation id="1495677929897281669">Taba geri qayıdın</translation>
+<translation id="1496514951988037011">istifadəçi adı</translation>
 <translation id="1498498210836053409">Mətni redaktə edərkən yapışqan rejimi deaktiv edin (Ağıllı Yapışqan Rejim)</translation>
 <translation id="1499041187027566160">həcmi artırın</translation>
 <translation id="1500297251995790841">Naməlum cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1433,6 +1434,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1981434377190976112">Bütün veb saytlarda bütün datanızı oxumaq</translation>
 <translation id="1982851102516626421">Çıxış etdiniz</translation>
 <translation id="1983612835086592681">Keçən həftə açdınız</translation>
+<translation id="1984087999855033707">telefon nömrəsi</translation>
 <translation id="1984417487208496350">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="1984683754853869253">Məktəb üçün yeni profil yaratmaq istəyirsiniz?</translation>
 <translation id="198507684520034826">Yardım</translation>
@@ -4751,7 +4753,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="428963538941819373"><ph name="HOST" /> saytına baxdıqda bu saytlar haqqınızda yadda saxlanan məlumatdan istifadə edə bilər</translation>
 <translation id="4289732974614035569">PİN seçin</translation>
-<translation id="4290526909608432059">Chrome tətbiqləri üçün dəstək tezliklə başa çatacaq. Seçimləriniz haqqında məlumat əldə etmək üçün tətbiq tərtibatçısı və ya IT dəstək komandanız ilə əlaqə saxlayın.</translation>
 <translation id="4290791284969893584">Bir səhifəni bağladıqdan sonra başlatdığınız tapşırıqlar başa çatmaya bilər</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> üzv</translation>
 <translation id="4290898381118933198">Səhifələr arasında naviqasiya üçün çəkin</translation>
@@ -7617,6 +7618,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ailə və dostlarınızı əlavə edin</translation>
 <translation id="6367097275976877956">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, boşluq düyməsinə basın.</translation>
+<translation id="6367196786591004737">Daxiletməni silin</translation>
 <translation id="6367396429435748845">Maus düymələrini durdurmaq və davam etdirmək üçün <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> üzərinə basın</translation>
 <translation id="6367985768157257101">Yaxındakılarla Paylaşma ilə qəbul edilsin?</translation>
 <translation id="6368157733310917710">&amp;Ünvanlar və s.</translation>
@@ -7950,7 +7952,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6610002944194042868">Tərcümə Seçimləri</translation>
 <translation id="6610064275805055636">Təcrid edilmiş veb-tətbiqləri idarə edin</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
-<translation id="6611972847767394631">Tablarınızı burada tapın</translation>
 <translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
 <translation id="6613267708691765962">Zərərli proqram skanlanır...</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
@@ -10611,6 +10612,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8472623782143987204">avadanlıqla yedəklənmiş</translation>
 <translation id="8473540203671727883">Mətni maus ilə səsləndirin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
+<translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8474378002946546633">Bildirişlərə icazə verin</translation>
 <translation id="8474561048882755118">Bənzər məhsulları yan-yana görməyinizə və vacib təfərrüatları asanlıqla müqayisə etməyinizə imkan verir</translation>
 <translation id="8475313423285172237">Kompüterinizdə başqa bir proqram Chrome'un işləməsini dəyişən artırma əlavə etdi.</translation>

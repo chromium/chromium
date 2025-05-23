@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Ikusi orriaren estatistikak</translation>
 <translation id="1108938384783527433">Historiaren sinkronizazioa</translation>
 <translation id="1111673857033749125">Beste gailuetan gordeta dituzun laster-markak hemen agertuko dira.</translation>
-<translation id="1113597929977215864">Erakutsi ikuspegi sinplifikatua</translation>
 <translation id="1126696498560056882">Kudeatu gailuko kontuak</translation>
 <translation id="1129510026454351943">Xehetasunak: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Ezkutuko moduan zure arakatze-jarduerak pribatu mantentzen dira, gailuaren beste erabiltzaileek ikus ez ditzaten</translation>
@@ -122,6 +121,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="1480287803138246127">Baliteke historia osoa ez agertzea hemen. Chrome-ko historia osoa ikusteko, ireki ezazu.</translation>
 <translation id="1492417797159476138">Dagoeneko gorde duzu erabiltzaile-izen hau webgune honetarako</translation>
 <translation id="1493287004536771723">Hasi zara <ph name="SITE_NAME" /> webguneari jarraitzen</translation>
+<translation id="1496514951988037011">erabiltzaile-izena</translation>
 <translation id="1501480321619201731">Ezabatu taldea</translation>
 <translation id="1502010315804028179">Pasahitza kudeatzeko, eguneratu Google Play Services</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
@@ -221,6 +221,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="197288927597451399">Mantendu</translation>
 <translation id="1973912524893600642">Mantendu datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
+<translation id="1984087999855033707">telefono-zenbakia</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="200114059308480249">Barne hartu nahi al duzu inguruko testua Google-ko bilaketetan?</translation>
@@ -1876,7 +1877,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="961856697154696964">Ezabatu arakatze-datuak</translation>
 <translation id="963246339335003378">Ireki Ataza-kudeatzailea</translation>
 <translation id="966131775676567255">Kontuko datuak ezabatzen</translation>
-<translation id="96681097142096641">Orri sinplifikatua ikusi nahi duzu?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min gelditzen dira</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>

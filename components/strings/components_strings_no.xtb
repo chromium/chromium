@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted. Du blir logget av de fleste nettsteder. }other{Fra # nettsteder. Du blir logget av de fleste nettsteder. }}</translation>
+<translation id="1035509598913574970">Turkis 3</translation>
 <translation id="1035709686865413354">Vannfiltre og vannrensere</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1036881361735705143">C4-konvolutt</translation>
@@ -264,6 +265,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
+<translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
 <translation id="1442987760062738829">Hull</translation>
@@ -631,6 +633,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Tillat for alle besøk</translation>
 <translation id="2085876078937250610">Lagre …</translation>
+<translation id="2088913896151127116">Legg til tekst</translation>
 <translation id="2090451897496479509">Kontakt leverandøren for å få mer informasjon</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2093982008204312032">Google Chrome prøver å slå av Windows Hello for utfylling av passord.</translation>
@@ -767,6 +770,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2296331629987861142">Betal i rimelige avdrag (forutsetter at du er kvalifisert; gebyrer påløper)</translation>
 <translation id="2300306941146563769">Ikke lastet opp</translation>
 <translation id="2301098101308036335">Hvilke nettsteder som besøkes, og når.</translation>
+<translation id="2302571905116831849">Fyll ut stamkundekort automatisk</translation>
 <translation id="230286397113210245">Knappen «Åpne et inkognitovindu» – aktiver for å åpne et nytt inkognitovindu for privat surfing</translation>
 <translation id="2305294852062272447">Vil du lagre førerkortet?</translation>
 <translation id="2306124309679506798">Vil du tillate en omsluttende opplevelse?</translation>
@@ -837,7 +841,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2413155254802890957">Gamle</translation>
 <translation id="2413528052993050574">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan være trukket tilbake. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2414886740292270097">Mørk</translation>
-<translation id="2418292431699242678">Administratoren din tillater at følgende synkroniseres mellom de forrige og nåværende øktene dine på alle ChromeOS-enheter:</translation>
 <translation id="2429716554270894715">Stoff (vannfast)</translation>
 <translation id="2436186046335138073">Vil du la <ph name="HANDLER_HOSTNAME" /> åpne alle <ph name="PROTOCOL" />-linker?</translation>
 <translation id="2436976580469434549">Fiber- og tekstilkunst</translation>
@@ -1093,6 +1096,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2915068235268646559">Krasj fra <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Maling</translation>
 <translation id="2916038427272391327">Lukk andre programmer</translation>
+<translation id="2917630513638801879">Turkis 1</translation>
 <translation id="2919185931486062599">Jakt og skyting</translation>
 <translation id="2922350208395188000">Tjenerens sertifikat kan ikke kontrolleres.</translation>
 <translation id="2922792708490674">{0,plural, =1{Filen er blokkert for nedlasting}other{<ph name="FILE_COUNT" /> filer er blokkert for nedlasting}}</translation>
@@ -1172,7 +1176,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037605927509011580">Æsj!</translation>
 <translation id="3039406992698062762">Familiereise</translation>
-<translation id="3040636468789770340">Informasjonskapsler (påloggingsstatus på nettsteder du nylig har besøkt)</translation>
 <translation id="3041176923638368519">Se vilkårene for kortfordeler</translation>
 <translation id="3041612393474885105">Sertifikatinformasjon</translation>
 <translation id="3045769629416806687">Ekstremsport</translation>
@@ -1680,7 +1683,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3869939189466884821">De lokale filene dine slettes om <ph name="MINUTES" /> minutter</translation>
 <translation id="3872834068356954457">Vitenskap</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
-<translation id="387681220560687945">Vinduer (plassering og organisering av vinduer og faner)</translation>
 <translation id="3879748587602334249">Nedlastingsbehandling</translation>
 <translation id="3880456882942693779">Kunst og underholdning</translation>
 <translation id="3880589673277376494">Internett og telekommunikasjon</translation>
@@ -2082,6 +2084,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4562155266774382038">Avvis forslaget</translation>
 <translation id="4566017918361049074">Utendørs</translation>
 <translation id="4569155249847375786">Bekreftet</translation>
+<translation id="4570008401337135432">Tekstjustering</translation>
 <translation id="457875822857220463">Levering</translation>
 <translation id="4579699065574932398">Bankvirksomhet</translation>
 <translation id="4582595824823167856">Motta en tekstmelding</translation>
@@ -2245,7 +2248,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4866506163384898554">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å vise markøren</translation>
 <translation id="4873616204573862158">Briller</translation>
 <translation id="4873807733347502026">låse og bruke musen din</translation>
-<translation id="4876188919622883022">Forenklet visning</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876327226315760474">Dette betyr at funksjoner på nettstedet skal fungere som forventet, men det kan hende at surfebeskyttelsen svekkes.</translation>
 <translation id="4877047577339061095">Oppbevaringsløsninger til hjemmet</translation>
@@ -2605,6 +2607,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5481682542063333508">Tilby skrivehjelp</translation>
 <translation id="54817484435770891">Du må angi en gyldig adresse</translation>
 <translation id="5483838506518938965">Du er klar</translation>
+<translation id="5484396522446324950">Stiler</translation>
 <translation id="5485100387355669506">Ekstra tykk</translation>
 <translation id="5485973315555778056">Skymaskin</translation>
 <translation id="5488367146069768854">Installasjoner av nettapper</translation>
@@ -2943,6 +2946,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6062937464449575061">Slutt å spore pris</translation>
 <translation id="6063415549109819824">Boligfinansiering</translation>
 <translation id="6070432475334343308">En eller flere filer ble ikke lastet opp til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Turkis 2</translation>
 <translation id="6085149458302186532">Etiketter (farget)</translation>
 <translation id="6087312102907839798">Relaterte søk</translation>
 <translation id="6089505343295765444">Faner du sletter fra Chrome-loggen, vises fortsatt i sammenligningstabellene</translation>
@@ -3023,7 +3027,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="622039917539443112">Parallellfals</translation>
 <translation id="6221286101741304627">For å gå ut av fullskjerm, trykk på |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Vil du lagre dette kortet i Google-kontoen din?</translation>
-<translation id="6221892641068781024">Forenklet visning</translation>
 <translation id="6222527803348563979">Brevpapir</translation>
 <translation id="62231116988543150">kunne installere nettapper</translation>
 <translation id="6224281071334553713">Smykkesteiner og smykker</translation>
@@ -3843,6 +3846,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7598391785903975535">Under <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan for øyeblikket ikke behandle denne forespørselen.</translation>
 <translation id="7599089013883397081">Nedlastingen ble tidsavbrutt</translation>
+<translation id="7602868996817972616">Spør Google om denne siden</translation>
 <translation id="7608583484192556132">Hvorvidt en annonse du ser, er personlig tilpasset, kan avhenge av flere ting, inkludert denne innstillingen, <ph name="BEGIN_LINK_1" />annonser foreslått av nettsteder<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene dine for informasjonskapsler<ph name="END_LINK_2" /> og hvorvidt nettstedet du ser på, viser personlig tilpassede annonser. Finn ut mer om hvordan du <ph name="BEGIN_LINK_3" />administrerer annonsepersonvernet ditt<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Verdien er utenfor rekkevidden <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Tykk</translation>

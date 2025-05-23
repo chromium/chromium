@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1036348656032585052">Deaktiv edin</translation>
-<translation id="1045448422538531528">Qrupa əlavə edin</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> həftə əvvəl yaradıldı}other{<ph name="NUM_WEEKS_MANY" /> həftə əvvəl yaradıldı}}</translation>
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab bağlanıb}other{<ph name="MANY_CLOSED" /> tab bağlanıb}}</translation>
 <translation id="2894757982205307093">Qrupa yeni tab</translation>
 <translation id="2928243913527329289">Google | Bu mağaza haqqında</translation>
-<translation id="2977480621796371840">Qrupdan çıxarın</translation>
 <translation id="29919168204617356">Qeyri-aktiv tablar avtomatik bağlanacaq. Onları Tarixçədə tapa bilərsiniz.</translation>
 <translation id="3008554597174452548">Məhsulu izləməyi dayandırın</translation>
 <translation id="3026391124054406831">Tabları nizamlamaq üçün qruplar yaradın.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="6109251075362363230">Ən son istifadə olunan nüsxə istisna olmaqla bütün dublikat tablar da artıq arxivlənəcək.</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
+<translation id="6212567362666004597">Qrupa tab əlavə edin</translation>
 <translation id="6220820548421939212">Bəli. Hazıram</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
 <translation id="6271513594716432922">Bütün deaktiv tabları bağlayın</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome fəaliyyətsiz bölmədə 3 ay ərzində istifadə etmədiyiniz elementləri avtomatik bağlayır. Bunu indi və ya istənilən vaxt Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>
 <translation id="8915916167043355778">Hamısını bağlayın</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Yeni pəncərəyə köçürün}other{Başqa pəncərəyə köçürün}}</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>

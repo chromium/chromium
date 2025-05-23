@@ -4763,7 +4763,6 @@
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="428963538941819373">እነዚህ ጣቢያዎች እርስዎ <ph name="HOST" /> በሚያስሱበት ጊዜ ስለ እርስዎ ያስቀመጡትን መረጃ መጠቀም ይችላሉ</translation>
 <translation id="4289732974614035569">አንድ ፒን ይምረጡ</translation>
-<translation id="4290526909608432059">የChrome መተግበሪያዎች ድጋፍ በቅርቡ ያበቃል። ስለ አማራጮችዎ ለማወቅ የመተግበሪያውን ገንቢ ወይም የአይቲ የድጋፍ ቡድንዎን ያነጋግሩ።</translation>
 <translation id="4290791284969893584">አንድ ገፅ ከዘጉ በኋላ እርስዎ የጀመሯቸው ሥራዎች ላይጠናቀቁ ይችላሉ</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> አባል</translation>
 <translation id="4290898381118933198">በገጾች መካከል ለማሰስ ያንሸራትቱ</translation>
@@ -7631,6 +7630,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">ቤተሰብ እና ጓደኛዎች ያክሉ</translation>
 <translation id="6367097275976877956">የChromeOS አብሮገነብ የማያ ገፅ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ? የሚፈልጉ ከሆነ የክፍተት አሞሌን ይጫኑ።</translation>
+<translation id="6367196786591004737">ግቤትን ሰርዝ</translation>
 <translation id="6367396429435748845">የመዳፊት ቁልፎችን ባሉበት ለማቆም እና ከቆሙበት ለመቀጠል <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">በአቅራቢያ አጋራ ይቀበሉ?</translation>
 <translation id="6368157733310917710">&amp;አድራሻዎች እና ሌሎች</translation>
@@ -7966,7 +7966,6 @@
 <translation id="6610002944194042868">የትርጉም አማራጮች</translation>
 <translation id="6610064275805055636">ገለልተኛ የድር መተግበሪያዎችን ያቀናብሩ</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> ትር</translation>
-<translation id="6611972847767394631">የእርስዎን ትሮች እዚህ ያግኙ</translation>
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6613267708691765962">የተንኮል አዘል ዌርን በመቃኘት ላይ...</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
@@ -10634,6 +10633,7 @@ nil</translation>
 <translation id="8472623782143987204">የሃርድዌር ደጀን ያለው</translation>
 <translation id="8473540203671727883">ከመዳፊቱ ሥር ያለውን ጽሁፍ ይናገሩ</translation>
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
+<translation id="847433688444405067">በመላው መሣሪያዎች ላይ ያስሱ</translation>
 <translation id="8474378002946546633">ማሳወቂያዎችን ፍቀድ</translation>
 <translation id="8474561048882755118">ተመሳሳይ ምርቶችን ጎን ለጎን እንዲመለከቱ እና ለእርስዎ አስፈላጊ የሆኑትን ዝርዝሮች በቀላሉ እንዲያነጻጽሩ ያግዝዎታል</translation>
 <translation id="8475313423285172237">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ቅጥያ አክሏል።</translation>

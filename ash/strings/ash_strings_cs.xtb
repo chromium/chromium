@@ -1486,6 +1486,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5788127256798019331">Soubory Play</translation>
 <translation id="5788535737706478207">Znovu otevřít naposledy zavřenou kartu nebo okno</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
+<translation id="5791926618942305301">Je aktivní záznam obrazovky nastavený na možnost <ph name="SOURCE" /> – <ph name="TYPE" />. Stisknutím tabulátoru vyberete typ záznamu. Stisknutím klávesy Enter pořídíte záznam. Pokud chcete vybrat zachycovanou oblast, nastavte typ záznamu na částečný snímek obrazovky. Pokud ještě není aktivní, stisknutím mezerníku vyberte oblast.</translation>
 <translation id="579415080077680903">Ticho</translation>
 <translation id="5802516411616338943">Otevření Rychlého nastavení</translation>
 <translation id="5804651031882187592">Vypněte možnost Uzamknout SIM kartu</translation>
@@ -1642,6 +1643,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6288235558961782912">Adresu <ph name="USER_EMAIL_ADDRESS" /> můžete s povolením rodiče přidat později</translation>
 <translation id="6291221004442998378">Nenabíjí se</translation>
 <translation id="6298183524022479114">Přizpůsobte si toto zařízení v aplikaci</translation>
+<translation id="6304076460080088478">Pokud chcete prohledat obrazovku pomocí Google Lens, zavřete nebo minimalizujte anonymní okna</translation>
 <translation id="6309219492973062892">Kliknout nebo klepnout na ikony 1–8 na poličce</translation>
 <translation id="6315170314923504164">Hlas</translation>
 <translation id="6319058840130157106">Přecházet zpět mezi pravým dolním rohem, spouštěčem, adresním řádkem, lištou záložek, otevřeným webem a staženými soubory</translation>

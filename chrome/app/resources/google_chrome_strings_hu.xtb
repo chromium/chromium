@@ -96,7 +96,6 @@
 <translation id="2199691482078155239">A Chrome nagyobb irányítást ad afelett, hogy milyen hirdetések jelenjenek meg Önnek, és korlátozza, hogy mely webhelyek tudhatnak meg Önről információkat, amikor személyre szabott hirdetéseket jelenítenek meg.</translation>
 <translation id="2216543877350048334">Ha szeretné eltávolítani Google-fiókját a Chrome-ból, jelentkezzen ki</translation>
 <translation id="2236949375853147973">Saját tevékenységek</translation>
-<translation id="223889379102603431">Információ arról, hogy a Chrome hogyan kezeli a főtanúsítványokat</translation>
 <translation id="2290014774651636340">Hiányoznak Google API-kulcsok. A Google Chrome egyes funkciói kikapcsolnak.</translation>
 <translation id="2290095356545025170">Biztos benne, hogy eltávolítja a Google Chrome-ot?</translation>
 <translation id="2309047409763057870">Ez a Google Chrome második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
@@ -242,6 +241,7 @@
 <translation id="4050175100176540509">A legújabb verzióban fontos biztonsági fejlesztések és új funkciók érhetők el.</translation>
 <translation id="4053720452172726777">A Google Chrome személyre szabása és beállításai</translation>
 <translation id="408393047846373801">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyebekhez, jelentkezzen be a Chrome-ba Ezt a jelszót a rendszer az Ön Google-fiókjába menti a bejelentkezés után.</translation>
+<translation id="409936259433005390">Hamarosan frissít a Windows 11-re? Töltse le a Chrome-telepítőt a OneDrive-ra, hogy rögtön készen álljon.</translation>
 <translation id="4110895483821904099">Új saját Chrome-profil beállítása</translation>
 <translation id="4111566860456076004">A Chrome nem tudja ellenőrizni, hogy honnan származik a bővítmény, amely lehet, hogy nem biztonságos. Távolítsa el a Chrome-ból, hogy a bővítmény a továbbiakban már ne láthassa és módosíthassa az Ön adatait a felkeresett webhelyeken (a személyes adatokat is beleértve).</translation>
 <translation id="4128488089242627000">A Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük (ajánlott)</translation>
@@ -564,7 +564,6 @@
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
 <translation id="8257796129973882597">A Chrome-menüből megnyithatja a könyvjelzőket, az olvasási módot és egyebeket</translation>
 <translation id="8267953129876836456">A Chrome talált néhány áttekintésre érdemes biztonsági javaslatot</translation>
-<translation id="8270775718612349140">A Chrome által kezelt tanúsítványok</translation>
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
 <translation id="8313851650939857356">Indítási hiba: <ph name="STARTUP_ERROR" />.</translation>

@@ -4756,7 +4756,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4289540628985791613">Kopsavilkums</translation>
 <translation id="428963538941819373">Šīs vietnes var izmantot informāciju, kas tajās ir saglabāta par jums, kamēr pārlūkojat vietni <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Izvēlieties PIN</translation>
-<translation id="4290526909608432059">Drīzumā tiks pārtraukts Chrome lietotņu atbalsts. Lai uzzinātu par jums pieejamajām iespējām, sazinieties ar lietotnes izstrādātāju vai savu IT atbalsta komandu.</translation>
 <translation id="4290791284969893584">Pēc lapas aizvēršanas var netikt pabeigti jūsu iesāktie uzdevumi</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> dalībnieks</translation>
 <translation id="4290898381118933198">Vilkšana, lai pārietu uz citām lapām</translation>
@@ -7620,6 +7619,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ģimenes un draugu pievienošana</translation>
 <translation id="6367097275976877956">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet atstarpes taustiņu.</translation>
+<translation id="6367196786591004737">Dzēst ierakstu</translation>
 <translation id="6367396429435748845">Nospiediet īsinājumtaustiņu <ph name="ALT" />+<ph name="LAUNCHER" />+<ph name="NUM_4" />, lai apturētu un atsāktu peles taustiņu darbību.</translation>
 <translation id="6367985768157257101">Vai saņemt saturu, izmantojot funkciju Kopīgošana tuvumā?</translation>
 <translation id="6368157733310917710">&amp;Adreses un citi dati</translation>
@@ -7957,7 +7957,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6610002944194042868">Tulkošanas opcijas</translation>
 <translation id="6610064275805055636">Pārvaldīt izolētas tīmekļa lietotnes</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> cilne</translation>
-<translation id="6611972847767394631">Jūsu cilnes ir pieejamas šeit</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6613267708691765962">Notiek ļaunprātīgas programmatūras meklēšana…</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
@@ -10619,6 +10618,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473540203671727883">Izrunāt tekstu, virs kura novietots kursors</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
+<translation id="847433688444405067">Pārlūkošana dažādās ierīcēs</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>
 <translation id="8474561048882755118">Palīdz līdztekus skatīt līdzīgus produktus un ērti salīdzināt jums būtisko informāciju.</translation>
 <translation id="8475313423285172237">Cita datorā instalēta programma ir izraisījusi tāda paplašinājuma pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>

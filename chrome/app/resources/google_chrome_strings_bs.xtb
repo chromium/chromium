@@ -100,7 +100,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2199691482078155239">Chrome vam daje veću kontrolu nad oglasima koji vam se prikazuju i ograničava koje web lokacije mogu saznati informacije o vama kada vam prikažu personalizirane oglase</translation>
 <translation id="2216543877350048334">Odjavite se da uklonite Google račun iz Chromea</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
-<translation id="223889379102603431">Informacije o tome kako Chrome upravlja svojim temeljnim certifikatima</translation>
 <translation id="2290014774651636340">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će biti onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea i nije je moguće postaviti kao zadani preglednik.</translation>
@@ -572,7 +571,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8257796129973882597">Možete otvoriti oznake, način rada za čitanje i drugo u Chrome meniju</translation>
 <translation id="8267953129876836456">Chrome je pronašao neke sigurnosne preporuke koje trebate pregledati</translation>
-<translation id="8270775718612349140">Certifikati kojima upravlja Chrome</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="829923460755755423">Dodajte prečicu za Google upravitelja lozinki</translation>
 <translation id="8313851650939857356">Došlo je do greške prilikom pokretanja: <ph name="STARTUP_ERROR" />.</translation>

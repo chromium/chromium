@@ -718,6 +718,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1494349716233667318">Siteler, cihazımda yüklü yazı tiplerini kullanmak isteyebilir</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" sanal makinesi mevcut, ancak geçerli bir <ph name="APP_NAME" /> sanal makinesi değil. Lütfen yöneticinizle iletişime geçin.</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
+<translation id="1496514951988037011">kullanıcı adı</translation>
 <translation id="1498498210836053409">Metin düzenlerken sabit modu kapat (Akıllı Sabit Mod)</translation>
 <translation id="1499041187027566160">sesi aç</translation>
 <translation id="1500297251995790841">Bilinmeyen cihaz [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1437,6 +1438,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1981434377190976112">Web sitelerindeki tüm verilerinizi okuma</translation>
 <translation id="1982851102516626421">Oturumunuz kapalı</translation>
 <translation id="1983612835086592681">Geçen hafta açtınız</translation>
+<translation id="1984087999855033707">telefon numarası</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1984683754853869253">Okul için yeni bir profil oluşturmak istiyor musunuz?</translation>
 <translation id="198507684520034826">Yardım</translation>
@@ -4332,7 +4334,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3983400541576569538">Bazı uygulamalara ait veriler kaybolabilir</translation>
 <translation id="3983586614702900908">bilinmeyen bir tedarikçi firmanın cihazları</translation>
 <translation id="3983764759749072418">Play Store uygulamalarının bu cihaza erişim izni var.</translation>
-<translation id="3983769721878416534">Tıklamadan önce gecikme süresi</translation>
+<translation id="3983769721878416534">Tıklamadan önce bekleme süresi</translation>
 <translation id="3984135167056005094">E-posta adresini ekleme</translation>
 <translation id="3984159763196946143">Demo modu başlatılamadı</translation>
 <translation id="3984536049089846927">Sonraki sayfa</translation>
@@ -4750,7 +4752,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="428963538941819373">Bu siteler, <ph name="HOST" /> sitesinde gezinirken hakkınızda kaydettikleri bilgileri kullanabilir</translation>
 <translation id="4289732974614035569">PIN seçin</translation>
-<translation id="4290526909608432059">Chrome uygulamalarının desteği yakında sonlandırılacak. Kullanabileceğiniz seçenekler hakkında bilgi edinmek için uygulama geliştiriciyle veya BT destek ekibinizle iletişime geçin.</translation>
 <translation id="4290791284969893584">Bir sayfa kapatıldıktan sonra, başladığınız görevler tamamlanmayabilir</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> üye</translation>
 <translation id="4290898381118933198">Sayfa değiştirmek için hızla kaydırın</translation>
@@ -7618,6 +7619,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Aile üyelerini ve arkadaşları ekleyin</translation>
 <translation id="6367097275976877956">ChromeOS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise boşluk çubuğuna basın.</translation>
+<translation id="6367196786591004737">Girişi sil</translation>
 <translation id="6367396429435748845">Fare tuşlarını duraklatmak ve devam ettirmek için <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> tuşlarına basın</translation>
 <translation id="6367985768157257101">Yakındakilerle Paylaş özelliğiyle içerik alınsın mı?</translation>
 <translation id="6368157733310917710">&amp;Adresler ve daha fazlası</translation>
@@ -7951,7 +7953,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6610002944194042868">Çeviri Seçenekleri</translation>
 <translation id="6610064275805055636">Yalıtılmış web uygulamalarını yönetin</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> sekme</translation>
-<translation id="6611972847767394631">Sekmelerinizi burada bulabilirsiniz</translation>
 <translation id="661266467055912436">Hem siz hem de web'deki herkes için güvenliği iyileştirir.</translation>
 <translation id="6613267708691765962">Kötü amaçlı yazılım taranıyor...</translation>
 <translation id="6615455863669487791">Göster</translation>
@@ -10613,6 +10614,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8472623782143987204">donanım esaslı</translation>
 <translation id="8473540203671727883">Fare işaretçisinin altındaki metni oku</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
+<translation id="847433688444405067">Farklı cihazlarda göz atın</translation>
 <translation id="8474378002946546633">Bildirimlere izin ver</translation>
 <translation id="8474561048882755118">Benzer ürünleri yan yana görmenize ve sizin için önemli olan bilgileri kolayca karşılaştırmanıza yardımcı olur.</translation>
 <translation id="8475313423285172237">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uzantı ekledi.</translation>

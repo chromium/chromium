@@ -1459,7 +1459,6 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="7388345524791662148">Više opcija za snimku <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ugrađena dodirna podloga</translation>
 <translation id="7397270852490618635">Isključivanje svijetle teme</translation>
-<translation id="7400166052988585408">Nastavnik će zaključati tvoj zaslon za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="7401543881546089382">Izbriši prečac</translation>
 <translation id="7405493795721832710">Uređaj <ph name="DEVICE_NAME" /> spreman je za ažuriranje</translation>
 <translation id="741244894080940828">preračunavanje</translation>
@@ -1614,7 +1613,6 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8088963492174775412">Pritisnite za snimanje</translation>
 <translation id="8094062939584182041">Dopustite Googleu da vam pošalje e-poruku o tom problemu</translation>
 <translation id="8104083085214006426">Upotrebljavate otvorenu i nesigurnu mrežu</translation>
-<translation id="8110942816572072814">Nastavnik je zaključao zaslon</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može pingati</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>

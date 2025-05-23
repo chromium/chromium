@@ -265,6 +265,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1432187715652018471">Ez az oldal szolgáltatáskezelőt kíván telepíteni.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
+<translation id="1433478348197382180">Olvasási mód</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1442386063175183758">Jobb oldalon kihajtható</translation>
 <translation id="1442987760062738829">Lyukasztás</translation>
@@ -635,6 +636,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2088913896151127116">Szöveg hozzáadása</translation>
 <translation id="2090451897496479509">További információért forduljon a szolgáltatóhoz.</translation>
 <translation id="2091887806945687916">Hang</translation>
+<translation id="2093184051799735948">Írjon be egy URL-t, vagy keressen itt: <ph name="ENGINE_NAME" /></translation>
 <translation id="2093982008204312032">A Google Chrome megpróbálja kikapcsolni a Windows Hello szolgáltatást a jelszavak kitöltéséhez.</translation>
 <translation id="2094505752054353250">Domainkeveredés</translation>
 <translation id="2094704029599359040">Verzióadatok</translation>
@@ -839,7 +841,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2413155254802890957">Régi</translation>
 <translation id="2413528052993050574">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványát visszavonhatták. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="2414886740292270097">Sötét</translation>
-<translation id="2418292431699242678">A rendszergazda engedélyezi, hogy a következők bármely ChromeOS-eszközön szinkronizálódjanak az Ön előző és jelenlegi munkamenete között:</translation>
 <translation id="2429716554270894715">Szövet (vízálló)</translation>
 <translation id="2436186046335138073">Engedélyezi az összes <ph name="PROTOCOL" /> link megnyitását a(z) <ph name="HANDLER_HOSTNAME" /> számára?</translation>
 <translation id="2436976580469434549">Szövet- és textilművészet</translation>
@@ -1175,7 +1176,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037605927509011580">A manóba!</translation>
 <translation id="3039406992698062762">Családi utazás</translation>
-<translation id="3040636468789770340">Cookie-k (bejelentkezett állapot a nemrégiben felkeresett webhelyeken)</translation>
 <translation id="3041176923638368519">A kártya előnyeire vonatkozó feltételek megtekintése</translation>
 <translation id="3041612393474885105">Tanúsítvány adatai</translation>
 <translation id="3045769629416806687">Extrém sportok</translation>
@@ -1681,7 +1681,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3869939189466884821">Helyi fájljait <ph name="MINUTES" /> perc múlva töröljük</translation>
 <translation id="3872834068356954457">Természettudományok</translation>
 <translation id="3875783148670536197">Bemutató</translation>
-<translation id="387681220560687945">Ablakok (az ablakok és a lapok elrendezése és rendszerezése)</translation>
 <translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3880456882942693779">Művészet és szórakoztatás</translation>
 <translation id="3880589673277376494">Internet és telekommunikáció</translation>
@@ -2246,7 +2245,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4866506163384898554">A kurzor megjelenítéséhez nyomja le a következő billentyűkombinációt: |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">Szemüvegek</translation>
 <translation id="4873807733347502026">Az egér zárolása és használata</translation>
-<translation id="4876188919622883022">Egyszerűsített nézet</translation>
 <translation id="4876305945144899064">Nincs felhasználónév</translation>
 <translation id="4876327226315760474">Ez azt jelenti, hogy a webhely funkcióinak a várt módon kell működniük, de előfordulhat, hogy kevésbé lesz hatékony a böngészési védelem.</translation>
 <translation id="4877047577339061095">Otthoni tárolás és rendszerezés</translation>
@@ -2396,7 +2394,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5115232566827194440">Korlátozott felügyelt vendégmunkamenet felülírása</translation>
 <translation id="5115563688576182185">(64 bites)</translation>
 <translation id="5120526915373271910">Családi filmek</translation>
-<translation id="5121592697493894155">Google Kereső az oldalsó panelen</translation>
 <translation id="5122786942953798871">Boríték (karton)</translation>
 <translation id="5123063207673082822">Hétvége</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
@@ -3027,7 +3024,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="622039917539443112">Paralel hajtás</translation>
 <translation id="6221286101741304627">A teljes képernyős nézetből való kilépéshez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Menti ezt a kártyát Google-fiókjába?</translation>
-<translation id="6221892641068781024">Egyszerűsített nézet</translation>
 <translation id="6222527803348563979">Levélpapír</translation>
 <translation id="62231116988543150">Internetes alkalmazások telepítése</translation>
 <translation id="6224281071334553713">Drágakövek és ékszerek</translation>

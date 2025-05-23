@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
-<translation id="1045448422538531528">Guruh chatiga kiritish</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta oldin yaratilgan}other{<ph name="NUM_WEEKS_MANY" /> hafta oldin yaratilgan}}</translation>
 <translation id="1063300264396686489">Boshqa qurilmalardagi varaqlar guruhini avtomatik ochish</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ta varaq yopildi}other{<ph name="MANY_CLOSED" /> ta varaq yopildi}}</translation>
 <translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
-<translation id="2977480621796371840">Guruhdan chiqarish</translation>
 <translation id="29919168204617356">Nofaol varaqlar avtomatik yopiladi. Istalgan vaqt ularni Tarixdan topishingiz mumkin.</translation>
 <translation id="3008554597174452548">Mahsulot kuzatuvini toʻxtatish</translation>
 <translation id="3026391124054406831">Varaqlarni tartiblash uchun guruhlar yaratish.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">Varaqlar guruhi avtomatik saqlanadi</translation>
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
 <translation id="6109251075362363230">Barcha takroriy varaqlar ham arxivlanadi, oxirgi ishlatilgan nusxasi bundan mustasno.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Guruhni yangi oynaga olish}other{Guruhni boshqa oynaga olish}}</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
+<translation id="6212567362666004597">Varaqni guruhga kiritish</translation>
 <translation id="6220820548421939212">Ha. Roziman</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
 <translation id="6271513594716432922">Barcha nofaol varaqlarni yopish</translation>
@@ -177,6 +177,7 @@
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Varaqni yangi oynaga olish}other{Varaqni boshqa oynaga olish}}</translation>
 <translation id="799469866974412355">Boshqa qurilmadagi yangi guruh</translation>
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
 <translation id="8053770993984522566">Varaqlar guruhlari roʻyxati, yarim hajmda ochildi</translation>
@@ -198,11 +199,11 @@
 <translation id="8730621377337864115">Tayyor</translation>
 <translation id="8730999928494395583">Bu inkognito varaqlardagi harakatlar tarixi ushbu qurilmadan olib tashlanadi</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> oy oldin yaratilgan}other{<ph name="NUM_MONTHS_MANY" /> oy oldin yaratilgan}}</translation>
+<translation id="8813708480179818649">Guruhidan varaqni olib tashlash</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>
 <translation id="883379923675618699">Chrome 3 oy davomida ishlatilmagan nofaol seansdagi sahifalarni avtomatik yopadi. Buni istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin.</translation>
 <translation id="8887921976452567404">Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi.</translation>
 <translation id="8915916167043355778">Hammasini yopish</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Yangi oynaga olish}other{Boshqa oynaga olish}}</translation>
 <translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> rangli <ph name="TITLE_OF_GROUP" /> varaqlar guruhi uchun amallar menyusini ochish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>

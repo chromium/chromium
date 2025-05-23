@@ -718,6 +718,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1494349716233667318">I siti possono chiedere di utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="1494429729245089920">La macchina virtuale "<ph name="VM_NAME" />" esiste, ma non sembra essere una macchina virtuale <ph name="APP_NAME" /> valida. Contatta l'amministratore.</translation>
 <translation id="1495677929897281669">Torna alla scheda</translation>
+<translation id="1496514951988037011">nome utente</translation>
 <translation id="1498498210836053409">Disattiva la modalità persistente quando modifichi un testo (modalità persistente intelligente)</translation>
 <translation id="1499041187027566160">alza volume</translation>
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1437,6 +1438,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1981434377190976112">Leggere tutti i tuoi dati su tutti i siti web</translation>
 <translation id="1982851102516626421">Accesso non eseguito</translation>
 <translation id="1983612835086592681">Elemento aperto da te la settimana scorsa</translation>
+<translation id="1984087999855033707">numero di telefono</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1984683754853869253">Vuoi creare un nuovo profilo di scuola?</translation>
 <translation id="198507684520034826">Aiuto</translation>
@@ -4754,7 +4756,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="428963538941819373">Questi siti possono usare le informazioni su di te che hanno salvato durante la tua navigazione su <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Scegli un PIN</translation>
-<translation id="4290526909608432059">A breve il supporto per le app di Chrome non sarà più disponibile. Per scoprire le opzioni a tua disposizione, contatta lo sviluppatore dell'app o il team di assistenza IT.</translation>
 <translation id="4290791284969893584">Dopo aver chiuso una pagina, le attività che hai avviato potrebbero non concludersi</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Scorri per navigare da una pagina all'altra</translation>
@@ -7618,6 +7619,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Aggiungi amici e familiari</translation>
 <translation id="6367097275976877956">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS? In questo caso, premi la barra spaziatrice.</translation>
+<translation id="6367196786591004737">Elimina voce</translation>
 <translation id="6367396429435748845">Premi <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> per mettere in pausa e riprendere i tasti del mouse</translation>
 <translation id="6367985768157257101">Ricevere con Condivisione nelle vicinanze?</translation>
 <translation id="6368157733310917710">&amp;Indirizzi e altro</translation>
@@ -7951,7 +7953,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
 <translation id="6610064275805055636">Gestisci le app web isolate</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> scheda</translation>
-<translation id="6611972847767394631">Trova le tue schede qui</translation>
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
 <translation id="6615455863669487791">Mostrami</translation>
@@ -9986,6 +9987,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8037801708772278989">Controllo appena eseguito</translation>
 <translation id="8038111231936746805">(predefinita)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copia di 1 file in <ph name="CLOUD_PROVIDER" /> in corso…}other{Copia di {NUM_OF_FILES} file in <ph name="CLOUD_PROVIDER" /> in corso…}}</translation>
+<translation id="8039525676147630657">Questa app di Chrome smetterà di funzionare dopo l'aggiornamento della versione di ChromeOS. Salva i dati dell'app che vuoi conservare. Per scoprire di più sulle opzioni a tua disposizione, contatta lo sviluppatore dell'app o il team di assistenza IT.</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8041093619605951337">Felice</translation>
 <translation id="8041267120753677077">Trasmetti in streaming le app del tuo telefono</translation>
@@ -10614,6 +10616,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8472623782143987204">basato sull'hardware</translation>
 <translation id="8473540203671727883">Leggi il testo sotto il puntatore del mouse</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
+<translation id="847433688444405067">Naviga su più dispositivi</translation>
 <translation id="8474378002946546633">Consenti notifiche</translation>
 <translation id="8474561048882755118">Ti aiuta a vedere prodotti simili uno di fianco all'altro e confrontare facilmente i dettagli che ti interessano</translation>
 <translation id="8475313423285172237">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.</translation>

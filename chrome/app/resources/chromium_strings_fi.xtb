@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Valitse, käytetäänkö Chromium-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="2054039611381840095">Sinulla on oltava macOS 12 tai uudempi, jotta saat tulevia Chromiumin päivityksiä. Tällä tietokoneella on macOS 11.</translation>
 <translation id="2086476982681781442">Chromium on estänyt tämän latauksen, koska tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
-<translation id="2088953378266246249">Tietoa siitä, miten Chromium hallinnoi juurivarmenteitaan</translation>
 <translation id="2099452623287920103">Salasanat ja muu Chromium-data tallennetaan Google-tilillesi ja poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromiumissa, kirjaudu takaisin sisään.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
@@ -609,7 +608,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9190841055450128916">Chromium (saapuva mDNS)</translation>
 <translation id="924957577793602335">Tee Chromiumista näköisesi</translation>
 <translation id="93478295209880648">Chromium ei välttämättä toimi oikein, koska se ei enää tue Windows XP:tä tai Windows Vistaa.</translation>
-<translation id="942598560705308788">Chromiumin hallinnoimat varmenteet</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="965162752251293939">Kuka käyttää Chromiumia?</translation>
 <translation id="967427899662692980">Ota Chromiumin tehokkain suojaus käyttöön</translation>

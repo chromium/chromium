@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Wyświetl statystyki strony</translation>
 <translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
-<translation id="1113597929977215864">Pokaż widok uproszczony</translation>
 <translation id="1126696498560056882">Zarządzaj kontami na tym urządzeniu</translation>
 <translation id="1129510026454351943">Szczegóły: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">W trybie incognito Twoje przeglądanie jest prywatne – niewidoczne dla innych osób korzystających z Twojego urządzenia</translation>
@@ -122,6 +121,7 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1480287803138246127">Niektóre elementy Twojej historii mogą się tutaj nie wyświetlać. Możesz otworzyć całą historię Chrome.</translation>
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
 <translation id="1493287004536771723">Obserwujesz stronę <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nazwa użytkownika</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
 <translation id="1502010315804028179">Aby zarządzać hasłami, zaktualizuj Usługi Google Play</translation>
 <translation id="1506061864768559482">Wyszukiwarka</translation>
@@ -221,6 +221,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="197288927597451399">Zachowaj</translation>
 <translation id="1973912524893600642">Zachowaj dane</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
+<translation id="1984087999855033707">numer telefonu</translation>
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1986685561493779662">Nazwa już istnieje</translation>
 <translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
@@ -1876,7 +1877,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="961856697154696964">Usuń dane przeglądania</translation>
 <translation id="963246339335003378">Otwórz menedżera zadań</translation>
 <translation id="966131775676567255">Usuwam dane konta</translation>
-<translation id="96681097142096641">Pokazać uproszczoną stronę?</translation>
 <translation id="970715775301869095">Pozostało: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zamknij wszystkie karty</translation>

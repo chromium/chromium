@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1036348656032585052">آف کریں</translation>
-<translation id="1045448422538531528">گروپ میں شامل کریں</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ہفتہ پہلے تخلیق کیا گیا}other{<ph name="NUM_WEEKS_MANY" /> ہفتے پہلے تخلیق کیا گیا}}</translation>
 <translation id="1063300264396686489">دوسرے آلات سے ٹیب گروپس کو خودکار طور پر کھولیں</translation>
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ٹیب بند ہو گیا}other{<ph name="MANY_CLOSED" /> ٹیبز بند ہو گئے}}</translation>
 <translation id="2894757982205307093">گروپ میں نیا ٹیب</translation>
 <translation id="2928243913527329289">‏Google | اس اسٹور کے بارے میں</translation>
-<translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
 <translation id="29919168204617356">غیر فعال ٹیبز خودکار طور پر بند ہو جائیں گے۔ آپ انہیں ہمیشہ سرگزشت میں تلاش کر سکتے ہیں۔</translation>
 <translation id="3008554597174452548">پروڈکٹ کو ٹریک کرنا بند کریں</translation>
 <translation id="3026391124054406831">اپنے ٹیبز کو منظم کرنے کیلئے گروپس تخلیق کریں۔</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
+<translation id="6212567362666004597">گروپ میں ٹیب شامل کریں</translation>
 <translation id="6220820548421939212">ہاں۔ میں تیار ہوں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">‏‫Chrome غیر فعال سیکشن میں موجود ان آئٹمز کو خودکار طور پر بند کر دیتا ہے جنہیں آپ نے 3 ماہ سے استعمال نہیں کیا ہے۔ آپ ترتیبات میں اسے ابھی یا کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="8887921976452567404">آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔</translation>
 <translation id="8915916167043355778">تمام بند کریں</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{نئی ونڈو میں منتقل کریں}other{دوسری ونڈو میں منتقل کریں}}</translation>
 <translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
 <translation id="9114502155681725011">ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>

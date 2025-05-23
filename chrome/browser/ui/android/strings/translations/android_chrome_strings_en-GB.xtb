@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">View page insights</translation>
 <translation id="1108938384783527433">History sync</translation>
 <translation id="1111673857033749125">Bookmarks saved on your other devices will appear here.</translation>
-<translation id="1113597929977215864">Show simplified view</translation>
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Incognito mode keeps your browsing private from others who use your device</translation>
@@ -1878,7 +1877,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963246339335003378">Open task manager</translation>
 <translation id="966131775676567255">Deleting account data</translation>
-<translation id="96681097142096641">View simplified page?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>

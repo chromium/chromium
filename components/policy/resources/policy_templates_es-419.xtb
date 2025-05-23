@@ -1716,6 +1716,25 @@ Si no estableces la política para los usuarios generales, equivale a habilitarl
 <translation id="2180795125410219364">Inhabilitar la configuración de Inicio/Fin</translation>
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
+<translation id="2182945089357619926">Esta política permite a los administradores establecer un agregador de búsquedas de la empresa designado que proporcionará recomendaciones de búsqueda y resultados en la barra de direcciones cuando se active una palabra clave específica. Para iniciar una búsqueda, los usuarios pueden escribir en la barra de direcciones la palabra clave especificada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (p. ej., <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, luego, presionar la barra espaciadora o Tab.
+
+Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del motor de búsqueda que se muestra al usuario en la barra de direcciones.
+
+El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que el usuario ingresa para activar la búsqueda. El atajo puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos deben ser únicos.
+
+El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se realizará la búsqueda. Ingresa la dirección web para la página de resultados del motor de búsqueda y usa <ph name="SEARCH_TERM_MARKER" /> en lugar de la búsqueda.
+
+El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Se realizará una solicitud POST y la consulta del usuario se pasará en los parámetros de POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se establece este campo, se usará un ícono predeterminado. Se recomienda usar un ícono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de archivos de imagen admitidos: JPEG, ICO y PNG.
+
+El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> para ver las recomendaciones de búsqueda. Si no estableces este campo, no se requerirá la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="2187372280917024033">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
 A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
@@ -2082,6 +2101,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2421779938235645781">El color de retroiluminación del teclado coincide con el fondo de pantalla actual</translation>
 <translation id="2423255396068675416">Si habilitas la política o no la estableces, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre que estén habilitadas las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" />. Si inhabilitas la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para los usuarios. En ese caso, se comenzará a aplicar la política en los contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se inicien a partir de ese momento, pero no en aquellos que ya estén en ejecución.</translation>
 <translation id="2423654977291507457">Inhabilitar integraciones</translation>
+<translation id="2424141395604579502">Si estableces esta política como verdadera o no la estableces, los usuarios podrán agregar, quitar, modificar o subir favoritos.
+
+      Si la estableces como falsa, los usuarios no podrán agregar, quitar, modificar ni subir favoritos. Podrán seguir utilizando los favoritos existentes.</translation>
 <translation id="242521047682347997">No permitir que los usuarios sincronicen mensajes SMS entre su teléfono y su Chromebook</translation>
 <translation id="2426782419955104525">Habilita la función Instant de <ph name="PRODUCT_NAME" /> e impide que los usuarios modifiquen esta opción.
 
@@ -3062,6 +3084,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 Si habilitas la política, siempre se mostrará el menú de accesibilidad flotante.
 
 Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilidad flotante.</translation>
+<translation id="312646755999968569">Inhabilitar TLS 1.3 Early Data</translation>
 <translation id="3126748868885248792">El botón principal es el derecho</translation>
 <translation id="3128072319047570212">Configuración de keygen</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos móviles</translation>
@@ -4818,7 +4841,6 @@ Esto se quitó en M112.</translation>
 Si inhabilitas la política, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
 
 Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán elegir si desean abrir los archivos PDF de forma externa o no.</translation>
-<translation id="4413764344717830250">Controlar la visibilidad de la atribución de la extensión en la página Nueva pestaña para los navegadores administrados</translation>
 <translation id="4415603335307944578">Si esta política se configura como verdadera, o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.
 
       Si esta política se configura como falsa, el navegador no volverá a mostrar la página de bienvenida la primera vez que se inicie después de una actualización del SO.</translation>
@@ -5339,6 +5361,21 @@ Si la inhabilitas, no se le mostrará la promoción para la extensión del Prove
 <translation id="4789450349513792856">Bloquear ventanas emergentes en estos sitios</translation>
 <translation id="4790391579868456557">Usar cookies esenciales y no esenciales en la búsqueda</translation>
 <translation id="4790588245699320140">Permitir que Asistente de Google acceda al contexto en pantalla</translation>
+<translation id="4799820756794591883">TLS 1.3 Early Data es una extensión de TLS 1.3 para enviar una solicitud HTTP en simultáneo con el protocolo de enlace TLS.
+
+      Si configuras la política, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado para TLS 1.3 Early Data.
+
+      Si la habilitas, <ph name="PRODUCT_NAME" /> habilitará TLS 1.3 Early Data.
+
+      Si la inhabilitas, <ph name="PRODUCT_NAME" /> no habilitará TLS 1.3 Early Data.
+
+      Cuando la función está habilitada, <ph name="PRODUCT_NAME" /> puede usar o no TLS 1.3 Early Data, según la compatibilidad del servidor.
+
+      TLS 1.3 Early Data es un protocolo establecido. Se espera que los servidores TLS, los middleboxes y el software de seguridad existentes manejen o rechacen TLS 1.3 Early Data sin interrumpir la conexión.
+
+      Sin embargo, es posible que los dispositivos que no implementan TLS correctamente no funcionen bien y se desconecten cuando se use TLS 1.3 Early Data. Si esto ocurre, los administradores deben comunicarse con el proveedor para corregirlo.
+
+      Esta política es una medida temporal para controlar la función y se quitará después. Es posible que la política se habilite para permitirte buscar errores y que se inhabilite mientras se resuelven.</translation>
 <translation id="4800438168909332958">Habilita la función de cancelación del eco de audio (AEC) del sistema. El AEC del sistema es un cancelador de eco acústico,
 es decir, un módulo de procesamiento de audio que quita la reproducción de audio del sistema (echo) de la señal del micrófono.
 Esta política es temporal y se quitará ni bien se inicie la cancelación del eco de audio del sistema.
@@ -6762,11 +6799,6 @@ Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIR
 <translation id="5670249935663090320">Si habilitas la política o no la estableces, se activará <ph name="PRODUCT_NAME" />, que los usuarios pueden ejecutar desde el menú de la app, los menús contextuales de la página, los controles de contenido multimedia en los sitios web compatibles con Cast y el ícono de la barra de herramientas de Cast (si se muestra).
 
 Si inhabilitas la política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
-<translation id="5671392367521500075">Esta política controla la visibilidad de la atribución de la extensión en el pie de página de la página Nueva pestaña cuando esta página está controlada por una extensión. De forma predeterminada, este pie de página muestra información sobre la extensión que controla la página Nueva pestaña.
-
-Si no la estableces o la estableces como verdadera, los navegadores con una página Nueva pestaña controlada por una extensión mostrarán el nombre de la extensión y un vínculo a ella.
-
-Si estableces esta política como falsa, se ocultará la atribución de la extensión.</translation>
 <translation id="5673254755365419402">Habilitar la función Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de extensiones que activan la política. Si la estableces como falsa, no se capturará ningún evento. Si no la estableces, se establecerá el valor predeterminado como verdadero.</translation>
 <translation id="5673780539191375049">Establece el intervalo de tiempo (en minutos) que se usa para volver a cargar automáticamente el flujo de autenticación del usuario en su dispositivo <ph name="PRODUCT_OS_NAME" />. Se presenta esta política para controlar el vencimiento de algunos servicios que se usan en los flujos de autenticación cuando el dispositivo permanece inactivo por un tiempo.
@@ -6779,6 +6811,7 @@ El intervalo de recarga máximo es de una semana (10,080 minutos).
 
 Esta política afecta los flujos de autenticación de acceso y de pantalla de bloqueo.</translation>
 <translation id="5676740747107495269">Muestra las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
+<translation id="5679082773290670847">Habilitar TLS 1.3 Early Data</translation>
 <translation id="5679540979548648200">Impide que los usuarios de este dispositivo apliquen la transferencia de ADB y fuerza la opción de Powerwash en el dispositivo si la transferencia se había habilitado antes</translation>
 <translation id="5681258683432554972">Configuración predeterminada de ventanas emergentes</translation>
 <translation id="5683494457096171405">Las combinaciones de teclas con la tecla de búsqueda se envían primero a la app antes de que el SO las controle solo cuando la app enfocada está en pantalla completa.</translation>
@@ -7119,6 +7152,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="5917897389577978190">Gmail (compatible a partir de la versión 135)</translation>
 <translation id="592036544845479336">Volver a habilitar los eventos de mutación que quedaron obsoletos o se quitaron</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
+<translation id="5923084443277419535">Se está cambiando el analizador de HTML para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador HTML hasta la versión M138.
+
+Si habilitas esta política o no la estableces, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
+
+Si inhabilitas esta política, el analizador de HTML restringirá las etiquetas que se pueden colocar dentro del elemento &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Esta política dejó de estar disponible porque la función que controla nunca se lanzó. En su lugar, usa la política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Si no estableces esta política o la estableces como <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valor 0), se mostrará una etiqueta de trabajo o de institución educativa junto al avatar de la barra de herramientas.
@@ -10496,6 +10534,7 @@ El usuario debe permitir explícitamente que todas las extensiones de esta lista
 Si no se instala una extensión especificada en esta política, se bloqueará la navegación en Incógnito.
 
 Esta política se aplica al modo Incógnito. Esto significa que debes habilitar el modo Incógnito en el navegador. Si se inhabilita el modo Incógnito con la política <ph name="INCOGNITO_MODE_AVAILABILITY" />, esta política no tendrá efecto.</translation>
+<translation id="8218485948330739485">Habilitar TLS 1.3 Early Data</translation>
 <translation id="8219813789911069300">Bloquear descargas con contenido malicioso (recomendado)</translation>
 <translation id="8220023426952118761">Tasa de descarga deseada en kbit/s.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>

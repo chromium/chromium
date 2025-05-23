@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Kuva lehe statistika</translation>
 <translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
-<translation id="1113597929977215864">Kuva lihtsustatud vaade</translation>
 <translation id="1126696498560056882">Kontode haldamine selles seadmes</translation>
 <translation id="1129510026454351943">Üksikasjad: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognito režiim hoiab teie sirvimise privaatsena teiste eest, kes teie seadet kasutavad</translation>
@@ -1876,8 +1875,8 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="95817756606698420">Chrome saab Hiinas otsimiseks kasutada teenust <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Seda saate muuta menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>
+<translation id="963246339335003378">Ava tegumihaldur</translation>
 <translation id="966131775676567255">Konto andmete kustutamine</translation>
-<translation id="96681097142096641">Kas kuvada lihtsustatud leht?</translation>
 <translation id="970715775301869095">Jäänud on <ph name="MINUTES" /> minutit</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>

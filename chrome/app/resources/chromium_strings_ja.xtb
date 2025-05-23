@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Chromium の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
 <translation id="2054039611381840095">今後、Chromium のアップデートを受信するには、macOS 12 以降が必要となります。このコンピュータでは macOS 11 が実行されています。</translation>
 <translation id="2086476982681781442">このダウンロードは Chromium でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
-<translation id="2088953378266246249">Chromium でのルート証明書の管理方法に関する情報</translation>
 <translation id="2099452623287920103">Google アカウントに保存したパスワードなどの Chromium データは、このデバイスから削除されます。Chromium でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
@@ -123,7 +122,7 @@
 <translation id="2592940277904433508">Chromium を引き続き使用</translation>
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="2629740064077610681">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chromium プロフィールの閲覧データを確認することはできません。</translation>
+<translation id="2629740064077610681">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chromium プロファイルの閲覧データを確認することはできません。</translation>
 <translation id="2635452620547538388">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="264613044588233783">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します（推奨）</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
@@ -608,7 +607,6 @@
 <translation id="9190841055450128916">Chromium（mDNS インバウンド）</translation>
 <translation id="924957577793602335">Chromium を独自にカスタマイズ</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
-<translation id="942598560705308788">Chromium で管理されている証明書</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>
 <translation id="967427899662692980">Chromium の最高のセキュリティ強度で保護</translation>

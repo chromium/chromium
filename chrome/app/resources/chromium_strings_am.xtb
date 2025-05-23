@@ -82,7 +82,6 @@
 <translation id="2049376729098081731">በGoogle አገልግሎቶች ውስጥ ተጨማሪ ግላዊነት የተላበሱ ተሞክሮዎችን ለማግኘት የChromium ታሪክን ለማካተት እና ላለማካተት ይምረጡ</translation>
 <translation id="2054039611381840095">የወደፊት የChromium ዝማኔዎችን ለማግኘት macOS 12 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር macOS 11 እየተጠቀመ ነው።</translation>
 <translation id="2086476982681781442">ፋይሉ አታላይ ስለሆነ እና በመሣሪያዎ ላይ ያልተጠበቁ ለውጦችን ሊያደርግ ስለሚችል Chromium ይህን ውርድ አግዷል</translation>
-<translation id="2088953378266246249">Chromium እንዴት የስር እውቅና ማረጋገጫዎቹን እንደሚያስተዳድር ላይ መረጃ</translation>
 <translation id="2099452623287920103">Google መለያ ውስጥ ያስቀመጧቸው የይለፍ ቃላትዎ እና ሌላ Chromium ውሂብ ከዚህ መሣሪያ ይወገዳሉ። እንደገና Chromium ውስጥ እነሱን ለመጠቀም መልሰው በመለያ ይግቡ።</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{ድርጅትዎ Chromium ለ1 ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ-ሰር የአሰሳ ውሂብን ይሰርዛል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል። የእርስዎ ትሮች ክፍት ሆነው ይቆያሉ።}one{ድርጅትዎ Chromium ለ# ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ-ሰር የአሰሳ ውሂብን ይሰርዛል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል። የእርስዎ ትሮች ክፍት ሆነው ይቆያሉ።}other{ድርጅትዎ Chromium ለ# ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር በራስ-ሰር የአሰሳ ውሂብን ይሰርዛል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል። የእርስዎ ትሮች ክፍት ሆነው ይቆያሉ።}}</translation>
 <translation id="2126108037660393668">የወረደው ፋይል ማረጋገጫን አላለፈም።</translation>
@@ -611,7 +610,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromiumን የራስዎ ያድርጉት</translation>
 <translation id="93478295209880648">Chromium በWindows XP ወይም Windows Vista ላይ ከእንግዲህ ስለማይደገፍ በአግባቡ ላይሰራ ይችላል</translation>
-<translation id="942598560705308788">በChromium የሚተዳደሩ የእውቅና ማረጋገጫዎች</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="965162752251293939">ማነው Chromiumን የሚጠቀመው?</translation>
 <translation id="967427899662692980">የChromiumን ጠንካራ ደህንነት ያግኙ</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Ver métricas de la página</translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Aquí aparecen los marcadores que hayas guardado en otros dispositivos.</translation>
-<translation id="1113597929977215864">Mostrar vista simplificada</translation>
 <translation id="1126696498560056882">Gestionar las cuentas de este dispositivo</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">El modo Incógnito protege la privacidad de tu navegación frente a otros usuarios que usan tu dispositivo</translation>
@@ -122,6 +121,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1480287803138246127">Es posible que parte de tu historial no aparezca aquí. Abre el historial completo de Chrome para verlo todo.</translation>
 <translation id="1492417797159476138">Ya has guardado ese nombre de usuario en este sitio web</translation>
 <translation id="1493287004536771723">Estás siguiendo a <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nombre de usuario</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1502010315804028179">Para gestionar tus contraseñas, actualiza Servicios de Google Play</translation>
 <translation id="1506061864768559482">Buscador</translation>
@@ -221,6 +221,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Avanzado</translation>
+<translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sin protección (no recomendado)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="200114059308480249">¿Incluir texto cercano en las búsquedas de Google?</translation>
@@ -1876,7 +1877,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="963246339335003378">Abrir administrador de tareas</translation>
 <translation id="966131775676567255">Eliminando datos de la cuenta</translation>
-<translation id="96681097142096641">¿Ver página simplificada?</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>

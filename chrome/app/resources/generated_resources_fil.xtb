@@ -4770,7 +4770,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="428963538941819373">Makakagamit ang mga site na ito ng impormasyong na-save ng mga ito tungkol sa iyo habang bina-browse mo ang <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pumili ng PIN</translation>
-<translation id="4290526909608432059">Malapit nang matapos ang suporta para sa mga Chrome app. Para malaman ang mga opsyon mo, makipag-ugnayan sa developer ng app o sa iyong team ng suporta ng IT.</translation>
 <translation id="4290791284969893584">Pagkatapos isara ang isang page, posibleng hindi matapos ang mga gawaing sinimulan mo</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> miyembro</translation>
 <translation id="4290898381118933198">Mag-swipe para mag-navigate sa mga page</translation>
@@ -7638,6 +7637,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Magdagdag ng pamilya at mga kaibigan</translation>
 <translation id="6367097275976877956">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa ChromeOS? Kung oo, pindutin ang space bar.</translation>
+<translation id="6367196786591004737">I-delete ang entry</translation>
 <translation id="6367396429435748845">Pindutin ang <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> para i-pause at ipagpatuloy ang mga mouse key</translation>
 <translation id="6367985768157257101">Tanggapin gamit ang Nearby Share?</translation>
 <translation id="6368157733310917710">&amp;Mga address at higit pa</translation>
@@ -7973,7 +7973,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6610002944194042868">Mga Opsyon sa Pagsasalin</translation>
 <translation id="6610064275805055636">Pamahalaan ang mga naka-isolate na web app</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
-<translation id="6611972847767394631">Hanapin ang iyong mga tab dito</translation>
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6613267708691765962">Sina-scan para sa malware...</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
@@ -10637,6 +10636,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8472623782143987204">na-hardware-back</translation>
 <translation id="8473540203671727883">Bigkasin ang text na hino-hover ng cursor</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
+<translation id="847433688444405067">Mag-browse sa lahat ng device</translation>
 <translation id="8474378002946546633">Payagan ang mga notification</translation>
 <translation id="8474561048882755118">Tinutulungan kang makita nang magkakatabi ang magkakatulad na produkto at paghambingin ang mga detalye na mahalaga para sa iyo nang walang kahirap-hirap</translation>
 <translation id="8475313423285172237">Ang isa pang program sa iyong computer ay nagdagdag ng extension na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>

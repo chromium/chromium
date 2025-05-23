@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1036348656032585052">關閉</translation>
-<translation id="1045448422538531528">新增至群組</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週前建立}other{<ph name="NUM_WEEKS_MANY" /> 週前建立}}</translation>
 <translation id="1063300264396686489">自動開啟其他裝置建立的分頁群組</translation>
 <translation id="1075622780330595106">你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{已關閉 <ph name="ONE_CLOSED" /> 個分頁}other{已關閉 <ph name="MANY_CLOSED" /> 個分頁}}</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2928243913527329289">Google | 關於這間商店</translation>
-<translation id="2977480621796371840">從群組中移除</translation>
 <translation id="29919168204617356">閒置分頁將自動關閉。你隨時可以前往「歷史記錄」查看這些分頁。</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3026391124054406831">建立群組，方便整理分頁。</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
 <translation id="6193448654517602979">選取分頁</translation>
+<translation id="6212567362666004597">將分頁加入群組</translation>
 <translation id="6220820548421939212">是，我同意</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome 會自動關閉「閒置分頁」部分中 3 個月未曾使用的項目。你隨時可以前往「設定」關閉這項功能。</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移到新視窗}other{移到其他視窗}}</translation>
 <translation id="9090098097337832354">這間店的資訊已關閉</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>
 <translation id="9169594135889675189">在群組中新增分頁</translation>

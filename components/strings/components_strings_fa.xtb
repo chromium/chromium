@@ -18,6 +18,7 @@
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1030706264415084469"><ph name="URL" /> می‌خواهد داده‌های بزرگ را برای همیشه در دستگاهتان ذخیره کند</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت. شما را از سیستم اکثر سایت‌ها خارج می‌کند. }one{از # سایت. شما را از سیستم اکثر سایت‌ها خارج می‌کند. }other{از # سایت. شما را از سیستم اکثر سایت‌ها خارج می‌کند. }}</translation>
+<translation id="1035509598913574970">فیروزه‌ای ۳</translation>
 <translation id="1035709686865413354">فیلتر آب و تصفیه‌کننده</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036881361735705143">پاکت سی۴</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">این صفحه می‌خواهد کنترل‌کننده سرویس نصب کند.</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
 <translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
+<translation id="1433478348197382180">حالت خواندن</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
 <translation id="1442987760062738829">سوراخ کردن</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">در هر بازدید مجاز است</translation>
 <translation id="2085876078937250610">ذخیره کردن…</translation>
+<translation id="2088913896151127116">افزودن نوشتار</translation>
 <translation id="2090451897496479509">برای اطلاعات بیشتر با ارائه‌دهنده تماس بگیرید</translation>
 <translation id="2091887806945687916">صدا</translation>
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
-<translation id="2418292431699242678">‏سرپرست شما امکان همگام‌سازی موارد زیر را بین جلسه‌های قبلی و فعلی شما در هر دستگاه ChromeOS فراهم می‌کند:</translation>
 <translation id="2429716554270894715">پارچه (ضدآب)</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2436976580469434549">هنر نساجی و بافت</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">خرابی از <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">نقاشی</translation>
 <translation id="2916038427272391327">برنامه‌های دیگر را ببندید</translation>
+<translation id="2917630513638801879">فیروزه‌ای ۱</translation>
 <translation id="2919185931486062599">شکار و تیراندازی</translation>
 <translation id="2922350208395188000">گواهی سرور بررسی نمی‌شود.</translation>
 <translation id="2922792708490674">{0,plural, =1{بارگیری فایل مسدود شده است}one{بارگیری <ph name="FILE_COUNT" /> فایل مسدود شده است}other{بارگیری <ph name="FILE_COUNT" /> فایل مسدود شده است}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
 <translation id="3039406992698062762">سفر خانوادگی</translation>
-<translation id="3040636468789770340">کوکی‌ها (وضعیت ورود به سیستم در وب‌سایت‌های اخیراً بازدیدشده)</translation>
 <translation id="3041176923638368519">دیدن شرایط مزایای کارت</translation>
 <translation id="3041612393474885105">اطلاعات گواهی</translation>
 <translation id="3045769629416806687">ورزش‌های سنگین</translation>
@@ -1625,7 +1627,7 @@
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
 <translation id="3781428340399460090">صورتی پررنگ</translation>
-<translation id="3783418713923659662">مسترکارت</translation>
+<translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
 <translation id="378611282717571199">منطبق‌ترین نتایج برای «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="3789155188480882154">اندازه ۱۶</translation>
@@ -1680,7 +1682,6 @@
 <translation id="3869939189466884821">فایل‌های محلی شما تا <ph name="MINUTES" /> دقیقه دیگر حذف خواهد شد</translation>
 <translation id="3872834068356954457">علم</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
-<translation id="387681220560687945">پنجره‌ها (ترتیب و سازمان‌دهی پنجره‌ها و برگه‌ها)</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
 <translation id="3880589673277376494">اینترنت و مخابرات</translation>
@@ -2082,6 +2083,7 @@
 <translation id="4562155266774382038">بستن پیشنهاد</translation>
 <translation id="4566017918361049074">فعالیت‌های فضای باز</translation>
 <translation id="4569155249847375786">تأیید شده</translation>
+<translation id="4570008401337135432">تراز نوشتار</translation>
 <translation id="457875822857220463">ارسال</translation>
 <translation id="4579699065574932398">بانک‌داری</translation>
 <translation id="4582595824823167856">دریافت پیام نوشتاری</translation>
@@ -2245,7 +2247,6 @@
 <translation id="4866506163384898554">برای نمایش مکان‌نما، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
 <translation id="4873616204573862158">عینک</translation>
 <translation id="4873807733347502026">موشواره را قفل و از آن استفاده کند</translation>
-<translation id="4876188919622883022">نمای ساده‌شده</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
 <translation id="4876327226315760474">این یعنی ویژگی‌های سایت باید طبق انتظار کار کند اما ممکن است محافظت کمتری در مرورگر داشته باشید.</translation>
 <translation id="4877047577339061095">قفسه‌بندی و انبار برای خانه</translation>
@@ -2605,6 +2606,7 @@
 <translation id="5481682542063333508">ارائه کمک در نوشتن</translation>
 <translation id="54817484435770891">نشانی معتبری اضافه کنید</translation>
 <translation id="5483838506518938965">شما آماده‌اید!</translation>
+<translation id="5484396522446324950">سبک‌ها</translation>
 <translation id="5485100387355669506">فوق‌العاده ضخیم</translation>
 <translation id="5485973315555778056">ماشین ابری</translation>
 <translation id="5488367146069768854">نصب‌های برنامه وب</translation>
@@ -2943,6 +2945,7 @@
 <translation id="6062937464449575061">لغو پیگیری قیمت</translation>
 <translation id="6063415549109819824">تأمین هزینه خرید خانه</translation>
 <translation id="6070432475334343308">یک یا چند فایل در پوشه <ph name="FOLDER_NAME" /> در <ph name="CLOUD_PROVIDER" /> بارگذاری نشدند</translation>
+<translation id="6078069862923723141">فیروزه‌ای ۲</translation>
 <translation id="6085149458302186532">برچسب (رنگی)</translation>
 <translation id="6087312102907839798">جستجوهای مربوط</translation>
 <translation id="6089505343295765444">‏برگه‌هایی را که از سابقه Chrome حذف می‌کنید همچنان در جدول‌های مقایسه نشان داده می‌شوند</translation>
@@ -3023,7 +3026,6 @@
 <translation id="622039917539443112">تاخوردگی موازی</translation>
 <translation id="6221286101741304627">برای خروج از تمام‌صفحه، |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="6221311046884916259">‏می‌خواهید این کارت در «حساب Google» شما ذخیره شود؟</translation>
-<translation id="6221892641068781024">نمای ساده‌شده</translation>
 <translation id="6222527803348563979">نوشت‌افزار</translation>
 <translation id="62231116988543150">بتواند برنامه‌های وب نصب کند</translation>
 <translation id="6224281071334553713">جواهرات و سنگ‌های قیمتی</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7598391785903975535">کمتر از <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> درحال حاضر نمی‌تواند این درخواست را انجام دهد.</translation>
 <translation id="7599089013883397081">مهلت زمانی بارگیری تمام شد</translation>
+<translation id="7602868996817972616">‏پرسیدن از Google درباره این صفحه</translation>
 <translation id="7608583484192556132">اینکه آیا آگهی‌ای که می‌بینید شخصی‌سازی شده است یا نه به عوامل زیادی بستگی دارد، ازجمله این تنظیم، <ph name="BEGIN_LINK_1" />آگهی‌های پیشنهادی سایت<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه. درباره <ph name="BEGIN_LINK_3" />مدیریت حریم خصوصی آگهی<ph name="END_LINK_3" /> بیشتر بدانید.</translation>
 <translation id="7610193165460212391">مقدار خارج از محدوده <ph name="VALUE" /> است.</translation>
 <translation id="761261689936461781">ضخیم</translation>

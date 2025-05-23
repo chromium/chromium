@@ -18,6 +18,7 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030706264415084469"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए बड़ी मात्रा में डेटा संग्रहीत करना चाहता है</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{किसी साइट से नहीं}=1{1 साइट से. आपको ज़्यादातर साइटों से साइन आउट कर देता है. }one{# साइट से. आपको ज़्यादातर साइटों से साइन आउट कर देता है. }other{# साइटों से. आपको ज़्यादातर साइटों से साइन आउट कर देता है. }}</translation>
+<translation id="1035509598913574970">सायन 3</translation>
 <translation id="1035709686865413354">वॉटर फ़िल्टर और प्यूरीफ़ायर</translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1036881361735705143">C4 साइज़ का लिफ़ाफ़ा</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1433225466058025572">अपनी फ़ाइलें फिर से मूव करने की कोशिश करें</translation>
+<translation id="1433478348197382180">रीडिंग मोड</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1442386063175183758">दायां गेट फ़ोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
@@ -632,6 +634,7 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हमेशा के लिए अनुमति दें</translation>
 <translation id="2085876078937250610">सेव करें…</translation>
+<translation id="2088913896151127116">टेक्स्ट जोड़ें</translation>
 <translation id="2090451897496479509">ज़्यादा जानकारी के लिए, सेवा देने वाली कंपनी से संपर्क करें</translation>
 <translation id="2091887806945687916">आवाज़</translation>
 <translation id="2093982008204312032">Google Chrome, Windows Hello को बंद करने की कोशिश कर रहा है, ताकि पासवर्ड डाला जा सके.</translation>
@@ -838,7 +841,6 @@
 <translation id="2413155254802890957">पुराना</translation>
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2414886740292270097">गहरा</translation>
-<translation id="2418292431699242678">आपका एडमिन, किसी भी ChromeOS डिवाइस पर आपके पिछले और मौजूदा सेशन के बीच, इन चीज़ों को सिंक करने की सुविधा चालू करता है:</translation>
 <translation id="2429716554270894715">फ़ैब्रिक (वॉटरप्रूफ़)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2436976580469434549">फ़ाइबर और टेक्सटाइल आर्ट</translation>
@@ -1094,6 +1096,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> की क्रैश रिपोर्ट</translation>
 <translation id="2915496182262110498">पेंटिंग</translation>
 <translation id="2916038427272391327">दूसरे प्रोग्राम बंद करें</translation>
+<translation id="2917630513638801879">सायन 1</translation>
 <translation id="2919185931486062599">शिकार करना और निशानेबाज़ी</translation>
 <translation id="2922350208395188000">सर्वर प्रमाणपत्र की जाँच नहीं की जा सकती.</translation>
 <translation id="2922792708490674">{0,plural, =1{फ़ाइल को डाउनलोड करने से रोका गया}one{<ph name="FILE_COUNT" /> फ़ाइल को डाउनलोड करने से रोका गया}other{<ph name="FILE_COUNT" /> फ़ाइलों को डाउनलोड करने से रोका गया}}</translation>
@@ -1173,7 +1176,6 @@
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
 <translation id="3039406992698062762">फ़ैमिली ट्रैवल</translation>
-<translation id="3040636468789770340">कुकी (हाल ही में विज़िट की गई वेबसाइटों पर साइन-इन की स्थिति)</translation>
 <translation id="3041176923638368519">कार्ड पर मिलने वाले फ़ायदों से जुड़ी शर्तें देखें</translation>
 <translation id="3041612393474885105">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="3045769629416806687">जोखिम भरे खेल</translation>
@@ -1680,7 +1682,6 @@
 <translation id="3869939189466884821">आपकी लोकल फ़ाइलें <ph name="MINUTES" /> मिनट में मिटा दी जाएंगी</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
-<translation id="387681220560687945">विंडो (विंडो और टैब को क्रम से लगाना और व्यवस्थित करना)</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880456882942693779">कला और मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट और टेलीकॉम</translation>
@@ -2082,6 +2083,7 @@
 <translation id="4562155266774382038">सुझाव को खारिज करें</translation>
 <translation id="4566017918361049074">आउटडोर गतिविधियां</translation>
 <translation id="4569155249847375786">सत्यापित</translation>
+<translation id="4570008401337135432">टेक्स्ट अलाइनमेंट</translation>
 <translation id="457875822857220463">वितरण</translation>
 <translation id="4579699065574932398">बैंकिंग</translation>
 <translation id="4582595824823167856">मैसेज पाएं</translation>
@@ -2245,7 +2247,6 @@
 <translation id="4866506163384898554">अपना कर्सर दिखाने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
 <translation id="4873616204573862158">चश्मे और सनग्लास</translation>
 <translation id="4873807733347502026">अपने माउस को लॉक करें और उसका इस्तेमाल करें</translation>
-<translation id="4876188919622883022">सरल बनाया गया व्यू</translation>
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
 <translation id="4876327226315760474">इसका मतलब है कि साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी, लेकिन हो सकता है कि आपको ब्राउज़िंग के लिए कम सुरक्षा मिले.</translation>
 <translation id="4877047577339061095">घर का स्टोरेज और शेल्फ़</translation>
@@ -2605,6 +2606,7 @@
 <translation id="5481682542063333508">लिखने में मदद पाएं</translation>
 <translation id="54817484435770891">मान्य पता जोड़ें</translation>
 <translation id="5483838506518938965">आप बिलकुल तैयार हैं</translation>
+<translation id="5484396522446324950">स्टाइल</translation>
 <translation id="5485100387355669506">बहुत मोटा</translation>
 <translation id="5485973315555778056">क्लाउड मशीन</translation>
 <translation id="5488367146069768854">वेब ऐप्लिकेशन के इंस्टॉल होने की कुल संख्या</translation>
@@ -2943,6 +2945,7 @@
 <translation id="6062937464449575061">कीमत ट्रैक न करें</translation>
 <translation id="6063415549109819824">होम फ़ाइनेंसिंग</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> पर मौजूद <ph name="FOLDER_NAME" /> में एक या उससे ज़्यादा फ़ाइलें अपलोड नहीं हो पाईं</translation>
+<translation id="6078069862923723141">सायन 2</translation>
 <translation id="6085149458302186532">लेबल (कलर्ड)</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
 <translation id="6089505343295765444">Chrome इतिहास से मिटाए गए टैब, अब भी तुलना करने वाली टेबल में दिखेंगे</translation>
@@ -3023,7 +3026,6 @@
 <translation id="622039917539443112">पैरलल फ़ोल्ड</translation>
 <translation id="6221286101741304627">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="6221311046884916259">क्या आपको इस कार्ड की जानकारी अपने Google खाते में सेव करनी है?</translation>
-<translation id="6221892641068781024">सरल बनाया गया व्यू</translation>
 <translation id="6222527803348563979">स्टेशनरी</translation>
 <translation id="62231116988543150">वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति चाहिए</translation>
 <translation id="6224281071334553713">जेम्स और गहने</translation>
@@ -3844,6 +3846,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> से कम</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> फ़िलहाल इस अनुरोध का प्रबंधन नहीं कर सकता है.</translation>
 <translation id="7599089013883397081">डाउनलोड करने का समय खत्म हो गया</translation>
+<translation id="7602868996817972616">Google से इस पेज के बारे में पूछें</translation>
 <translation id="7608583484192556132">आपको दिखने वाला विज्ञापन आपकी दिलचस्पी के मुताबिक है या नहीं, यह कई चीज़ों के आधार पर तय होता है. इसमें यह सेटिंग, <ph name="BEGIN_LINK_1" />साइट की ओर से सुझाए गए विज्ञापन<ph name="END_LINK_1" />, और आपकी <ph name="BEGIN_LINK_2" />कुकी सेटिंग<ph name="END_LINK_2" /> शामिल है. साथ ही, यह इस बात पर भी निर्भर होता है कि आप जिस साइट पर हैं वह लोगों की दिलचस्पी के मुताबिक विज्ञापन दिखाती है या नहीं. <ph name="BEGIN_LINK_3" />विज्ञापनों के लिए अपनी निजता को मैनेज करने<ph name="END_LINK_3" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> मान सीमा से बाहर है.</translation>
 <translation id="761261689936461781">मोटा</translation>

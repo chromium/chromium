@@ -4758,7 +4758,6 @@
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="428963538941819373">Эти сайты могут использовать информацию о вас, которая сохраняется при работе с сайтом <ph name="HOST" />.</translation>
 <translation id="4289732974614035569">Выберите PIN-код</translation>
-<translation id="4290526909608432059">Поддержка приложений Chrome скоро будет прекращена. Чтобы узнать о дальнейших шагах, свяжитесь с разработчиком приложения или со своей службой поддержки.</translation>
 <translation id="4290791284969893584">После закрытия страницы активные задачи могут не завершиться</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> участник</translation>
 <translation id="4290898381118933198">Перемещение между страницами пролистыванием</translation>
@@ -7625,6 +7624,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Добавьте родных и друзей</translation>
 <translation id="6367097275976877956">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox? Если да, нажмите Пробел.</translation>
+<translation id="6367196786591004737">Удалить запись</translation>
 <translation id="6367396429435748845">Чтобы приостановить или возобновить управление указателем с клавиатуры, нажмите <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">Принять через Обмен с окружением?</translation>
 <translation id="6368157733310917710">Адреса и другие данные</translation>
@@ -7964,7 +7964,6 @@
 <translation id="6610002944194042868">Параметры перевода</translation>
 <translation id="6610064275805055636">Настроить изолированные веб-приложения</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> вкладка</translation>
-<translation id="6611972847767394631">Здесь находятся ваши вкладки</translation>
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6613267708691765962">Поиск вредоносного ПО…</translation>
 <translation id="6615455863669487791">Показать</translation>
@@ -10626,6 +10625,7 @@
 <translation id="8472623782143987204">требуется оборудование</translation>
 <translation id="8473540203671727883">Произносить текст под указателем мыши</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
+<translation id="847433688444405067">Работайте на разных устройствах</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
 <translation id="8474561048882755118">Позволяет размещать похожие товары рядом и сравнивать их по важным для вас критериям.</translation>
 <translation id="8475313423285172237">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.</translation>
@@ -11803,7 +11803,7 @@
 <translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994087375490600917">Боковые панели</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>
-<translation id="995755448277384931">Добавление кода IBAN</translation>
+<translation id="995755448277384931">Добавить код IBAN</translation>
 <translation id="996250603853062861">Создание безопасного подключения...</translation>
 <translation id="997143476478634194">Когда вы посещаете сайты, эти настройки используются автоматически. Обычно сайты показывают уведомления, чтобы оповестить вас о сообщениях в чате или срочных новостях.</translation>
 <translation id="99731366405731005">Чтобы использовать функцию "Синхронизация Wi-Fi", включите <ph name="LINK1_BEGIN" />синхронизацию Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Подробнее…<ph name="LINK2_END" /></translation>

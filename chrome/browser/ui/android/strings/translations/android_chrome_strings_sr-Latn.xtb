@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Prikaži uvid u stranicu</translation>
 <translation id="1108938384783527433">Sinhronizacija istorije</translation>
 <translation id="1111673857033749125">Obeleživači sačuvani na drugim uređajima će se prikazati ovde.</translation>
-<translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
 <translation id="1126696498560056882">Upravljajte nalozima na ovom uređaju</translation>
 <translation id="1129510026454351943">Detalji: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Režim bez arhiviranja čuva privatnost pregledanja od drugih koji koriste uređaj</translation>
@@ -1878,7 +1877,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>
 <translation id="963246339335003378">Otvori Menadžer zadataka</translation>
 <translation id="966131775676567255">Brišu se podaci naloga</translation>
-<translation id="96681097142096641">Želite da vidite pojednostavljenu stranicu?</translation>
 <translation id="970715775301869095">Još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Oflajn</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>

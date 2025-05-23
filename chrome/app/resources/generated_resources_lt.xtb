@@ -4772,7 +4772,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="428963538941819373">Šios svetainės gali naudoti savo išsaugotą informaciją apie jus, kai naršote <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pasirinkite PIN kodą</translation>
-<translation id="4290526909608432059">„Chrome“ programų palaikymas netrukus bus nutrauktas. Jei norite sužinoti apie parinktis, susisiekite su programos kūrėju arba IT palaikymo komanda.</translation>
 <translation id="4290791284969893584">Uždarius puslapį, pradėtos užduotys gali likti nebaigtos</translation>
 <translation id="4290826901752066702">Narių: <ph name="NUM" /></translation>
 <translation id="4290898381118933198">Naršykite puslapius perbraukdami</translation>
@@ -7641,6 +7640,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Pridėti šeimos narius ir draugus</translation>
 <translation id="6367097275976877956">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą? Jei norite, paspauskite tarpo klavišą.</translation>
+<translation id="6367196786591004737">Ištrinti įrašą</translation>
 <translation id="6367396429435748845">Paspauskite <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" />, kad pristabdytumėte ir toliau naudotumėte pelės klavišus</translation>
 <translation id="6367985768157257101">Gauti naudojant Bendrinimą netoliese?</translation>
 <translation id="6368157733310917710">&amp;Adresai ir kt.</translation>
@@ -7980,7 +7980,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6610002944194042868">Vertimo parinktys</translation>
 <translation id="6610064275805055636">Tvarkyti izoliuotas žiniatinklio programas</translation>
 <translation id="6611432349566876829">Skirtukų: <ph name="NUM" /></translation>
-<translation id="6611972847767394631">Čia rasite savo skirtukus</translation>
 <translation id="661266467055912436">Sustiprina jūsų ir visų žiniatinklio naudotojų saugą.</translation>
 <translation id="6613267708691765962">Nuskaitoma, ar nėra kenkėjiškų programų...</translation>
 <translation id="6615455863669487791">Rodyti</translation>
@@ -10643,6 +10642,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8472623782143987204">palaikoma aparatinės įrangos</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
+<translation id="847433688444405067">Naršymas įrenginiuose</translation>
 <translation id="8474378002946546633">Leisti pranešimus</translation>
 <translation id="8474561048882755118">Padeda palyginti panašius produktus ir lengvai palyginti jums svarbią išsamią informaciją</translation>
 <translation id="8475313423285172237">Kita jūsų kompiuteryje esanti programa pridėjo plėtinį, kuris gali pakeisti „Chrome“ veikimo būdą.</translation>

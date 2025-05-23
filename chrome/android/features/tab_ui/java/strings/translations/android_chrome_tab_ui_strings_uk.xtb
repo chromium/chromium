@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1036348656032585052">Вимкнути</translation>
-<translation id="1045448422538531528">Додати в групу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створено <ph name="NUM_WEEKS_ONE" /> тиждень тому}one{Створено <ph name="NUM_WEEKS_MANY" /> тиждень тому}few{Створено <ph name="NUM_WEEKS_MANY" /> тижні тому}many{Створено <ph name="NUM_WEEKS_MANY" /> тижнів тому}other{Створено <ph name="NUM_WEEKS_MANY" /> тижня тому}}</translation>
 <translation id="1063300264396686489">Автоматично відкривати групи вкладок з інших пристроїв</translation>
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> вкладку закрито}one{<ph name="MANY_CLOSED" /> вкладку закрито}few{<ph name="MANY_CLOSED" /> вкладки закрито}many{<ph name="MANY_CLOSED" /> вкладок закрито}other{<ph name="MANY_CLOSED" /> вкладки закрито}}</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2928243913527329289">Google | Про цей магазин</translation>
-<translation id="2977480621796371840">Вилучити з групи</translation>
 <translation id="29919168204617356">Неактивні вкладки буде автоматично закрито. Ви завжди можете знайти їх в історії.</translation>
 <translation id="3008554597174452548">Вимкнути відстеження товару</translation>
 <translation id="3026391124054406831">Щоб упорядковувати вкладки, об’єднуйте їх у групи.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
+<translation id="6212567362666004597">Додати вкладку в групу</translation>
 <translation id="6220820548421939212">Так, видаляти</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6271513594716432922">Закрити всі неактивні вкладки</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome автоматично закриває об’єкти в розділі "Неактивні вкладки", які ви не використовували протягом 3 місяців. Ви можете будь-коли вимкнути цю функцію в налаштуваннях.</translation>
 <translation id="8887921976452567404">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок".</translation>
 <translation id="8915916167043355778">Закрити всі</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Перемістити в нове вікно}one{Перемістити в інше вікно}few{Перемістити в інше вікно}many{Перемістити в інше вікно}other{Перемістити в інше вікно}}</translation>
 <translation id="9090098097337832354">Інформацію про цей магазин закрито</translation>
 <translation id="9114502155681725011">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />", колір: <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Додати нову вкладку в групу</translation>

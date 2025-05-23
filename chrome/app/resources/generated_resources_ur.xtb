@@ -4756,7 +4756,6 @@
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="428963538941819373">آپ کے <ph name="HOST" /> کو براؤز کرتے وقت یہ سائٹس آپ کے بارے میں محفوظ کردہ معلومات کا استعمال کر سکتی ہیں۔</translation>
 <translation id="4289732974614035569">‏PIN منتخب کریں</translation>
-<translation id="4290526909608432059">‏‫Chrome ایپس کے لیے سپورٹ جلد ہی ختم ہو جائے گا۔ اپنے اختیارات کے بارے میں جاننے کے لیے، ایپ ڈویلپر یا اپنی IT سپورٹ ٹیم سے رابطہ کریں۔</translation>
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> رکن</translation>
 <translation id="4290898381118933198">صفحات کے درمیان نیویگیٹ کیلئے سوائپ کریں</translation>
@@ -7621,6 +7620,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">خاندان اور دوستوں کو شامل کریں</translation>
 <translation id="6367097275976877956">‏کیا آپ ChromeOS کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو اسپیس بار کو دبائیں۔</translation>
+<translation id="6367196786591004737">اندراج حذف کریں</translation>
 <translation id="6367396429435748845">ماؤس کنٹرول کرنے کی کلیدوں کو موقوف کرنے اور دوبارہ شروع کرنے کیلئے <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> دبائیں</translation>
 <translation id="6367985768157257101">قریبی آلات کے ساتھ اشتراک کے ذریعے موصول کریں؟</translation>
 <translation id="6368157733310917710">&amp;پتے اور مزید</translation>
@@ -7954,7 +7954,6 @@
 <translation id="6610002944194042868">ترجمہ کے اختیارات</translation>
 <translation id="6610064275805055636">عیلحدہ کردہ ویب ایپس کا نظم کریں</translation>
 <translation id="6611432349566876829">‫<ph name="NUM" /> ٹیب</translation>
-<translation id="6611972847767394631">یہاں اپنے ٹیبز تلاش کریں</translation>
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6613267708691765962">میلوئیر کے لیے اسکین کیا جا رہا ہے...</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
@@ -10615,6 +10614,7 @@
 <translation id="8472623782143987204">ہارڈ ویئر کے ذریعے تعاون یافتہ</translation>
 <translation id="8473540203671727883">ماؤس کے نیچے موجود ٹیکسٹ بولیں</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
+<translation id="847433688444405067">آلات پر براؤز کریں</translation>
 <translation id="8474378002946546633">اطلاعات کی اجازت دیں</translation>
 <translation id="8474561048882755118">آپ کو ملتے جلتے پروڈکٹس کو سمت بہ سمت دیکھنے اور آپ کے لیے تفصیلات کا آسانی سے موازنہ کرنے میں مدد کرتا ہے</translation>
 <translation id="8475313423285172237">‏آپ کے کمپیوٹر پر موجود ایک دوسرے پروگرام نے ایک ایکسٹینشن شامل کیا جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔</translation>

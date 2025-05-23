@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Прикажи увиди за страниците</translation>
 <translation id="1108938384783527433">Синхронизација на историја</translation>
 <translation id="1111673857033749125">Обележувачите зачувани на другите уреди ќе се појават тука.</translation>
-<translation id="1113597929977215864">Прикажи поедноставен приказ</translation>
 <translation id="1126696498560056882">Управувајте со сметките на уредов</translation>
 <translation id="1129510026454351943">Детали: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режимот „Инкогнито“ ја штити приватноста на вашето прелистување од другите што го користат уредот</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">Дел од вашата историја можеби нема да се појави тука. За да ја видите сета ваша историја на Chrome, отворете ја целата историја на Chrome.</translation>
 <translation id="1492417797159476138">Веќе го зачувавте ова корисничко име за сајтов</translation>
 <translation id="1493287004536771723">Го следите <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">корисничко име</translation>
 <translation id="1501480321619201731">Избриши ја групата</translation>
 <translation id="1502010315804028179">За да управувате со вашите лозинки, ажурирајте ги услугите на Google Play</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">Чувај</translation>
 <translation id="1973912524893600642">Задржи ги податоците</translation>
 <translation id="1974060860693918893">Напредни</translation>
+<translation id="1984087999855033707">телефонски број</translation>
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
 <translation id="1986685561493779662">Името веќе постои</translation>
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
@@ -1874,8 +1875,8 @@
 <translation id="939598580284253335">Внеси пристапна фраза</translation>
 <translation id="95817756606698420">Chrome може да го користи <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> за пребарување во Кина. Тоа може да го промените во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Избришете го прелистувањето</translation>
+<translation id="963246339335003378">Отвори „Управник со задачи“</translation>
 <translation id="966131775676567255">Се бришат податоците во сметката</translation>
-<translation id="96681097142096641">Да се прикаже поедноставена страница?</translation>
 <translation id="970715775301869095">Останаа <ph name="MINUTES" /> минути</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>

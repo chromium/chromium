@@ -18,6 +18,7 @@
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030706264415084469">يريد <ph name="URL" /> تخزين حجم كبير من البيانات بشكل دائم على جهازك.</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{لا مواقع}=1{من موقع واحد. يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. }two{من موقعَين. يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. }few{من # مواقع. يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. }many{من # موقعًا. يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. }other{من # موقع. يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. }}</translation>
+<translation id="1035509598913574970">الأزرق السماوي 3</translation>
 <translation id="1035709686865413354">فلاتر مياه ومطهّرات</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036881361735705143">‏ظرف C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433225466058025572">حاوِل نقل ملفاتك مرة أخرى.</translation>
+<translation id="1433478348197382180">وضع القراءة</translation>
 <translation id="1436185428532214179">السماح للموقع الإلكتروني بطلب تعديل الملفات والمجلدات على جهازك</translation>
 <translation id="1442386063175183758">الطي على شكل بوابة يمينًا</translation>
 <translation id="1442987760062738829">ثقب</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">السماح بالاستخدام في كل زيارة</translation>
 <translation id="2085876078937250610">حفظ…</translation>
+<translation id="2088913896151127116">إضافة نص</translation>
 <translation id="2090451897496479509">يُرجى التواصل مع مقدِّم الخدمة للحصول على مزيد من المعلومات</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2093982008204312032">‏يحاول Google Chrome إيقاف استخدام Windows Hello لملء كلمات المرور.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">القديم</translation>
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
-<translation id="2418292431699242678">‏يسمح المشرف بمزامنة ما يلي بين جلساتك السابقة والحالية على أي جهاز ChromeOS:</translation>
 <translation id="2429716554270894715">نسيج (ضد الماء)</translation>
 <translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="2436976580469434549">أعمال فنية بالغزل والنسيج</translation>
@@ -1094,6 +1096,7 @@
 <translation id="2915068235268646559">مُعطّل منذ <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">طلاء بالألوان</translation>
 <translation id="2916038427272391327">إغلاق البرامج الأخرى</translation>
+<translation id="2917630513638801879">الأزرق السماوي 1</translation>
 <translation id="2919185931486062599">صيد ورماية</translation>
 <translation id="2922350208395188000">لا يمكن التحقق من شهادة الخادم.</translation>
 <translation id="2922792708490674">{0,plural, =1{تم حظر تنزيل الملف}zero{تم حظر تنزيل <ph name="FILE_COUNT" /> ملف}two{تم حظر تنزيل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر تنزيل <ph name="FILE_COUNT" /> ملفات}many{تم حظر تنزيل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر تنزيل <ph name="FILE_COUNT" /> ملف}}</translation>
@@ -1173,7 +1176,6 @@
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3039406992698062762">سياحة عائلية</translation>
-<translation id="3040636468789770340">ملفات تعريف الارتباط (حالة تسجيل الدخول على المواقع الإلكترونية التي زرتها مؤخرًا)</translation>
 <translation id="3041176923638368519">الاطّلاع على أحكام مزايا البطاقة</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
 <translation id="3045769629416806687">رياضات خطرة</translation>
@@ -1681,7 +1683,6 @@
 <translation id="3869939189466884821">سيتم حذف ملفاتك على الجهاز بعد <ph name="MINUTES" /> من الدقائق</translation>
 <translation id="3872834068356954457">علوم</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
-<translation id="387681220560687945">النوافذ (ترتيب وتنظيم النوافذ وعلامات التبويب)</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3880456882942693779">فنون وترفيه</translation>
 <translation id="3880589673277376494">إنترنت واتصالات</translation>
@@ -2084,6 +2085,7 @@
 <translation id="4562155266774382038">إغلاق الاقتراح</translation>
 <translation id="4566017918361049074">أنشطة في أماكن مفتوحة</translation>
 <translation id="4569155249847375786">تم التحقق</translation>
+<translation id="4570008401337135432">محاذاة النص</translation>
 <translation id="457875822857220463">التسليم</translation>
 <translation id="4579699065574932398">خدمات مصرفية</translation>
 <translation id="4582595824823167856">تلقي رسالة نصية</translation>
@@ -2247,7 +2249,6 @@
 <translation id="4866506163384898554">اضغط على |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| لعرض المؤشر.</translation>
 <translation id="4873616204573862158">نظارات</translation>
 <translation id="4873807733347502026">قفل الماوس واستخدامه</translation>
-<translation id="4876188919622883022">العرض المبسَّط</translation>
 <translation id="4876305945144899064">ليس هناك اسم مستخدم</translation>
 <translation id="4876327226315760474">هذا يعني أنّ ميزات الموقع الإلكتروني يُفترض أن تعمل على النحو المتوقَّع، ولكن قد تكون الحماية أثناء التصفّح أقلّ.</translation>
 <translation id="4877047577339061095">مستلزمات التخزين والتنظيم في المنزل</translation>
@@ -2607,6 +2608,7 @@
 <translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
 <translation id="5483838506518938965">اكتملت المهمة</translation>
+<translation id="5484396522446324950">الأنماط</translation>
 <translation id="5485100387355669506">سميك للغاية</translation>
 <translation id="5485973315555778056">جهاز على السحابة الإلكترونية</translation>
 <translation id="5488367146069768854">عمليات تثبيت تطبيقات الويب</translation>
@@ -2945,6 +2947,7 @@
 <translation id="6062937464449575061">إيقاف تتبُّع السعر</translation>
 <translation id="6063415549109819824">تمويل عقاري</translation>
 <translation id="6070432475334343308">لم يتم تحميل ملف واحد أو أكثر إلى "<ph name="FOLDER_NAME" />" على <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">الأزرق السماوي 2</translation>
 <translation id="6085149458302186532">تصنيفات (ملوّنة)</translation>
 <translation id="6087312102907839798">عمليات البحث ذات الصلة</translation>
 <translation id="6089505343295765444">‏ستظل علامات التبويب التي تحذفها من سجلّ Chrome معروضة في جداول المقارنة</translation>
@@ -3025,7 +3028,6 @@
 <translation id="622039917539443112">الطي بشكلٍ متوازٍ</translation>
 <translation id="6221286101741304627">للخروج من وضع "ملء الشاشة"، اضغط على |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">‏هل تريد حفظ بيانات هذه البطاقة في حسابك على Google؟</translation>
-<translation id="6221892641068781024">العرض المبسَّط</translation>
 <translation id="6222527803348563979">أدوات مكتبية</translation>
 <translation id="62231116988543150">إمكانية تثبيت تطبيقات الويب</translation>
 <translation id="6224281071334553713">مجوهرات وحليّ</translation>
@@ -3846,6 +3848,7 @@
 <translation id="7598391785903975535">أقل من <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">يتعذر على <ph name="HOST_NAME" /> معالجة هذا الطلب حاليًا.</translation>
 <translation id="7599089013883397081">انتهت مهلة التنزيل</translation>
+<translation id="7602868996817972616">‏طرح سؤال على Google حول هذه الصفحة</translation>
 <translation id="7608583484192556132">إنّ ظهور إعلانات مخصّصة يعتمد على عدة عوامل، منها هذا الإعداد و<ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تتصفّحه يخصِّص الإعلانات. تعرَّف على مزيد من المعلومات حول <ph name="BEGIN_LINK_3" />إدارة الخصوصية في عرض الإعلانات<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">القيمة خارج النطاق <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">سميك</translation>

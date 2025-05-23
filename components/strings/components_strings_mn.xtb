@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Нэвтрэх түлхүүр</translation>
 <translation id="1030706264415084469"><ph name="URL" /> таны төхөөрөмжид том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас. Таныг ихэнх сайтаас гаргана. }other{# сайтаас. Таныг ихэнх сайтаас гаргана. }}</translation>
+<translation id="1035509598913574970">3-р ногоон хөх</translation>
 <translation id="1035709686865413354">Ус шүүгч болон цэвэршүүлэгчид</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036881361735705143">Дугтуй C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">хуудас үйлчилгээ зохицуулагчийг суулгахыг хүсэж байна.</translation>
 <translation id="1432581352905426595">Хайлтын системийг удирдах</translation>
 <translation id="1433225466058025572">Файлуудаа дахин зөөж үзнэ үү</translation>
+<translation id="1433478348197382180">Уншлагын горим</translation>
 <translation id="1436185428532214179">Таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="1442386063175183758">Доод хэсгийг дотогш нь нугалж эвхэх баруун хаалган нугалаа</translation>
 <translation id="1442987760062738829">Нүх цоолбор</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
 <translation id="2083256696566019397">Зочлох бүрд зөвшөөрөх</translation>
 <translation id="2085876078937250610">Хадгалах…</translation>
+<translation id="2088913896151127116">Текст нэмэх</translation>
 <translation id="2090451897496479509">Үйлчилгээ үзүүлэгчтэй холбогдож нэмэлт мэдээлэл авна уу</translation>
 <translation id="2091887806945687916">Дуу</translation>
 <translation id="2093982008204312032">Google Chrome нууц үгийг бөглөхөд Windows Hello-г унтраахаар оролдож байна.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">Хуучин</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
 <translation id="2414886740292270097">Хар</translation>
-<translation id="2418292431699242678">Танай администратор дараах зүйлийг дурын ChromeOS төхөөрөмж дээрх таны өмнөх болон одоогийн харилцан үйлдлүүдийн хооронд синк хийхийг идэвхжүүлсэн:</translation>
 <translation id="2429716554270894715">Даавуу (усны хамгаалалттай)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрлийг олгох уу?</translation>
 <translation id="2436976580469434549">Мяндас, сүлжмэл урлагууд</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />-н гэмтэл</translation>
 <translation id="2915496182262110498">Будалт</translation>
 <translation id="2916038427272391327">Бусад хөтөлбөрийг хаах</translation>
+<translation id="2917630513638801879">1-р ногоон хөх</translation>
 <translation id="2919185931486062599">Агнуур, буудлага</translation>
 <translation id="2922350208395188000">Серверийн гэрчилгээг шалгаж болохгүй байна.</translation>
 <translation id="2922792708490674">{0,plural, =1{Файлыг татахыг блоклосон}other{<ph name="FILE_COUNT" /> файлыг татахыг блоклосон}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Гэр бүлийн аялал</translation>
-<translation id="3040636468789770340">Күүки (таны саяхан зочилсон вебсайт дээрх нэвтэрсэн төлөв)</translation>
 <translation id="3041176923638368519">Картын үр өгөөжийн нөхцөлийг харах</translation>
 <translation id="3041612393474885105">Гэрчилгээний мэдээлэл</translation>
 <translation id="3045769629416806687">Экстрим спортууд</translation>
@@ -1681,7 +1683,6 @@
 <translation id="3869939189466884821">Таны дотоод файлуудыг <ph name="MINUTES" /> минутын дараа устгана</translation>
 <translation id="3872834068356954457">Шинжлэх ухаан</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
-<translation id="387681220560687945">Цонх (цонх, табын зохион байгуулалт, зохицуулалт)</translation>
 <translation id="3879748587602334249">Таталтын менежер</translation>
 <translation id="3880456882942693779">Урлаг, энтертэйнмент</translation>
 <translation id="3880589673277376494">Интернэт, телеком</translation>
@@ -2083,6 +2084,7 @@
 <translation id="4562155266774382038">Зөвлөмжийг хаах</translation>
 <translation id="4566017918361049074">Гадаа</translation>
 <translation id="4569155249847375786">Баталгаажсан</translation>
+<translation id="4570008401337135432">Текст эгнүүлэх</translation>
 <translation id="457875822857220463">Хүргэлт</translation>
 <translation id="4579699065574932398">Банк</translation>
 <translation id="4582595824823167856">Мессеж авах</translation>
@@ -2246,7 +2248,6 @@
 <translation id="4866506163384898554">Курсороо харуулахын тулд |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| дээр дарна уу</translation>
 <translation id="4873616204573862158">Нүдний шил</translation>
 <translation id="4873807733347502026">Хулганаа түгжих ба ашиглах</translation>
-<translation id="4876188919622883022">Хялбаршуулсан харагдац</translation>
 <translation id="4876305945144899064">Хэрэглэгчийн нэр алга</translation>
 <translation id="4876327226315760474">Энэ нь сайтын онцлогууд тооцоолсноор ажиллах ёстой хэдий ч таны үзэх хамгаалалт бага байж магадгүй гэсэн үг юм.</translation>
 <translation id="4877047577339061095">Гэрийн агуулах сав болон тавиур</translation>
@@ -2606,6 +2607,7 @@
 <translation id="5481682542063333508">Бичих тусламж санал болгох</translation>
 <translation id="54817484435770891">Хүчинтэй хаяг нэмэх</translation>
 <translation id="5483838506518938965">Тохируулга дууссан</translation>
+<translation id="5484396522446324950">Загвар</translation>
 <translation id="5485100387355669506">Хэт зузаан</translation>
 <translation id="5485973315555778056">Үүлний төхөөрөмж</translation>
 <translation id="5488367146069768854">Веб апп суулгах</translation>
@@ -2944,6 +2946,7 @@
 <translation id="6062937464449575061">Үнэ хянахаа болих</translation>
 <translation id="6063415549109819824">Орон сууцны санхүүжилт</translation>
 <translation id="6070432475334343308">Нэг эсвэл түүнээс олон файлыг <ph name="CLOUD_PROVIDER" /> дээрх <ph name="FOLDER_NAME" />-д байршуулаагүй</translation>
+<translation id="6078069862923723141">2-р ногоон хөх</translation>
 <translation id="6085149458302186532">Шошго (өнгөтэй)</translation>
 <translation id="6087312102907839798">Холбоотой хайлтууд</translation>
 <translation id="6089505343295765444">Таны Chrome-н түүхээс устгасан табууд харьцуулалтын хүснэгтэд тань харагдсан хэвээр байх болно</translation>
@@ -3023,7 +3026,6 @@
 <translation id="622039917539443112">Зэрэгцээ нугалаа</translation>
 <translation id="6221286101741304627">Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="6221311046884916259">Та энэ картыг Google Бүртгэлд хадгалахыг хүсэж байна уу?</translation>
-<translation id="6221892641068781024">Хялбаршуулсан харагдац</translation>
 <translation id="6222527803348563979">Бичгийн цаас</translation>
 <translation id="62231116988543150">Веб аппликэйшнүүдийг суулгах боломжтой байх</translation>
 <translation id="6224281071334553713">Үнэт чулуу болон үнэт эдлэл</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />-с бага</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> нь одоогоор энэ хүсэлтийг зохицуулах боломжгүй байна.</translation>
 <translation id="7599089013883397081">Татах үйлдэл завсарласан</translation>
+<translation id="7602868996817972616">Энэ хуудасны тухай Google-с асуух</translation>
 <translation id="7608583484192556132">Таны хардаг зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK_1" />сайтын санал болгосон зар<ph name="END_LINK_1" />, таны <ph name="BEGIN_LINK_2" />күүкиний тохиргоо<ph name="END_LINK_2" /> болон таны үзэж буй сайт зарыг хувийн болгодог эсэх гэх мэт олон зүйлээс хамаарч болно. <ph name="BEGIN_LINK_3" />Зарын нууцлалаа удирдах<ph name="END_LINK_3" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="7610193165460212391">Утга нь <ph name="VALUE" /> хамрах хүрээнээс гарсан байна.</translation>
 <translation id="761261689936461781">Зузаан</translation>

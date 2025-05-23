@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Sahifa statistikasi</translation>
 <translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
 <translation id="1111673857033749125">Boshqa qurilmalaringizda saqlangan xatcho‘plar shu yerda ko‘rsatiladi.</translation>
-<translation id="1113597929977215864">Soddalashgan shaklda ko‘rsatish</translation>
 <translation id="1126696498560056882">Bu qurilmadagi hisoblarni boshqarish</translation>
 <translation id="1129510026454351943">Tafsilotlar: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognito rejimidagi harakatlaringiz ayni qurilmadan foydalanuvchilarga koʻrinmaydi</translation>
@@ -377,6 +376,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2718352093833049315">Faqat Wi-Fi orqali</translation>
 <translation id="2718846868787000099">Kontent sizga mos tillarda chiqishi uchun siz ochadigan saytlar til sozlamalaringizni koʻra oladi</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Mutolaa rejimini chiqarish</translation>
 <translation id="2739887572830526131">Keyinroq varaqlar kiritish uchun ushbu guruhni saqlab qoling yoki kerak boʻlmasa, uni oʻchirib tashlang.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hozir ishlamayapti.</translation>
 <translation id="2760805590727089264">OO / YY</translation>
@@ -1747,6 +1747,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8676789164135894283">Kirishni tasdiqlash</translation>
 <translation id="8683039184091909753">rasm</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, tanlangan varaq</translation>
+<translation id="8693232767599693749">Mutolaa rejimi ochilsinmi?</translation>
 <translation id="8697753151306746444">Oʻrniga oyna yoki ekranni ulashing</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
@@ -1878,7 +1879,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>
 <translation id="963246339335003378">Vazifalar boshqaruvini ochish</translation>
 <translation id="966131775676567255">Hisob maʼlumotlari oʻchirilmoqda</translation>
-<translation id="96681097142096641">Soddalashgan shaklda koʻrasizmi?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> daqiqa qoldi</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="983192555821071799">Barcha varaqlarni yopish</translation>

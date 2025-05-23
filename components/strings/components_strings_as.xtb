@@ -18,6 +18,7 @@
 <translation id="102916930470544692">পাছকী</translation>
 <translation id="1030706264415084469"><ph name="URL" />এ আপোনাৰ ডিভাইচত স্থায়ীভাৱে বেছিকৈ ডেটা ষ্ট’ৰ কৰিব বিচাৰে</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{এটাও নাই}=1{১ টা ছাইটৰ পৰা। অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়। }one{# টা ছাইটৰ পৰা অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়। }other{# টা ছাইটৰ পৰা অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়। }}</translation>
+<translation id="1035509598913574970">সেউজ নীলা ৩</translation>
 <translation id="1035709686865413354">পানীৰ ফিল্টাৰ আৰু পিউৰিফায়াৰ</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1036881361735705143">এনভেল’প C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">পৃষ্ঠাখনে এটা সেৱা হেণ্ডলাৰ ইনষ্টল কৰিব বিচাৰে।</translation>
 <translation id="1432581352905426595">সন্ধানৰ ইঞ্জিন পৰিচালনা কৰক</translation>
 <translation id="1433225466058025572">আপোনাৰ ফাইলসমূহ পুনৰ স্থানান্তৰ কৰি চাওক</translation>
+<translation id="1433478348197382180">পঢ়াৰ ম’ড</translation>
 <translation id="1436185428532214179">আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1442386063175183758">সোঁফালে গে'ট ফ'ল্ড কৰক</translation>
 <translation id="1442987760062738829">পাঞ্চ</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">ফলাফল <ph name="TOTAL_RESULTS" />ৰ ভিতৰত <ph name="RESULT_NUMBER" /></translation>
 <translation id="2083256696566019397">প্ৰতিবাৰ যাওঁতে অনুমতি দিয়ক</translation>
 <translation id="2085876078937250610">ছেভ কৰক…</translation>
+<translation id="2088913896151127116">পাঠ যোগ দিয়ক</translation>
 <translation id="2090451897496479509">অধিক তথ্যৰ বাবে প্ৰদানকাৰীৰ সৈতে যোগাযোগ কৰক</translation>
 <translation id="2091887806945687916">শব্দ</translation>
 <translation id="2093982008204312032">Google Chromeএ পাছৱৰ্ড পূৰ কৰিবলৈ Windows Hello অফ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">পুৰণি</translation>
 <translation id="2413528052993050574">এই ছার্ভাৰে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ হয়তো প্ৰত্যাহাৰ কৰা হৈছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ প্ৰতিৰোধ কৰাৰ বাবে হ‘ব পাৰে।</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
-<translation id="2418292431699242678">আপোনাৰ প্ৰশাসকে যিকোনো ChromeOS ডিভাইচত আপোনাৰ পূৰ্বৰ আৰু বৰ্তমানৰ ছেশ্বনসমূহ মাজত ছিংক কৰাটো সক্ষম কৰিছে:</translation>
 <translation id="2429716554270894715">ফেব্ৰিক (ৱাটাৰপ্ৰুফ)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />ক সকলো <ph name="PROTOCOL" />ৰ লিংক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="2436976580469434549">ফাইবাৰ আৰু টেক্সটাইল আৰ্ট</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />ত হোৱা ক্ৰেশ্ব</translation>
 <translation id="2915496182262110498">ৰং কৰা</translation>
 <translation id="2916038427272391327">অন্য প্ৰ’গ্ৰেমসমূহ বন্ধ কৰক</translation>
+<translation id="2917630513638801879">সেউজ নীলা ১</translation>
 <translation id="2919185931486062599">চিকাৰ আৰু শ্বুটিং</translation>
 <translation id="2922350208395188000">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ পৰীক্ষা কৰিব নোৱাৰি।</translation>
 <translation id="2922792708490674">{0,plural, =1{ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}one{<ph name="FILE_COUNT" /> টা ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}other{<ph name="FILE_COUNT" /> টা ফাইল ডাউনল’ড কৰাটো অৱৰোধ কৰা হৈছে}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
 <translation id="3037605927509011580">আমি দুঃখিত!</translation>
 <translation id="3039406992698062762">পৰিয়ালৰ ভ্ৰমণ</translation>
-<translation id="3040636468789770340">কুকি (আপুনি শেহতীয়াকৈ চোৱা ৱেবছাইটসমূহত ছাইন ইন হৈ থকা অৱস্থা)</translation>
 <translation id="3041176923638368519">কাৰ্ডৰ লাভালাভৰ চৰ্তাৱলী চাওক</translation>
 <translation id="3041612393474885105">প্ৰমাণপত্ৰৰ তথ্য</translation>
 <translation id="3045769629416806687">দুঃসাহসিক খেল</translation>
@@ -1677,7 +1679,6 @@
 <translation id="3869939189466884821">আপোনাৰ স্থানীয় ফাইলসমূহ <ph name="MINUTES" /> মিনিটত মচা হ’ব</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
-<translation id="387681220560687945">ৱিণ্ড’ (সজ্জা আৰু ৱিণ্ড’ আৰু টেবসমূহ সংগঠন)</translation>
 <translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
 <translation id="3880456882942693779">কলা আৰু মনোৰঞ্জন</translation>
 <translation id="3880589673277376494">ইণ্টাৰনেট আৰু টেলিকম</translation>
@@ -2078,6 +2079,7 @@
 <translation id="4562155266774382038">পৰামৰ্শ অগ্ৰাহ্য কৰক</translation>
 <translation id="4566017918361049074">মুকলি ঠাইত হোৱা কাৰ্যকলাপ</translation>
 <translation id="4569155249847375786">সত্যাপন কৰা হৈছে</translation>
+<translation id="4570008401337135432">পাঠৰ শাৰীবিন্যাস</translation>
 <translation id="457875822857220463">ডেলিভাৰী সেৱাৰ তথ্য</translation>
 <translation id="4579699065574932398">বেংকিং</translation>
 <translation id="4582595824823167856">এটা পাঠ বাৰ্তাৰ লাভ কৰক</translation>
@@ -2241,7 +2243,6 @@
 <translation id="4866506163384898554">আপোনাৰ কাৰ্ছৰটো দেখুৱাবলৈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| টিপক</translation>
 <translation id="4873616204573862158">আইৱেৰ</translation>
 <translation id="4873807733347502026">আপোনাৰ মাউছ লক কৰক আৰু ব্যৱহাৰ কৰক</translation>
-<translation id="4876188919622883022">সৰলীকৃত ভিউ</translation>
 <translation id="4876305945144899064">কোনো ব্যৱহাৰকাৰীৰ নাম নাই</translation>
 <translation id="4876327226315760474">ইয়াৰ অৰ্থ হৈছে ছাইটটোৰ সুবিধাসমূহে বিচৰামতে কাম কৰিব লাগে, কিন্তু আপোনাৰ ব্ৰাউজিঙৰ সুৰক্ষা কম হ’ব পাৰে।</translation>
 <translation id="4877047577339061095">হ’ম ষ্ট’ৰেজ আৰু শ্বেলভিং</translation>
@@ -2601,6 +2602,7 @@
 <translation id="5481682542063333508">লিখাৰ সহায় আগবঢ়াওক</translation>
 <translation id="54817484435770891">মান্য ঠিকনা দিয়ক</translation>
 <translation id="5483838506518938965">আপুনি সম্পূৰ্ণ সাজু</translation>
+<translation id="5484396522446324950">শৈলী</translation>
 <translation id="5485100387355669506">অতিৰিক্ত মোটা</translation>
 <translation id="5485973315555778056">ক্লাউড মেচিন</translation>
 <translation id="5488367146069768854">ৱেব এপ্‌ ইনষ্টলেশ্বন</translation>
@@ -2939,6 +2941,7 @@
 <translation id="6062937464449575061">মূল্য ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="6063415549109819824">ঘৰ ক্ৰয় কৰিবলৈ পুঁজিৰ যোগান</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />ৰ <ph name="FOLDER_NAME" />ত এটা বা ততোধিক ফাইল আপল’ড কৰা হোৱা নাই</translation>
+<translation id="6078069862923723141">সেউজ নীলা ২</translation>
 <translation id="6085149458302186532">লেবেল (ৰঙীন)</translation>
 <translation id="6087312102907839798">সম্বন্ধীয় সন্ধানসমুহ</translation>
 <translation id="6089505343295765444">আপোনাৰ Chromeৰ ইতিহাসৰ পৰা আপুনি মচা টেবসমূহ তথাপি আপোনাৰ তুলনাৰ তালিকাত দেখা যাব</translation>
@@ -3018,7 +3021,6 @@
 <translation id="622039917539443112">সমান্তৰালকৈ ফ'ল্ড কৰক</translation>
 <translation id="6221286101741304627">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ'বলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="6221311046884916259">আপুনি এই কাৰ্ড নিজৰ Google একাউণ্টত ছেভ কৰিব খোজেনে?</translation>
-<translation id="6221892641068781024">সৰলীকৃত ভিউ</translation>
 <translation id="6222527803348563979">লেখন সামগ্ৰী</translation>
 <translation id="62231116988543150">ৱেব এপ্‌ ইনষ্টল কৰিবলৈ সক্ষম হ’ব</translation>
 <translation id="6224281071334553713">ৰত্ন আৰু অলংকাৰ</translation>
@@ -3838,6 +3840,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />তকৈ কম</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" />এ এই মুহূৰ্তত এই অনুৰোধটো নিয়ন্ত্ৰণ কৰিব নোৱাৰে।</translation>
 <translation id="7599089013883397081">ডাউনল’ড কৰাৰ সময় উকলিছে</translation>
+<translation id="7602868996817972616">Googleক এই পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
 <translation id="7608583484192556132">আপুনি দেখা পোৱা কোনো বিজ্ঞাপন ব্যক্তিগতকৰণ কৰা হয়নে নহয় সেয়া বহুতো বিষয়ৰ ওপৰত নিৰ্ভৰ কৰে, য’ত এইটো ছেটিং, <ph name="BEGIN_LINK_1" />ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপন<ph name="END_LINK_1" />, আপোনাৰ <ph name="BEGIN_LINK_2" />কুকিৰ ছেটিং<ph name="END_LINK_2" /> আৰু আপুনি চাই থকা ছাইটটোৱে বিজ্ঞাপন ব্যক্তিগত কৰেনে নকৰে আদি বিষয় অন্তৰ্ভুক্ত। <ph name="BEGIN_LINK_3" />আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰা<ph name="END_LINK_3" />ৰ বিষয়ে অধিক জানক।</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> মান পৰিসৰৰ বাহিৰৰ।</translation>
 <translation id="761261689936461781">মোটা</translation>

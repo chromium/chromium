@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Izvēlieties, vai iekļaut Chromium vēsturi, lai iegūtu personalizētākas iespējas Google pakalpojumos.</translation>
 <translation id="2054039611381840095">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 12 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 11.</translation>
 <translation id="2086476982681781442">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē.</translation>
-<translation id="2088953378266246249">Informācija par to, kā Chromium pārvalda savus saknes sertifikātus</translation>
 <translation id="2099452623287920103">Jūsu paroles un citi Chromium dati, ko saglabājāt savā Google kontā, tiks noņemti no šīs ierīces. Lai atkal izmantotu šos datus pārlūkā Chromium, atkārtoti pierakstieties.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Jūsu organizācija automātiski dzēš pārlūkošanas datus, ja pārlūks Chromium nav izmantots vienu minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Cilnes joprojām būs atvērtas.}zero{Jūsu organizācija automātiski dzēš pārlūkošanas datus, ja pārlūks Chromium nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Cilnes joprojām būs atvērtas.}one{Jūsu organizācija automātiski dzēš pārlūkošanas datus, ja pārlūks Chromium nav izmantots # minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Cilnes joprojām būs atvērtas.}other{Jūsu organizācija automātiski dzēš pārlūkošanas datus, ja pārlūks Chromium nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Cilnes joprojām būs atvērtas.}}</translation>
 <translation id="2126108037660393668">Neizdevās verificēt lejupielādēto failu.</translation>
@@ -606,7 +605,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="9190841055450128916">Chromium (mDNS ienākošie savienojumi)</translation>
 <translation id="924957577793602335">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="93478295209880648">Iespējams, Chromium nedarbosies pareizi, jo tas vairs netiek atbalstīts operētājsistēmās Windows XP un Windows Vista.</translation>
-<translation id="942598560705308788">Chromium pārvaldītie sertifikāti</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="965162752251293939">Kas izmanto pārlūku Chromium?</translation>
 <translation id="967427899662692980">Visaugstākais Chromium drošības līmenis</translation>

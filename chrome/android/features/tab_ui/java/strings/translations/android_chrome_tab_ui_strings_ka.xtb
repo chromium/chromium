@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1036348656032585052">გამორთვა</translation>
-<translation id="1045448422538531528">ჯგუფში დამატება</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{შეიქმნა <ph name="NUM_WEEKS_ONE" /> კვირის წინ}other{შეიქმნა <ph name="NUM_WEEKS_MANY" /> კვირის წინ}}</translation>
 <translation id="1063300264396686489">ჩანართების ჯგუფების სხვა მოწყობილობებიდან ავტომატურად გახსნა</translation>
 <translation id="1075622780330595106">თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ჩანართი დაიხურა}other{<ph name="MANY_CLOSED" /> ჩანართი დაიხურა}}</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
 <translation id="2928243913527329289">Google | ამ მაღაზიის შესახებ</translation>
-<translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
 <translation id="29919168204617356">არააქტიური ჩანართები ავტომატურად დაიხურება. მათი პოვნა ნებისმიერ დროს შეგიძლიათ ისტორიაში.</translation>
 <translation id="3008554597174452548">პროდუქტისთვის თვალის მიდევნების შეწყვეტა</translation>
 <translation id="3026391124054406831">შექმენით ჯგუფები ჩანართების ორგანიზებისთვის.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ამ ერთეულის ფასმა ახლახან დაიკლო <ph name="PREVIOUS_PRICE" />-დან <ph name="NEW_PRICE" />-მდე</translation>
 <translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
+<translation id="6212567362666004597">ჩანართის დამატება ჯგუფში</translation>
 <translation id="6220820548421939212">დიახ. თანახმა ვარ</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="6271513594716432922">ყველა უმოქმედო ჩანართის დახურვა</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome ავტომატურად დახურავს იმ ერთეულებს უმოქმედოების სექციაში, რომლებიც 3 თვეა, არ გამოგიყენებიათ. ამის შეცვლა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="8887921976452567404">თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან.</translation>
 <translation id="8915916167043355778">ყველას დახურვა</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ახალ ფანჯარაში გადატანა}other{სხვა ფანჯარაში გადატანა}}</translation>
 <translation id="9090098097337832354">ამ მაღაზიის შესახებ ინფორმაცია დახურულია</translation>
 <translation id="9114502155681725011">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების <ph name="COLOR_NAME" /> ფერის ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>

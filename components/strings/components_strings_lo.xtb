@@ -265,6 +265,7 @@
 <translation id="1432187715652018471">ໜ້າຕ້ອງການຕິດຕັ້ງຕົວຈັດການ​ບໍ​ລິ​ການ​.</translation>
 <translation id="1432581352905426595">ຈັດການໂປຣແກຣມຊອກຫາ</translation>
 <translation id="1433225466058025572">ລອງຍ້າຍໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
+<translation id="1433478348197382180">ໂໝດການອ່ານ</translation>
 <translation id="1436185428532214179">ສາມາດຂໍແກ້ໄຂໄຟລ໌ ແລະ ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1442386063175183758">ພັບທົບເບື້ອງຂວາ</translation>
 <translation id="1442987760062738829">ເຈາະຮູ</translation>
@@ -839,7 +840,6 @@
 <translation id="2413155254802890957">ເກົ່າ</translation>
 <translation id="2413528052993050574">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະຖືກຖອນຄືນແລ້ວ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2414886740292270097">ມືດ</translation>
-<translation id="2418292431699242678">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເປີດໃຊ້ການຊິ້ງຕໍ່ໄປນີ້ລະຫວ່າງເຊດຊັນກ່ອນໜ້າ ແລະ ປັດຈຸບັນຂອງທ່ານໃນອຸປະກອນ ChromeOS ໃດໆດັ່ງນີ້:</translation>
 <translation id="2429716554270894715">ຜ້າ (ກັນນ້ຳ)</translation>
 <translation id="2436186046335138073">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກລິ້ງ <ph name="PROTOCOL" /> ບໍ?</translation>
 <translation id="2436976580469434549">ສິນລະປະຜ້າແພ ແລະ ເສັ້ນໃຍ</translation>
@@ -1175,7 +1175,6 @@
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
 <translation id="3039406992698062762">ການທ່ອງທ່ຽວແບບຄອບຄົວ</translation>
-<translation id="3040636468789770340">ຄຸກກີ້ (ສະຖານະທີ່ເຂົ້າສູ່ລະບົບຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼ້າສຸດ)</translation>
 <translation id="3041176923638368519">ເບິ່ງຂໍ້ກຳນົດສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3041612393474885105">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>
 <translation id="3045769629416806687">ກິລາຜາດໂຜນ</translation>
@@ -1683,7 +1682,6 @@
 <translation id="3869939189466884821">ໄຟລ໌ໃນເຄື່ອງຂອງທ່ານຈະຖືກລຶບໃນ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
-<translation id="387681220560687945">ໜ້າຈໍ (ການຈັດຮຽງ ແລະ ການຈັດລະບຽບໜ້າຈໍ ແລະ ແຖບ)</translation>
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
 <translation id="3880456882942693779">ສິນລະປະ ແລະ ຄວາມບັນເທີງ</translation>
 <translation id="3880589673277376494">ອິນເຕີເນັດ ແລະ ໂທລະຄົມມະນາຄົມ</translation>
@@ -2249,7 +2247,6 @@
 <translation id="4866506163384898554">ກົດ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ</translation>
 <translation id="4873616204573862158">ແວ່ນຕາ</translation>
 <translation id="4873807733347502026">ລັອກ ແລະ ໃຊ້ເມົ້າຂອງທ່ານ</translation>
-<translation id="4876188919622883022">ມຸມມອງງ່າຍດາຍ</translation>
 <translation id="4876305945144899064">ບໍ່ມີຊື່ຜູ້ໃຊ້</translation>
 <translation id="4876327226315760474">ການຕັ້ງຄ່ານີ້ໝາຍຄວາມວ່າຄຸນສົມບັດຂອງເວັບໄຊຄວນເຮັດວຽກຕາມທີ່ຄາດໄວ້, ແຕ່ການປົກປ້ອງທ່ານໃນລະຫວ່າງການທ່ອງເວັບອາດຫຼຸດລົງ.</translation>
 <translation id="4877047577339061095">ການເກັບເຄື່ອງເຮືອນ ແລະ ຊັ້ນວາງ</translation>
@@ -2399,7 +2396,6 @@
 <translation id="5115232566827194440">ຈຳກັດການຍົກເລີກໄລຍະເວລາຂອງແຂກທີ່ມີການຈັດການແລ້ວ</translation>
 <translation id="5115563688576182185">(64-ບິດ)</translation>
 <translation id="5120526915373271910">ໜັງສຳລັບຄອບຄົວ</translation>
-<translation id="5121592697493894155">Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="5122786942953798871">ຊອງ (ເຈ້ຍໃຍຝ້າຍ)</translation>
 <translation id="5123063207673082822">ທ້າຍອາທິດ</translation>
 <translation id="5123433949759960244">ບານບ້ວງ</translation>
@@ -3030,7 +3026,6 @@
 <translation id="622039917539443112">ພັບແບບຂະໜານ</translation>
 <translation id="6221286101741304627">ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">ທ່ານຕ້ອງການບັນທຶກບັດນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານບໍ?</translation>
-<translation id="6221892641068781024">ມຸມມອງງ່າຍດາຍ</translation>
 <translation id="6222527803348563979">ເຄື່ອງຂຽນ</translation>
 <translation id="62231116988543150">ສາມາດຕິດຕັ້ງເວັບແອັບໄດ້</translation>
 <translation id="6224281071334553713">ເພັດ ແລະ ອັນຍະມະນີ</translation>

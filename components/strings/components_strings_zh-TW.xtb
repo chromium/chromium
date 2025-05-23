@@ -18,6 +18,7 @@
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
+<translation id="1035509598913574970">青色 3</translation>
 <translation id="1035709686865413354">濾水器與淨水器</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433225466058025572">再次嘗試移動檔案</translation>
+<translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1436185428532214179">可以要求編輯裝置上的檔案和資料夾</translation>
 <translation id="1442386063175183758">右半邊對折</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -630,6 +632,7 @@
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
 <translation id="2083256696566019397">每次造訪時允許</translation>
 <translation id="2085876078937250610">儲存…</translation>
+<translation id="2088913896151127116">新增文字</translation>
 <translation id="2090451897496479509">詳情請洽詢供應商</translation>
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
@@ -836,7 +839,6 @@
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已遭撤銷。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="2414886740292270097">深色</translation>
-<translation id="2418292431699242678">系統管理員允許以下資料在所有 ChromeOS 裝置的工作階段間保持同步：</translation>
 <translation id="2429716554270894715">織品 (防水)</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="2436976580469434549">纖維與紡織藝術</translation>
@@ -1092,6 +1094,7 @@
 <translation id="2915068235268646559">當機時間：<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">繪畫</translation>
 <translation id="2916038427272391327">關閉其他程式</translation>
+<translation id="2917630513638801879">青色 1</translation>
 <translation id="2919185931486062599">打獵與射擊</translation>
 <translation id="2922350208395188000">無法檢查伺服器憑證。</translation>
 <translation id="2922792708490674">{0,plural, =1{禁止下載這個檔案}other{禁止下載這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
@@ -1171,7 +1174,6 @@
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039406992698062762">家庭旅遊</translation>
-<translation id="3040636468789770340">Cookie (近期造訪網站上的登入狀態)</translation>
 <translation id="3041176923638368519">查看卡片優惠措施條款</translation>
 <translation id="3041612393474885105">憑證資訊</translation>
 <translation id="3045769629416806687">極限運動</translation>
@@ -1678,7 +1680,6 @@
 <translation id="3869939189466884821">本機檔案將在 <ph name="MINUTES" /> 分鐘後刪除</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
-<translation id="387681220560687945">視窗 (視窗和分頁的排列方式)</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術與娛樂</translation>
 <translation id="3880589673277376494">網際網路與電信</translation>
@@ -2080,6 +2081,7 @@
 <translation id="4562155266774382038">關閉建議</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4569155249847375786">驗證完成</translation>
+<translation id="4570008401337135432">文字對齊方式</translation>
 <translation id="457875822857220463">快遞</translation>
 <translation id="4579699065574932398">銀行</translation>
 <translation id="4582595824823167856">接收簡訊</translation>
@@ -2243,7 +2245,6 @@
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
 <translation id="4873616204573862158">眼鏡</translation>
 <translation id="4873807733347502026">鎖定並使用你的滑鼠</translation>
-<translation id="4876188919622883022">簡易檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4876327226315760474">這表示網站功能應可正常運作，但瀏覽防護的強度可能會降低。</translation>
 <translation id="4877047577339061095">居家儲藏與陳列架</translation>
@@ -2603,6 +2604,7 @@
 <translation id="5481682542063333508">提供寫作輔助</translation>
 <translation id="54817484435770891">新增有效的地址</translation>
 <translation id="5483838506518938965">你已完成所有步驟</translation>
+<translation id="5484396522446324950">樣式</translation>
 <translation id="5485100387355669506">特粗</translation>
 <translation id="5485973315555778056">雲端機器</translation>
 <translation id="5488367146069768854">網頁應用程式安裝</translation>
@@ -2941,6 +2943,7 @@
 <translation id="6062937464449575061">取消追蹤價格</translation>
 <translation id="6063415549109819824">家庭金融</translation>
 <translation id="6070432475334343308">一或多個檔案未上傳至「<ph name="CLOUD_PROVIDER" />」中的「<ph name="FOLDER_NAME" />」</translation>
+<translation id="6078069862923723141">青色 2</translation>
 <translation id="6085149458302186532">標籤 (彩色)</translation>
 <translation id="6087312102907839798">相關搜尋</translation>
 <translation id="6089505343295765444">你從 Chrome 歷史記錄中刪除的分頁仍會顯示在比較表中</translation>
@@ -3021,7 +3024,6 @@
 <translation id="622039917539443112">雙對摺</translation>
 <translation id="6221286101741304627">如要退出全螢幕模式，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="6221311046884916259">要將這張卡片儲存到 Google 帳戶嗎？</translation>
-<translation id="6221892641068781024">簡易檢視</translation>
 <translation id="6222527803348563979">信紙</translation>
 <translation id="62231116988543150">你允許網頁應用程式</translation>
 <translation id="6224281071334553713">珠寶首飾</translation>
@@ -3842,6 +3844,7 @@
 <translation id="7598391785903975535">不到 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這項要求。</translation>
 <translation id="7599089013883397081">下載作業逾時</translation>
+<translation id="7602868996817972616">向 Google 詢問與本頁相關的資訊</translation>
 <translation id="7608583484192556132">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否會放送個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告隱私權<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="761261689936461781">粗</translation>

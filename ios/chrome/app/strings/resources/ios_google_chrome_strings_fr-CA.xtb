@@ -320,6 +320,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
+<translation id="8796490717897731471"><ph name="EMAIL" />. Chrome est géré.</translation>
 <translation id="880967149107462122">Accédez aux paramètres de Chrome</translation>
 <translation id="8842132678697187091">Vous pouvez ouvrir Lentille Google ici.</translation>
 <translation id="8850736900032787670">Pour recevoir du contenu personnalisé en fonction de vos intérêts, connectez-vous à Chrome.</translation>

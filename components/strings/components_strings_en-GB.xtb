@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wants to permanently store large data on your device</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{None}=1{From 1 site. Signs you out of most sites. }other{From # sites. Signs you out of most sites. }}</translation>
+<translation id="1035509598913574970">Cyan 3</translation>
 <translation id="1035709686865413354">Water Filters and Purifiers</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -264,6 +265,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
 <translation id="1433225466058025572">Try moving your files again</translation>
+<translation id="1433478348197382180">Reading mode</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1442386063175183758">Right gate fold</translation>
 <translation id="1442987760062738829">Punch</translation>
@@ -631,6 +633,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Allow on every visit</translation>
 <translation id="2085876078937250610">Save…</translation>
+<translation id="2088913896151127116">Add text</translation>
 <translation id="2090451897496479509">Contact the provider for more information</translation>
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2093982008204312032">Google Chrome is trying to turn off Windows Hello for filling passwords.</translation>
@@ -837,7 +840,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2413155254802890957">Old</translation>
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2414886740292270097">Dark</translation>
-<translation id="2418292431699242678">Your administrator enables the following to be synced between your previous and current sessions on any ChromeOS device:</translation>
 <translation id="2429716554270894715">Fabric (waterproof)</translation>
 <translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
 <translation id="2436976580469434549">Fibre and textile arts</translation>
@@ -1093,6 +1095,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2915068235268646559">Crash from <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Painting</translation>
 <translation id="2916038427272391327">Close other programmes</translation>
+<translation id="2917630513638801879">Cyan 1</translation>
 <translation id="2919185931486062599">Hunting and shooting</translation>
 <translation id="2922350208395188000">Server's certificate cannot be checked.</translation>
 <translation id="2922792708490674">{0,plural, =1{File blocked from downloading}other{<ph name="FILE_COUNT" /> files blocked from downloading}}</translation>
@@ -1172,7 +1175,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Family travel</translation>
-<translation id="3040636468789770340">Cookies (signed-in state on your recently visited websites)</translation>
 <translation id="3041176923638368519">See card benefit terms</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="3045769629416806687">Extreme sports</translation>
@@ -1680,7 +1682,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3869939189466884821">Your local files will be deleted in <ph name="MINUTES" /> minutes</translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
-<translation id="387681220560687945">Windows (arrangement and organisation of windows and tabs)</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Arts and entertainment</translation>
 <translation id="3880589673277376494">Internet and telecom</translation>
@@ -2082,6 +2083,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4562155266774382038">Dismiss suggestion</translation>
 <translation id="4566017918361049074">Outdoors</translation>
 <translation id="4569155249847375786">Verified</translation>
+<translation id="4570008401337135432">Text alignment</translation>
 <translation id="457875822857220463">Delivery</translation>
 <translation id="4579699065574932398">Banking</translation>
 <translation id="4582595824823167856">Get a text message</translation>
@@ -2245,7 +2247,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
 <translation id="4873616204573862158">Eyewear</translation>
 <translation id="4873807733347502026">Lock and use your mouse</translation>
-<translation id="4876188919622883022">Simplified view</translation>
 <translation id="4876305945144899064">No username</translation>
 <translation id="4876327226315760474">This means site features should work as expected, but you may have less browsing protection.</translation>
 <translation id="4877047577339061095">Home Storage and Shelving</translation>
@@ -2605,6 +2606,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5481682542063333508">Offer writing help</translation>
 <translation id="54817484435770891">Add valid address</translation>
 <translation id="5483838506518938965">You're all set</translation>
+<translation id="5484396522446324950">Styles</translation>
 <translation id="5485100387355669506">Extra thick</translation>
 <translation id="5485973315555778056">Cloud machine</translation>
 <translation id="5488367146069768854">Web app installations</translation>
@@ -2943,6 +2945,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6062937464449575061">Untrack price</translation>
 <translation id="6063415549109819824">Home financing</translation>
 <translation id="6070432475334343308">One or more files were not uploaded to <ph name="FOLDER_NAME" /> on <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Labels (coloured)</translation>
 <translation id="6087312102907839798">Related searches</translation>
 <translation id="6089505343295765444">Tabs that you delete from your Chrome history will still show up in your comparison tables</translation>
@@ -3023,7 +3026,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="622039917539443112">Parallel fold</translation>
 <translation id="6221286101741304627">To exit full screen, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Do you want to save this card in your Google Account?</translation>
-<translation id="6221892641068781024">Simplified View</translation>
 <translation id="6222527803348563979">Stationery</translation>
 <translation id="62231116988543150">Be able to install web apps</translation>
 <translation id="6224281071334553713">Gems and Jewellery</translation>
@@ -3844,6 +3846,7 @@ Additional details:
 <translation id="7598391785903975535">Less than <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7599089013883397081">Downloading timed out</translation>
+<translation id="7602868996817972616">Ask Google about this page</translation>
 <translation id="7608583484192556132">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Thick</translation>

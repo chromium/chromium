@@ -718,6 +718,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1494349716233667318">Sajtet mund të kërkojnë të përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="1494429729245089920">Pajisja virtuale "<ph name="VM_NAME" />" ekziston, por me sa duket nuk është një pajisje virtuale e vlefshme <ph name="APP_NAME" />. Kontakto me administratorin tënd.</translation>
 <translation id="1495677929897281669">Kthehu te skeda</translation>
+<translation id="1496514951988037011">emri i përdoruesit</translation>
 <translation id="1498498210836053409">Çaktivizo modalitetin "e ngjitur" kur modifikon tekstin (Modaliteti "i ngjitur" inteligjent)</translation>
 <translation id="1499041187027566160">rrit volumin</translation>
 <translation id="1500297251995790841">Pajisje e panjohur [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1434,6 +1435,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1981434377190976112">Lexo të gjitha të dhënat e tua në të gjitha uebsajtet</translation>
 <translation id="1982851102516626421">Ke dalë</translation>
 <translation id="1983612835086592681">E hape gjatë javës së kaluar</translation>
+<translation id="1984087999855033707">numri i telefonit</translation>
 <translation id="1984417487208496350">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="1984683754853869253">Dëshiron të krijosh një profil të ri për shkollën?</translation>
 <translation id="198507684520034826">Ndihma</translation>
@@ -4750,7 +4752,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="428963538941819373">Këto sajte mund të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Zgjidh një PIN</translation>
-<translation id="4290526909608432059">Mbështetja për aplikacionet e Chrome do të përfundojë së shpejti. Për të mësuar për opsionet e tua, kontakto me zhvilluesin e aplikacionit dhe ekipin e mbështetjes për teknologjinë e informacionit.</translation>
 <translation id="4290791284969893584">Pasi të mbyllësh një faqe, detyrat që ke nisur mund të mos përfundojnë</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> anëtar</translation>
 <translation id="4290898381118933198">Rrëshqit shpejt për të naviguar mes faqeve</translation>
@@ -7616,6 +7617,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Shto familjarë dhe miq</translation>
 <translation id="6367097275976877956">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS? Nëse po, shtyp tastin e hapësirës.</translation>
+<translation id="6367196786591004737">Fshi hyrjen</translation>
 <translation id="6367396429435748845">Shtyp <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> për të vendosur në pauzë dhe për të vazhduar me tastet e miut</translation>
 <translation id="6367985768157257101">Të merret me "Ndarjen në afërsi"?</translation>
 <translation id="6368157733310917710">&amp;Adresat dhe më shumë</translation>
@@ -7949,7 +7951,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
 <translation id="6610064275805055636">Menaxho aplikacionet e izoluara të uebit</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> skedë</translation>
-<translation id="6611972847767394631">Gjej skedat e tua këtu</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6613267708691765962">Po skanon për softuerë keqdashës...</translation>
 <translation id="6615455863669487791">Ma trego</translation>
@@ -10609,6 +10610,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8472623782143987204">të mbështetur nga hardueri</translation>
 <translation id="8473540203671727883">Lexo me zë tekstin poshtë miut</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
+<translation id="847433688444405067">Shfleto nëpër pajisje</translation>
 <translation id="8474378002946546633">Lejo njoftimet</translation>
 <translation id="8474561048882755118">Të ndihmon të shikosh produkte të ngjashme krah për krah dhe të krahasosh me lehtësi detajet që kanë rëndësi për ty</translation>
 <translation id="8475313423285172237">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1036348656032585052">Dezactivează</translation>
-<translation id="1045448422538531528">Adaugă în grup</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat acum <ph name="NUM_WEEKS_ONE" /> săptămână}few{Creat acum <ph name="NUM_WEEKS_MANY" /> săptămâni}other{Creat acum <ph name="NUM_WEEKS_MANY" /> de săptămâni}}</translation>
 <translation id="1063300264396686489">Deschide automat grupuri de file de pe alte dispozitive</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> filă închisă}few{<ph name="MANY_CLOSED" /> file închise}other{<ph name="MANY_CLOSED" /> de file închise}}</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
 <translation id="2928243913527329289">Google | Despre acest magazin</translation>
-<translation id="2977480621796371840">Elimină din grup</translation>
 <translation id="29919168204617356">Filele inactive se vor închide automat. Le poți găsi oricând în Istoric.</translation>
 <translation id="3008554597174452548">Nu mai urmări produsul</translation>
 <translation id="3026391124054406831">Creează grupuri pentru a organiza filele.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Toate filele dublură vor fi acum arhivate, cu excepția copiei folosite cel mai recent.</translation>
 <translation id="6193448654517602979">Selectează file</translation>
+<translation id="6212567362666004597">Adaugă fila într-un grup</translation>
 <translation id="6220820548421939212">Da. Accept</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6271513594716432922">Închide toate filele inactive</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome închide automat elementele din secțiunea inactivă pe care nu le-ai folosit timp de trei luni. Poți dezactiva această opțiune acum sau oricând din Setări.</translation>
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>
 <translation id="8915916167043355778">Închide-le pe toate</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mută într-o fereastră nouă}few{Mută în altă fereastră}other{Mută în altă fereastră}}</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9114502155681725011">Deschide meniul de acțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" />, de culoare <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>

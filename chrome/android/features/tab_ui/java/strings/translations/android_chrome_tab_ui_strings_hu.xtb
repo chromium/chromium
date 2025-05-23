@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1036348656032585052">Kikapcsolás</translation>
-<translation id="1045448422538531528">Hozzáadás csoporthoz</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hete létrehozva}other{<ph name="NUM_WEEKS_MANY" /> hete létrehozva}}</translation>
 <translation id="1063300264396686489">Más eszközökről származó lapcsoportok automatikus megnyitása</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> lap bezárva}other{<ph name="MANY_CLOSED" /> lap bezárva}}</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
 <translation id="2928243913527329289">Google | Az üzletről</translation>
-<translation id="2977480621796371840">Eltávolítás a csoportból</translation>
 <translation id="29919168204617356">Az inaktív lapok automatikusan bezáródnak. Az Előzményekben bármikor megtalálhatja őket.</translation>
 <translation id="3008554597174452548">Termék nyomon követésének leállítása</translation>
 <translation id="3026391124054406831">Csoportokat hozhat létre a lapok rendszerezéséhez.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">A lapcsoportokat automatikusan menti a rendszer</translation>
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Csoport áthelyezése egy új ablakba}other{Csoport áthelyezése egy másik ablakba}}</translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
+<translation id="6212567362666004597">Lap hozzáadása csoporthoz</translation>
 <translation id="6220820548421939212">Igen, benne vagyok</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="6271513594716432922">Az összes inaktív lap bezárása</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">A Chrome automatikusan bezárja az inaktív szakaszban található olyan elemeket, amelyeket Ön három hónapja nem használt. Ezt most vagy bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="8887921976452567404">A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban.</translation>
 <translation id="8915916167043355778">Az összes bezárása</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Áthelyezés új ablakba}other{Áthelyezés másik ablakba}}</translation>
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9114502155681725011">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport műveleti menüjének megnyitása.</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>

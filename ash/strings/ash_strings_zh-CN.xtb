@@ -1484,6 +1484,7 @@
 <translation id="5788127256798019331">Play 文件</translation>
 <translation id="5788535737706478207">重新打开上次关闭的标签页或窗口</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="5791926618942305301">在屏幕截取中，将其设置为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键可选择截取类型。按 Enter 键可截取。若要选择截取区域，请设为截取部分屏幕。如果尚未启用，请按空格键选择区域。</translation>
 <translation id="579415080077680903">静音</translation>
 <translation id="5802516411616338943">打开“快捷设置”</translation>
 <translation id="5804651031882187592">关闭“锁定 SIM 卡”设置</translation>
@@ -1640,6 +1641,7 @@
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">未在充电</translation>
 <translation id="6298183524022479114">在应用内自定义此设备</translation>
+<translation id="6304076460080088478">关闭或最小化无痕式窗口，以便使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="6309219492973062892">点击或点按任务栏图标 1-8</translation>
 <translation id="6315170314923504164">语音</translation>
 <translation id="6319058840130157106">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向后移动</translation>

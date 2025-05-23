@@ -354,7 +354,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2393230427496852974">Llegeix què en diuen els usuaris</translation>
 <translation id="2394659309569789395">Obre el lloc web igualment</translation>
 <translation id="2403129868389095715">El paquet no es pot entregar</translation>
-<translation id="2408110434434717724">Les dades de navegació existents es mantindran separades. Per utilitzar-les, tanca la sessió del compte gestionat.</translation>
 <translation id="2410754283952462441">Tria un compte</translation>
 <translation id="2422174748424038845">Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els dispositius.</translation>
 <translation id="2424805048070062787">Continua amb aquesta pestanya</translation>
@@ -387,7 +386,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2539748786028143624">Activa la protecció millorada…</translation>
 <translation id="2540111494300686866">Oculta els quadres de diàleg</translation>
 <translation id="2542268842667970959">Amaga Comprovació de seguretat</translation>
-<translation id="2547458583188611426">La sincronització no funciona. Per iniciar la sincronització, introdueix la frase de contrasenya.</translation>
 <translation id="2551153019974022505">Error del compte</translation>
 <translation id="2559843230610279254">Grup de pestanyes, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanyes.</translation>
 <translation id="2577522251608256362">Veïnat</translation>
@@ -444,6 +442,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Sol·licita el lloc web per a ordinadors</translation>
+<translation id="2789486458103222910">D'acord</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Contrasenya desada al teu Compte de Google ({EMAIL})}other{Contrasenyes desades al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Afegeix una contrasenya…</translation>
 <translation id="2793703503584038325">Selecciona una contrasenya i toca la icona de compartir</translation>
@@ -490,6 +489,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="3012310354105716927">Encara no s'han desat algunes dades</translation>
 <translation id="3016518775797983090">No es pot compartir la pàgina</translation>
 <translation id="3020183492814296499">Dreceres</translation>
+<translation id="3021342271734507256">Dibuixa, marca o toca qualsevol cosa a la pantalla per cercar</translation>
 <translation id="3023690182746510369">Espera un moment mentre utilitzem la IA per potenciar l'esdeveniment del calendari amb el context de la pàgina web.</translation>
 <translation id="3030138564564344289">Torna a provar la baixada</translation>
 <translation id="3032704072014531631">Perdràs immediatament l'accés al grup de pestanyes <ph name="GROUP_NAME" /> i <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ja no podrà interaccionar amb tu als serveis de Google</translation>
@@ -617,6 +617,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="3596414637720633074">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="3602260545951981695">Tria Protecció millorada</translation>
+<translation id="3608436266458100337">Mode de lector</translation>
 <translation id="3622175633937495219">Historial de cerques (n'hem trobat <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Pots fer lliscar la vora per anar enrere.</translation>
 <translation id="362709345066740529">Personalitza les targetes, el feed i més aquí</translation>
@@ -641,6 +642,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3738428049780661523">Data de creació: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carret</translation>
 <translation id="3750225824417196283">Pàgina de pestanya d'incògnit nova</translation>
+<translation id="3751873026576444885">Deixa de cercar a la pantalla amb Google Lens</translation>
 <translation id="3753408171347588045">S'està fent un seguiment dels preus</translation>
 <translation id="3762232513783804601">Creat per a l'iPad</translation>
 <translation id="3779810277399252432">No hi ha connexió a Internet.</translation>
@@ -902,6 +904,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4802185666270672526">Amaga l'opció Sol·licita el lloc web per a ordinadors</translation>
 <translation id="4803185665210547709">Gestionat per la teva organització.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="4803728135431112209">Dibuixa, marca o toca per seleccionar qualsevol cosa que vulguis cercar i obtén resultats sense sortir de la pestanya</translation>
 <translation id="4807098396393229769">Titular de la targeta</translation>
 <translation id="4808744395915275922">Actualitzacions</translation>
 <translation id="4813345808229079766">Connexió</translation>
@@ -1052,7 +1055,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5444892875087332195">Adreces d'interès</translation>
 <translation id="5452354193031718372">Utilitza una contrasenya segura:</translation>
 <translation id="5454211924362324495">Per evitar que altres persones utilitzin la teva contrasenya, <ph name="BEGIN_LINK" />canvia-la a <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
-<translation id="5454723301413569630"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que pot veure algunes dades, com ara</translation>
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5457226814769348910">Obre la versió sense connexió</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
@@ -1270,6 +1272,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6295751040240588413">L'àlies de la targeta no és vàlid</translation>
 <translation id="629730747756840877">Compte</translation>
 <translation id="6301104306974789820">Rep notificacions de seguiment de preus</translation>
+<translation id="6307241780749477694">Verifica la teva identitat per obtenir totes les teves contrasenyes en aquest dispositiu</translation>
 <translation id="6316141353357700666">Tria la contrasenya que vols utilitzar de la llista que es mostra.</translation>
 <translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
 <translation id="6331836477476466332">Un navegador més segur i potent per a tu</translation>
@@ -1290,6 +1293,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6361848730467328243">Segueix <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Tria un motor de cerca de la llista.</translation>
 <translation id="6368102751067608420">Per suprimir totes les dades del gestor de contrasenyes</translation>
+<translation id="6372558618707314581">Ves a la pàgina que vulguis</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="6387994324662817823">Les contrasenyes es desen al gestor de contrasenyes de Google només en aquest dispositiu.</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
@@ -1299,7 +1303,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6410005280995367944">Contrasenyes en altres aplicacions</translation>
 <translation id="6410390304316730527">Navegació segura et protegeix contra els atacants que et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari maliciós o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). Si la desactives, ves amb compte quan naveguis per llocs web desconeguts o amb mala reputació.</translation>
 <translation id="6410883413783534063">Obre pestanyes per visitar diverses pàgines al mateix temps</translation>
-<translation id="6415646765510136">Tria què vols fer amb les dades de navegació que hi ha en aquest dispositiu.</translation>
 <translation id="6416807286621280684">Novetats sobre les entregues i sobre els paquets que segueixes.</translation>
 <translation id="6418346271604475326">Preparant el PDF</translation>
 <translation id="6421038304268477484">Text traduït</translation>
@@ -1619,6 +1622,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7696316012653762532">Opcions per traduir la pàgina</translation>
 <translation id="7700527812567437847">Cerca a la pantalla amb Google Lens</translation>
 <translation id="7701040980221191251">Cap</translation>
+<translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>
 <translation id="7719038820139380048">Inicia la sessió per obtenir contingut basat en els teus interessos.</translation>
@@ -1793,6 +1797,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8370406443343902172">Ves a Configuració...</translation>
 <translation id="8372471489238799313">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
+<translation id="8385363453480067273">Cerca el que veus amb Google Lens</translation>
 <translation id="8386068868580335421">Restableix</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8393889347136007944">Pestanyes que no s'han utilitzat durant <ph name="THRESHOLD" /> dies</translation>

@@ -721,6 +721,7 @@
 <translation id="1494349716233667318">אתרים יכולים לבקש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="1494429729245089920">המכונה הווירטואלית '<ph name="VM_NAME" />' קיימת, אבל נראה שהיא לא מכונה וירטואלית תקינה מסוג <ph name="APP_NAME" />. צריך לפנות לאדמין.</translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
+<translation id="1496514951988037011">שם משתמש</translation>
 <translation id="1498498210836053409">השבתת ההקשה ביד אחת במהלך עריכת טקסט (הקשה חכמה ביד אחת)</translation>
 <translation id="1499041187027566160">הגברת עוצמת הקול</translation>
 <translation id="1500297251995790841">מכשיר לא ידוע [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1446,6 +1447,7 @@
 <translation id="1981434377190976112">קריאת כל הנתונים שלך בכל האתרים</translation>
 <translation id="1982851102516626421">לא נכנסת לחשבון</translation>
 <translation id="1983612835086592681">פתחת את המסמך בשבוע האחרון</translation>
+<translation id="1984087999855033707">מספר טלפון</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1984683754853869253">רוצה ליצור פרופיל חדש לבית הספר?</translation>
 <translation id="198507684520034826">עזרה</translation>
@@ -4766,7 +4768,6 @@
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="428963538941819373">האתרים האלה יכולים להשתמש במידע שנשמר עליך בזמן הגלישה בשרת <ph name="HOST" /></translation>
 <translation id="4289732974614035569">בחירת קוד אימות</translation>
-<translation id="4290526909608432059">‏התמיכה באפליקציות Chrome תסתיים בקרוב. כדי לקבל מידע על האפשרויות, צריך לפנות למפתח האפליקציה או לצוות התמיכה ב-IT.</translation>
 <translation id="4290791284969893584">לאחר סגירת דף, ייתכן שמשימות שהתחלת לא יסתיימו</translation>
 <translation id="4290826901752066702">משתמש אחד (<ph name="NUM" />)</translation>
 <translation id="4290898381118933198">אפשר להחליק כדי לעבור בין הדפים</translation>
@@ -7635,6 +7636,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">הוספת בני משפחה וחברים</translation>
 <translation id="6367097275976877956">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS? אם כן, יש להקיש על מקש הרווח.</translation>
+<translation id="6367196786591004737">מחיקת הרשומה</translation>
 <translation id="6367396429435748845">כדי להשהות את השליטה בעכבר מהמקלדת או להמשיך אותה, לוחצים על <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">האם לקבל באמצעות 'שיתוף בקרבת מקום'?</translation>
 <translation id="6368157733310917710">כתובות ועוד</translation>
@@ -7972,7 +7974,6 @@
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
 <translation id="6610064275805055636">‏ניהול של אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="6611432349566876829">כרטיסייה אחת (<ph name="NUM" />)</translation>
-<translation id="6611972847767394631">הכרטיסיות שלך נמצאות כאן</translation>
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6613267708691765962">מתבצעת סריקה לאיתור תוכנה זדונית…</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
@@ -10636,6 +10637,7 @@
 <translation id="8472623782143987204">גיבוי חומרה</translation>
 <translation id="8473540203671727883">הקראת הטקסט שנמצא מתחת לסמן של העכבר</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
+<translation id="847433688444405067">גלישה בכמה מכשירים</translation>
 <translation id="8474378002946546633">אפשר התראות</translation>
 <translation id="8474561048882755118">התכונה הזו עוזרת לך לראות מוצרים דומים זה לצד זה ולהשוות בקלות את הפרטים שחשובים לך</translation>
 <translation id="8475313423285172237">‏תוכנה אחרת במחשב שלך הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.</translation>

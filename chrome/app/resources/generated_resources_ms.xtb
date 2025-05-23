@@ -4769,7 +4769,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="428963538941819373">Laman ini boleh menggunakan maklumat yang disimpan tentang anda ketika anda menyemak imbas <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
-<translation id="4290526909608432059">Sokongan untuk apl Chrome akan ditamatkan tidak lama lagi. Untuk mengetahui pilihan anda, hubungi pembangun apl atau pasukan sokongan IT anda.</translation>
 <translation id="4290791284969893584">Selepas menutup halaman, tugas yang anda mulakan mungkin tidak selesai</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> ahli</translation>
 <translation id="4290898381118933198">Leret untuk menavigasi antara halaman</translation>
@@ -7637,6 +7636,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tambahkan keluarga dan rakan</translation>
 <translation id="6367097275976877956">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS? Jika ya, tekan bar ruang.</translation>
+<translation id="6367196786591004737">Padam entri</translation>
 <translation id="6367396429435748845">Tekan <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> untuk menjeda dan menyambung semula kekunci tetikus</translation>
 <translation id="6367985768157257101">Terima dengan Kongsi Berdekatan?</translation>
 <translation id="6368157733310917710">&amp;Alamat dan pelbagai lagi</translation>
@@ -7970,7 +7970,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6610002944194042868">Pilihan Terjemahan</translation>
 <translation id="6610064275805055636">Urus apl web terpencil</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
-<translation id="6611972847767394631">Cari tab anda di sini</translation>
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
 <translation id="6613267708691765962">Mengimbas untuk mengesan perisian hasad...</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
@@ -10005,6 +10004,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8037801708772278989">Disemak sebentar tadi</translation>
 <translation id="8038111231936746805">(lalai)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Menyalin 1 fail kepada <ph name="CLOUD_PROVIDER" />}other{Menyalin {NUM_OF_FILES} fail kepada <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Apl Chrome ini akan berhenti berfungsi selepas versi ChromeOS anda dikemaskinikan. Simpan sebarang data yang mahu anda simpan. Untuk mengetahui pilihan anda, hubungi pembangun apl atau pasukan sokongan IT anda.</translation>
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8041093619605951337">Gembira</translation>
 <translation id="8041267120753677077">Strim apl telefon anda</translation>
@@ -10634,6 +10634,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8472623782143987204">disokong perkakasan</translation>
 <translation id="8473540203671727883">Sebutkan teks di bawah tetikus</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
+<translation id="847433688444405067">Semak imbas merentas peranti</translation>
 <translation id="8474378002946546633">Benarkan pemberitahuan</translation>
 <translation id="8474561048882755118">Membantu anda melihat produk yang serupa secara bersebelahan dan membandingkan butiran yang penting kepada anda dengan mudah</translation>
 <translation id="8475313423285172237">Program lain pada komputer anda menambah sambungan yang boleh mengubah cara Chrome berfungsi.</translation>

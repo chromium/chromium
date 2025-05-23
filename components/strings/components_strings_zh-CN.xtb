@@ -265,6 +265,7 @@
 <translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433225466058025572">尝试重新移动文件</translation>
+<translation id="1433478348197382180">阅读模式</translation>
 <translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -839,7 +840,6 @@
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
-<translation id="2418292431699242678">管理员允许在所有 ChromeOS 设备的先前会话和当前会话之间同步以下数据：</translation>
 <translation id="2429716554270894715">织物（防水）</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2436976580469434549">纤维与纺织品艺术</translation>
@@ -1175,7 +1175,6 @@
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039406992698062762">家庭旅行</translation>
-<translation id="3040636468789770340">Cookie（您最近访问过的网站上的已登录状态）</translation>
 <translation id="3041176923638368519">查看卡福利条款</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3045769629416806687">极限运动</translation>
@@ -1679,7 +1678,6 @@
 <translation id="3869939189466884821">您的本地文件将在 <ph name="MINUTES" /> 分钟后被删除</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">操作步骤</translation>
-<translation id="387681220560687945">窗口（窗口和标签页的排列和组织方式）</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
@@ -1846,6 +1844,7 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新标签页中打开帮助中心文章</translation>
 <translation id="4165986682804962316">网站设置</translation>
+<translation id="4169189393773057143">在 Google 钱包中管理会员卡或关闭这些建议</translation>
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4171400957073367226">验证签名无效</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2244,7 +2243,6 @@
 <translation id="4866506163384898554">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 可显示鼠标光标</translation>
 <translation id="4873616204573862158">眼镜</translation>
 <translation id="4873807733347502026">锁定和使用鼠标</translation>
-<translation id="4876188919622883022">简化版视图</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4876327226315760474">这意味着，网站功能应该会按预期运行，但您受到的保护级别较低。</translation>
 <translation id="4877047577339061095">家庭储藏与搁架</translation>
@@ -2394,7 +2392,6 @@
 <translation id="5115232566827194440">受限受管理访客会话的替换设置</translation>
 <translation id="5115563688576182185">（64 位）</translation>
 <translation id="5120526915373271910">家庭片</translation>
-<translation id="5121592697493894155">侧边栏中的 Google 搜索结果</translation>
 <translation id="5122786942953798871">信封（棉纸）</translation>
 <translation id="5123063207673082822">周末</translation>
 <translation id="5123433949759960244">篮球</translation>
@@ -3024,7 +3021,6 @@
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221286101741304627">若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">要将这张卡的信息保存到您的 Google 账号中吗？</translation>
-<translation id="6221892641068781024">简化版视图</translation>
 <translation id="6222527803348563979">信笺</translation>
 <translation id="62231116988543150">能够安装 Web 应用</translation>
 <translation id="6224281071334553713">珠宝首饰</translation>
@@ -3439,6 +3435,7 @@
 <translation id="692638818576287323">商用车</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />默认搜索引擎让您可在网络中搜索信息，并支持 Chrome 功能<ph name="END_BOLD" />，例如通过地址栏和运用网页上的图片进行搜索。如果您所用的搜索引擎不支持某项功能，您可能无法使用该功能。</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 账号</translation>
+<translation id="6935077351544118151">现在，您可以自动填充 Google 钱包中的会员卡</translation>
 <translation id="6935082727755903526">会计和财务职位</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="6936976777388162184">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>

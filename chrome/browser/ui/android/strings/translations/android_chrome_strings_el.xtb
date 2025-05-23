@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Προβολή insight σελίδας</translation>
 <translation id="1108938384783527433">Συγχρονισμός ιστορικού</translation>
 <translation id="1111673857033749125">Οι σελιδοδείκτες που είναι αποθηκευμένοι σε άλλες συσκευές θα εμφανίζονται εδώ.</translation>
-<translation id="1113597929977215864">Εμφάνιση απλοποιημένης προβολής</translation>
 <translation id="1126696498560056882">Διαχείριση λογαριασμών σε αυτή τη συσκευή</translation>
 <translation id="1129510026454351943">Λεπτομέρειες: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Η κατάσταση ανώνυμης περιήγησης διατηρεί την περιήγησή σας ιδιωτική από άλλα άτομα που χρησιμοποιούν τη συσκευή σας</translation>
@@ -1878,7 +1877,6 @@
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="963246339335003378">Άνοιγμα Διαχείρισης Εργασιών</translation>
 <translation id="966131775676567255">Διαγραφή δεδομένων λογαριασμού</translation>
-<translation id="96681097142096641">Προβολή απλοποιημένης σελίδας;</translation>
 <translation id="970715775301869095">Απομένουν <ph name="MINUTES" /> λεπτά</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="983192555821071799">Κλείσιμο όλων των καρτελών</translation>

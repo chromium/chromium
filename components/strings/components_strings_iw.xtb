@@ -18,6 +18,7 @@
 <translation id="102916930470544692">מפתח גישה</translation>
 <translation id="1030706264415084469"><ph name="URL" /> רוצה לאחסן באופן קבוע כמות גדולה של נתונים במכשיר שלך</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{אין אתרים}=1{מאתר אחד. תתבצע יציאה מהחשבון ברוב האתרים. }one{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }two{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }other{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }}</translation>
+<translation id="1035509598913574970">ציאן 3</translation>
 <translation id="1035709686865413354">מסנני מים ומטהרי מים</translation>
 <translation id="1036348656032585052">כיבוי</translation>
 <translation id="1036881361735705143">‏מעטפה – C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
+<translation id="1433478348197382180">מצב קריאה</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
 <translation id="1442987760062738829">ניקוב</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">לאפשר בכל ביקור</translation>
 <translation id="2085876078937250610">שמירה…</translation>
+<translation id="2088913896151127116">הוספת טקסט</translation>
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">ישנה</translation>
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2414886740292270097">כהה</translation>
-<translation id="2418292431699242678">‏האדמין מאפשר לסנכרן את הפריטים הבאים בין הסשנים הקודמים והנוכחי בכל מכשיר ChromeOS:</translation>
 <translation id="2429716554270894715">Fabric (Waterproof)</translation>
 <translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">אומנויות טקסטיל ואריגים</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">קריסה משעה <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">צביעה</translation>
 <translation id="2916038427272391327">סגירת תוכניות אחרות</translation>
+<translation id="2917630513638801879">ציאן 1</translation>
 <translation id="2919185931486062599">ציד וירי</translation>
 <translation id="2922350208395188000">לא ניתן לבדוק את אישור השרת.</translation>
 <translation id="2922792708490674">{0,plural, =1{אין אפשרות להוריד את הקובץ}one{אין אפשרות להוריד <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להוריד <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להוריד <ph name="FILE_COUNT" /> קבצים}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
 <translation id="3039406992698062762">נסיעות משפחתיות</translation>
-<translation id="3040636468789770340">‏קובצי Cookie (מצב כניסה באתרים שביקרת בהם לאחרונה)</translation>
 <translation id="3041176923638368519">לעיון בתנאי ההטבה של הכרטיס</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>
 <translation id="3045769629416806687">ספורט אקסטרים</translation>
@@ -1680,7 +1682,6 @@
 <translation id="3869939189466884821">הקבצים המקומיים שלך יימחקו בעוד <ph name="MINUTES" /> דקות</translation>
 <translation id="3872834068356954457">מדע</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
-<translation id="387681220560687945">חלונות (סידור וארגון של חלונות וכרטיסיות)</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3880456882942693779">אומנויות ובידור</translation>
 <translation id="3880589673277376494">אינטרנט וטלקום</translation>
@@ -1847,6 +1848,7 @@
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165422751765527461">פתיחת מאמר במרכז העזרה בכרטיסייה חדשה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
+<translation id="4169189393773057143">‏ניהול כרטיסי מועדון לקוחות או השבתת ההצעות האלה ב-Google Wallet</translation>
 <translation id="4169535189173047238">לא לאפשר</translation>
 <translation id="4171400957073367226">חתימת אימות לא חוקית</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> ‏- <ph name="RESULT_OWNER" /> ‏- <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -2081,6 +2083,7 @@
 <translation id="4562155266774382038">ביטול ההצעה</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4569155249847375786">מאומת</translation>
+<translation id="4570008401337135432">יישור טקסט</translation>
 <translation id="457875822857220463">משלוח</translation>
 <translation id="4579699065574932398">בנקאות</translation>
 <translation id="4582595824823167856">קבלה של הודעת טקסט</translation>
@@ -2248,7 +2251,6 @@ Del</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
 <translation id="4873616204573862158">משקפיים</translation>
 <translation id="4873807733347502026">לנעול את העכבר ולהשתמש בו</translation>
-<translation id="4876188919622883022">תצוגה נקייה</translation>
 <translation id="4876305945144899064">אין שם משתמש</translation>
 <translation id="4876327226315760474">במצב כזה תכונות האתר אמורות לפעול כצפוי, אבל יכול להיות שתהיה פחות הגנה במהלך הגלישה.</translation>
 <translation id="4877047577339061095">פתרונות אחסון ומדפים לבית</translation>
@@ -2608,6 +2610,7 @@ Del</translation>
 <translation id="5481682542063333508">הצעה לעזרה בכתיבה</translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
+<translation id="5484396522446324950">סגנונות</translation>
 <translation id="5485100387355669506">עבה במיוחד</translation>
 <translation id="5485973315555778056">מכונה בענן</translation>
 <translation id="5488367146069768854">התקנות של אפליקציות אינטרנט</translation>
@@ -2947,6 +2950,7 @@ Del</translation>
 <translation id="6062937464449575061">ביטול המעקב אחר המחירים</translation>
 <translation id="6063415549109819824">מימון לבית</translation>
 <translation id="6070432475334343308">קובץ אחד או יותר לא הועלה אל <ph name="FOLDER_NAME" /> ב-<ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">ציאן 2</translation>
 <translation id="6085149458302186532">Labels (Colored)</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
 <translation id="6089505343295765444">‏כרטיסיות שמחקת מההיסטוריה ב-Chrome עדיין יופיעו בטבלאות ההשוואה.</translation>
@@ -3027,7 +3031,6 @@ Del</translation>
 <translation id="622039917539443112">קיפול מקביל</translation>
 <translation id="6221286101741304627">כדי לצאת ממסך מלא, צריך ללחוץ על |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">‏לשמור את פרטי הכרטיס הזה בחשבון Google שלך?</translation>
-<translation id="6221892641068781024">תצוגה נקייה</translation>
 <translation id="6222527803348563979">Stationery</translation>
 <translation id="62231116988543150">הרשאה להתקין אפליקציות אינטרנט</translation>
 <translation id="6224281071334553713">אבני חן ותכשיטים</translation>
@@ -3442,6 +3445,7 @@ Del</translation>
 <translation id="692638818576287323">רכבים מסחריים</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל מאפשר לך לבצע חיפושים באינטרנט ומפעיל תכונות של Chrome<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. יכול להיות שתכונה מסוימת לא תהיה זמינה אם מנוע החיפוש לא תומך בה.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>
+<translation id="6935077351544118151">‏מעכשיו אפשר למלא אוטומטית כרטיסי מועדון לקוחות מ-Google Wallet</translation>
 <translation id="6935082727755903526">משרות בתחום החשבונאות והפיננסים</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="6936976777388162184">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
@@ -3847,6 +3851,7 @@ Del</translation>
 <translation id="7598391785903975535">פחות מ-<ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> לא יכול לטפל כרגע בבקשה הזו.</translation>
 <translation id="7599089013883397081">פג הזמן הקצוב להורדה</translation>
+<translation id="7602868996817972616">‏שאלה ל-Google לגבי הדף הזה</translation>
 <translation id="7608583484192556132">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />מודעות שאתרים מציעים<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-Cookie<ph name="END_LINK_2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK_3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">הערך מחוץ לטווח <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">עבה</translation>

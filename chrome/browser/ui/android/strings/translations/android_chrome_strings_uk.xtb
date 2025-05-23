@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Статистика сторінки</translation>
 <translation id="1108938384783527433">Синхронізація історії</translation>
 <translation id="1111673857033749125">Тут відображатимуться закладки, збережені на інших ваших пристроях.</translation>
-<translation id="1113597929977215864">Показати в режимі спрощеного перегляду</translation>
 <translation id="1126696498560056882">Керувати обліковими записами на цьому пристрої</translation>
 <translation id="1129510026454351943">Деталі. <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режим анонімного перегляду забезпечує приватний перегляд вебсторінок, щоб їх не бачили інші користувачі, які мають доступ до вашого пристрою.</translation>
@@ -1878,7 +1877,6 @@
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>
 <translation id="963246339335003378">Відкрити Диспетчер завдань</translation>
 <translation id="966131775676567255">Видалення даних в обліковому записі</translation>
-<translation id="96681097142096641">Переглянути спрощену сторінку?</translation>
 <translation id="970715775301869095">Залишилося <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрити всі вкладки</translation>

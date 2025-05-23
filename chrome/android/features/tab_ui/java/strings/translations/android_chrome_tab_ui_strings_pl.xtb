@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="1045448422538531528">Dodaj do grupy</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Utworzono <ph name="NUM_WEEKS_ONE" /> tydzień temu}few{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnie temu}many{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodni temu}other{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnia temu}}</translation>
 <translation id="1063300264396686489">Automatycznie otwieraj grupy kart z innych urządzeń</translation>
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Zamknięto <ph name="ONE_CLOSED" /> kartę}few{Zamknięto <ph name="MANY_CLOSED" /> karty}many{Zamknięto <ph name="MANY_CLOSED" /> kart}other{Zamknięto <ph name="MANY_CLOSED" /> karty}}</translation>
 <translation id="2894757982205307093">Nowa karta w grupie</translation>
 <translation id="2928243913527329289">Google | Informacje o tym sklepie</translation>
-<translation id="2977480621796371840">Usuń z grupy</translation>
 <translation id="29919168204617356">Nieaktywne karty zostaną automatycznie zamknięte. Zawsze możesz je znaleźć w historii.</translation>
 <translation id="3008554597174452548">Przestań obserwować produkt</translation>
 <translation id="3026391124054406831">Twórz grupy, aby porządkować karty.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
+<translation id="6212567362666004597">Dodaj kartę do grupy</translation>
 <translation id="6220820548421939212">Tak. Chętnie</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome automatycznie zamyka elementy w sekcji nieaktywnych, których nie używasz od 3 miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.</translation>
 <translation id="8887921976452567404">Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart.</translation>
 <translation id="8915916167043355778">Zamknij wszystko</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Przenieś do nowego okna}few{Przenieś do innego okna}many{Przenieś do innego okna}other{Przenieś do innego okna}}</translation>
 <translation id="9090098097337832354">Informacje o tym sklepie zostały zamknięte</translation>
 <translation id="9114502155681725011">Otwórz menu czynności grupy kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Dodaj nową kartę do grupy</translation>

@@ -1459,7 +1459,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7388345524791662148">Lisää vaihtoehtoja: <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Sisäänrakennettu kosketuslevy</translation>
 <translation id="7397270852490618635">Laita vaalea teema pois päältä</translation>
-<translation id="7400166052988585408">Opettaja lukitsee näyttösi <ph name="NUM_SECONDS" /> sekunnin kuluttua</translation>
 <translation id="7401543881546089382">Poista pikakuvake</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> on valmis päivitettäväksi</translation>
 <translation id="741244894080940828">muunnos</translation>
@@ -1614,7 +1613,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8088963492174775412">Tallenna painamalla</translation>
 <translation id="8094062939584182041">Salli Googlen lähettää sinulle sähköpostia tästä ongelmasta</translation>
 <translation id="8104083085214006426">Käytät avointa ja suojaamatonta verkkoa</translation>
-<translation id="8110942816572072814">Opettaja on lukinnut näyttösi</translation>
 <translation id="811820734797650957">(Android) Yhdyskäytävää voidaan pingata</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Vahvista</translation>

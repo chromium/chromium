@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1036348656032585052">Slökkva</translation>
-<translation id="1045448422538531528">Setja í hóp</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Búinn til fyrir <ph name="NUM_WEEKS_ONE" /> viku}one{Búinn til fyrir <ph name="NUM_WEEKS_MANY" /> viku}other{Búinn til fyrir <ph name="NUM_WEEKS_MANY" /> vikum}}</translation>
 <translation id="1063300264396686489">Opna flipahópa úr öðrum tækjum sjálfkrafa</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> flipa lokað}one{<ph name="MANY_CLOSED" /> flipa lokað}other{<ph name="MANY_CLOSED" /> flipum lokað}}</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
 <translation id="2928243913527329289">Google | Um þessa verslun</translation>
-<translation id="2977480621796371840">Fjarlægja úr hópi</translation>
 <translation id="29919168204617356">Óvirkum flipum verður lokað sjálfkrafa. Þú getur alltaf fundið þá í „Ferli“.</translation>
 <translation id="3008554597174452548">Hætta að fylgjast með vöru</translation>
 <translation id="3026391124054406831">Búðu til hópa til að flokka flipana þína.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Allir tvíteknir flipar verða nú einnig settir í geymslu, fyrir utan það afrit sem síðast var notað.</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
+<translation id="6212567362666004597">Bæta flipa við hóp</translation>
 <translation id="6220820548421939212">Já. Ég vil vera með</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
 <translation id="6271513594716432922">Loka öllum óvirkum flipum</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í þrjá mánuði. Þú getur slökkt á þessu núna eða síðar í stillingunum.</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
 <translation id="8915916167043355778">Loka öllu</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Færa yfir í nýjan glugga}one{Færa yfir í nýjan glugga}other{Færa yfir í nýjan glugga}}</translation>
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>
 <translation id="9114502155681725011">Opnaðu aðgerðavalmynd flipahópsins „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“.</translation>
 <translation id="9169594135889675189">Bæta nýjum flipa við hóp</translation>

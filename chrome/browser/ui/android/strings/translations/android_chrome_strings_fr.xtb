@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Voir insights de la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
-<translation id="1113597929977215864">Afficher la vue simplifiée</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Le mode navigation privée maintient votre navigation privée vis-à-vis des autres utilisateurs de votre appareil</translation>
@@ -1876,8 +1875,8 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Supprimer les données de navigation</translation>
+<translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966131775676567255">Suppression des données du compte…</translation>
-<translation id="96681097142096641">Afficher la page simplifiée ?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>

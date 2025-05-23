@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1036348656032585052">Izklop</translation>
-<translation id="1045448422538531528">Dodajanje v skupino</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ustvarjeno pred <ph name="NUM_WEEKS_ONE" /> tednom}one{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednom}two{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednoma}few{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}other{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}}</translation>
 <translation id="1063300264396686489">Samodejno odpiranje skupin zavihkov iz drugih naprav</translation>
 <translation id="1075622780330595106">Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> zavihek je zaprt}one{<ph name="MANY_CLOSED" /> zavihek je zaprt}two{<ph name="MANY_CLOSED" /> zavihka sta zaprta}few{<ph name="MANY_CLOSED" /> zavihki so zaprti}other{<ph name="MANY_CLOSED" /> zavihkov je zaprtih}}</translation>
 <translation id="2894757982205307093">Novi zavihek v skupini</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
-<translation id="2977480621796371840">Odstrani iz skupine</translation>
 <translation id="29919168204617356">Neaktivni zavihki bodo samodejno zaprti. Vedno jih lahko najdete v razdelku Zgodovina.</translation>
 <translation id="3008554597174452548">Ustavi spremljanje izdelka</translation>
 <translation id="3026391124054406831">Ustvarite skupine in organizirajte zavihke.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Vsi podvojeni zavihki, razen nazadnje uporabljene kopije, bodo zdaj tudi arhivirani.</translation>
 <translation id="6193448654517602979">Izberite zavihke</translation>
+<translation id="6212567362666004597">Dodaj zavihek skupini</translation>
 <translation id="6220820548421939212">Da. Sem za.</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6271513594716432922">Zapiranje vseh neaktivnih zavihkov</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome samodejno zapre elemente v neaktivnem razdelku, ki jih niste uporabljali 3 mesece. To lahko izklopite zdaj ali kadar koli v nastavitvah.</translation>
 <translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>
 <translation id="8915916167043355778">Zapri vse</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premik v novo okno}one{Premik v drugo okno}two{Premik v drugo okno}few{Premik v drugo okno}other{Premik v drugo okno}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
 <translation id="9114502155681725011">Odpiranje menija z dejanji za skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Skupini dodaj nov zavihek</translation>

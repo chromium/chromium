@@ -716,6 +716,7 @@
 <translation id="1494349716233667318">网站可以询问能否使用您设备上安装的字体</translation>
 <translation id="1494429729245089920">虚拟机“<ph name="VM_NAME" />”已存在，但似乎不是有效的 <ph name="APP_NAME" /> 虚拟机。请与您的管理员联系。</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
+<translation id="1496514951988037011">用户名</translation>
 <translation id="1498498210836053409">编辑文本时关闭粘滞模式（智能粘滞模式）</translation>
 <translation id="1499041187027566160">调高音量</translation>
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1430,6 +1431,7 @@
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
 <translation id="1982851102516626421">您已退出账号</translation>
 <translation id="1983612835086592681">您在过去一周内打开过</translation>
+<translation id="1984087999855033707">电话号码</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1984683754853869253">您想创建一份新的学校资料吗？</translation>
 <translation id="198507684520034826">帮助</translation>
@@ -4743,7 +4745,6 @@
 <translation id="4289540628985791613">概述</translation>
 <translation id="428963538941819373">这些网站可以使用它们在您浏览 <ph name="HOST" /> 时保存的与您相关的信息</translation>
 <translation id="4289732974614035569">选择 PIN 码</translation>
-<translation id="4290526909608432059">对 Chrome 应用的支持即将停止。如需了解您有哪些选择，请与应用开发者或您的 IT 支持团队联系。</translation>
 <translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> 位成员</translation>
 <translation id="4290898381118933198">滑动即可浏览各个页面</translation>
@@ -7606,6 +7607,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">添加亲朋好友</translation>
 <translation id="6367097275976877956">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请按空格键。</translation>
+<translation id="6367196786591004737">删除条目</translation>
 <translation id="6367396429435748845">按 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 可暂停和恢复使用鼠标键</translation>
 <translation id="6367985768157257101">要接收来自“附近分享”的内容吗？</translation>
 <translation id="6368157733310917710">地址和其他信息(&amp;A)</translation>
@@ -7939,7 +7941,6 @@
 <translation id="6610002944194042868">翻译选项</translation>
 <translation id="6610064275805055636">管理独立式 Web 应用</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> 个标签页</translation>
-<translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6615455863669487791">演示一下</translation>
@@ -8682,7 +8683,7 @@
 <translation id="7134951043985383439">下载的文件有危险</translation>
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7136694880210472378">设为默认选项</translation>
-<translation id="7137277889990479760">继续以 <ph name="EMAIL" /> 的身份登录</translation>
+<translation id="7137277889990479760">以 <ph name="EMAIL" /> 的身份继续</translation>
 <translation id="7137771508221868414">这会删除由网站和安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
@@ -10602,6 +10603,7 @@
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473540203671727883">说出鼠标指针下的文字</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
+<translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8474378002946546633">允许通知</translation>
 <translation id="8474561048882755118">帮助您并排查看相似商品，轻松比较您关心的细节</translation>
 <translation id="8475313423285172237">您计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。</translation>
@@ -11560,7 +11562,7 @@
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9129562557082598582">导出全部<ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">输入的模式无效。</translation>
-<translation id="9130135798965366513">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
+<translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9130208109420587135">修改分组名称“<ph name="NAME" />”</translation>
 <translation id="9130364135697530260">此网站上的嵌入式内容可以使用它们保存的与您相关的信息</translation>
 <translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>

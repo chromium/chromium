@@ -100,7 +100,6 @@
 <translation id="2199691482078155239">Chrome вам пружа већу контролу над огласима које видите и ограничава информације које сајтови могу да сазнају о вама када приказују персонализоване огласе</translation>
 <translation id="2216543877350048334">Да бисте уклонили Google налог из Chrome-а, одјавите се</translation>
 <translation id="2236949375853147973">Моје активности</translation>
-<translation id="223889379102603431">Информације о томе како Chrome управља сертификатима основног нивоа</translation>
 <translation id="2290014774651636340">Недостају шифре за Google API. Неке функције Google Chrome-а ће бити онемогућене.</translation>
 <translation id="2290095356545025170">Да ли стварно желите да деинсталирате Google Chrome?</translation>
 <translation id="2309047409763057870">Ово је секундарна инсталација Google Chrome-а па не можете да га подесите као подразумевани прегледач.</translation>
@@ -572,7 +571,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8255190535488645436">Google Chrome користи камеру и микрофон.</translation>
 <translation id="8257796129973882597">Можете да отварате обележиваче, режим за читање и друго из Chrome менија</translation>
 <translation id="8267953129876836456">Chrome је пронашао безбедносне препоруке које можете да прегледате</translation>
-<translation id="8270775718612349140">Сертификати којима управља Chrome</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="829923460755755423">Додајте пречицу у Google менаџер лозинки</translation>
 <translation id="8313851650939857356">Грешка при покретању: <ph name="STARTUP_ERROR" /></translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Prikaži uvide stranice</translation>
 <translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1111673857033749125">Oznake koje sačuvate na drugim uređajima će se pojaviti ovdje.</translation>
-<translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
 <translation id="1126696498560056882">Upravljajte računima na uređaju</translation>
 <translation id="1129510026454351943">Detalji: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Anonimni način rada štiti vašu privatnost pregledanja od drugih osoba koje koriste vaš uređaj</translation>
@@ -1878,7 +1877,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>
 <translation id="963246339335003378">Otvaranje upravitelja zadataka</translation>
 <translation id="966131775676567255">Brisanje podataka računa</translation>
-<translation id="96681097142096641">Prikazati pojednostavljenu stranicu?</translation>
 <translation id="970715775301869095">Ostalo je još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>

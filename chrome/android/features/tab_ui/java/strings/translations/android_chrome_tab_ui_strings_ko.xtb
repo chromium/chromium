@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1036348656032585052">사용 중지</translation>
-<translation id="1045448422538531528">그룹에 추가</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" />주 전 생성됨}other{<ph name="NUM_WEEKS_MANY" />주 전 생성됨}}</translation>
 <translation id="1063300264396686489">다른 기기에서 생성된 탭 그룹 자동 열기</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{탭 <ph name="ONE_CLOSED" />개 닫힘}other{탭 <ph name="MANY_CLOSED" />개 닫힘}}</translation>
 <translation id="2894757982205307093">그룹에 새 탭 추가</translation>
 <translation id="2928243913527329289">Google | 매장 정보</translation>
-<translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="29919168204617356">비활성 탭이 자동으로 닫힙니다. 방문 기록에서 언제든지 비활성 탭을 확인할 수 있습니다.</translation>
 <translation id="3008554597174452548">제품 추적 중지</translation>
 <translation id="3026391124054406831">그룹을 만들어 탭을 정리하세요.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">이제 가장 최근에 사용한 사본을 제외한 모든 중복 탭도 보관처리됩니다.</translation>
 <translation id="6193448654517602979">탭 선택</translation>
+<translation id="6212567362666004597">그룹에 탭 추가</translation>
 <translation id="6220820548421939212">예. 동의합니다.</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6271513594716432922">비활성 탭 모두 닫기</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome에서 3개월 동안 사용하지 않은 비활성 섹션의 항목을 자동으로 닫습니다. 지금 또는 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="8887921976452567404">닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다.</translation>
 <translation id="8915916167043355778">모두 닫기</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{새 창으로 이동}other{다른 창으로 이동}}</translation>
 <translation id="9090098097337832354">매장에 관한 정보가 닫힘</translation>
 <translation id="9114502155681725011">탭 그룹 <ph name="TITLE_OF_GROUP" />(색상: <ph name="COLOR_NAME" />)의 탭 그룹 작업 메뉴 열기</translation>
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>

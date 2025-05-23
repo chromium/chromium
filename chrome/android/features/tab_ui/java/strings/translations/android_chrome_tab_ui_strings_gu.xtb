@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1036348656032585052">બંધ કરો</translation>
-<translation id="1045448422538531528">ગ્રૂપમાં ઉમેરો</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં બનાવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}}</translation>
 <translation id="1063300264396686489">અન્ય ડિવાઇસમાંથી ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ટૅબ બંધ કર્યું}one{<ph name="MANY_CLOSED" /> બંધ કર્યું}other{<ph name="MANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="2894757982205307093">ગ્રૂપમાં નવું ટૅબ</translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
-<translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="29919168204617356">નિષ્ક્રિય ટૅબ ઑટોમૅટિક રીતે બંધ થઈ જશે. તમે ગમે ત્યારે તેને ઇતિહાસમાં શોધી શકો છો.</translation>
 <translation id="3008554597174452548">પ્રોડક્ટને ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3026391124054406831">તમારા ટૅબ ગોઠવવાનું શરૂ કરવા માટે ગ્રૂપ બનાવો.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
+<translation id="6212567362666004597">ગ્રૂપમાં ટૅબ ઉમેરો</translation>
 <translation id="6220820548421939212">હા. હું સંમત છું</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6271513594716432922">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા 3 મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="8887921976452567404">તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે.</translation>
 <translation id="8915916167043355778">બધા બંધ કરો</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{નવી વિન્ડો પર ખસેડો}one{અન્ય વિન્ડો પર ખસેડો}other{અન્ય વિન્ડો પર ખસેડો}}</translation>
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> રંગના, ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટેનું ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો.</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>

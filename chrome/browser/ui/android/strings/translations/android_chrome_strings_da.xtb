@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Se sideindsigt</translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
-<translation id="1113597929977215864">Se enkel visning</translation>
 <translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1129510026454351943">Info: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognitotilstand sørger for, at din internetaktivitet er privat, så andre, der bruger din enhed, ikke kan se den</translation>
@@ -1878,7 +1877,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="961856697154696964">Slet browserdata</translation>
 <translation id="963246339335003378">Åbn Jobliste</translation>
 <translation id="966131775676567255">Sletter kontodata</translation>
-<translation id="96681097142096641">Vil du se en forenklet side?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter tilbage</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Luk alle faner</translation>

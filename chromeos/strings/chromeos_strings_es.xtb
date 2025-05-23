@@ -1459,7 +1459,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7388345524791662148">Más opciones de <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Desactivar tema claro</translation>
-<translation id="7400166052988585408">El profesor bloqueará tu pantalla en <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="7401543881546089382">Eliminar acceso directo</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
 <translation id="741244894080940828">conversión</translation>
@@ -1614,7 +1613,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8088963492174775412">Pulsar para grabar</translation>
 <translation id="8094062939584182041">Permitir que Google te envíe correos electrónicos sobre este problema</translation>
 <translation id="8104083085214006426">Estás usando una red abierta que no es segura</translation>
-<translation id="8110942816572072814">Tu profesor ha bloqueado tu pantalla</translation>
 <translation id="811820734797650957">(Android) Se puede hacer ping a la pasarela</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="1045448422538531528">Adicionar ao grupo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Criado há <ph name="NUM_WEEKS_ONE" /> semana}one{Criado há <ph name="NUM_WEEKS_MANY" /> semana}other{Criado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automaticamente grupos de guias de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> guia fechada}one{<ph name="MANY_CLOSED" /> guia fechada}other{<ph name="MANY_CLOSED" /> guias fechadas}}</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2928243913527329289">Google | Sobre a loja</translation>
-<translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="29919168204617356">As guias inativas serão fechadas automaticamente. Elas podem ser encontradas no Histórico.</translation>
 <translation id="3008554597174452548">Parar de monitorar o produto</translation>
 <translation id="3026391124054406831">Crie grupos para organizar as guias.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todas as guias duplicadas também serão arquivadas, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
+<translation id="6212567362666004597">Adicionar guia ao grupo</translation>
 <translation id="6220820548421939212">Sim, aceito</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
 <translation id="6271513594716432922">Fechar todas as guias inativas</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há três meses. Você pode desativar esse recurso agora ou a qualquer momento nas configurações.</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>
 <translation id="8915916167043355778">Fechar todas</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover para nova janela}one{Mover para outra janela}other{Mover para outra janela}}</translation>
 <translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9114502155681725011">Abrir o menu de ações do grupo de guias <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>

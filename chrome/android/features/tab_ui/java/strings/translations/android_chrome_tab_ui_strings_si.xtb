@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
-<translation id="1045448422538531528">සමූහයට එක් කරන්න</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{සති <ph name="NUM_WEEKS_ONE" />ට පෙර තනන ලදි}one{සති <ph name="NUM_WEEKS_MANY" />ට පෙර තනන ලදි}other{සති <ph name="NUM_WEEKS_MANY" />ට පෙර තනන ලදි}}</translation>
 <translation id="1063300264396686489">වෙනත් උපාංගවලින් පටිති සමූහ ස්වයංක්‍රීයව විවෘත කරන්න</translation>
 <translation id="1075622780330595106">ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> පටිත්තක් වසන ලදි}one{පටිති <ph name="MANY_CLOSED" /> ක් වසන ලදි}other{පටිති <ph name="MANY_CLOSED" /> ක් වසන ලදි}}</translation>
 <translation id="2894757982205307093">කණ්ඩායම තුළ නව පටිත්ත</translation>
 <translation id="2928243913527329289">Google | මෙම අලෙවිසල පිළිබඳව</translation>
-<translation id="2977480621796371840">කණ්ඩායමෙන් ඉවත් කරන්න</translation>
 <translation id="29919168204617356">අක්‍රිය පටිති ස්වයංක්‍රීයව වැසෙනු ඇත. ඔබට ඒවා සැම විට ම ඉතිහාසය තුළ සොයා ගත හැක.</translation>
 <translation id="3008554597174452548">නිෂ්පාදනය හඹා යාම නවත්වන්න</translation>
 <translation id="3026391124054406831">ඔබේ පටිති සංවිධාන කිරීමට සමූහ සාදන්න.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
+<translation id="6212567362666004597">සමූහයට පටිත්ත එක් කරන්න</translation>
 <translation id="6220820548421939212">ඔව්. මම සහභාගි වෙමි</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
 <translation id="6271513594716432922">සියලුම අක්‍රිය පටිති වසන්න</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">ඔබ මාස 3ක් තිස්සේ භාවිතා නොකළ අක්‍රිය කොටසේ අයිතම Chrome ස්වයංක්‍රීයව වසා දමයි. ඔබට මෙය දැන් හෝ ඕනෑම වේලාවක සැකසීම් තුළ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="8887921976452567404">ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක.</translation>
 <translation id="8915916167043355778">සියල්ල වසන්න</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{නව කවුළුවකට ගෙන යන්න}one{වෙනත් කවුළුවක් වෙත යන්න}other{වෙනත් කවුළුවක් වෙත යන්න}}</translation>
 <translation id="9090098097337832354">මෙම වෙළඳසැල පිළිබඳ තොරතුරු වසා ඇත</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> පටිති සමූහය සඳහා පටිති සමූහ ක්‍රියා මෙනුව විවෘත කරන්න, වර්ණය <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">සමූහයට නව පටිත්ත එක් කරන්න</translation>

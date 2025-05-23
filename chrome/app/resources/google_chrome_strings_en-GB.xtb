@@ -100,7 +100,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2199691482078155239">Chrome gives you more control over the ads that you see and limits what sites can learn about you when they show you personalised ads</translation>
 <translation id="2216543877350048334">To remove your Google Account from Chrome, sign out</translation>
 <translation id="2236949375853147973">My Activity</translation>
-<translation id="223889379102603431">Information about how Chrome manages its root certificates</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
@@ -572,7 +571,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8257796129973882597">You can open bookmarks, reading mode and more from the Chrome menu</translation>
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>
-<translation id="8270775718612349140">Certificates managed by Chrome</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>

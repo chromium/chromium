@@ -718,6 +718,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1494349716233667318">Webguneek gailuan instalatutako letrak erabiltzea eska dezakete</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" makina birtuala badago, baina ez da balio duen <ph name="APP_NAME" /> makina birtual bat. Jarri administratzailearekin harremanetan.</translation>
 <translation id="1495677929897281669">Itzuli fitxara</translation>
+<translation id="1496514951988037011">erabiltzaile-izena</translation>
 <translation id="1498498210836053409">Desaktibatu modu itsaskorra testua editatzean (modu itsaskor adimenduna)</translation>
 <translation id="1499041187027566160">igo bolumena</translation>
 <translation id="1500297251995790841">Identifikatu ezin den gailua [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1437,6 +1438,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1981434377190976112">Edozein webgunetan dauzkazun datu guztiak irakurri.</translation>
 <translation id="1982851102516626421">Saioa amaitu duzu</translation>
 <translation id="1983612835086592681">Azken astean ireki duzu</translation>
+<translation id="1984087999855033707">telefono-zenbakia</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1984683754853869253">Eskolarako profil berri bat sortu nahi duzu?</translation>
 <translation id="198507684520034826">Laguntza</translation>
@@ -4752,7 +4754,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="428963538941819373"><ph name="HOST" /> arakatu bitartean zuri buruz gorde duten informazioa erabil dezakete webgune hauek</translation>
 <translation id="4289732974614035569">Aukeratu PIN bat</translation>
-<translation id="4290526909608432059">Laster, Chrome-ren aplikazioekiko bateragarritasuna amaituko da. Dauzkazun aukerak ezagutzeko, jarri aplikazioaren garatzailearekin edo zure IKT saileko laguntza-taldearekin harremanetan.</translation>
 <translation id="4290791284969893584">Orri bat ixten baduzu, baliteke hasitako zereginak ez amaitzea</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> kide</translation>
 <translation id="4290898381118933198">Pasatu hatza orrietan zehar nabigatzeko</translation>
@@ -7615,6 +7616,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Gehitu senideak eta lagunak</translation>
 <translation id="6367097275976877956">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, sakatu zuriune-barra.</translation>
+<translation id="6367196786591004737">Ezabatu sarrera</translation>
 <translation id="6367396429435748845">Sakatu <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> saguaren teklak pausatzeko eta berriro aktibatzeko</translation>
 <translation id="6367985768157257101">Nearby Share erabili nahi duzu edukia jasotzeko?</translation>
 <translation id="6368157733310917710">Helbideak eta beste</translation>
@@ -7948,7 +7950,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6610002944194042868">Itzultzeko aukerak</translation>
 <translation id="6610064275805055636">Kudeatu sareko aplikazio isolatuak</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> fitxa</translation>
-<translation id="6611972847767394631">Bilatu fitxak hemen</translation>
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainerako erabiltzaileentzat.</translation>
 <translation id="6613267708691765962">Malwarea dagoen egiaztatzen…</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
@@ -10608,6 +10609,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8472623782143987204">hardwarean gordeak</translation>
 <translation id="8473540203671727883">Irakurri ozen saguaren kurtsorearen azpiko testua</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
+<translation id="847433688444405067">Arakatu gailu guztietan</translation>
 <translation id="8474378002946546633">Eman jakinarazpenak bidaltzeko baimena</translation>
 <translation id="8474561048882755118">Antzeko produktuak alboz albo ikusten eta inporta zaizkizun xehetasunak konparatzen laguntzen dizu.</translation>
 <translation id="8475313423285172237">Ordenagailuan duzun beste programa batek Chrome-ren funtzionamendua alda dezakeen luzapen bat gehitu du.</translation>

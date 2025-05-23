@@ -96,7 +96,6 @@
 <translation id="2199691482078155239">Chrome ให้คุณควบคุมโฆษณาที่เห็นได้มากขึ้น และจำกัดว่าเว็บไซต์จะรู้อะไรเกี่ยวกับคุณได้บ้างเมื่อแสดงโฆษณาที่ปรับตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="2216543877350048334">หากต้องการนำบัญชี Google ออกจาก Chrome ให้ออกจากระบบ</translation>
 <translation id="2236949375853147973">กิจกรรมของฉัน</translation>
-<translation id="223889379102603431">ข้อมูลเกี่ยวกับวิธีที่ Chrome จัดการใบรับรองรูท</translation>
 <translation id="2290014774651636340">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Google Chrome จะถูกปิดใช้งาน</translation>
 <translation id="2290095356545025170">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการติดตั้ง Google Chrome</translation>
 <translation id="2309047409763057870">นี่เป็นการติดตั้ง Google Chrome แบบสำรอง และไม่สามารถใช้เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
@@ -428,7 +427,7 @@
 <translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
-<translation id="659498884637196217">เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
+<translation id="659498884637196217">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="6632473616050862500">Chrome OS Flex เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม</translation>
 <translation id="6634299872736643004">การเปลี่ยนแปลงการตั้งค่านี้จะมีผลเมื่อ Chrome รีสตาร์ท</translation>
 <translation id="6660596345553328257">ลงชื่อเข้าใช้ Chrome ไหม</translation>
@@ -563,7 +562,6 @@
 <translation id="8255190535488645436">Google Chrome ใช้กล้องและไมโครโฟนของคุณอยู่</translation>
 <translation id="8257796129973882597">คุณสามารถเปิดบุ๊กมาร์ก โหมดการอ่าน และอื่นๆ จากเมนู Chrome ได้</translation>
 <translation id="8267953129876836456">Chrome พบคำแนะนำด้านความปลอดภัยบางอย่างที่คุณควรตรวจสอบ</translation>
-<translation id="8270775718612349140">ใบรับรองที่จัดการโดย Chrome</translation>
 <translation id="8286862437124483331">Google Chrome กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>
 <translation id="829923460755755423">เพิ่มทางลัดในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8313851650939857356">ข้อผิดพลาดในการเริ่มต้น: <ph name="STARTUP_ERROR" /></translation>

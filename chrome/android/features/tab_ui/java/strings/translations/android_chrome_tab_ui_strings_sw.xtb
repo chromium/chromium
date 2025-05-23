@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1036348656032585052">Zima</translation>
-<translation id="1045448422538531528">Weka kwenye kikundi</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Kiliundwa wiki <ph name="NUM_WEEKS_ONE" /> iliyopita}other{Kiliundwa wiki <ph name="NUM_WEEKS_MANY" /> zilizopita}}</translation>
 <translation id="1063300264396686489">Fungua kiotomatiki vichupo vya vikundi kwenye vifaa vingine</translation>
 <translation id="1075622780330595106">Hujatumia vichupo vyako <ph name="NUMBER_OF_TABS" /> hivi karibuni. Je, tuvifunge?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Kichupo <ph name="ONE_CLOSED" /> kimefungwa}other{Vichupo <ph name="MANY_CLOSED" /> vimefungwa}}</translation>
 <translation id="2894757982205307093">Kichupo kipya katika kikundi</translation>
 <translation id="2928243913527329289">Google | Kuhusu duka hili</translation>
-<translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
 <translation id="29919168204617356">Vichupo visivyotumika vitafungwa kiotomatiki. Unaweza kuvipata wakati wowote katika Historia.</translation>
 <translation id="3008554597174452548">Acha kufuatilia bidhaa</translation>
 <translation id="3026391124054406831">Unda vikundi ili upange vichupo vyako.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Hivi majuzi, bei ya kipengee hiki ilipunguzwa kutoka <ph name="PREVIOUS_PRICE" /> ikawa <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Vichupo vyote vinavyojirudia sasa vitahifadhiwa kwenye kumbukumbu, isipokuwa nakala ulizotumia hivi majuzi.</translation>
 <translation id="6193448654517602979">Chagua vichupo</translation>
+<translation id="6212567362666004597">Weka kichupo kwenye kikundi</translation>
 <translation id="6220820548421939212">Ndiyo. Ninakubali</translation>
 <translation id="6228793724645064692">(ukadiriaji wa duka)</translation>
 <translation id="6271513594716432922">Funga vichupo vyote visivyotumika</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome hufunga vipengee kiotomatiki katika sehemu ya vipengee visivyotumika ambavyo hujatumia kwa miezi 3. Unaweza kuzima hali hii sasa au wakati wowote kwenye Mipangilio.</translation>
 <translation id="8887921976452567404">Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo.</translation>
 <translation id="8915916167043355778">Funga vyote</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Hamishia kwenye dirisha jipya}other{Hamishia kwenye dirisha jingine}}</translation>
 <translation id="9090098097337832354">Maelezo kuhusu duka hili yamefungwa</translation>
 <translation id="9114502155681725011">Fungua menyu ya vitendo ya kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, rangi <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>

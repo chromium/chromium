@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Vezi statisticile privind paginile</translation>
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1111673857033749125">Marcajele salvate pe alte dispozitive vor apărea aici.</translation>
-<translation id="1113597929977215864">Arată afișarea simplificată</translation>
 <translation id="1126696498560056882">Gestionează conturile de pe acest dispozitiv</translation>
 <translation id="1129510026454351943">Detalii: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Modul incognito îți păstrează navigarea privată față de alte persoane care îți folosesc dispozitivul</translation>
@@ -122,6 +121,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1480287803138246127">Este posibil ca o parte a istoricului să nu se afișeze aici. Pentru a vedea tot istoricul Chrome, deschide istoricul Chrome complet.</translation>
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
 <translation id="1493287004536771723">Urmărești <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nume de utilizator</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
 <translation id="1502010315804028179">Pentru a gestiona parolele, actualizează serviciile Google Play</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
@@ -221,6 +221,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="197288927597451399">Păstrează</translation>
 <translation id="1973912524893600642">Păstrează datele</translation>
 <translation id="1974060860693918893">Avansate</translation>
+<translation id="1984087999855033707">număr de telefon</translation>
 <translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
 <translation id="1986685561493779662">Numele există deja</translation>
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
@@ -1874,8 +1875,8 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="95817756606698420">Chrome poate să folosească <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pentru căutare în China. Poți să schimbi acest lucru din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
+<translation id="963246339335003378">Deschide managerul de activități</translation>
 <translation id="966131775676567255">Se șterg datele contului</translation>
-<translation id="96681097142096641">Vrei să afișezi pagina simplificată?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min. rămase</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Închide toate filele</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">查看网页数据洞见</translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
-<translation id="1113597929977215864">显示简化版视图</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1129510026454351943">错误详情：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">无痕模式可实现私密浏览，其他使用此设备的人员无法得知您的浏览信息</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1493287004536771723">您已关注 <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">用户名</translation>
 <translation id="1501480321619201731">删除群组</translation>
 <translation id="1502010315804028179">如需管理您的密码，请更新 Google Play 服务</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1984087999855033707">电话号码</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
@@ -1841,7 +1842,7 @@
 <translation id="9106148373857059373">书签保存流程已关闭</translation>
 <translation id="9108808586816295166">安全 DNS 未必一直可用</translation>
 <translation id="910908805481542201">帮我解决此问题</translation>
-<translation id="9130135798965366513">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
+<translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>
 <translation id="9133397713400217035">离线浏览</translation>
 <translation id="9143389653531441385">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册</translation>
@@ -1874,7 +1875,6 @@
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963246339335003378">打开任务管理器</translation>
 <translation id="966131775676567255">正在删除账号数据</translation>
-<translation id="96681097142096641">查看简化版网页？</translation>
 <translation id="970715775301869095">还剩 <ph name="MINUTES" /> 分钟</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

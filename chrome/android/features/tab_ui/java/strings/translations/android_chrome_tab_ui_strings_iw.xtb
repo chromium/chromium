@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1036348656032585052">כיבוי</translation>
-<translation id="1045448422538531528">הוספה לקבוצה</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{נוצרה לפני שבוע (<ph name="NUM_WEEKS_ONE" />)}one{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}two{נוצרה לפני שבועיים (<ph name="NUM_WEEKS_MANY" />)}other{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}}</translation>
 <translation id="1063300264396686489">פתיחה אוטומטית של קבוצות כרטיסיות ממכשירים אחרים</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{כרטיסייה אחת (<ph name="ONE_CLOSED" />) נסגרה}one{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}two{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}other{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}}</translation>
 <translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
 <translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
-<translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="29919168204617356">הכרטיסיות הלא פעילות ייסגרו אוטומטית. תמיד אפשר למצוא אותן בהיסטוריה.</translation>
 <translation id="3008554597174452548">הפסקת המעקב אחר המוצר הזה</translation>
 <translation id="3026391124054406831">אפשר ליצור קבוצות כדי לארגן את הכרטיסיות.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
+<translation id="6212567362666004597">הוספת הכרטיסייה לקבוצה</translation>
 <translation id="6220820548421939212">כן. אני בעניין</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6271513594716432922">סגירה של כל הכרטיסיות הלא פעילות</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך 3 חודשים. אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.</translation>
 <translation id="8887921976452567404">אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'.</translation>
 <translation id="8915916167043355778">סגירת הכול</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{העברה לחלון חדש}one{העברה לחלון אחר}two{העברה לחלון אחר}other{העברה לחלון אחר}}</translation>
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9114502155681725011">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>

@@ -18,6 +18,7 @@
 <translation id="102916930470544692">พาสคีย์</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ต้องการจัดเก็บข้อมูลขนาดใหญ่อย่างถาวรในอุปกรณ์ของคุณ</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{ไม่มี}=1{จากเว็บไซต์ 1 แห่ง นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ }other{จากเว็บไซต์ # แห่ง นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ }}</translation>
+<translation id="1035509598913574970">เขียวแกมน้ำเงิน 3</translation>
 <translation id="1035709686865413354">เครื่องกรองน้ำ</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">หน้าเว็บต้องการติดตั้งเครื่องจัดการบริการ</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1433225466058025572">ลองย้ายไฟล์อีกครั้ง</translation>
+<translation id="1433478348197382180">โหมดการอ่าน</translation>
 <translation id="1436185428532214179">สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="1442386063175183758">พับทบด้านขวา</translation>
 <translation id="1442987760062738829">เจาะรู</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
 <translation id="2083256696566019397">อนุญาตในทุกๆ การเข้าชม</translation>
 <translation id="2085876078937250610">บันทึก…</translation>
+<translation id="2088913896151127116">เพิ่มข้อความ</translation>
 <translation id="2090451897496479509">โปรดติดต่อผู้ให้บริการเพื่อขอข้อมูลเพิ่มเติม</translation>
 <translation id="2091887806945687916">เสียง</translation>
 <translation id="2093982008204312032">Google Chrome กำลังพยายามปิด Windows Hello เพื่อป้อนรหัสผ่าน</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
-<translation id="2418292431699242678">ผู้ดูแลระบบของคุณเปิดใช้การซิงค์ต่อไปนี้ระหว่างเซสชันก่อนหน้าและปัจจุบันในอุปกรณ์ ChromeOS ของคุณ</translation>
 <translation id="2429716554270894715">ผ้า (กันน้ำ)</translation>
 <translation id="2436186046335138073">อนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดไหม</translation>
 <translation id="2436976580469434549">ศิลปะเส้นใยและสิ่งทอ</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559">การขัดข้องเมื่อ<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">การระบายสี</translation>
 <translation id="2916038427272391327">ปิดโปรแกรมอื่นๆ</translation>
+<translation id="2917630513638801879">เขียวแกมน้ำเงิน 1</translation>
 <translation id="2919185931486062599">ล่าสัตว์และยิงปืน</translation>
 <translation id="2922350208395188000">ไม่สามารถตรวจสอบใบรับรองของเซิร์ฟเวอร์</translation>
 <translation id="2922792708490674">{0,plural, =1{ไฟล์ถูกบล็อกไม่ให้มีการดาวน์โหลด}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกไม่ให้มีการดาวน์โหลด}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">กำลังติดตามราคา</translation>
 <translation id="3037605927509011580">แย่จัง!</translation>
 <translation id="3039406992698062762">การท่องเที่ยวแบบครอบครัว</translation>
-<translation id="3040636468789770340">คุกกี้ (สถานะที่ลงชื่อเข้าใช้บนเว็บไซต์ที่คุณเข้าชมล่าสุด)</translation>
 <translation id="3041176923638368519">ดูข้อกำหนดสิทธิประโยชน์ของบัตร</translation>
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="3045769629416806687">กีฬาผาดโผน</translation>
@@ -1679,7 +1681,6 @@
 <translation id="3869939189466884821">ระบบจะลบไฟล์ในเครื่องของคุณใน <ph name="MINUTES" /> นาที</translation>
 <translation id="3872834068356954457">วิทยาศาสตร์</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
-<translation id="387681220560687945">หน้าต่าง (การจัดเรียงและการจัดระเบียบหน้าต่างและแท็บ)</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
 <translation id="3880589673277376494">อินเทอร์เน็ตและโทรคมนาคม</translation>
@@ -2081,6 +2082,7 @@
 <translation id="4562155266774382038">ปิดคำแนะนำ</translation>
 <translation id="4566017918361049074">กลางแจ้ง</translation>
 <translation id="4569155249847375786">ยืนยันแล้ว</translation>
+<translation id="4570008401337135432">การจัดข้อความ</translation>
 <translation id="457875822857220463">การจัดส่ง</translation>
 <translation id="4579699065574932398">การธนาคาร</translation>
 <translation id="4582595824823167856">รับ SMS</translation>
@@ -2244,7 +2246,6 @@
 <translation id="4866506163384898554">กด |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| เพื่อแสดงเคอร์เซอร์</translation>
 <translation id="4873616204573862158">แว่น</translation>
 <translation id="4873807733347502026">ล็อกและใช้เมาส์</translation>
-<translation id="4876188919622883022">มุมมองอย่างง่าย</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
 <translation id="4876327226315760474">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง</translation>
 <translation id="4877047577339061095">ที่จัดเก็บและชั้นวางสิ่งของภายในบ้าน</translation>
@@ -2604,6 +2605,7 @@
 <translation id="5481682542063333508">เสนอความช่วยเหลือในการเขียน</translation>
 <translation id="54817484435770891">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="5483838506518938965">คุณพร้อมแล้ว</translation>
+<translation id="5484396522446324950">รูปแบบ</translation>
 <translation id="5485100387355669506">หนามาก</translation>
 <translation id="5485973315555778056">เครื่องที่ใช้ระบบคลาวด์</translation>
 <translation id="5488367146069768854">การติดตั้งเว็บแอป</translation>
@@ -2942,6 +2944,7 @@
 <translation id="6062937464449575061">ยกเลิกการติดตามราคา</translation>
 <translation id="6063415549109819824">สินเชื่อบ้าน</translation>
 <translation id="6070432475334343308">ไม่ได้อัปโหลดไฟล์อย่างน้อย 1 รายการไปยัง <ph name="FOLDER_NAME" /> ใน <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">เขียวแกมน้ำเงิน 2</translation>
 <translation id="6085149458302186532">ป้าย (มีสี)</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
 <translation id="6089505343295765444">แท็บที่คุณลบออกจากประวัติการเข้าชมใน Chrome จะยังคงแสดงในตารางเปรียบเทียบ</translation>
@@ -3022,7 +3025,6 @@
 <translation id="622039917539443112">พับแบบขนาน</translation>
 <translation id="6221286101741304627">หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">ต้องการบันทึกบัตรนี้ไว้ในบัญชี Google ไหม</translation>
-<translation id="6221892641068781024">มุมมองอย่างง่าย</translation>
 <translation id="6222527803348563979">กระดาษจดหมาย</translation>
 <translation id="62231116988543150">ติดตั้งเว็บแอปได้</translation>
 <translation id="6224281071334553713">อัญมณีและเครื่องประดับ</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7598391785903975535">ไม่ถึง <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
 <translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
+<translation id="7602868996817972616">ถาม Google เกี่ยวกับหน้านี้</translation>
 <translation id="7608583484192556132">โฆษณาที่คุณเห็นจะได้รับการปรับตามโปรไฟล์ของคุณหรือไม่นั้นขึ้นอยู่กับหลายอย่าง ซึ่งรวมถึงการตั้งค่านี้ <ph name="BEGIN_LINK_1" />โฆษณาที่เว็บไซต์แนะนำ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK_3" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
 <translation id="761261689936461781">หนา</translation>

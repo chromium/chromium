@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">查看網頁深入分析資訊</translation>
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
-<translation id="1113597929977215864">顯示「簡易檢視」模式</translation>
 <translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
 <translation id="1129510026454351943">詳細資料：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">如果你與人共用裝置，但不想讓其他人查看你的瀏覽記錄，可以使用無痕模式</translation>
@@ -1878,7 +1877,6 @@
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963246339335003378">開啟工作管理員</translation>
 <translation id="966131775676567255">正在刪除帳戶資料</translation>
-<translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>

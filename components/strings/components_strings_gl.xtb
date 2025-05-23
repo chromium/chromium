@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ningún}=1{De 1 sitio. Pecha a túa sesión na maioría dos sitios. }other{De # sitios. Pecha a túa sesión na maioría dos sitios. }}</translation>
+<translation id="1035509598913574970">Ciano 3</translation>
 <translation id="1035709686865413354">Filtros e purificadores de auga</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
@@ -264,6 +265,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1432187715652018471">esta páxina quere instalar un controlador de servizo.</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
 <translation id="1433225466058025572">Proba a mover os ficheiros de novo</translation>
+<translation id="1433478348197382180">Modo de lectura</translation>
 <translation id="1436185428532214179">Pode pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="1442386063175183758">Dobrez en ventá na parte dereita</translation>
 <translation id="1442987760062738829">Perforación</translation>
@@ -631,6 +633,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir en todas as visitas</translation>
 <translation id="2085876078937250610">Gardar…</translation>
+<translation id="2088913896151127116">Engadir un texto</translation>
 <translation id="2090451897496479509">Ponte en contacto co fornecedor para obter máis información</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2093982008204312032">Google Chrome está tentando desactivar Windows Hello para completar contrasinais.</translation>
@@ -837,7 +840,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2414886740292270097">Escuro</translation>
-<translation id="2418292431699242678">Quen che administra a conta activou a sincronización dos seguintes datos entre as túas sesións anteriores e a actuais en todos os dispositivos ChromeOS:</translation>
 <translation id="2429716554270894715">Tecido (impermeable)</translation>
 <translation id="2436186046335138073">Queres que se use <ph name="HANDLER_HOSTNAME" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte e artesanía téxtil</translation>
@@ -1093,6 +1095,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2915068235268646559">Fallo (<ph name="CRASH_TIME" />)</translation>
 <translation id="2915496182262110498">Pintura</translation>
 <translation id="2916038427272391327">Pecha outros programas</translation>
+<translation id="2917630513638801879">Ciano 1</translation>
 <translation id="2919185931486062599">Caza e tiro</translation>
 <translation id="2922350208395188000">Non se pode comprobar o certificado do servidor.</translation>
 <translation id="2922792708490674">{0,plural, =1{Bloqueouse a descarga do ficheiro}other{Bloqueouse a descarga de <ph name="FILE_COUNT" /> ficheiros}}</translation>
@@ -1172,7 +1175,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037605927509011580">Vaia!</translation>
 <translation id="3039406992698062762">Viaxes en familia</translation>
-<translation id="3040636468789770340">Cookies (estado de sesión iniciada nos sitios web visitados recentemente)</translation>
 <translation id="3041176923638368519">Consultar as condicións das vantaxes da tarxeta</translation>
 <translation id="3041612393474885105">Información do certificado</translation>
 <translation id="3045769629416806687">Deportes de risco</translation>
@@ -1680,7 +1682,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3869939189466884821">O teus ficheiros locais eliminaranse dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciencia</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
-<translation id="387681220560687945">Ventás (disposición e organización das ventás e pestanas)</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3880456882942693779">Arte e entretemento</translation>
 <translation id="3880589673277376494">Internet e telecomunicacións</translation>
@@ -2082,6 +2083,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4562155266774382038">Ignorar suxestión</translation>
 <translation id="4566017918361049074">Aire libre</translation>
 <translation id="4569155249847375786">Verificada</translation>
+<translation id="4570008401337135432">Aliñamento do texto</translation>
 <translation id="457875822857220463">Entrega</translation>
 <translation id="4579699065574932398">Banca</translation>
 <translation id="4582595824823167856">Obter mensaxe de texto</translation>
@@ -2245,7 +2247,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">Lentes</translation>
 <translation id="4873807733347502026">Bloquear e usar o rato</translation>
-<translation id="4876188919622883022">Vista simplificada</translation>
 <translation id="4876305945144899064">Sen nome de usuario</translation>
 <translation id="4876327226315760474">Isto significa que as funcións do sitio deberían funcionar segundo o previsto, pero pode que teñas menos protección durante a navegación.</translation>
 <translation id="4877047577339061095">Estantes e almacenamento domésticos</translation>
@@ -2605,6 +2606,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5481682542063333508">Ofrecer axuda para escribir</translation>
 <translation id="54817484435770891">Engade un enderezo válido</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
+<translation id="5484396522446324950">Estilos</translation>
 <translation id="5485100387355669506">Supergroso</translation>
 <translation id="5485973315555778056">Máquina da nube</translation>
 <translation id="5488367146069768854">Instalacións de aplicacións web</translation>
@@ -2943,6 +2945,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6062937464449575061">Deixar de facer seguimento de prezos</translation>
 <translation id="6063415549109819824">Financiamento da vivenda</translation>
 <translation id="6070432475334343308">Non se cargaron un ou máis ficheiros en <ph name="FOLDER_NAME" /> de <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6078069862923723141">Ciano 2</translation>
 <translation id="6085149458302186532">Etiquetas (de cores)</translation>
 <translation id="6087312102907839798">Buscas relacionadas</translation>
 <translation id="6089505343295765444">As pestanas que elimines do teu historial de Chrome seguirán mostrándose nas táboas de comparación</translation>
@@ -3023,7 +3026,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="622039917539443112">Dobrez en paralelo</translation>
 <translation id="6221286101741304627">Para saír da pantalla completa, preme |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Queres gardar esta tarxeta na túa Conta de Google?</translation>
-<translation id="6221892641068781024">Vista simplificada</translation>
 <translation id="6222527803348563979">Papelaría</translation>
 <translation id="62231116988543150">Poder instalar aplicacións web</translation>
 <translation id="6224281071334553713">Xemas e xoias</translation>
@@ -3843,6 +3845,7 @@ Detalles adicionais:
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Actualmente <ph name="HOST_NAME" /> non pode procesar esta solicitude.</translation>
 <translation id="7599089013883397081">Esgotouse o tempo de espera para a descarga</translation>
+<translation id="7602868996817972616">Pregúntalle a Google sobre esta páxina</translation>
 <translation id="7608583484192556132">A personalización dos anuncios que se che mostran depende de moitos factores, como, por exemplo, desta opción de configuración, dos <ph name="BEGIN_LINK_1" />anuncios suxeridos polos sitios<ph name="END_LINK_1" />, da <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> ou de se o sitio que estás vendo personaliza ou non os anuncios. Máis información sobre <ph name="BEGIN_LINK_3" />como xestionar a privacidade nos anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">O valor está fóra do rango de <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Groso</translation>

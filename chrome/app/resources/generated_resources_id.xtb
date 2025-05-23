@@ -4769,7 +4769,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4289540628985791613">Ringkasan</translation>
 <translation id="428963538941819373">Situs ini dapat menggunakan info tentang Anda yang disimpannya ketika Anda menjelajahi <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
-<translation id="4290526909608432059">Dukungan untuk aplikasi Chrome akan segera berakhir. Untuk mempelajari opsi yang tersedia, hubungi developer aplikasi atau tim dukungan IT Anda.</translation>
 <translation id="4290791284969893584">Setelah menutup halaman, tugas yang Anda mulai mungkin tidak selesai</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> anggota</translation>
 <translation id="4290898381118933198">Geser untuk berpindah antarhalaman</translation>
@@ -7637,6 +7636,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tambahkan keluarga dan teman</translation>
 <translation id="6367097275976877956">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS? Jika iya, tekan tombol spasi.</translation>
+<translation id="6367196786591004737">Hapus entri</translation>
 <translation id="6367396429435748845">Tekan <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> untuk menjeda dan melanjutkan tombol mouse</translation>
 <translation id="6367985768157257101">Terima menggunakan Berbagi Langsung?</translation>
 <translation id="6368157733310917710">&amp;Alamat dan lainnya</translation>
@@ -7970,7 +7970,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6610002944194042868">Opsi Terjemahan</translation>
 <translation id="6610064275805055636">Kelola aplikasi web terisolasi</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
-<translation id="6611972847767394631">Temukan tab Anda di sini</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
 <translation id="6613267708691765962">Memindai malware...</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
@@ -10632,6 +10631,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8472623782143987204">cadangan hardware</translation>
 <translation id="8473540203671727883">Ucapkan teks di bawah kursor</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
+<translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8474378002946546633">Izinkan pemberitahuan</translation>
 <translation id="8474561048882755118">Membantu Anda melihat produk serupa secara berdampingan dan membandingkan detail yang penting bagi Anda dengan mudah</translation>
 <translation id="8475313423285172237">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.</translation>

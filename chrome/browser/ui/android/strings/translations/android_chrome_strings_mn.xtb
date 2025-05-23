@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Хуудасны статистикийг харах</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
-<translation id="1113597929977215864">Хялбаршуулсан харагдцыг харуулах</translation>
 <translation id="1126696498560056882">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах</translation>
 <translation id="1129510026454351943">Дэлгэрэнгүй: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Нууцлалын горим таны төхөөрөмжийг ашигладаг бусад хүнээс таны үзэлтийг нууцалдаг</translation>
@@ -1878,7 +1877,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>
 <translation id="963246339335003378">Ажлын менежерийг нээх</translation>
 <translation id="966131775676567255">Бүртгэлийн өгөгдлийг устгаж байна</translation>
-<translation id="96681097142096641">Хялбарчилсан хуудсыг үзэх үү?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> минут үлдсэн</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Бүх табыг хаах</translation>

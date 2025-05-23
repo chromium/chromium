@@ -18,6 +18,7 @@
 <translation id="102916930470544692">패스키</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{없음}=1{사이트 1개입니다. 대부분의 사이트에서 로그아웃됩니다. }other{사이트 #개입니다. 대부분의 사이트에서 로그아웃됩니다. }}</translation>
+<translation id="1035509598913574970">청록색 3</translation>
 <translation id="1035709686865413354">필터 및 정수기</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036881361735705143">봉투 C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
 <translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
+<translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
 <translation id="1442987760062738829">펀칭</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
 <translation id="2083256696566019397">방문할 때마다 허용</translation>
 <translation id="2085876078937250610">저장…</translation>
+<translation id="2088913896151127116">텍스트 추가</translation>
 <translation id="2090451897496479509">자세한 내용은 제공업체에 문의하세요</translation>
 <translation id="2091887806945687916">소리</translation>
 <translation id="2093982008204312032">Chrome에서 비밀번호 입력에 Windows Hello를 사용하지 않으려고 합니다.</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">이전 주소</translation>
 <translation id="2413528052993050574">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 취소될 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2414886740292270097">어둡게</translation>
-<translation id="2418292431699242678">관리자가 모든 ChromeOS 기기에서 이전 세션과 현재 세션 간에 다음을 동기화하도록 설정합니다.</translation>
 <translation id="2429716554270894715">패브릭(방수)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />에서 모든 <ph name="PROTOCOL" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="2436976580469434549">섬유 및 직물 예술</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />에 비정상 종료 발생</translation>
 <translation id="2915496182262110498">회화</translation>
 <translation id="2916038427272391327">다른 프로그램 닫기</translation>
+<translation id="2917630513638801879">청록색 1</translation>
 <translation id="2919185931486062599">사냥 및 사격</translation>
 <translation id="2922350208395188000">서버 인증서를 확인할 수 없습니다.</translation>
 <translation id="2922792708490674">{0,plural, =1{파일 다운로드 차단됨}other{파일 <ph name="FILE_COUNT" />개의 다운로드 차단됨}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
 <translation id="3039406992698062762">가족 여행</translation>
-<translation id="3040636468789770340">쿠키(최근 방문한 웹사이트의 로그인 상태)</translation>
 <translation id="3041176923638368519">카드 혜택 약관 보기</translation>
 <translation id="3041612393474885105">인증서 정보</translation>
 <translation id="3045769629416806687">익스트림 스포츠</translation>
@@ -1680,7 +1682,6 @@
 <translation id="3869939189466884821">로컬 파일이 <ph name="MINUTES" />분 후 삭제됩니다</translation>
 <translation id="3872834068356954457">과학</translation>
 <translation id="3875783148670536197">방법 보기</translation>
-<translation id="387681220560687945">창(창과 탭의 배열 및 구성)</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3880456882942693779">예술 및 엔터테인먼트</translation>
 <translation id="3880589673277376494">인터넷 및 통신</translation>
@@ -2082,6 +2083,7 @@
 <translation id="4562155266774382038">추천 닫기</translation>
 <translation id="4566017918361049074">야외 활동</translation>
 <translation id="4569155249847375786">확인됨</translation>
+<translation id="4570008401337135432">텍스트 정렬</translation>
 <translation id="457875822857220463">배송</translation>
 <translation id="4579699065574932398">뱅킹</translation>
 <translation id="4582595824823167856">문자 메시지 받기</translation>
@@ -2245,7 +2247,6 @@
 <translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="4873616204573862158">안경 및 선글라스</translation>
 <translation id="4873807733347502026">마우스를 잠그고 사용합니다</translation>
-<translation id="4876188919622883022">간단히 보기</translation>
 <translation id="4876305945144899064">사용자 이름 없음</translation>
 <translation id="4876327226315760474">즉, 사이트 기능이 예상대로 작동하지만 브라우징 보호 기능이 약화될 수 있습니다.</translation>
 <translation id="4877047577339061095">가정용 수납 및 선반</translation>
@@ -2605,6 +2606,7 @@
 <translation id="5481682542063333508">작성 도움 제공</translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
 <translation id="5483838506518938965">준비 완료</translation>
+<translation id="5484396522446324950">스타일</translation>
 <translation id="5485100387355669506">매우 굵게</translation>
 <translation id="5485973315555778056">Cloud 머신</translation>
 <translation id="5488367146069768854">웹 앱 설치</translation>
@@ -2943,6 +2945,7 @@
 <translation id="6062937464449575061">가격 추적 취소</translation>
 <translation id="6063415549109819824">주택담보대출</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />의 <ph name="FOLDER_NAME" />에 하나 이상의 파일이 업로드되지 않았습니다.</translation>
+<translation id="6078069862923723141">청록색 2</translation>
 <translation id="6085149458302186532">라벨(색상 있음)</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
 <translation id="6089505343295765444">Chrome 방문 기록에서 삭제한 탭은 비교 테이블에 계속 표시됩니다</translation>
@@ -3023,7 +3026,6 @@
 <translation id="622039917539443112">평행 폴드</translation>
 <translation id="6221286101741304627">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="6221311046884916259">이 카드를 Google 계정에 저장하시겠습니까?</translation>
-<translation id="6221892641068781024">간단히 보기</translation>
 <translation id="6222527803348563979">편지지</translation>
 <translation id="62231116988543150">웹 앱을 설치할 수 있음</translation>
 <translation id="6224281071334553713">보석 및 귀금속</translation>
@@ -3843,6 +3845,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 미만</translation>
 <translation id="759889825892636187">현재 <ph name="HOST_NAME" />에서 요청을 처리할 수 없습니다.</translation>
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
+<translation id="7602868996817972616">이 페이지에 대해 Google에 질문하기</translation>
 <translation id="7608583484192556132">이 설정, <ph name="BEGIN_LINK_1" />사이트 추천 광고<ph name="END_LINK_1" />, 내 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK_3" />광고 개인 정보 보호 관리<ph name="END_LINK_3" />에 대해 자세히 알아보세요.</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
 <translation id="761261689936461781">굵게</translation>

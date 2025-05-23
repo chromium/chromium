@@ -1636,6 +1636,25 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
 <translation id="2180795125410219364">Einstellungen von „Position 1“ und „Ende“ sind deaktiviert</translation>
 <translation id="2180958780733364832">Verwendung des monitorlosen Modus verwalten</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
+<translation id="2182945089357619926">Mit dieser Richtlinie können Administratoren einen bestimmten Suchaggregator für Unternehmen festlegen, der Suchvorschläge und ‑ergebnisse in der Adressleiste einblendet, wenn er durch einen bestimmten Suchbegriff aktiviert wird. Nutzer können eine Suche starten, indem sie den im Feld „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ angegebenen Suchbegriff mit oder ohne das Präfix „@“ (z. B. „<ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />“), gefolgt von einem Leerzeichen oder Tabulatorzeichen, in die Adressleiste eingeben.
+
+Die folgenden Felder sind Pflichtfelder: „<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“, „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“, „<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ und „<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“.
+
+Das Feld „<ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ entspricht dem Namen der Suchmaschine, der dem Nutzer in der Adressleiste angezeigt werden soll.
+
+Das Feld „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ entspricht dem Suchbegriff, den der Nutzer eingibt, um die Suche zu starten. Das Kürzel kann einfache Wörter und Zeichen enthalten, darf jedoch keine Leerzeichen enthalten und nicht mit dem @‑Symbol beginnen. Kürzel müssen eindeutig sein.
+
+Im Feld „<ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL angegeben, unter der gesucht werden soll. Gib die Webadresse für die Ergebnisseite der Suchmaschine ein und verwende „<ph name="SEARCH_TERM_MARKER" />“ als Platzhalter für die Suchanfrage.
+
+Durch das Feld „<ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL angegeben, die Suchvorschläge bereitstellt. Eine POST-Anfrage wird gesendet und die Anfrage des Nutzers wird in den POST-Parametern unter dem Schlüssel „<ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />“ übergeben.
+
+Durch das Feld „<ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ wird die URL eines Bildes angegeben, das für die Suchvorschläge verwendet wird. Wenn dieses Feld nicht konfiguriert ist, wird ein Standardsymbol verwendet. Es wird empfohlen, ein Favicon (Beispiel: <ph name="ICON_URL_EXAMPLE" />) zu verwenden. Unterstützte Formate für Bilddateien: JPEG, PNG und ICO.
+
+Das Feld „<ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ gibt an, ob die Adressleiste „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ erforderlich ist, um Suchvorschläge zu sehen. Wenn dieses Feld nicht festgelegt ist, ist die Adressleiste „<ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />“ nicht erforderlich.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="2183338188392346527">Gerätelaufzeitzähler nicht melden</translation>
 <translation id="2187372280917024033">Die URI-Vorlage des gewünschten DNS-over-HTTPS-Resolvers. Wenn du mehrere DNS-over-HTTPS-Resolver angeben möchtest, trenne die dazugehörigen URI-Vorlagen durch Leerzeichen. Diese Richtlinie ist der Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ sehr ähnlich, die sie überschreibt, wenn sie konfiguriert ist.
 Im Gegensatz zur Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ unterstützt diese Richtlinie die Angabe von Informationen zur Identität.
@@ -1987,6 +2006,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2421779938235645781">Hintergrundbeleuchtung der Tastatur auf aktuellen Hintergrund abgestimmt</translation>
 <translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2423654977291507457">Integrationen deaktivieren</translation>
+<translation id="2424141395604579502">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen, ändern oder hochladen.
+
+      Ist sie auf „False“ gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen, ändern oder hochladen. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="242521047682347997">Nutzern nicht erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="2426782419955104525">Hiermit wird die Instant-Funktion von <ph name="PRODUCT_NAME" /> aktiviert und verhindert, dass Nutzer diese Einstellung ändern können.
 
@@ -2929,6 +2951,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 Ist diese Richtlinie aktiviert, wird das unverankerte Menü für Bedienungshilfen immer angezeigt.
 
 Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte Menü für Bedienungshilfen nie angezeigt.</translation>
+<translation id="312646755999968569">TLS 1.3 Early Data deaktivieren</translation>
 <translation id="3126748868885248792">Rechte Taste als primäre Maustaste festlegen</translation>
 <translation id="3128072319047570212">Keygen-Einstellungen</translation>
 <translation id="3131703464330936425">Mobilfunk-Roaming nicht zulassen</translation>
@@ -4616,7 +4639,6 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 Ist die Richtlinie deaktiviert, werden PDF-Dateien mit dem PDF-Plug‑in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.
 
 Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Ist die Richtlinie nicht konfiguriert, können Nutzer entscheiden, ob das PDF extern geöffnet werden soll.</translation>
-<translation id="4413764344717830250">Sichtbarkeit der Namensnennung für Erweiterungen auf der Seite „Neuer Tab“ für verwaltete Browser steuern</translation>
 <translation id="4415603335307944578">Wenn die Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, zeigt der Browser die Begrüßungsseite beim ersten Start nach einer Aktualisierung des Betriebssystems noch einmal an.
 
       Ist die Richtlinie auf "false" gesetzt, wird die Begrüßungsseite beim ersten Start nach einer Aktualisierung des Betriebssystems nicht noch einmal angezeigt.</translation>
@@ -5118,6 +5140,21 @@ Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmelde
 <translation id="4789450349513792856">Pop-ups auf diesen Websites blockieren</translation>
 <translation id="4790391579868456557">Notwendige und nicht notwendige Cookies in der Suche verwenden.</translation>
 <translation id="4790588245699320140">Google Assistant erlauben, auf den Bildschirmkontext zuzugreifen</translation>
+<translation id="4799820756794591883">TLS 1.3 Early Data ist eine Erweiterung von TLS 1.3, mit der eine HTTP-Anfrage gleichzeitig mit dem TLS‑Handshake gesendet werden kann.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für TLS 1.3 Early Data.
+
+      Wenn sie aktiviert ist, wird TLS 1.3 Early Data von <ph name="PRODUCT_NAME" /> aktiviert.
+
+      Ist die Richtlinie deaktiviert, wird TLS 1.3 Early Data nicht von <ph name="PRODUCT_NAME" /> aktiviert.
+
+      Wenn aktiviert, kann <ph name="PRODUCT_NAME" /> je nach Serversupport TLS 1.3 Early Data verwenden oder nicht.
+
+      TLS 1.3 Early Data ist ein etabliertes Protokoll. Bestehende TLS‑Server, Zwischengeräte und Sicherheitssoftware sollten TLS 1.3 Early Data ohne Verbindungsabbruch verarbeiten oder ablehnen.
+
+      Auf Geräten, auf denen TLS nicht korrekt implementiert wird, kann es jedoch zu Fehlfunktionen und Verbindungsabbrüchen kommen, wenn TLS 1.3 Early Data verwendet wird. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+      Diese Richtlinie ist eine vorübergehende Maßnahme zur Steuerung der Funktion und wird danach entfernt. Sie kann aktiviert werden, um zu prüfen, ob Probleme auftreten, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="4800438168909332958">Mit dieser Richtlinie kann die Echounterdrückungsfunktion des Systems, kurz System-AEC (Audio Echo Cancellation), aktiviert werden. Die System-AEC dient zur Unterdrückung des akustischen Echos, ist also ein Audioverarbeitungsmodul, das die Audiowiedergabe des Systems (Echo) aus dem Mikrofonsignal entfernt.
 Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der System-AEC entfernt.
 
@@ -6503,11 +6540,6 @@ Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTI
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 
 Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
-<translation id="5671392367521500075">Mit dieser Richtlinie wird die Sichtbarkeit der Namensnennung für Erweiterungen in der Fußzeile der Seite „Neuer Tab“ festgelegt, wenn die Seite von einer Erweiterung gesteuert wird. Standardmäßig werden in der Fußzeile Informationen zur Erweiterung angezeigt, die die Seite „Neuer Tab“ steuert.
-
-Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird in Browsern, in denen die Seite „Neuer Tab“ von einer Erweiterung gesteuert wird, ein Link zur Erweiterung und deren Name angezeigt.
-
-Ist sie auf „false“ gesetzt, wird die Namensnennung ausgeblendet.</translation>
 <translation id="5673254755365419402"><ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ aktivieren.</translation>
 <translation id="567377007899266033">Wenn die Richtlinie auf "True" gesetzt ist, werden Berichte über wichtige richtlinienbasierte Erweiterungsinstallationen an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine diesbezüglichen Ereignisse erfasst. Ist die Richtlinie nicht konfiguriert, ist der Standardwert "True".</translation>
 <translation id="5673780539191375049">Mit dieser Richtlinie wird das Zeitintervall (in Minuten) festgelegt, gemäß dem der Authentifizierungsvorgang des Nutzers auf seinem <ph name="PRODUCT_OS_NAME" />-Gerät automatisch aktualisiert wird. Die Richtlinie wird eingeführt, um das Beenden einiger Dienste zu verhindern, die bei Authentifizierungsabläufen verwendet werden, nachdem das Gerät eine Weile inaktiv war.
@@ -6520,6 +6552,7 @@ Das höchstmögliche Aktualisierungsintervall beträgt eine Woche (10.080 Minut
 
 Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als auch die Authentifizierung auf dem Sperrbildschirm aus.</translation>
 <translation id="5676740747107495269">Optionen für Bedienungshilfen im Taskleistenmenü auf dem Anmeldebildschirm anzeigen</translation>
+<translation id="5679082773290670847">TLS 1.3 Early Data aktivieren</translation>
 <translation id="5679540979548648200">Nutzer des Geräts daran hindern, ADB-Sideloading zu verwenden, und ein Powerwash für das Gerät erzwingen, wenn Sideloading zuvor aktiviert war</translation>
 <translation id="5681258683432554972">Standardeinstellung für Pop-ups</translation>
 <translation id="5683494457096171405">Tastenkombinationen mit der Suchtaste werden nur dann zuerst an die App gesendet, bevor sie vom Betriebssystem verarbeitet werden, wenn die App, auf der der Fokus liegt, im Vollbildmodus ist.</translation>
@@ -6842,6 +6875,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5917897389577978190">Gmail (wird seit Version 135 unterstützt)</translation>
 <translation id="592036544845479336">Eingestellte/entfernte Mutationsereignisse wieder aktivieren</translation>
 <translation id="5921713479449475707">Downloads automatischer Updates über HTTP zulassen</translation>
+<translation id="5923084443277419535">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M138 verwendet werden.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
+
+Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="5925405187134730827">Diese Richtlinie wurde eingestellt, da die von ihr gesteuerte Funktion nie eingeführt wurde. Verwende stattdessen die Richtlinie „<ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />“.
 
 Ist diese Richtlinie nicht konfiguriert oder auf „<ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />“ (Wert 0) gesetzt, wird neben dem Avatar der Symbolleiste das Label „Arbeit“ oder „Schule“ angezeigt.
@@ -10028,6 +10066,7 @@ Der Nutzer muss explizit alle Erweiterungen in dieser Liste im Inkognitomodus er
 Wenn eine in dieser Richtlinie angegebene Erweiterung nicht installiert ist, wird der Inkognitomodus blockiert.
 
 Diese Richtlinie wird auf den Inkognitomodus angewendet. Das bedeutet, dass der Inkognitomodus im Browser aktiviert sein muss. Wenn der Inkognitomodus über die Richtlinie „<ph name="INCOGNITO_MODE_AVAILABILITY" />“ deaktiviert wurde, hat diese Richtlinie keine Auswirkungen.</translation>
+<translation id="8218485948330739485">TLS 1.3 Early Data aktivieren</translation>
 <translation id="8219813789911069300">Schädliche Downloads blockieren. Empfohlen.</translation>
 <translation id="8220023426952118761">Gewünschte Download-Rate in kbit/s.</translation>
 <translation id="8220156281401380422">Zulassungsliste für natives Messaging konfigurieren</translation>

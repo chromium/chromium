@@ -1459,7 +1459,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7388345524791662148">Higit pang opsyon para sa <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Built-in na touchpad</translation>
 <translation id="7397270852490618635">I-off ang maliwanag na tema</translation>
-<translation id="7400166052988585408">Ilo-lock ng iyong guro ang iyong screen sa loob ng <ph name="NUM_SECONDS" /> (na) segundo</translation>
 <translation id="7401543881546089382">Tanggalin ang shortcut</translation>
 <translation id="7405493795721832710">Handa nang i-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversion</translation>
@@ -1614,7 +1613,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8088963492174775412">Pindutin para mag-record</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
-<translation id="8110942816572072814">Ni-lock ng iyong guro ang screen mo</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>

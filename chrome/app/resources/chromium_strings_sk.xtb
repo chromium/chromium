@@ -81,7 +81,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2049376729098081731">Vyberte, či sa má zahrnúť história prehliadača Chromium na zaistenie prispôsobenejšieho prostredia v službách Googlu</translation>
 <translation id="2054039611381840095">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 12 alebo novší. V tomto počítači používate macOS 11.</translation>
 <translation id="2086476982681781442">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor je klamlivý a môže vo vašom zariadení vykonať neočakávané zmeny</translation>
-<translation id="2088953378266246249">Informácie o tom, ako Chromium spravuje koreňové certifikáty</translation>
 <translation id="2099452623287920103">Heslá a ďalšie údaje prehliadača Chromium, ktoré ste si uložili do účtu Google, budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v prehliadači Chromium, znova sa prihláste.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať jednu minútu. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}few{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minúty. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}many{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minúty. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}other{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chromium nebude používať # minút. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory. Vaše karty zostanú otvorené.}}</translation>
 <translation id="2126108037660393668">Stiahnutý súbor sa nepodarilo overiť.</translation>
@@ -610,7 +609,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Upravte Chromium podľa seba</translation>
 <translation id="93478295209880648">Chromium nemusí fungovať správne, pretože v systémoch Windows XP a Windows Vista už nie je podporovaný</translation>
-<translation id="942598560705308788">Certifikáty, ktoré spravuje Chromium</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>
 <translation id="967427899662692980">Získajte najsilnejšie zabezpečenie prehliadača Chromium</translation>

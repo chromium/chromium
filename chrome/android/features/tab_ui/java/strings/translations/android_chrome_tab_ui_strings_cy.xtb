@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1036348656032585052">Diffodd</translation>
-<translation id="1045448422538531528">Ychwanegu at y grŵp</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Crëwyd <ph name="NUM_WEEKS_ONE" /> wythnos yn ôl}zero{Crëwyd <ph name="NUM_WEEKS_MANY" /> wythnos yn ôl}two{Crëwyd <ph name="NUM_WEEKS_MANY" /> wythnos yn ôl}few{Crëwyd <ph name="NUM_WEEKS_MANY" /> wythnos yn ôl}many{Crëwyd <ph name="NUM_WEEKS_MANY" /> wythnos yn ôl}other{Crëwyd <ph name="NUM_WEEKS_MANY" /> wythnos yn ôl}}</translation>
 <translation id="1063300264396686489">Agor grwpiau tabiau yn awtomatig o ddyfeisiau eraill</translation>
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab wedi cau}zero{<ph name="MANY_CLOSED" /> tabiau wedi cau}two{<ph name="MANY_CLOSED" /> dab wedi cau}few{<ph name="MANY_CLOSED" /> thab wedi cau}many{<ph name="MANY_CLOSED" /> thab wedi cau}other{<ph name="MANY_CLOSED" /> tab wedi cau}}</translation>
 <translation id="2894757982205307093">Mae tab newydd yn y grŵp</translation>
 <translation id="2928243913527329289">Google | Ynghylch y siop hon</translation>
-<translation id="2977480621796371840">Tynnu o'r grŵp</translation>
 <translation id="29919168204617356">Bydd tabiau anweithredol yn cael eu cau'n awtomatig. Gallwch bob amser ddod o hyd iddynt yn Hanes.</translation>
 <translation id="3008554597174452548">Stopio olrhain y cynnyrch</translation>
 <translation id="3026391124054406831">Creu grwpiau i drefnu eich tabiau.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Bydd pob tab dyblyg nawr yn cael ei archifo hefyd, ac eithrio'r copi a ddefnyddiwyd yn fwyaf diweddar.</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
+<translation id="6212567362666004597">Ychwanegu tab at grŵp</translation>
 <translation id="6220820548421939212">Ie. Iawn</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
 <translation id="6271513594716432922">Cau pob tab anweithredol</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Mae Chrome yn cau eitemau yn yr adran anweithredol nad ydych wedi'u defnyddio ers 3 mis yn awtomatig. Gallwch ddiffodd hyn nawr neu unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="8887921976452567404">Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau.</translation>
 <translation id="8915916167043355778">Cau'r cyfan</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Symud i ffenestr newydd}zero{Symud i ffenestr arall}two{Symud i ffenestr arall}few{Symud i ffenestr arall}many{Symud i ffenestr arall}other{Symud i ffenestr arall}}</translation>
 <translation id="9090098097337832354">Gwybodaeth am y siop hon wedi'i chau</translation>
 <translation id="9114502155681725011">Agorwch ddewislen gweithredu grŵp tab ar gyfer grŵp tab <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Ychwanegu tab newydd at y grŵp</translation>

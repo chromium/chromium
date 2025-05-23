@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1036348656032585052">Poista käytöstä</translation>
-<translation id="1045448422538531528">Lisää ryhmään</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Luotu <ph name="NUM_WEEKS_ONE" /> viikko sitten}other{Luotu <ph name="NUM_WEEKS_MANY" /> viikkoa sitten}}</translation>
 <translation id="1063300264396686489">Avaa välilehtiryhmät automaattisesti muilta laitteilta</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> välilehti suljettu}other{<ph name="MANY_CLOSED" /> välilehteä suljettu}}</translation>
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
-<translation id="2977480621796371840">Poista ryhmästä</translation>
 <translation id="29919168204617356">Ei-aktiiviset välilehdet suljetaan automaattisesti. Löydät ne milloin tahansa historiasta.</translation>
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3026391124054406831">Luo ryhmiä, niin voit järjestellä välilehtiä.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Tämän tuotteen hinta on laskenut äskettäin: aiemmin <ph name="PREVIOUS_PRICE" />, nyt <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Myös kaikki välilehtien kopiot arkistoidaan nyt, lukuun ottamatta viimeksi käytettyä kopiota.</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
+<translation id="6212567362666004597">Lisää välilehti ryhmään</translation>
 <translation id="6220820548421939212">Kyllä. Laita päälle</translation>
 <translation id="6228793724645064692">(kauppa-arvio)</translation>
 <translation id="6271513594716432922">Sulje kaikki ei-aktiiviset välilehdet</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome sulkee automaattisesti ei-aktiivisen osion kohteet, joita et ole käyttänyt kolmeen kuukauteen. Voit laittaa tämän pois päältä nyt tai milloin tahansa asetuksista.</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Siirrä uuteen ikkunaan}other{Siirrä toiseen ikkunaan}}</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9114502155681725011">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>

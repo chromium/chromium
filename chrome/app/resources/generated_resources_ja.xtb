@@ -1755,7 +1755,7 @@
 <translation id="2207116775853792104">この拡張機能を残す</translation>
 <translation id="2209841631181508629">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
-<translation id="2211043920024403606">プロフィール情報</translation>
+<translation id="2211043920024403606">プロファイル情報</translation>
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
@@ -2670,7 +2670,7 @@
 <translation id="2819167288942847344">アプリが誤動作しないように、スマートフォンやタブレットのウィンドウ、サイズ変更可能なウィンドウにプリセットのサイズを使用します</translation>
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
-<translation id="282230978681804245">あなたのプロフィールは組織によって管理されており、この組織は次の情報を見ることができます</translation>
+<translation id="282230978681804245">あなたのプロファイルは組織によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
 <translation id="2822910719211888134">Linux のバックアップ中にエラーが発生しました</translation>
@@ -4746,7 +4746,6 @@
 <translation id="4289540628985791613">概要</translation>
 <translation id="428963538941819373">これらのサイトは、<ph name="HOST" /> を閲覧する際に、保存したあなたに関する情報を使用できます</translation>
 <translation id="4289732974614035569">PIN の入力</translation>
-<translation id="4290526909608432059">Chrome アプリのサポートはまもなく終了します。対応方法については、アプリのデベロッパーまたは IT サポートチームにお問い合わせください。</translation>
 <translation id="4290791284969893584">ページを閉じると、開始したタスクが完了できなくなります</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> 人のメンバー</translation>
 <translation id="4290898381118933198">スワイプしてページ間を移動する</translation>
@@ -7608,6 +7607,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">家族や友だちを追加</translation>
 <translation id="6367097275976877956">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。有効にする場合は Space キーを押してください。</translation>
+<translation id="6367196786591004737">エントリを削除</translation>
 <translation id="6367396429435748845"><ph name="ALT" />+<ph name="LAUNCHER" />+<ph name="NUM_4" /> キーを押すと、マウスキーを一時停止または再開します</translation>
 <translation id="6367985768157257101">ニアバイシェアで受信しますか？</translation>
 <translation id="6368157733310917710">住所など(&amp;A)</translation>
@@ -7940,7 +7940,6 @@
 <translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6610064275805055636">独立したウェブアプリを管理する</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> 個のタブ</translation>
-<translation id="6611972847767394631">ここからタブを確認できます</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6615455863669487791">表示</translation>
@@ -8844,7 +8843,7 @@
 <translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
-<translation id="7262919421769447042">あなたのプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
+<translation id="7262919421769447042">あなたのプロファイルは <ph name="PROFILE_MANAGER" /> によって管理されており、この組織は次の情報を見ることができます</translation>
 <translation id="7264695323040866038">サポートされているウェブリンクを開く際に、常に <ph name="APP" /> アプリを使用しますか？</translation>
 <translation id="7267044199012331848">仮想マシンをインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
@@ -9973,6 +9972,7 @@
 <translation id="8037801708772278989">前回の確認: たった今</translation>
 <translation id="8038111231936746805">（デフォルト）</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーしています}other{{NUM_OF_FILES} 個のファイルを <ph name="CLOUD_PROVIDER" /> にコピーしています}}</translation>
+<translation id="8039525676147630657">この Chrome アプリは、ChromeOS のバージョンが更新されると動作しなくなります。残しておきたいアプリデータがある場合は保存してください。対応方法については、アプリのデベロッパーまたは IT サポートチームにお問い合わせください。</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041093619605951337">幸せ</translation>
 <translation id="8041267120753677077">スマートフォンのアプリをストリーミングします</translation>
@@ -9986,7 +9986,7 @@
 <translation id="804786196054284061">エンドユーザー使用許諾契約</translation>
 <translation id="8048596485169033655">メインノードのアノテーション ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="8048728378294435881">データをバックアップして、他のデバイスで使用</translation>
-<translation id="8048977114738515028">デバイスにデスクトップ ショートカットを作成して、このプロフィールに直接アクセスできるようにします</translation>
+<translation id="8048977114738515028">デバイスにデスクトップ ショートカットを作成して、このプロファイルに直接アクセスできるようにします</translation>
 <translation id="8049029041626250638">キーボードまたはマウスを接続してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="8049122382261047457">Google レンズで画像を検索</translation>
 <translation id="8049705080247101012">「<ph name="EXTENSION_NAME" />」は、不正な拡張機能として認識されているためインストールされませんでした</translation>
@@ -10601,6 +10601,7 @@
 <translation id="8472623782143987204">ハードウェア式</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
+<translation id="847433688444405067">複数のデバイスでブラウジング</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
 <translation id="8474561048882755118">同様の商品を並べて表示して、重要な情報を簡単に比較できるようにします</translation>
 <translation id="8475313423285172237">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。</translation>

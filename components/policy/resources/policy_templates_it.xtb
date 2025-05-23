@@ -1696,6 +1696,25 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
 <translation id="2180795125410219364">Le impostazioni di Inizio/Fine sono disattivate</translation>
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
+<translation id="2182945089357619926">Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
+
+I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
+
+Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
+
+Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
+
+Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. Consigliamo di utilizzare una favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />). Formati di file immagine supportati: JPEG, PNG e ICO.
+
+Il campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica se la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> è obbligatoria per visualizzare i suggerimenti di ricerca. Se questo campo non viene configurato, la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> non sarà obbligatoria.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">Non segnalare i contatori del tempo di esecuzione del dispositivo</translation>
 <translation id="2187372280917024033">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questa policy è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e la sostituirà se verrà specificato.
 A differenza della policy <ph name="DOH_TEMPLATES_POLICY_NAME" />, questa policy consente di specificare le informazioni sull'identità.
@@ -2333,6 +2352,13 @@ Per migliorare la privacy, questa policy non supporterà gli aggiornamenti a met
 L'utente avrà la certezza che, dopo l'accesso, le altre app non saranno in grado di acquisire le schermate, se ciò non era già stato consentito all'inizio della sessione.</translation>
 <translation id="2615240493030733717">Segnala informazioni sul fuso orario</translation>
 <translation id="2619258867868873629">La destinazione "Salva come PDF" e la destinazione "Salva su Google Drive" sui dispositivi <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="262035875928535253">Configura l'elenco di domini in cui <ph name="PRODUCT_NAME" /> deve disattivare <ph name="PASSWORD_MANAGER_NAME" />. Ciò significa che i workflow di salvataggio e compilazione verranno disattivati, in modo che le password di questi siti web non possano essere salvate o compilate automaticamente nei moduli web.
+
+Se un dominio è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> verrà disattivato per quel dominio.
+
+Se un dominio non è presente nell'elenco, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per il dominio.
+
+Se la policy non viene configurata, <ph name="PASSWORD_MANAGER_NAME" /> sarà disponibile per tutti i domini.</translation>
 <translation id="2621290137818374425">La configurazione della policy consente di disattivare i requisiti relativi alle informative di Certificate Transparency per i nomi host negli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
 
       Se la policy non viene configurata e se i certificati che richiedono informative tramite Certificate Transparency non vengono comunicati, <ph name="PRODUCT_NAME" /> non ritiene attendibili questi certificati.
@@ -4717,7 +4743,6 @@ Questa policy è stata rimossa nella versione M112.</translation>
 Se la policy viene impostata su Disattivata, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.
 
 Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene impostata, gli utenti possono scegliere se aprire o meno i file PDF esternamente.</translation>
-<translation id="4413764344717830250">Controlla la visibilità dell'attribuzione dell'estensione nella pagina Nuova scheda per i browser gestiti</translation>
 <translation id="4415603335307944578">Se questa norma è impostata su true o non è configurata, il browser mostrerà di nuovo la pagina di benvenuto al primo avvio successivo a un upgrade del sistema operativo.
 
       Se la norma è impostata su false, il browser non mostrerà di nuovo la pagina di benvenuto in occasione del primo avvio successivo a un upgrade del sistema operativo.</translation>
@@ -6629,11 +6654,6 @@ Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_
 <translation id="5670249935663090320">Se la policy viene attivata o se non viene configurata, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Trasmetti nella barra degli strumenti.
 
 Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> viene disattivato.</translation>
-<translation id="5671392367521500075">Questa policy consente di stabilire la visibilità dell'attribuzione dell'estensione nel piè di pagina della pagina Nuova scheda quando quest'ultima è controllata da un'estensione. Per impostazione predefinita, il piè di pagina nella pagina Nuova scheda mostra informazioni sull'estensione che controlla la pagina Nuova scheda.
-
-Se questa policy viene lasciata vuota o impostata su true, i browser con una pagina Nuova scheda controllata da un'estensione mostreranno il nome dell'estensione e un link a quest'ultima.
-
-Se questa policy viene impostata su false, l'attribuzione dell'estensione verrà nascosta.</translation>
 <translation id="5673254755365419402">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Se la policy viene impostata su True, Google riceverà rapporti sui principali eventi di installazione delle estensioni attivati dalla policy. Se la policy viene impostata su False, non viene acquisito alcun evento. Se la policy non viene impostata, il valore predefinito è True.</translation>
 <translation id="5673780539191375049">Consente di impostare l'intervallo di tempo (in minuti) utilizzato per ricaricare automaticamente il flusso di autenticazione dell'utente su <ph name="PRODUCT_OS_NAME" />. Questa policy viene introdotta per gestire la scadenza di alcuni servizi utilizzati nei flussi di autenticazione quando il dispositivo rimane inattivo per un po' di tempo.
@@ -9441,6 +9461,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
           Se la policy viene impostata su False o se non viene configurata, gli utenti non avranno a disposizione la funzionalità di invio automatico del PIN nella schermata di blocco e di accesso.
 
           Se la policy viene configurata, gli utenti non avranno la possibilità di attivare la funzionalità.</translation>
+<translation id="7612030083959326401">Configura l'elenco di domini per i quali la funzionalità <ph name="PASSWORD_MANAGER_NAME" /> (salvataggio e compilazione) verrà disattivata</translation>
 <translation id="7612059745454194563">Non consentire la visualizzazione della promozione dell'estensione fornitore di credenziali</translation>
 <translation id="7612157962821894603">Contrassegni a livello di sistema da applicare all'avvio di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene compiuta l'azione stabilita per l'inattività.</translation>

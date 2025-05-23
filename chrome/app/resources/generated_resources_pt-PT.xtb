@@ -3235,7 +3235,7 @@ Quer pará-lo?</translation>
 <translation id="3241810535741601486">Esta alteração é permanente e não pode ser anulada. As atualizações alargadas aplicam-se a todos os utilizadores deste dispositivo. <ph name="LINK_START" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">A app com o atributo de manifesto "kiosk_only" tem de ser instalada no modo quiosque do ChromeOS</translation>
 <translation id="3243017971870859287">Ler números de série de componentes e dispositivos com ChromeOS Flex</translation>
-<translation id="324366796737464147">Supressão de ruído</translation>
+<translation id="324366796737464147">Cancelamento de ruído</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Manter o som desativado</translation>
 <translation id="3247006341013237647">Organizar os separadores?</translation>
@@ -4757,7 +4757,6 @@ Quer pará-lo?</translation>
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="428963538941819373">Estes sites podem usar informações guardadas sobre si enquanto navega em <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
-<translation id="4290526909608432059">A compatibilidade com as Apps do Chrome vai terminar em breve. Para saber mais sobre as opções disponíveis, contacte o programador da app ou a sua equipa de apoio técnico de TI.</translation>
 <translation id="4290791284969893584">Depois de fechar uma página, as tarefas que iniciou podem não ser concluídas</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Deslize rapidamente para navegar entre páginas</translation>
@@ -7626,6 +7625,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Adicionar família e amigos</translation>
 <translation id="6367097275976877956">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS? Em caso afirmativo, prima a barra de espaço.</translation>
+<translation id="6367196786591004737">Elimine a entrada</translation>
 <translation id="6367396429435748845">Prima <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> para pausar e retomar as teclas do rato</translation>
 <translation id="6367985768157257101">Quer receber através da funcionalidade Partilhar na proximidade?</translation>
 <translation id="6368157733310917710">Endereços e mais</translation>
@@ -7959,7 +7959,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="6610064275805055636">Faça a gestão de apps Web isoladas</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> separador</translation>
-<translation id="6611972847767394631">Encontre os seus separadores aqui</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6613267708691765962">A verificar a existência de software malicioso…</translation>
 <translation id="6615455863669487791">Mostrar</translation>
@@ -10622,6 +10621,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8472623782143987204">suporte de hardware</translation>
 <translation id="8473540203671727883">Pronunciar o texto sob o rato</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
+<translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8474561048882755118">Ajuda a ver produtos semelhantes lado a lado e comparar facilmente os detalhes mais importantes para si</translation>
 <translation id="8475313423285172237">Outro programa do computador adicionou uma extensão que pode alterar o funcionamento do Chrome.</translation>

@@ -718,6 +718,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1494349716233667318">Los sitios pueden solicitar permiso para usar las fuentes instaladas en tu dispositivo</translation>
 <translation id="1494429729245089920">La máquina virtual "<ph name="VM_NAME" />" existe, pero no es una máquina virtual válida de <ph name="APP_NAME" />. Ponte en contacto con tu administrador.</translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
+<translation id="1496514951988037011">nombre de usuario</translation>
 <translation id="1498498210836053409">Desactivar el modo Persistente al editar texto (modo Persistente inteligente)</translation>
 <translation id="1499041187027566160">subir el volumen</translation>
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1437,6 +1438,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1981434377190976112">Leer todos tus datos en todos los sitios web</translation>
 <translation id="1982851102516626421">Se ha cerrado tu sesión</translation>
 <translation id="1983612835086592681">Abierto por ti la semana pasada</translation>
+<translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sin protección (no recomendado)</translation>
 <translation id="1984683754853869253">¿Quieres crear un nuevo perfil para el centro educativo?</translation>
 <translation id="198507684520034826">Ayuda</translation>
@@ -4754,7 +4756,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4289540628985791613">Vista general</translation>
 <translation id="428963538941819373">Estos sitios pueden usar información que hayan guardado sobre ti cuando navegas por <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
-<translation id="4290526909608432059">La compatibilidad con las aplicaciones de Chrome finalizará pronto. Para obtener más información sobre las opciones disponibles, ponte en contacto con el desarrollador de la aplicación o con tu equipo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Después de que cierres una página, es posible que no se completen las tareas que hayas iniciado</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> miembro</translation>
 <translation id="4290898381118933198">Deslizar para navegar entre páginas</translation>
@@ -5604,7 +5605,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4890585766056792498">Protégete frente a sitios peligrosos</translation>
 <translation id="4890773143211625964">Mostrar opciones avanzadas de la impresora</translation>
 <translation id="4891089016822695758">Foro beta</translation>
-<translation id="4891795846939730995">Para que este dispositivo pueda acceder a tus llaves de acceso de nuevo, inicia sesión en un sitio o una aplicación con una llave de acceso guardada</translation>
+<translation id="4891795846939730995">Para que este dispositivo pueda acceder a tus llaves de acceso de nuevo, inicia sesión en un sitio o una aplicación con una llave de acceso guardada.</translation>
 <translation id="4892229439761351791">El sitio web puede usar el Bluetooth</translation>
 <translation id="4892328231620815052">Cuando quieras, busca tu lista de lectura en Marcadores y listas</translation>
 <translation id="489258173289528622">Modo de inactividad con batería</translation>
@@ -7620,6 +7621,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Añadir familiares y amigos</translation>
 <translation id="6367097275976877956">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS? Si es así, pulsa la barra espaciadora.</translation>
+<translation id="6367196786591004737">Eliminar entrada</translation>
 <translation id="6367396429435748845">Pulsa <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> para pausar y reanudar las teclas del ratón</translation>
 <translation id="6367985768157257101">¿Recibir a través de Compartir con Nearby?</translation>
 <translation id="6368157733310917710">&amp;Direcciones y más</translation>
@@ -7953,7 +7955,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6610002944194042868">Opciones del Traductor</translation>
 <translation id="6610064275805055636">Gestionar aplicaciones web aisladas</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> pestaña</translation>
-<translation id="6611972847767394631">Aquí están tus pestañas</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6613267708691765962">Buscando malware...</translation>
 <translation id="6615455863669487791">Ver</translation>
@@ -10616,6 +10617,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8472623782143987204">respaldado por hardware</translation>
 <translation id="8473540203671727883">Enunciar el texto que está debajo del ratón</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
+<translation id="847433688444405067">Navega en diferentes dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
 <translation id="8474561048882755118">Te ayuda a ver productos similares en paralelo y a comparar fácilmente los detalles que te interesan</translation>
 <translation id="8475313423285172237">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.</translation>

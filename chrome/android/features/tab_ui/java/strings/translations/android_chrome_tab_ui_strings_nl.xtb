@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1036348656032585052">Uitzetten</translation>
-<translation id="1045448422538531528">Toevoegen aan groep</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week geleden gemaakt}other{<ph name="NUM_WEEKS_MANY" /> weken geleden gemaakt}}</translation>
 <translation id="1063300264396686489">Tabbladgroepen van andere apparaten automatisch openen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tabblad gesloten}other{<ph name="MANY_CLOSED" /> tabbladen gesloten}}</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
 <translation id="2928243913527329289">Google | Over deze winkel</translation>
-<translation id="2977480621796371840">Uit groep verwijderen</translation>
 <translation id="29919168204617356">Inactieve tabbladen worden automatisch gesloten. Je kunt ze altijd terugvinden in Geschiedenis.</translation>
 <translation id="3008554597174452548">Product niet meer volgen</translation>
 <translation id="3026391124054406831">Maak groepen om je tabbladen te ordenen.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
+<translation id="6212567362666004597">Tabblad toevoegen aan groep</translation>
 <translation id="6220820548421939212">Ja. Nu aanzetten</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6271513594716432922">Alle inactieve tabbladen sluiten</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome sluit automatisch items in het gedeelte Inactief die je al 3 maanden niet hebt gebruikt. Je kunt dit nu of later uitzetten via Instellingen.</translation>
 <translation id="8887921976452567404">Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen.</translation>
 <translation id="8915916167043355778">Alles sluiten</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Verplaatsen naar nieuw venster}other{Verplaatsen naar ander venster}}</translation>
 <translation id="9090098097337832354">Informatie over deze winkel gesloten</translation>
 <translation id="9114502155681725011">Het actiemenu van de tabbladgroep openen voor de tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>

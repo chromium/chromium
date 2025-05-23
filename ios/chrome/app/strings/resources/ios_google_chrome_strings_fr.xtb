@@ -320,6 +320,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
+<translation id="8796490717897731471"><ph name="EMAIL" />. Chrome est géré.</translation>
 <translation id="880967149107462122">Accéder aux paramètres Chrome</translation>
 <translation id="8842132678697187091">Vous pouvez ouvrir Google Lens ici.</translation>
 <translation id="8850736900032787670">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chrome.</translation>

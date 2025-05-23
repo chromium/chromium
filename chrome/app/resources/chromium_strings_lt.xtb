@@ -82,7 +82,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2049376729098081731">Pasirinkite, ar įtraukti „Chromium“ istoriją, kad būtų teikiamos labiau suasmenintos funkcijos „Google“ paslaugose</translation>
 <translation id="2054039611381840095">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 12 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 11 versijos „macOS“.</translation>
 <translation id="2086476982681781442">„Chromium“ užblokavo šį atsisiuntimą, nes failas yra klaidinantis ir gali atlikti nenumatytų pakeitimų įrenginyje</translation>
-<translation id="2088953378266246249">Informacija apie tai, kaip „Chromium“ tvarko šakninius sertifikatus</translation>
 <translation id="2099452623287920103">Slaptažodžiai ir kiti „Chromium“ duomenys, kuriuos išsaugojote „Google“ paskyroje, bus pašalinti iš šio įrenginio. Jei norite juos vėl naudoti „Chromium“, vėl prisijunkite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama vieną minutę. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}one{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutę. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}few{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutes. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}many{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutės. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}other{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minučių. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}}</translation>
 <translation id="2126108037660393668">Nepavyko patvirtinti atsisiųsto failo.</translation>
@@ -611,7 +610,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="9190841055450128916">„Chromium“ (mDNS-In)</translation>
 <translation id="924957577793602335">Suasmeninkite „Chromium“</translation>
 <translation id="93478295209880648">„Chromium“ gali tinkamai neveikti, nes ji nebepalaikoma naudojant „Windows XP“ arba „Windows Vista“</translation>
-<translation id="942598560705308788">Sertifikatai, kuriuos tvarko „Chromium“</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="965162752251293939">Kas naudoja „Chromium“?</translation>
 <translation id="967427899662692980">Patikimiausios „Chromium“ saugos užtikrinimas</translation>

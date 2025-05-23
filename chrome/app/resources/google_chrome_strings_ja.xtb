@@ -96,7 +96,6 @@
 <translation id="2199691482078155239">Chrome では、表示される広告を細かく管理でき、サイトがパーソナライズド広告を表示する際にユーザーについて把握できる情報も制限されます</translation>
 <translation id="2216543877350048334">Chrome から Google アカウントを削除するには、ログアウトしてください</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
-<translation id="223889379102603431">Chrome でのルート証明書の管理方法に関する情報</translation>
 <translation id="2290014774651636340">Google API キーが欠落しています。Google Chrome の一部の機能は無効になります。</translation>
 <translation id="2290095356545025170">Google Chrome をアンインストールしてもよろしいですか？</translation>
 <translation id="2309047409763057870">この Google Chrome はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
@@ -169,7 +168,7 @@
 <translation id="306179102415443347">ショートカットを使用して Google パスワード マネージャーにすばやくアクセスできます。ショートカットはパソコンのホーム画面やアプリ ランチャーに移動できます。</translation>
 <translation id="3065168410429928842">Chrome タブ</translation>
 <translation id="3080151273017101988">Google Chrome を閉じた際にバックグラウンド アプリの処理を続行する</translation>
-<translation id="3100998948628680988">Chrome プロフィールの名前を設定</translation>
+<translation id="3100998948628680988">Chrome プロファイルの名前を設定</translation>
 <translation id="310459126943037700">タスクを終了できませんでした。</translation>
 <translation id="3112458742631356345">このダウンロードは Chrome でブロックされました。ファイルが一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="3114643501466072395">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
@@ -563,7 +562,6 @@
 <translation id="8255190535488645436">Google Chrome がカメラとマイクを使用しています。</translation>
 <translation id="8257796129973882597">Chrome メニューからブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="8267953129876836456">安全に関する推奨事項をご確認ください</translation>
-<translation id="8270775718612349140">Chrome で管理されている証明書</translation>
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="829923460755755423">Google パスワード マネージャーへのショートカットを追加できます</translation>
 <translation id="8313851650939857356">起動エラー: <ph name="STARTUP_ERROR" />。</translation>
@@ -606,7 +604,7 @@
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="8781673607513845160">カメラを使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="878572486461146056">インストール エラー: ネットワーク管理者により、インストールを許可しないというグループ ポリシーが適用されています: <ph name="INSTALL_ERROR" /></translation>
-<translation id="8798550110818026746">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chrome プロフィールの閲覧データを確認することはできません。</translation>
+<translation id="8798550110818026746">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。他の Chrome プロファイルの閲覧データを確認することはできません。</translation>
 <translation id="8801657293260363985">V8 は、サイトのパフォーマンスを向上させるために使用される Chrome の JavaScript エンジンおよび WebAssembly エンジンです</translation>
 <translation id="8821043148920470810">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 7 が実行されています。</translation>
 <translation id="8823341990149967727">Chrome は古いバージョンです</translation>

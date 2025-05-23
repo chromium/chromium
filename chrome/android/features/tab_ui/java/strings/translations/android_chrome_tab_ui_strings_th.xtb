@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1036348656032585052">ปิด</translation>
-<translation id="1045448422538531528">เพิ่มในกลุ่ม</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{สร้างเมื่อ <ph name="NUM_WEEKS_ONE" /> สัปดาห์ที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_WEEKS_MANY" /> สัปดาห์ที่ผ่านมา}}</translation>
 <translation id="1063300264396686489">เปิดกลุ่มแท็บจากอุปกรณ์อื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ปิดแล้ว <ph name="ONE_CLOSED" /> แท็บ}other{ปิดแล้ว <ph name="MANY_CLOSED" /> แท็บ}}</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
-<translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="29919168204617356">แท็บที่ไม่ได้ใช้งานจะปิดโดยอัตโนมัติ คุณดูแท็บเหล่านี้ได้ในประวัติการเข้าชมเสมอ</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
+<translation id="6212567362666004597">เพิ่มแท็บไปยังกลุ่ม</translation>
 <translation id="6220820548421939212">ได้ ตกลง</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
 <translation id="6271513594716432922">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome จะปิดรายการในส่วนที่ไม่ได้ใช้งานซึ่งคุณไม่ได้ใช้เป็นเวลา 3 เดือนโดยอัตโนมัติ คุณปิดฟีเจอร์นี้ในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="8887921976452567404">แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ"</translation>
 <translation id="8915916167043355778">ปิดทั้งหมด</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ย้ายไปยังหน้าต่างใหม่}other{ย้ายไปยังหน้าต่างอื่น}}</translation>
 <translation id="9090098097337832354">ปิดข้อมูลเกี่ยวกับร้านนี้แล้ว</translation>
 <translation id="9114502155681725011">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" สี<ph name="COLOR_NAME" /></translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>

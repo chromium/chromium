@@ -82,7 +82,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2049376729098081731">Dewiswch a ddylid cynnwys hanes Chromium i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="2054039611381840095">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 12 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 11.</translation>
 <translation id="2086476982681781442">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn dwyllodrus a gallai wneud newidiadau annisgwyl i'ch dyfais</translation>
-<translation id="2088953378266246249">Gwybodaeth am sut mae Chromium yn rheoli ei dystysgrifau gwraidd</translation>
 <translation id="2099452623287920103">Bydd eich cyfrineiriau a data Chromium arall a gadwyd gennych yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon. I'w defnyddio eto yn Chromium, mewngofnodwch eto.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am 1 funud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}zero{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}two{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # funud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}few{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}many{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}other{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}}</translation>
 <translation id="2126108037660393668">Mae'r ffeil a lawrlwythwyd wedi methu â dilysu.</translation>
@@ -611,7 +610,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personoleiddio Chromium</translation>
 <translation id="93478295209880648">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar Windows XP na Windows Vista</translation>
-<translation id="942598560705308788">Tystysgrifau a reolir gan Chromium</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="965162752251293939">Pwy sy'n defnyddio Chromium?</translation>
 <translation id="967427899662692980">Cael diogelwch cryfaf Chromium</translation>

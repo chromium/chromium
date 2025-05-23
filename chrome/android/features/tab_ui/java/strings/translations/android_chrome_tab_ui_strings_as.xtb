@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1036348656032585052">অফ কৰক</translation>
-<translation id="1045448422538531528">গোটত যোগ দিয়ক</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1063300264396686489">অন্য ডিভাইচসমূহৰ পৰা টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে খোলক</translation>
 <translation id="1075622780330595106">শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" />টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> টা টেব বন্ধ কৰা হ'ল}one{<ph name="MANY_CLOSED" /> টা টেব বন্ধ কৰা হ’ল}other{<ph name="MANY_CLOSED" /> টা টেব বন্ধ কৰা হ’ল}}</translation>
 <translation id="2894757982205307093">গোটটোত নতুন টেব</translation>
 <translation id="2928243913527329289">Google | এই ষ্ট'ৰখনৰ বিষয়ে</translation>
-<translation id="2977480621796371840">গোটৰ পৰা আঁতৰাওক</translation>
 <translation id="29919168204617356">নিষ্ক্ৰিয় টেবসমূহ স্বয়ংক্ৰিয়ভাৱে বন্ধ হ’ব। আপুনি সেইসমূহ যিকোনো সময়তে ইতিহাসত বিচাৰি পাব পাৰে।</translation>
 <translation id="3008554597174452548">প্ৰ'ডাক্ট ট্ৰেক কৰাটো বন্ধ কৰক</translation>
 <translation id="3026391124054406831">আপোনাৰ টেবসমূহ চিনাক্ত কৰিবলৈ গোটসমূহ সৃষ্টি কৰক।</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
 <translation id="6109251075362363230">আটাইবোৰ ডুপ্লিকেট টেবো এতিয়া আৰ্কাইভ কৰা হ’ব, য’ত একেবাৰে শেহতীয়াকৈ ব্যৱহাৰ কৰা প্ৰতিলিপিটোৰ ক্ষেত্ৰত ব্যতিক্ৰম থাকিব।</translation>
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
+<translation id="6212567362666004597">গোটত টেব যোগ দিয়ক</translation>
 <translation id="6220820548421939212">হয়। মই সন্মত</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6271513594716432922">আটাইবোৰ নিষ্ক্ৰিয় টেব বন্ধ কৰক</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chromeএ নিষ্ক্ৰিয় শাখাত থকা বস্তুবোৰ স্বয়ংক্ৰিয়ভাৱে বন্ধ কৰে যিবোৰ আপুনি ৩ মাহ ধৰি ব্যৱহাৰ কৰা নাই। আপুনি এতিয়া বা যিকোনো সময়তে এইটো অফ কৰিব পাৰে।</translation>
 <translation id="8887921976452567404">আপোনাৰ বন্ধ কৰা টেব আৰু গোটসমূহ শেহতীয়া টেব আৰু টেবৰ গোটসমূহ শাখাৰ পৰা পুনৰ খুলিব পাৰি।</translation>
 <translation id="8915916167043355778">আটাইবোৰ বন্ধ কৰক</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{নতুন ৱিণ্ড’লৈ নিয়ক}one{অন্য ৱিণ্ড’লৈ নিয়ক}other{অন্য ৱিণ্ড’লৈ নিয়ক}}</translation>
 <translation id="9090098097337832354">এই দোকানৰ বিষয়ে তথ্য দেখুওৱা বন্ধ হৈছে</translation>
 <translation id="9114502155681725011">টেবৰ গোট <ph name="TITLE_OF_GROUP" />, ৰং <ph name="COLOR_NAME" />ৰ বাবে টেবৰ গোটৰ কামৰ মেনুখন খোলক।</translation>
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>

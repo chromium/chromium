@@ -4768,7 +4768,6 @@
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="428963538941819373">ເວັບໄຊເຫຼົ່ານີ້ສາມາດໃຊ້ຂໍ້ມູນທີ່ພວກມັນບັນທຶກໄວ້ກ່ຽວກັບທ່ານໄດ້ໃນເວລາທ່ານເລືອກເບິ່ງ <ph name="HOST" /></translation>
 <translation id="4289732974614035569">ເລືອກ PIN</translation>
-<translation id="4290526909608432059">ລະບົບຈະຢຸດຮອງຮັບແອັບ Chrome ໃນໄວໆນີ້. ເພື່ອສຶກສາກ່ຽວກັບຕົວເລືອກຂອງທ່ານ, ກະລຸນາຕິດຕໍ່ນັກພັດທະນາແອັບ ຫຼື ທີມງານຊ່ວຍເຫຼືອດ້ານ IT ຂອງທ່ານ.</translation>
 <translation id="4290791284969893584">ຫຼັງຈາກການປິດໜ້າໃດໜຶ່ງ, ໜ້າວຽກທີ່ທ່ານເລີ່ມຕົ້ນໄວ້ອາດບໍ່ແລ້ວ</translation>
 <translation id="4290826901752066702">ສະມາຊິກ <ph name="NUM" /> ຄົນ</translation>
 <translation id="4290898381118933198">ປັດເພື່ອນຳທາງລະຫວ່າງໜ້າ</translation>
@@ -7635,6 +7634,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">ເພີ່ມຄອບ​ຄົວ​ ແລະ​ຫມູ່​ເພື່ອນ</translation>
 <translation id="6367097275976877956">ທ່ານຕ້ອງການເປີດນຳໃຊ້ ChromeVox, ໂປຣແກຣມອ່ານໜ້າຈໍໃນຕົວສຳລັບ ChromeOS ບໍ? ຖ້າຕ້ອງການ, ກະລຸນາກົດແຖບຍະຫວ່າງ.</translation>
+<translation id="6367196786591004737">ລຶບລາຍການ</translation>
 <translation id="6367396429435748845">ກົດ <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> ເພື່ອຢຸດຊົ່ວຄາວ ແລະ ສືບຕໍ່ໃຊ້ປຸ່ມເມົ້າ</translation>
 <translation id="6367985768157257101">ຮັບດ້ວຍການແບ່ງປັນໃກ້ຄຽງບໍ?</translation>
 <translation id="6368157733310917710">&amp;ທີ່ຢູ່ ແລະ ອື່ນໆ</translation>
@@ -7968,7 +7968,6 @@
 <translation id="6610002944194042868">ຕົວເລືອກແປພາສາ</translation>
 <translation id="6610064275805055636">ຈັດການເວັບແອັບທີ່ແຍກໄວ້</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> ແຖບ</translation>
-<translation id="6611972847767394631">ຊອກຫາແຖບຂອງທ່ານຢູ່ທີ່ນີ້</translation>
 <translation id="661266467055912436">ປັບປຸງຄວາມປອດໄພສຳລັບທ່ານ ແລະ ທຸກຄົນໃນເວັບ.</translation>
 <translation id="6613267708691765962">ກຳລັງສະແກນຫາເມົາແວ...</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
@@ -10627,6 +10626,7 @@
 <translation id="8472623782143987204">ຮາດແວສໍາຮອງໄວ້</translation>
 <translation id="8473540203671727883">ເວົ້າຂໍ້ຄວາມຢູ່ກ້ອງເມົ້າ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
+<translation id="847433688444405067">ເລືອກເບິ່ງທົ່ວອຸປະກອນຕ່າງໆ</translation>
 <translation id="8474378002946546633">ອະນຸຍາດການແຈ້ງເຕືອນ</translation>
 <translation id="8474561048882755118">ຊ່ວຍໃຫ້ທ່ານເບິ່ງຜະລິດຕະພັນທີ່ຄ້າຍຄືກັນໂດຍສະແດງຂໍ້ມູນຄູ່ກັນ ແລະ ປຽບທຽບລາຍລະອຽດທີ່ສຳຄັນຕໍ່ກັບທ່ານໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="8475313423285172237">ໂປຣແກຼມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່ານໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດຈະປ່ຽນແປງວິທີການເຮັດວຽກຂອງ Chrome ແລ້ວ.</translation>

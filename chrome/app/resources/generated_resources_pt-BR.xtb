@@ -720,6 +720,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1494349716233667318">Os sites podem pedir para usar as fontes instaladas no dispositivo</translation>
 <translation id="1494429729245089920">A máquina virtual "<ph name="VM_NAME" />" existe, mas não parece ser válida para o app <ph name="APP_NAME" />. Entre em contato com o administrador.</translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
+<translation id="1496514951988037011">nome de usuário</translation>
 <translation id="1498498210836053409">Desativar o modo tecla fixa ao editar texto (Modo tecla fixa inteligente)</translation>
 <translation id="1499041187027566160">aumentar o volume</translation>
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1448,6 +1449,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1981434377190976112">Ler seus dados em qualquer site</translation>
 <translation id="1982851102516626421">Sua conta está desconectada</translation>
 <translation id="1983612835086592681">Você abriu na última semana</translation>
+<translation id="1984087999855033707">número de telefone</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1984683754853869253">Quer criar um novo perfil para a escola?</translation>
 <translation id="198507684520034826">Ajuda</translation>
@@ -2687,7 +2689,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2819167288942847344">Usar os tamanhos predefinidos para evitar problemas em smartphones, tablets ou janelas redimensionáveis</translation>
 <translation id="2819519502129272135">Sincronização de arquivos desativada</translation>
 <translation id="2820957248982571256">Verificando...</translation>
-<translation id="282230978681804245">Seu perfil é gerenciado por sua organização, que pode ver algumas informações, incluindo:</translation>
+<translation id="282230978681804245">O perfil é gerenciado por sua organização, que pode ver algumas informações, incluindo:</translation>
 <translation id="2822551631199737692">Câmera em uso</translation>
 <translation id="2822634587701817431">Encolher / Expandir</translation>
 <translation id="2822910719211888134">Erro ao fazer backup do Linux</translation>
@@ -4768,7 +4770,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="428963538941819373">Esses sites podem usar informações que salvaram sobre você enquanto você navega no <ph name="HOST" />.</translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
-<translation id="4290526909608432059">A compatibilidade com apps do Chrome será encerrada em breve. Para saber mais sobre as opções, entre em contato com o desenvolvedor do app ou com a equipe de suporte de TI.</translation>
 <translation id="4290791284969893584">Após fechar uma página, as tarefas iniciadas talvez não sejam encerradas</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> participante</translation>
 <translation id="4290898381118933198">Deslize para navegar entre as páginas</translation>
@@ -4787,7 +4788,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
-<translation id="4304713468139749426">Gerenciador de senhas</translation>
+<translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
@@ -6631,7 +6632,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5631272057151918206">Essa ação removerá até <ph name="OFFLINE_STORAGE_SIZE" /> do espaço usado pelos seus arquivos off-line. Alguns arquivos ainda vão estar disponíveis off-line. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais sobre as permissões de extensões</translation>
-<translation id="5632300633605675627">Configuração do seu perfil…</translation>
+<translation id="5632300633605675627">Configurando seu perfil…</translation>
 <translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5633149627228920745">Saiba mais sobre os requisitos do sistema</translation>
@@ -7637,6 +7638,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Adicionar familiares e amigos</translation>
 <translation id="6367097275976877956">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS? Se for o caso, pressione a barra de espaço.</translation>
+<translation id="6367196786591004737">Excluir entrada</translation>
 <translation id="6367396429435748845">Pressione <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> para pausar e retomar as teclas do mouse</translation>
 <translation id="6367985768157257101">Receber com o "Compartilhar por proximidade"?</translation>
 <translation id="6368157733310917710">Endereços e mais</translation>
@@ -7972,7 +7974,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="6610064275805055636">Gerenciar Apps Isolados da Web</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> guia</translation>
-<translation id="6611972847767394631">Veja suas guias aqui</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6613267708691765962">Procurando malware...</translation>
 <translation id="6615455863669487791">Exibir</translation>
@@ -9786,7 +9787,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
 <translation id="7897900149154324287">No futuro, não se esqueça de ejetar o dispositivo removível no aplicativo "Arquivos" antes de desconectá-lo. Caso contrário, você poderá perder dados.</translation>
 <translation id="7898725031477653577">Sempre traduzir</translation>
-<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador e as configurações, além de qual software está instalado no dispositivo.</translation>
+<translation id="7900950034255258543">Para garantir que o dispositivo seja usado com segurança, sua organização pode acessar informações sobre o sistema operacional, o navegador e as configurações, além do software que está instalado no dispositivo.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903429136755645827">Clique para personalizar os controles do jogo</translation>
 <translation id="7903481341948453971">Usar o bloqueio de tela ao preencher senhas</translation>
@@ -10635,6 +10636,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8472623782143987204">suportado por hardware</translation>
 <translation id="8473540203671727883">Falar o texto que está sob o cursor do mouse</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
+<translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8474561048882755118">Ajuda você a ver produtos semelhantes lado a lado e comparar com facilidade os detalhes que são importantes para você</translation>
 <translation id="8475313423285172237">Outro programa em seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.</translation>

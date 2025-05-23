@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
-<translation id="1045448422538531528">ഗ്രൂപ്പിലേക്ക് ചേർക്കുക</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_WEEKS_MANY" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="1063300264396686489">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ തുറക്കുക</translation>
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ടാബ് അടച്ചു}other{<ph name="MANY_CLOSED" /> ടാബുകൾ അടച്ചു}}</translation>
 <translation id="2894757982205307093">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="2928243913527329289">Google | ഈ സ്റ്റോറിനെക്കുറിച്ച്</translation>
-<translation id="2977480621796371840">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
 <translation id="29919168204617356">നിഷ്ക്രിയമായ ടാബുകൾ സ്വയമേവ അടയ്ക്കും. നിങ്ങൾക്ക് അവ ഏതുസമയത്തും ചരിത്രത്തിൽ കണ്ടെത്താം.</translation>
 <translation id="3008554597174452548">ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="3026391124054406831">നിങ്ങളുടെ ടാബുകൾ ഓർഗനൈസ് ചെയ്യാൻ ഗ്രൂപ്പുകൾ സൃഷ്ടിക്കുക.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ സംരക്ഷിക്കും</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
 <translation id="6109251075362363230">ഏറ്റവും അടുത്തിടെ ഉപയോഗിച്ച പകർപ്പ് ഒഴികെ, എല്ലാ ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളും ഇപ്പോൾ ആർക്കൈവ് ചെയ്യും.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ഗ്രൂപ്പിനെ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ഗ്രൂപ്പിനെ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
+<translation id="6212567362666004597">ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="6220820548421939212">ഉവ്വ്. ഞാൻ തയ്യാറാണ്</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6271513594716432922">നിഷ്ക്രിയമായ എല്ലാ ടാബുകളും അടയ്ക്കുക</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">3 മാസമായി നിങ്ങൾ ഉപയോഗിക്കാത്ത, സജീവമല്ലാത്ത വിഭാഗത്തിലെ ഇനങ്ങൾ Chrome സ്വയമേവ അവസാനിപ്പിക്കും. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇപ്പോൾ അല്ലെങ്കിൽ പിന്നീട് എപ്പോൾ വേണമെങ്കിലും ഇത് ഓഫാക്കാം.</translation>
 <translation id="8887921976452567404">നിങ്ങളുടെ അടച്ച ടാബുകളും ഗ്രൂപ്പുകളും സമീപകാല ടാബുകൾ വിഭാഗത്തിൽ നിന്നും ടാബ് ഗ്രൂപ്പുകൾ വിഭാഗത്തിൽ നിന്നും വീണ്ടും തുറക്കാനാകും.</translation>
 <translation id="8915916167043355778">എല്ലാം അടയ്ക്കുക</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
 <translation id="9090098097337832354">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ അടച്ചു</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പിനുള്ള, ടാബ് ഗ്രൂപ്പ് പ്രവർത്തന മെനു തുറക്കുക, <ph name="COLOR_NAME" /> നിറം.</translation>
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>

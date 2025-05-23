@@ -1459,7 +1459,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7388345524791662148">Još opcija za snimak <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ugrađeni tačped</translation>
 <translation id="7397270852490618635">Isključite svetlu temu</translation>
-<translation id="7400166052988585408">Nastavnik će zaključati vaš ekran za <ph name="NUM_SECONDS" /> sek</translation>
 <translation id="7401543881546089382">Izbrišite prečicu</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> je spreman za ažuriranje</translation>
 <translation id="741244894080940828">konverziju</translation>
@@ -1614,7 +1613,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8088963492174775412">Pritisnite da biste snimili</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
-<translation id="8110942816572072814">Nastavnik je zaključao ekran</translation>
 <translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>

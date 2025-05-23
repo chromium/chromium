@@ -4754,7 +4754,6 @@
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="428963538941819373">આ સાઇટ, તમે જેમ જેમ <ph name="HOST" /> બ્રાઉઝ કરો તેમ તેમ તમારા વિશે તેમણે સાચવેલી માહિતીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4289732974614035569">કોઈ પિન પસંદ કરો</translation>
-<translation id="4290526909608432059">Chrome ઍપ માટે સપોર્ટ ટૂંક સમયમાં સમાપ્ત થશે. તમારા વિકલ્પો વિશે જાણવા માટે, ઍપ ડેવલપર અથવા તમારી IT સપોર્ટ ટીમનો સંપર્ક કરો.</translation>
 <translation id="4290791284969893584">કોઈ પેજ બંધ કર્યા પછી, તમે શરૂ કરેલા કાર્ય કદાચ પૂર્ણ થઈ શકશે નહીં</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> સભ્ય</translation>
 <translation id="4290898381118933198">એક પેજ પરથી બીજા પેજ વચ્ચે નૅવિગેટ કરવા માટે સ્વાઇપ કરો</translation>
@@ -7624,6 +7623,7 @@ USB ડિવાઇસ</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">કુટુંબીજનો અને મિત્રોને ઉમેરો</translation>
 <translation id="6367097275976877956">ChromeOSમાં બિલ્ટ-ઇન સ્ક્રીન રીડર એવા ChromeVoxને શું તમે સક્રિય કરવા માગો છો? જો હા હોય, તો સ્પેસ બાર દબાવો.</translation>
+<translation id="6367196786591004737">એન્ટ્રી ડિલીટ કરો</translation>
 <translation id="6367396429435748845">માઉસ કી થોભાવવા અને ફરી શરૂ કરવા માટે <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> દબાવો</translation>
 <translation id="6367985768157257101">શું 'નજીકના શેર' સાથે મેળવવા માગો છો?</translation>
 <translation id="6368157733310917710">સરનામા અને વધુ</translation>
@@ -7959,7 +7959,6 @@ USB ડિવાઇસ</translation>
 <translation id="6610002944194042868">અનુવાદ માટેના વિકલ્પો</translation>
 <translation id="6610064275805055636">આઇસોલેટેડ વેબ ઍપના સેટિંગ મેનેજ કરો</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> ટૅબ</translation>
-<translation id="6611972847767394631">તમારા ટૅબ અહીં મેળવો</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
 <translation id="6613267708691765962">માલવેર માટે સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
@@ -10616,6 +10615,7 @@ USB ડિવાઇસ</translation>
 <translation id="8472623782143987204">હાર્ડવેર-બેક્ડ</translation>
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
+<translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8474378002946546633">સૂચનાઓને અનુમતિ આપો</translation>
 <translation id="8474561048882755118">સમાન પ્રોડક્ટને બાજુ-બાજુમાં જોવામાં અને તમારી મહત્ત્વની હોય તેવી વિગતોની સરળતાથી તુલના કરવામાં તમારી સહાય કરે છે</translation>
 <translation id="8475313423285172237">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક એક્સ્ટેંશન ઉમેર્યું જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="1045448422538531528">Adicionar ao grupo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Criado há <ph name="NUM_WEEKS_ONE" /> semana}other{Criado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abra automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> separador fechado}other{<ph name="MANY_CLOSED" /> separadores fechados}}</translation>
 <translation id="2894757982205307093">Novo separador no grupo</translation>
 <translation id="2928243913527329289">Google | Acerca desta loja</translation>
-<translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="29919168204617356">Os separadores inativos são fechados automaticamente. Pode sempre encontrá-los no Histórico.</translation>
 <translation id="3008554597174452548">Deixar de monitorizar produto</translation>
 <translation id="3026391124054406831">Crie grupos para organizar os seus separadores.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
+<translation id="6212567362666004597">Adicionar separador a grupo</translation>
 <translation id="6220820548421939212">Sim. Aceito</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6271513594716432922">Fechar todos os separadores inativos</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">O Chrome fecha automaticamente os itens na secção inativa que não usa há 3 meses. Pode desativar esta funcionalidade agora ou em qualquer altura nas Definições.</translation>
 <translation id="8887921976452567404">É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores.</translation>
 <translation id="8915916167043355778">Fechar tudo</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover para nova janela}other{Mover para outra janela}}</translation>
 <translation id="9090098097337832354">Informações acerca desta loja fechadas</translation>
 <translation id="9114502155681725011">Abra o menu de ação do grupo de separadores para o grupo de separadores <ph name="TITLE_OF_GROUP" />, com a cor <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>

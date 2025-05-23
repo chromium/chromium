@@ -320,6 +320,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
+<translation id="8796490717897731471"><ph name="EMAIL" />. Chrome està gestionat.</translation>
 <translation id="880967149107462122">Ves a la configuració de Chrome</translation>
 <translation id="8842132678697187091">Aquí pots obrir Google Lens.</translation>
 <translation id="8850736900032787670">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chrome.</translation>

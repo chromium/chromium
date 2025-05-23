@@ -1459,7 +1459,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7388345524791662148">Plus d'options pour <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pavé tactile intégré</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
-<translation id="7400166052988585408">Votre enseignant verrouillera votre écran dans <ph name="NUM_SECONDS" /> secondes</translation>
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> est prêt à être mis à jour</translation>
 <translation id="741244894080940828">conversion</translation>
@@ -1614,7 +1613,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8088963492174775412">Appuyez pour enregistrer</translation>
 <translation id="8094062939584182041">Autoriser Google à vous envoyer un courriel à propos de ce problème</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
-<translation id="8110942816572072814">Votre enseignant a verrouillé votre écran</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">စာမျက်နှာ၏သိကောင်းစရာ ကြည့်ရန်</translation>
 <translation id="1108938384783527433">မှတ်တမ်းစင့်ခ်လုပ်ခြင်း</translation>
 <translation id="1111673857033749125">သင်၏ အခြားစက်ပစ္စည်းများပေါ်တွင် သိမ်းဆည်းထားသည့် ဝဘ်လိပ်စာများ ဤနေရာတွင် ပေါ်ပါမည်။</translation>
-<translation id="1113597929977215864">ရိုးရှင်းသည့်မြင်ကွင်းကို ပြရန်</translation>
 <translation id="1126696498560056882">ဤစက်ပေါ်ရှိ အကောင့်များကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="1129510026454351943">အသေးစိတ်များ− <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">ရုပ်ဖျက်မုဒ်သည် သင့်စက်သုံးသူများအား သင်၏ ဘရောက်စ်လုပ်မှုကို မပြပါ</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">သင်၏ မှတ်တမ်းအချို့ကို ဤနေရာတွင် ပြမည်မဟုတ်ပါ။ သင့် Chrome မှတ်တမ်းအားလုံးကြည့်ရန် Chrome မှတ်တမ်းအပြည့်အစုံကို ဖွင့်ပါ။</translation>
 <translation id="1492417797159476138">ယခုဝဘ်ဆိုက်အတွက် ဤအသုံးပြုသူအမည်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>
+<translation id="1496514951988037011">အသုံးပြုသူအမည်</translation>
 <translation id="1501480321619201731">အဖွဲ့ကို ဖျက်ရန်</translation>
 <translation id="1502010315804028179">စကားဝှက်များစီမံရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">သိမ်းမည်</translation>
 <translation id="1973912524893600642">ဒေတာများ ဆက်ထားရှိရန်</translation>
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
+<translation id="1984087999855033707">ဖုန်းနံပါတ်</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
@@ -1875,7 +1876,6 @@
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="963246339335003378">လုပ်ဆောင်ချက်မန်နေဂျာ ဖွင့်ရန်</translation>
 <translation id="966131775676567255">အကောင့်ဒေတာကို ဖျက်နေသည်</translation>
-<translation id="96681097142096641">ရိုးရှင်းအောင်ပြုထားသော စာမျက်နှာကို ကြည့်မလား။</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> မိနစ် ကျန်သည်</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="983192555821071799">တဘ်အားလုံး ပိတ်ရန်</translation>

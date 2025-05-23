@@ -1205,7 +1205,7 @@
 <translation id="1824870205483790748">ปักหมุดกลุ่มไว้ที่แถบบุ๊กมาร์ก</translation>
 <translation id="1825073796163165618">เปิดใช้ลิงก์</translation>
 <translation id="1825565032302550710">หมายเลขพอร์ตต้องอยู่ระหว่าง 1024 ถึง 65535</translation>
-<translation id="18260074040409954">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยรหัสผ่านจะบันทึกอยู่ใน <ph name="GOOGLE_PASSWORD_MANAGER" />ของ <ph name="EMAIL" /></translation>
+<translation id="18260074040409954">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ใน<ph name="GOOGLE_PASSWORD_MANAGER" /> แล้วสำหรับ <ph name="EMAIL" /></translation>
 <translation id="1826192255355608658">ซิงค์บุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ของเบราว์เซอร์ Chrome</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
 <translation id="1826657447823925402">การเลื่อนแบบย้อนกลับปิดอยู่</translation>
@@ -4754,7 +4754,6 @@
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="428963538941819373">เว็บไซต์เหล่านี้สามารถใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่คุณเรียกดู <ph name="HOST" /></translation>
 <translation id="4289732974614035569">เลือก PIN</translation>
-<translation id="4290526909608432059">ระบบจะหยุดรองรับแอป Chrome ในเร็วๆ นี้ หากต้องการดูตัวเลือกที่คุณมี โปรดติดต่อนักพัฒนาแอปหรือทีมสนับสนุนด้านไอที</translation>
 <translation id="4290791284969893584">หลังจากปิดหน้าไปแล้ว งานที่คุณเริ่มไว้อาจไม่ดำเนินต่อจนเสร็จสิ้น</translation>
 <translation id="4290826901752066702">สมาชิก <ph name="NUM" /> ราย</translation>
 <translation id="4290898381118933198">ปัดเพื่อไปยังหน้าต่างๆ</translation>
@@ -7617,6 +7616,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">เพิ่มครอบครัวและเพื่อนๆ</translation>
 <translation id="6367097275976877956">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม ถ้าต้องการ ให้กดแป้นเว้นวรรค</translation>
+<translation id="6367196786591004737">ลบรายการข้อมูล</translation>
 <translation id="6367396429435748845">กด <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> เพื่อหยุดชั่วคราวและใช้งานแป้นเมาส์ต่อ</translation>
 <translation id="6367985768157257101">ต้องการรับด้วยการแชร์ใกล้เคียงไหม</translation>
 <translation id="6368157733310917710">ที่อยู่และอื่นๆ</translation>
@@ -7950,7 +7950,6 @@
 <translation id="6610002944194042868">ตัวเลือกการแปลภาษา</translation>
 <translation id="6610064275805055636">จัดการ Isolated Web App</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> แท็บ</translation>
-<translation id="6611972847767394631">ค้นหาแท็บของคุณที่นี่</translation>
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
@@ -10612,6 +10611,7 @@
 <translation id="8472623782143987204">การสนับสนุนฮาร์ดแวร์</translation>
 <translation id="8473540203671727883">พูดข้อความที่อยู่ใต้เมาส์</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
+<translation id="847433688444405067">ท่องเว็บในอุปกรณ์ต่างๆ</translation>
 <translation id="8474378002946546633">อนุญาตการแจ้งเตือน</translation>
 <translation id="8474561048882755118">ช่วยให้คุณดูผลิตภัณฑ์ที่คล้ายกันโดยแสดงข้อมูลคู่กัน เพื่อให้คุณสามารถเปรียบเทียบรายละเอียดที่สำคัญได้โดยง่าย</translation>
 <translation id="8475313423285172237">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>

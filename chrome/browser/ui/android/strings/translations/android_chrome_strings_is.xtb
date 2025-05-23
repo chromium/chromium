@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Skoða upplýsingar um síðu</translation>
 <translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
-<translation id="1113597929977215864">Sýna einfaldað yfirlit</translation>
 <translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
 <translation id="1129510026454351943">Upplýsingar: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Huliðsstilling felur vefskoðun þína fyrir öðrum sem nota tækið þitt</translation>
@@ -122,6 +121,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1480287803138246127">Ekki er víst að hluti af ferlinum þínum birtist hér. Til að sjá allan Chrome-ferilinn skaltu opna Chrome-feril í heild sinni.</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1493287004536771723">Þú fylgist með <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">notandanafn</translation>
 <translation id="1501480321619201731">Eyða hópi</translation>
 <translation id="1502010315804028179">Uppfærðu þjónustu Google Play til að stjórna aðgangsorðunum þínum</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
@@ -221,6 +221,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="197288927597451399">Halda</translation>
 <translation id="1973912524893600642">Geyma gögn</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
+<translation id="1984087999855033707">símanúmer</translation>
 <translation id="1984417487208496350">Engin vörn (ekki mælt með)</translation>
 <translation id="1986685561493779662">Þetta nafn er þegar til</translation>
 <translation id="200114059308480249">Taka með texta umhverfis í Google leitum?</translation>
@@ -1876,7 +1877,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="961856697154696964">Eyða vefskoðunargögnum</translation>
 <translation id="963246339335003378">Opna verkstjórn</translation>
 <translation id="966131775676567255">Eyðir reikningsgögnum</translation>
-<translation id="96681097142096641">Skoða einfaldaða síðu?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mín. eftir</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="983192555821071799">Loka öllum flipum</translation>

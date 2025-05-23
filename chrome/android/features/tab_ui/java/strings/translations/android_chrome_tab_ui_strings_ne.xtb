@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
-<translation id="1045448422538531528">समूहमा थप्नुहोस्</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि बनाइएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि बनाइएको}}</translation>
 <translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> वटा ट्याब बन्द गरियो}other{<ph name="MANY_CLOSED" /> वटा ट्याब बन्द गरिए}}</translation>
 <translation id="2894757982205307093">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="2928243913527329289">Google | यो स्टोरबारे जानकारी</translation>
-<translation id="2977480621796371840">समूहबाट हटाउनुहोस्</translation>
 <translation id="29919168204617356">निष्क्रिय ट्याबहरू स्वतः बन्द हुने छन्। तपाईं "हिस्ट्री" मा गई जुनसुकै बेला ती ट्याब भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="3008554597174452548">उत्पादनको मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3026391124054406831">आफ्ना ट्याबहरू व्यवस्थापन गर्न समूहहरू बनाउनुहोस्।</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
+<translation id="6212567362666004597">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="6220820548421939212">अँ। म चाहन्छु</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6271513594716432922">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome ले तपाईंले ३ महिनादेखि प्रयोग नगरेका निष्क्रिय ट्याबहरूको खण्डमा रहेका वस्तुहरू स्वतः बन्द गर्छ। तपाईं अहिले वा जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="8887921976452567404">तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ।</translation>
 <translation id="8915916167043355778">सबै बन्द गर्नुहोस्</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{सारेर नयाँ विन्डोमा लैजानुहोस्}other{सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>

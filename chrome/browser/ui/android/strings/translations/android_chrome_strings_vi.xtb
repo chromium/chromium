@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Xem chi tiết về trang</translation>
 <translation id="1108938384783527433">Đồng bộ hoá nhật ký</translation>
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
-<translation id="1113597929977215864">Hiển thị chế độ xem đơn giản</translation>
 <translation id="1126696498560056882">Quản lý các tài khoản trên thiết bị này</translation>
 <translation id="1129510026454351943">Chi tiết: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Chế độ ẩn danh giúp ẩn hoạt động duyệt web của bạn với người dùng thiết bị của bạn</translation>
@@ -227,7 +226,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
-<translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
+<translation id="2038563949887743358">Bật Yêu cầu trang web dành cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
 <translation id="2047378580182589770">Chạm và giữ để thoát chế độ Ẩn danh</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
@@ -1389,7 +1388,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7186568385131859684">Kiểm soát cách Google sử dụng nhật ký duyệt web cùng với các dữ liệu khác của bạn trên các dịch vụ của Google</translation>
 <translation id="7190921792980745354">Chặn <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
-<translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi mật khẩu này ngay bây giờ}other{Bạn nên thay đổi các mật khẩu này ngay bây giờ}}</translation>
+<translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi ngay mật khẩu này}other{Bạn nên thay đổi ngay những mật khẩu này}}</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
@@ -1823,7 +1822,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9055497320631373736">Đã thêm lại trang web vào danh sách trang tiềm năng</translation>
 <translation id="9057030985451135243">Tìm hiểu về nhóm thẻ được chia sẻ</translation>
 <translation id="9063400323119781058">Đã huỷ đăng ký</translation>
-<translation id="9063523880881406963">Tắt Yêu cầu trang web cho máy tính</translation>
+<translation id="9063523880881406963">Tắt Yêu cầu trang web dành cho máy tính</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9065383040763568503">Dữ liệu lưu trữ mà Chrome cho là không quan trọng (ví dụ: những trang web không được lưu tùy chọn cài đặt hoặc những trang web mà bạn không truy cập thường xuyên)</translation>
 <translation id="9067341854474068781">Trang thông báo "Không có khoá truy cập nào" đã mở trên toàn màn hình</translation>
@@ -1878,7 +1877,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="961856697154696964">Xoá dữ liệu duyệt web</translation>
 <translation id="963246339335003378">Mở Trình quản lý tác vụ</translation>
 <translation id="966131775676567255">Đang xoá dữ liệu tài khoản</translation>
-<translation id="96681097142096641">Xem trang ở chế độ đơn giản?</translation>
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>

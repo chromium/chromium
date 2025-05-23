@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">यो पेजको विश्लेषणात्मक डेटा हेर्नुहोस्</translation>
 <translation id="1108938384783527433">ब्राउजिङ इतिहास सिंक गर्नुहोस्</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
-<translation id="1113597929977215864">सरलीकृत दृश्य देखाउनुहोस्</translation>
 <translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1129510026454351943">विवरणहरू: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईंको डिभाइस प्रयोग गर्ने अन्य मान्छेहरू तपाईंको ब्राउजिङ डेटा हेर्न पाउँदैनन्</translation>
@@ -122,6 +121,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1480287803138246127">तपाईंका केही ब्राउजिङ हिस्ट्री यहाँ नदेखिन सक्छन्। Chrome को सबै ब्राउजिङ हिस्ट्री हेर्न Chrome को पूरै ब्राउजिङ हिस्ट्री खोल्नुहोस्।</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
 <translation id="1493287004536771723">तपाईं <ph name="SITE_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
+<translation id="1496514951988037011">युजरनेम</translation>
 <translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
 <translation id="1502010315804028179">तपाईं आफ्ना पासवर्डहरू व्यवस्थापन गर्न चाहनुहुन्छ भने Google Play services अपडेट गर्नुहोस्</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
@@ -221,6 +221,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="197288927597451399">राख्नुहोस्</translation>
 <translation id="1973912524893600642">डेटा राख्नुहोस्</translation>
 <translation id="1974060860693918893">उन्नत</translation>
+<translation id="1984087999855033707">फोन नम्बर</translation>
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="1986685561493779662">नाम पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
@@ -1873,8 +1874,8 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="95817756606698420">Chrome ले चीनमा खोज गर्नका लागि <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> को प्रयोग गर्न सक्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई यसलाई बदल्न सक्नुहुन्छ।</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
+<translation id="963246339335003378">टास्क म्यानेजर खोल्नुहोस्</translation>
 <translation id="966131775676567255">खातामा भण्डारण गरिएको डेटा मेटाइँदै छ</translation>
-<translation id="96681097142096641">सरलीकृत पेज हेर्ने हो?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>

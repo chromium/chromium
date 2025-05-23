@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Sayfa analizlerini göster</translation>
 <translation id="1108938384783527433">Geçmiş senkronizasyonu</translation>
 <translation id="1111673857033749125">Diğer cihazlarınızda kaydedilmiş yer işaretleri burada görünür.</translation>
-<translation id="1113597929977215864">Basitleştirilmiş görünümü göster</translation>
 <translation id="1126696498560056882">Bu cihazdaki hesapları yönetin</translation>
 <translation id="1129510026454351943">Ayrıntılar: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Gizli mod, internette gezinme işlemlerinizi cihazınızı kullanan diğer kişilerden gizli tutar</translation>
@@ -122,6 +121,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1480287803138246127">Geçmişinizin bir kısmı burada görünmeyebilir. Tüm Chrome geçmişinizi görmek için Chrome geçmişinin tamamını açın.</translation>
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> kaynağını takip ediyorsunuz</translation>
+<translation id="1496514951988037011">kullanıcı adı</translation>
 <translation id="1501480321619201731">Grubu sil</translation>
 <translation id="1502010315804028179">Şifrelerinizi yönetmek için Google Play Hizmetlerini güncelleyin</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
@@ -221,6 +221,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="197288927597451399">Sakla</translation>
 <translation id="1973912524893600642">Verileri Koru</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
+<translation id="1984087999855033707">telefon numarası</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
 <translation id="200114059308480249">Seçilen kelimenin etrafındaki metin Google aramalarına dahil edilsin mi?</translation>
@@ -1874,8 +1875,8 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="95817756606698420">Chrome, Çin'de arama yapmak için <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />'yu kullanabilir. Bu seçimi <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da değiştirebilirsiniz.</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>
+<translation id="963246339335003378">Görev yöneticisini aç</translation>
 <translation id="966131775676567255">Hesap verileri siliniyor</translation>
-<translation id="96681097142096641">Basitleştirilmiş sayfa görüntülensin mi?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dk. kaldı</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="983192555821071799">Tüm sekmeleri kapat</translation>

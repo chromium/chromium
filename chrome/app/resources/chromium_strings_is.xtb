@@ -82,7 +82,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2049376729098081731">Veldu hvort að Chromium ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
 <translation id="2054039611381840095">Til að fá frekari uppfærslur á Chromium þarftu macOS 12 eða nýrri útgáfu. Þessi tölva notar macOS 11.</translation>
 <translation id="2086476982681781442">Chromium lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
-<translation id="2088953378266246249">Upplýsingar um hvernig Chromium stjórnar rótarvottorðum sínum</translation>
 <translation id="2099452623287920103">Lykilorðið þitt og önnur Chromium-gögn sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chromium skaltu skrá þig aftur inn.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}one{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}other{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chromium er ekki notað í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Flipar verða áfram opnir.}}</translation>
 <translation id="2126108037660393668">Ekki tókst að staðfesta skrána sem var sótt.</translation>
@@ -611,7 +610,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-inn)</translation>
 <translation id="924957577793602335">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="93478295209880648">Vera kann að Chromium virki ekki sem skyldi vegna þess að vafrinn er ekki lengur studdur á Windows XP eða Windows Vista</translation>
-<translation id="942598560705308788">Vottorð sem Chromium stjórnar</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="965162752251293939">Hver er að nota Chromium?</translation>
 <translation id="967427899662692980">Njóttu hámarksöryggis Chromium</translation>

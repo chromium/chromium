@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Atvērt lapu ieskatus</translation>
 <translation id="1108938384783527433">Vēstures sinhronizēšana</translation>
 <translation id="1111673857033749125">Šeit būs redzamas grāmatzīmes, kuras esat saglabājis citās ierīcēs.</translation>
-<translation id="1113597929977215864">Rādīt vienkāršoto skatu</translation>
 <translation id="1126696498560056882">Pārvaldīt kontus šajā ierīcē</translation>
 <translation id="1129510026454351943">Informācija: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognito režīmā jūsu pārlūkošana ir privāta un nav redzama citiem ierīces lietotājiem.</translation>
@@ -1878,7 +1877,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="961856697154696964">Dzēst pārlūkošanas datus</translation>
 <translation id="963246339335003378">Atvērt uzdevumu pārvaldnieku</translation>
 <translation id="966131775676567255">Notiek konta datu dzēšana</translation>
-<translation id="96681097142096641">Vai skatīt vienkāršotu lapu</translation>
 <translation id="970715775301869095">Atlikušas <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="983192555821071799">Aizvērt visas cilnes</translation>

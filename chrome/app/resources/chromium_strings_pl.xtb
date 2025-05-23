@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Określ, czy chcesz uwzględniać historię Chromium w celu lepszego dostosowania usług Google</translation>
 <translation id="2054039611381840095">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 12 lub nowszy. Na tym komputerze jest zainstalowany system macOS 11.</translation>
 <translation id="2086476982681781442">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik ma na celu oszukanie użytkownika i może wprowadzić nieoczekiwane zmiany na urządzeniu</translation>
-<translation id="2088953378266246249">Informacje o tym, jak Chromium zarządza certyfikatami głównymi</translation>
 <translation id="2099452623287920103">Hasła i inne dane z Chromium zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chromium, zaloguj się ponownie.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez minutę. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}few{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}many{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minut. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}other{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}}</translation>
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
@@ -606,7 +605,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="93478295209880648">Chromium może działać nieprawidłowo, bo nie jest już zgodny z Windows XP ani Windows Vista</translation>
-<translation id="942598560705308788">Certyfikaty zarządzane przez Chromium</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="965162752251293939">Kto używa Chromium?</translation>
 <translation id="967427899662692980">Korzystaj z najlepszych zabezpieczeń Chromium</translation>

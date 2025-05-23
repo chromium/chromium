@@ -81,7 +81,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2049376729098081731">Kies of je de Chromium-geschiedenis wilt opnemen voor meer gepersonaliseerde functies in Google-services</translation>
 <translation id="2054039611381840095">Als je toekomstige Chromium-updates wilt krijgen, heb je macOS 12 of hoger nodig. Deze computer gebruikt macOS 11.</translation>
 <translation id="2086476982681781442">Chromium heeft deze download geblokkeerd, omdat het bestand misleidend is en onverwachte wijzigingen kan aanbrengen op je apparaat</translation>
-<translation id="2088953378266246249">Informatie over hoe Chromium rootcertificaten beheert</translation>
 <translation id="2099452623287920103">Je wachtwoorden en andere Chromium-gegevens die je hebt opgeslagen in je Google-account, worden verwijderd van dit apparaat. Log opnieuw in om ze weer te gebruiken in Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Je organisatie verwijdert browsegegevens automatisch als Chromium 1 minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}other{Je organisatie verwijdert browsegegevens automatisch als Chromium # minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}}</translation>
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>
@@ -610,7 +609,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personaliseer Chromium</translation>
 <translation id="93478295209880648">Chromium werkt mogelijk niet naar behoren omdat dit niet langer wordt ondersteund op Windows XP en Windows Vista</translation>
-<translation id="942598560705308788">Certificaten beheerd door Chromium</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="965162752251293939">Wie gebruikt Chromium?</translation>
 <translation id="967427899662692980">Gebruik het hoogste beveiligingsniveau van Chromium</translation>

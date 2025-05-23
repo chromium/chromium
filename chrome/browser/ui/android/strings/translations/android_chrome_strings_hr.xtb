@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Prikaži uvide na stranici</translation>
 <translation id="1108938384783527433">Sinkronizacija povijesti</translation>
 <translation id="1111673857033749125">Ovdje će se prikazivati oznake koje ste spremili na drugim uređajima.</translation>
-<translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
 <translation id="1126696498560056882">Upravljajte računima na ovom uređaju</translation>
 <translation id="1129510026454351943">Pojedinosti: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Anonimni način štiti privatnost vašeg pregledavanja od drugih korisnika koji upotrebljavaju vaš uređaj</translation>
@@ -1878,7 +1877,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="961856697154696964">Izbriši podatke o pregledavanju</translation>
 <translation id="963246339335003378">Otvaranje upravitelja zadataka</translation>
 <translation id="966131775676567255">Brisanje podataka računa</translation>
-<translation id="96681097142096641">Prikazati pojednostavljenu stranicu?</translation>
 <translation id="970715775301869095">Preostalo minuta: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">Izvanmrežno</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>

@@ -1459,7 +1459,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7388345524791662148">Meer opsies vir <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ingeboude raakpaneel</translation>
 <translation id="7397270852490618635">Skakel ligtema af</translation>
-<translation id="7400166052988585408">Jou onderwyser gaan oor <ph name="NUM_SECONDS" /> sekondes jou skerm sluit</translation>
 <translation id="7401543881546089382">Vee kortpad uit</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is gereed vir opdatering</translation>
 <translation id="741244894080940828">omskakeling</translation>
@@ -1614,7 +1613,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8088963492174775412">Druk om op te neem</translation>
 <translation id="8094062939584182041">Laat Google toe om vir jou ’n e-pos oor hierdie kwessie te stuur</translation>
 <translation id="8104083085214006426">Jy gebruik tans 'n oop en onveilige netwerk</translation>
-<translation id="8110942816572072814">Jou onderwyser het jou skerm gesluit</translation>
 <translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Bevestig</translation>

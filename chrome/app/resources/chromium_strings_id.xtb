@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="2054039611381840095">Untuk mendapatkan update Chromium berikutnya, Anda memerlukan macOS 12 atau yang lebih baru. Komputer ini menggunakan macOS 11.</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut menipu dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
-<translation id="2088953378266246249">Informasi tentang cara Chromium mengelola root certificate-nya</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
@@ -609,7 +608,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalisasi Chromium Anda</translation>
 <translation id="93478295209880648">Chromium mungkin tidak berfungsi dengan semestinya karena sudah tidak didukung di Windows XP atau Windows Vista</translation>
-<translation id="942598560705308788">Sertifikat yang dikelola oleh Chromium</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="965162752251293939">Siapa yang menggunakan Chromium?</translation>
 <translation id="967427899662692980">Dapatkan keamanan terkuat Chromium</translation>

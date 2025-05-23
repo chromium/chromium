@@ -4752,7 +4752,6 @@
 <translation id="4289540628985791613">總覽</translation>
 <translation id="428963538941819373">這些網站可在你瀏覽 <ph name="HOST" /> 時，使用與你相關的既有資訊</translation>
 <translation id="4289732974614035569">選擇 PIN 碼</translation>
-<translation id="4290526909608432059">我們即將停止支援 Chrome 應用程式。如要瞭解可用的選項，請與應用程式開發人員或 IT 支援團隊聯絡。</translation>
 <translation id="4290791284969893584">關閉網頁後，你已啟動的工作可能無法完成</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> 位成員</translation>
 <translation id="4290898381118933198">使用滑動手勢瀏覽不同頁面</translation>
@@ -7614,6 +7613,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">新增家人好友</translation>
 <translation id="6367097275976877956">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
+<translation id="6367196786591004737">刪除項目</translation>
 <translation id="6367396429435748845">按下 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 鍵即可暫停及繼續使用滑鼠按鍵</translation>
 <translation id="6367985768157257101">要使用鄰近分享功能接收資料嗎？</translation>
 <translation id="6368157733310917710">地址和其他資訊(&amp;A)</translation>
@@ -7947,7 +7947,6 @@
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6610064275805055636">管理隔離網頁應用程式</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> 個分頁</translation>
-<translation id="6611972847767394631">你可以在這裡找到已開啟的分頁</translation>
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
 <translation id="6615455863669487791">顯示</translation>
@@ -10609,6 +10608,7 @@
 <translation id="8472623782143987204">硬體支援</translation>
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
+<translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8474561048882755118">你可以並排查看類似產品，輕鬆比較重要的詳細資料</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>

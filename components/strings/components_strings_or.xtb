@@ -18,6 +18,7 @@
 <translation id="102916930470544692">ପାସକୀ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ସ୍ଥାୟୀରୂପେ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଅଧିକ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସାଇଟରୁ। ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ। }other{# ସାଇଟରୁ। ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ। }}</translation>
+<translation id="1035509598913574970">ସାଇଆନ 3</translation>
 <translation id="1035709686865413354">ୱାଟର ଫିଲ୍ଟର ଏବଂ ପ୍ୟୁରିଫାୟର</translation>
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1036881361735705143">ଏନଭେଲପ C4</translation>
@@ -264,6 +265,7 @@
 <translation id="1432187715652018471">ପୃଷ୍ଠାଟି ଏକ ସେବା ହ୍ୟାଣ୍ଡଲର ଇନଷ୍ଟଲ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="1432581352905426595">ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1433225466058025572">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ମୁଭ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="1433478348197382180">ରିଡିଂ ମୋଡ</translation>
 <translation id="1436185428532214179">ଆପଣଙ୍କ ଡିଭାଇସରେ ଫାଇଲ୍ ଓ ଫୋଲ୍ଡରଗୁଡ଼ିକ ଏଡିଟ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1442386063175183758">ଡାହାଣ ପଟରେ ଗେଟ୍ ଫୋଲ୍ଡ</translation>
 <translation id="1442987760062738829">ପଞ୍ଚ୍</translation>
@@ -631,6 +633,7 @@
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
 <translation id="2083256696566019397">ପ୍ରତ୍ୟେକ ଭିଜିଟ ସମୟରେ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2085876078937250610">ସେଭ୍ କରନ୍ତୁ…</translation>
+<translation id="2088913896151127116">ଟେକ୍ସଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2090451897496479509">ଅଧିକ ସୂଚନା ପାଇଁ ପ୍ରଦାନକାରୀଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="2091887806945687916">ଧ୍ୱନି</translation>
 <translation id="2093982008204312032">Google Chrome, ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ Windows Hello ବନ୍ଦ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
@@ -837,7 +840,6 @@
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
-<translation id="2418292431699242678">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର ଯେ କୌଣସି ChromeOS ଡିଭାଇସରେ ଆପଣଙ୍କର ପୂର୍ବ ଏବଂ ବର୍ତ୍ତମାନର ସେସନଗୁଡ଼ିକ ମଧ୍ୟରେ ସିଙ୍କ ହେବା ପାଇଁ ନିମ୍ନୋକ୍ତଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତି:</translation>
 <translation id="2429716554270894715">ଫେବ୍ରିକ (ୱାଟରପ୍ରୁଫ)</translation>
 <translation id="2436186046335138073">ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="2436976580469434549">ଫାଇବର ଏବଂ ଟେକ୍ସଟାଇଲ ଆର୍ଟ୍ସ</translation>
@@ -1093,6 +1095,7 @@
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />ରେ କ୍ରାସ୍ ହୋଇଛି</translation>
 <translation id="2915496182262110498">ପେଣ୍ଟିଂ</translation>
 <translation id="2916038427272391327">ଅନ୍ୟ ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2917630513638801879">ସାଇଆନ 1</translation>
 <translation id="2919185931486062599">ଶିକାର ଏବଂ ସୁଟିଂ</translation>
 <translation id="2922350208395188000">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‌ ଯାଞ୍ଚ କରିହେବ ନାହିଁ</translation>
 <translation id="2922792708490674">{0,plural, =1{ଫାଇଲକୁ ଡାଉନଲୋଡ କରିବାରୁ ବ୍ଲକ କରାଯାଇଛି}other{<ph name="FILE_COUNT" />ଟି ଫାଇଲକୁ ଡାଉନଲୋଡ କରିବାରୁ ବ୍ଲକ କରାଯାଇଛି}}</translation>
@@ -1172,7 +1175,6 @@
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037605927509011580">ଇସ!</translation>
 <translation id="3039406992698062762">ପାରିବାରିକ ଟ୍ରାଭେଲ</translation>
-<translation id="3040636468789770340">କୁକୀ (ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିଥିବା ୱେବସାଇଟରେ ସାଇନ-ଇନ କରାଯାଇଥିବା ସ୍ଥିତି)</translation>
 <translation id="3041176923638368519">କାର୍ଡର ଲାଭ ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ</translation>
 <translation id="3041612393474885105">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3045769629416806687">ଏକ୍ସଟ୍ରିମ ସ୍ପୋର୍ଟ୍ସ</translation>
@@ -1677,7 +1679,6 @@
 <translation id="3869939189466884821">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକ <ph name="MINUTES" /> ମିନିଟରେ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="3872834068356954457">ବିଜ୍ଞାନ</translation>
 <translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
-<translation id="387681220560687945">Windows (ୱିଣ୍ଡୋ ଏବଂ ଟାବର ବ୍ୟବସ୍ଥା ଏବଂ ସଂଗଠନ)</translation>
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
 <translation id="3880456882942693779">କଳା ଓ ମନୋରଞ୍ଜନ</translation>
 <translation id="3880589673277376494">ଇଣ୍ଟରନେଟ ଓ ଟେଲିକମ</translation>
@@ -2079,6 +2080,7 @@
 <translation id="4562155266774382038">ପରାମର୍ଶକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="4566017918361049074">ଆଉଟଡୋର</translation>
 <translation id="4569155249847375786">ଯାଞ୍ଚ କରାଯାଇଛି</translation>
+<translation id="4570008401337135432">ଟେକ୍ସଟ ଆଲାଇନମେଣ୍ଟ</translation>
 <translation id="457875822857220463">ଡେଲିଭରୀ</translation>
 <translation id="4579699065574932398">ବେଙ୍କିଂ</translation>
 <translation id="4582595824823167856">ଏକ ଟେକ୍ସଟ ମେସେଜ ପାଆନ୍ତୁ</translation>
@@ -2242,7 +2244,6 @@
 <translation id="4866506163384898554">ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
 <translation id="4873616204573862158">ଆଇୱେର</translation>
 <translation id="4873807733347502026">ଆପଣଙ୍କ ମାଉସ ଲକ କରି ଏହାକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="4876188919622883022">ସରଳିକୃତ ଭ୍ୟୁ</translation>
 <translation id="4876305945144899064">କୌଣସି ଉପଯୋଗକର୍ତ୍ତାନାମ ନାହିଁ</translation>
 <translation id="4876327226315760474">ଏହାର ଅର୍ଥ ହେଉଛି ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବା ଉଚିତ, କିନ୍ତୁ ଆପଣଙ୍କର କମ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ଥାଇପାରେ।</translation>
 <translation id="4877047577339061095">ହୋମ ଷ୍ଟୋରେଜ ଏବଂ ସେଲଭିଂ</translation>
@@ -2602,6 +2603,7 @@
 <translation id="5481682542063333508">ଲେଖିବାରେ ସହାୟତାର ଅଫର କରନ୍ତୁ</translation>
 <translation id="54817484435770891">ବୈଧ ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5483838506518938965">ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ଭାବରେ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି</translation>
+<translation id="5484396522446324950">ଷ୍ଟାଇଲ</translation>
 <translation id="5485100387355669506">ଅତିରିକ୍ତ ମୋଟା</translation>
 <translation id="5485973315555778056">କ୍ଲାଉଡ ମେସିନ</translation>
 <translation id="5488367146069768854">ୱେବ ଆପ ଇନଷ୍ଟଲେସନ</translation>
@@ -2940,6 +2942,7 @@
 <translation id="6062937464449575061">ମୂଲ୍ୟ ଅନଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="6063415549109819824">ହୋମ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />ରେ ଥିବା <ph name="FOLDER_NAME" />ରେ ଗୋଟିଏ କିମ୍ବା ଅଧିକ ଫାଇଲକୁ ଅପଲୋଡ କରାଯାଇନାହିଁ</translation>
+<translation id="6078069862923723141">ସାଇଆନ 2</translation>
 <translation id="6085149458302186532">ଲେବଲ (ରଙ୍ଗୀନ)</translation>
 <translation id="6087312102907839798">ସମ୍ବନ୍ଧିତ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="6089505343295765444">ଆପଣ ଆପଣଙ୍କ Chrome ଇତିହାସରୁ ଡିଲିଟ କରୁଥିବା ଟାବଗୁଡ଼ିକ ଏବେ ବି ଆପଣଙ୍କ କମ୍ପାରିଜନ ଟେବୁଲରେ ଦେଖାଯିବ</translation>
@@ -3019,7 +3022,6 @@
 <translation id="622039917539443112">ସମାନ୍ତରାଳ ଫୋଲ୍ଡ</translation>
 <translation id="6221286101741304627">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
 <translation id="6221311046884916259">ଆପଣ ଏହି କାର୍ଡକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିବାକୁ ଚାହାଁନ୍ତି?</translation>
-<translation id="6221892641068781024">ସରଳୀକୃତ ଭ୍ୟୁ</translation>
 <translation id="6222527803348563979">ଷ୍ଟେସନାରୀ</translation>
 <translation id="62231116988543150">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ସକ୍ଷମ ହେବେ</translation>
 <translation id="6224281071334553713">ଜେମ୍ସ ଏବଂ ଜୁଏଲେରୀ</translation>
@@ -3839,6 +3841,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />ଠାରୁ କମ୍</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ବର୍ତ୍ତମାନ ଏହି ଅନୁରୋଧ ପରିଚାଳନା କରିବାକୁ ଅକ୍ଷମ।</translation>
 <translation id="7599089013883397081">ଡାଉନଲୋଡ କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
+<translation id="7602868996817972616">ଏହି ପୃଷ୍ଠା ବିଷୟରେ Googleକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7608583484192556132">ଆପଣ ଦେଖୁଥିବା କୌଣସି ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରାଯାଇଛି ନା ନାହିଁ ତାହା ଏହି ସେଟିଂ, <ph name="BEGIN_LINK_1" />ସାଇଟ-ପ୍ରସ୍ତାବିତ ବିଜ୍ଞାପନ<ph name="END_LINK_1" />, ଆପଣଙ୍କ <ph name="BEGIN_LINK_2" />କୁକୀ ସେଟିଂସ<ph name="END_LINK_2" /> ଏବଂ ଆପଣ ଭ୍ୟୁ କରୁଥିବା ସାଇଟ ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରେ ନା ନାହିଁ ସମେତ ଅନେକ ଜିନିଷ ଉପରେ ନିର୍ଭର କରିପାରେ। <ph name="BEGIN_LINK_3" />ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତାକୁ ପରିଚାଳନା କରିବା<ph name="END_LINK_3" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="7610193165460212391">ମୂଲ୍ୟ <ph name="VALUE" /> ପରିସୀମା ବାହାରେ ଅଛି।</translation>
 <translation id="761261689936461781">ମୋଟା</translation>

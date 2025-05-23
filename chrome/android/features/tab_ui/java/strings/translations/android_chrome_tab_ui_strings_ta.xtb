@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1036348656032585052">முடக்கு</translation>
-<translation id="1045448422538531528">குழுவில் சேர்</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> வாரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_WEEKS_MANY" /> வாரங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1063300264396686489">பிற சாதனங்களில் உருவாக்கப்பட்டிருக்கும் பக்கக் குழுக்களைத் தானாகத் திற</translation>
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> பக்கம் மூடப்பட்டது}other{<ph name="MANY_CLOSED" /> பக்கங்கள் மூடப்பட்டன}}</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
 <translation id="2928243913527329289">Google | இந்த ஸ்டோரைப் பற்றி</translation>
-<translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
 <translation id="29919168204617356">செயலில் இல்லாத பக்கங்கள் தானாகவே மூடப்படும். அவற்றை எப்போது வேண்டுமானாலும் பதிவில் பார்க்கலாம்.</translation>
 <translation id="3008554597174452548">தயாரிப்பைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="3026391124054406831">உங்கள் பக்கங்களை ஒழுங்கமைக்க குழுக்களை உருவாக்கலாம்.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
 <translation id="6109251075362363230">மிகச் சமீபத்தில் பயன்படுத்தப்பட்ட நகல் தவிர்த்து, பிற எல்லா நகல் பக்கங்களும் இப்போது காப்பிடப்படும்.</translation>
 <translation id="6193448654517602979">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="6212567362666004597">குழுவில் பக்கத்தைச் சேர்</translation>
 <translation id="6220820548421939212">ஆம். சரி.</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
 <translation id="6271513594716432922">செயலில் இல்லாத பக்கங்களை மூடு</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">கடந்த 3 மாதங்களில் நீங்கள் பயன்படுத்தாதவற்றை Chrome தானாக மூடும். அமைப்புகளில் இதை இப்போது அல்லது எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
 <translation id="8887921976452567404">மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம்.</translation>
 <translation id="8915916167043355778">அனைத்தையும் மூடு</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{புதிய சாளரத்திற்கு நகர்த்தும்}other{வேறு சாளரத்திற்கு நகர்த்தும்}}</translation>
 <translation id="9090098097337832354">இந்த ஸ்டோர் குறித்த தகவல்கள் மூடப்பட்டன</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> என்ற பக்கக் குழுவுக்கான பக்கக் குழுச் செயல் மெனுவைத் திறக்கும், <ph name="COLOR_NAME" /> வண்ணம்.</translation>
 <translation id="9169594135889675189">குழுவில் புதிய பக்கத்தைச் சேர்</translation>

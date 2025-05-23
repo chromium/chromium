@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="1036348656032585052">Vala</translation>
-<translation id="1045448422538531528">Engeza kwiqembu</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Kusungulwe evikini elingu-<ph name="NUM_WEEKS_ONE" /> eledlule}one{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}other{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}}</translation>
 <translation id="1063300264396686489">Vula ngokuzenzekelayo amaqembu amathebhu asuka kwamanye amadivaysi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Ithebhu engu-<ph name="ONE_CLOSED" /> ivaliwe}one{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}other{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}}</translation>
 <translation id="2894757982205307093">Ithebhu entsha kuqembu</translation>
 <translation id="2928243913527329289">I-Google | Mayelana nalesi sitoreji</translation>
-<translation id="2977480621796371840">Susa kusukela kuqembu</translation>
 <translation id="29919168204617356">Amathebhu angasebenzi azovalwa ngokuzenzekelayo. Ungahlala uwathola Emlandweni.</translation>
 <translation id="3008554597174452548">Yeka ukulandelela umkhiqizo</translation>
 <translation id="3026391124054406831">Sungula amaqembu ukuhlela amathebhu akho.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
+<translation id="6212567362666004597">Faka ithebhu eqenjini</translation>
 <translation id="6220820548421939212">Yebo. Ngingenile</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6271513594716432922">Vala wonke amathebhu angasebenzi</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">IChrome ivala ngokuzenzakalelayo izinto ezisesigabeni esingasebenzi ongakazisebenzisi ezinyangeni ezi-3. Ungavala lokhu manje noma ngesinye isikhathi kumasethingi.</translation>
 <translation id="8887921976452567404">Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu.</translation>
 <translation id="8915916167043355778">Vala konke</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Iya kuwindi elisha}one{Iya kwelinye iwindi}other{Iya kwelinye iwindi}}</translation>
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>
 <translation id="9114502155681725011">Vula imenyu yesenzo seqembu lethebhu seqembu lethebhu le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Engeza ithebhu entsha kuqembu</translation>

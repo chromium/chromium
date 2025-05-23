@@ -81,7 +81,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2049376729098081731">Aukeratu ea Chromium-eko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="2054039611381840095">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 12 edo berriago bat beharko duzu. Ordenagailu hau macOS 11 erabiltzen ari da.</translation>
 <translation id="2086476982681781442">Chromium-ek deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
-<translation id="2088953378266246249">Chromium-ek erroko ziurtagiriak kudeatzeko moduari buruzko informazioa</translation>
 <translation id="2099452623287920103">Google-ko kontuan gordetako pasahitzak eta Chromium-eko beste datuak gailu honetatik kenduko dira. Chromium-en haiek berriro ere erabiltzeko, hasi saioa berriro.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium minutu batez erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}other{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chromium # minutuz erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}}</translation>
 <translation id="2126108037660393668">Deskargatutako fitxategia ezin izan da egiaztatu.</translation>
@@ -610,7 +609,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Pertsonalizatu Chromium</translation>
 <translation id="93478295209880648">Chromium-ek agian ez du behar bezala funtzionatuko, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
-<translation id="942598560705308788">Chromium-ek kudeatutako ziurtagiriak</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="965162752251293939">Nor erabiltzen ari da Chromium?</translation>
 <translation id="967427899662692980">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>

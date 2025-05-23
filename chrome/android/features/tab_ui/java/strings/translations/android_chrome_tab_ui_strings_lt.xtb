@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1036348656032585052">Išjungti</translation>
-<translation id="1045448422538531528">Pridėti prie grupės</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Sukurta prieš <ph name="NUM_WEEKS_ONE" /> savaitę}one{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaitę}few{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaites}many{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaitės}other{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaičių}}</translation>
 <translation id="1063300264396686489">Automatiškai atidaryti skirtukų grupes iš kitų įrenginių</translation>
 <translation id="1075622780330595106">Pastaruoju metu nebuvo naudojama tiek skirtukų: <ph name="NUMBER_OF_TABS" />. Uždaryti juos?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Uždarytas <ph name="ONE_CLOSED" /> skirtukas}one{Uždarytas <ph name="MANY_CLOSED" /> skirtukas}few{Uždaryti <ph name="MANY_CLOSED" /> skirtukai}many{Uždaryta <ph name="MANY_CLOSED" /> skirtuko}other{Uždaryta <ph name="MANY_CLOSED" /> skirtukų}}</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
-<translation id="2977480621796371840">Pašalinti iš grupės</translation>
 <translation id="29919168204617356">Neaktyvūs skirtukai bus automatiškai uždaryti. Juos visada rasite skiltyje „Istorija“.</translation>
 <translation id="3008554597174452548">Stabdyti produkto stebėjimą</translation>
 <translation id="3026391124054406831">Kurkite grupes, kad galėtumėte tvarkyti skirtukus.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
+<translation id="6212567362666004597">Pridėti skirtuką prie grupės</translation>
 <translation id="6220820548421939212">Taip. Sutinku</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6271513594716432922">Uždaryti visus neaktyvius skirtukus</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">„Chrome“ automatiškai uždaro elementus neaktyvių elementų, kurių nenaudojote tris mėnesius, skiltyje. Galite tai išjungti dabar arba bet kada skiltyje „Nustatymai“.</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Perkelti į naują langą}one{Perkelti į kitą langą}few{Perkelti į kitą langą}many{Perkelti į kitą langą}other{Perkelti į kitą langą}}</translation>
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
 <translation id="9114502155681725011">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, veiksmų meniu.</translation>
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1036348656032585052">አጥፋ</translation>
-<translation id="1045448422538531528">ወደ ቡድን አክል</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ከ<ph name="NUM_WEEKS_ONE" /> ሳምንት በፊት የተፈጠረ}one{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንት በፊት የተፈጠረ}other{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንቶች በፊት የተፈጠረ}}</translation>
 <translation id="1063300264396686489">ከሌሎች መሣሪያዎች ሆነው የትር ቡድኖችን በራስ-ሰር ይክፈቱ</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ሥራ ላይ አልዋሉም። ይዘጉ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ትር ተዘግቷል}one{<ph name="MANY_CLOSED" /> ትር ተዘግቷል}other{<ph name="MANY_CLOSED" /> ትሮች ተዘግተዋል}}</translation>
 <translation id="2894757982205307093">በቡድን ውስጥ አዲስ ትር</translation>
 <translation id="2928243913527329289">Google | ስለዚህ መደብር</translation>
-<translation id="2977480621796371840">ከቡድን አስወግድ</translation>
 <translation id="29919168204617356">ገቢር ያልሆኑ ትሮች በራስ-ሰር ይዘጋሉ። በማንኛውም ጊዜ በታሪክ ውስጥ ሊያገኗቸው ይችላሉ።</translation>
 <translation id="3008554597174452548">ምርቱን መከታተል አቁም</translation>
 <translation id="3026391124054406831">ትሮችዎን ለማስተባበር ቡድኖችን ይፍጠሩ።</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
+<translation id="6212567362666004597">ትርን ወደ ቡድን ያክሉ</translation>
 <translation id="6220820548421939212">አዎ። ገብቼያለሁ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="6271513594716432922">ሁሉንም የቦዘኑ ትሮች ዝጋ</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome በ3 ወራት ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎችን በራስ-ሰር ይዘጋል። ይህን አሁን ወይም በማንኛውም ጊዜ ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="8887921976452567404">የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ።</translation>
 <translation id="8915916167043355778">ሁሉንም ዝጋ</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ወደ አዲስ መስኮት ያንቀሳቅሱ}one{ወደ ሌላ መስኮት ያንቀሳቅሱ}other{ወደ ሌላ መስኮት ያንቀሳቅሱ}}</translation>
 <translation id="9090098097337832354">ስለዚህ መደብር መረጃ ተዘግቷል</translation>
 <translation id="9114502155681725011">ለትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> የትር ቡድን የእርምጃ ምናሌ ይክፈቱ።</translation>
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Mostrar insights da página</translation>
 <translation id="1108938384783527433">Sincronizar histórico</translation>
 <translation id="1111673857033749125">Favoritos salvos nos seus outros dispositivos serão exibidos aqui.</translation>
-<translation id="1113597929977215864">Mostrar a versão simplificada</translation>
 <translation id="1126696498560056882">Gerenciar contas neste dispositivo</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">O modo de navegação anônima protege sua navegação de outras pessoas que usam o mesmo dispositivo</translation>
@@ -122,6 +121,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1480287803138246127">Parte do seu histórico pode não aparecer aqui. Para acessar todo o seu histórico do Chrome, abra o histórico completo.</translation>
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1493287004536771723">Você está seguindo o site <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nome de usuário</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
 <translation id="1502010315804028179">Atualize o Google Play Services para gerenciar suas senhas.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
@@ -221,6 +221,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="197288927597451399">Manter</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
+<translation id="1984087999855033707">número de telefone</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">Esse nome já existe</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
@@ -336,7 +337,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2535807170289627159">Todas as guias</translation>
 <translation id="2536728043171574184">Vendo uma cópia off-line desta página</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> (guia)</translation>
-<translation id="2546283357679194313">Cookies e dados do site</translation>
+<translation id="2546283357679194313">Cookies e dados de sites</translation>
 <translation id="2547843573592965873">O bloqueio de perfil mantém suas informações salvas em segurança na sua Conta do Google no carro, incluindo senhas, pagamentos e muito mais.</translation>
 <translation id="254973855621628293">Senhas salvas neste dispositivo</translation>
 <translation id="2567385386134582609">IMAGEM</translation>
@@ -1875,8 +1876,8 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Excluir dados de navegação</translation>
+<translation id="963246339335003378">Abrir o gerenciador de tarefas</translation>
 <translation id="966131775676567255">Excluindo dados da conta</translation>
-<translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>

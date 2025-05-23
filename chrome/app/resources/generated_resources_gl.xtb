@@ -4758,7 +4758,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="428963538941819373">Estes sitios poden usar a información que garden sobre ti mentres navegas por <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Escolle un PIN</translation>
-<translation id="4290526909608432059">A compatibilidade coas aplicacións de Chrome finalizará pronto. Para obter máis información sobre as opcións dispoñibles, ponte en contacto con quen programou a aplicación ou co teu equipo do servizo de asistencia de TI.</translation>
 <translation id="4290791284969893584">Ao pechar unha páxina, as tarefas iniciadas poderían non finalizar</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Pasar o dedo para navegar entre páxinas</translation>
@@ -7622,6 +7621,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Engadir familia e amigos</translation>
 <translation id="6367097275976877956">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS? En caso afirmativo, preme a barra de espazo.</translation>
+<translation id="6367196786591004737">Eliminar a entrada</translation>
 <translation id="6367396429435748845">Preme <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> para pór en pausa e retomar as teclas do rato</translation>
 <translation id="6367985768157257101">Queres recibir o contido coa función Compartir por Nearby?</translation>
 <translation id="6368157733310917710">Enderezos e moito máis</translation>
@@ -7955,7 +7955,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6610002944194042868">Opcións de tradución</translation>
 <translation id="6610064275805055636">Xestionar aplicacións web illadas</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> pestana</translation>
-<translation id="6611972847767394631">Atopa aquí as túas pestanas</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
 <translation id="6615455863669487791">Mostrar</translation>
@@ -10615,6 +10614,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8472623782143987204">teclas de hardware</translation>
 <translation id="8473540203671727883">Pronunciar texto ao pasar por encima o punteiro do rato</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
+<translation id="847433688444405067">Navega en varios dispositivos</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
 <translation id="8474561048882755118">Axúdache a ver produtos similares en paralelo e comparar facilmente os detalles que máis che interesen</translation>
 <translation id="8475313423285172237">Outro programa do teu ordenador engadiu unha extensión que pode cambiar o funcionamento de Chrome.</translation>

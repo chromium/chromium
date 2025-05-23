@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1045448422538531528">Agregar al grupo</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Se creó hace <ph name="NUM_WEEKS_ONE" /> semana}other{Se creó hace <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Se cerró <ph name="ONE_CLOSED" /> pestaña}other{Se cerraron <ph name="MANY_CLOSED" /> pestañas}}</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
-<translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="29919168204617356">Las pestañas inactivas se cerrarán automáticamente. Puedes encontrarlas en el Historial en cualquier momento.</translation>
 <translation id="3008554597174452548">Dejar de seguir el precio del producto</translation>
 <translation id="3026391124054406831">Crea grupos para organizar tus pestañas.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
+<translation id="6212567362666004597">Agregar pestaña al grupo</translation>
 <translation id="6220820548421939212">Sí. Acepto</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome cierra automáticamente los elementos de la sección inactiva que no usaste en 3 meses. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.</translation>
 <translation id="8887921976452567404">Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas.</translation>
 <translation id="8915916167043355778">Cerrar</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Mover a una ventana nueva}other{Mover a otra ventana}}</translation>
 <translation id="9090098097337832354">La hoja de información sobre esta tienda está cerrada</translation>
 <translation id="9114502155681725011">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>

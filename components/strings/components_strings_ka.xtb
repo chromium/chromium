@@ -265,6 +265,7 @@
 <translation id="1432187715652018471">გვერდს სურს სერვისის დამმუშავებლის ინსტალაცია.</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
 <translation id="1433225466058025572">ცადეთ თქვენი ფაილების ხელახლა გადატანა</translation>
+<translation id="1433478348197382180">წაკითხვის რეჟიმი</translation>
 <translation id="1436185428532214179">შეუძლია თქვენს მოწყობილობაზე არსებული ფაილებისა და საქაღალდეების რედაქტირების თხოვნა</translation>
 <translation id="1442386063175183758">მარჯვნივ დაკეცვა ჭიშკრის ფორმით</translation>
 <translation id="1442987760062738829">გახვრეტა</translation>
@@ -839,7 +840,6 @@
 <translation id="2413155254802890957">ძველი</translation>
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2414886740292270097">მუქი</translation>
-<translation id="2418292431699242678">თქვენმა ადმინისტრატორმა დაუშვა, რომ თქვენი ChromeOS მოწყობილობის წინა და მიმდინარე სესიებს შორის სინქრონიზებული იყოს შემდეგი კონტენტი:</translation>
 <translation id="2429716554270894715">ქსოვილი (წყალგაუმტარი)</translation>
 <translation id="2436186046335138073">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული?</translation>
 <translation id="2436976580469434549">ბოჭკოვანი მასალებით და ტექსტილით შექმნილი ხელოვნება</translation>
@@ -1175,7 +1175,6 @@
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037605927509011580">უი, ხარვეზი!</translation>
 <translation id="3039406992698062762">ოჯახური მოგზაურობა</translation>
-<translation id="3040636468789770340">ქუქი-ჩანაწერები (ავტორიზებული სტატუსი თქვენ მიერ ბოლოს მონახულებულ ვებსაიტებზე)</translation>
 <translation id="3041176923638368519">ბარათის უპირატესობებით სარგებლობის პირობების ნახვა</translation>
 <translation id="3041612393474885105">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3045769629416806687">ექსტრემალური სპორტი</translation>
@@ -1683,7 +1682,6 @@
 <translation id="3869939189466884821">თქვენი ლოკალური ფაილები წაიშლება <ph name="MINUTES" /> წუთში</translation>
 <translation id="3872834068356954457">მეცნიერება</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
-<translation id="387681220560687945">ფანჯრები (ფანჯრებისა და ჩანართების განლაგება და ორგანიზება)</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3880456882942693779">ხელოვნება და გართობა</translation>
 <translation id="3880589673277376494">ინტერნეტი და ტელეკომუნიკაცია</translation>
@@ -2249,7 +2247,6 @@
 <translation id="4866506163384898554">კურსორის საჩვენებლად დააჭირეთ კლავიშებზე |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">სათვალეები</translation>
 <translation id="4873807733347502026">თქვენი მაუსის დაბლოკვა და გამოყენება</translation>
-<translation id="4876188919622883022">გამარტივებული ხედი</translation>
 <translation id="4876305945144899064">მომხმარებლის სახელის გარეშე</translation>
 <translation id="4876327226315760474">ეს ნიშნავს, რომ საიტის ფუნქციებმა მოლოდინისამებრ უნდა იმუშაოს, თუმცა ვების დათვალიერებისას ნაკლებად იქნებით დაცული.</translation>
 <translation id="4877047577339061095">საოჯახო საცავები და თაროები</translation>
@@ -2399,7 +2396,6 @@
 <translation id="5115232566827194440">სტუმრის შეზღუდული მართული სესიის უგულებელყოფა</translation>
 <translation id="5115563688576182185">(64-ბიტი)</translation>
 <translation id="5120526915373271910">საოჯახო ფილმები</translation>
-<translation id="5121592697493894155">Google Search გვერდით პანელში</translation>
 <translation id="5122786942953798871">კონვერტი (ბამბის)</translation>
 <translation id="5123063207673082822">შაბათ-კვირა</translation>
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
@@ -3030,7 +3026,6 @@
 <translation id="622039917539443112">პარალელური დაკეცვა</translation>
 <translation id="6221286101741304627">სრულეკრანიანი რეჟიმიდან გასასვლელად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="6221311046884916259">გსურთ ამ ბარათის თქვენს Google ანგარიშში შენახვა?</translation>
-<translation id="6221892641068781024">გამარტივებული ხედი</translation>
 <translation id="6222527803348563979">საწერი ქაღალდი</translation>
 <translation id="62231116988543150">ვებ-აპების ინსტალაცია</translation>
 <translation id="6224281071334553713">ძვირფასი ქვები და სამკაულები</translation>

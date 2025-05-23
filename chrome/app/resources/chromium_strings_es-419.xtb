@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Elige si quieres incluir el historial de Chromium para tener experiencias más personalizadas en los servicios de Google</translation>
 <translation id="2054039611381840095">Para obtener las próximas actualizaciones de Chromium, necesitarás macOS 12 o versiones posteriores. Esta computadora usa macOS 11.</translation>
 <translation id="2086476982681781442">Chromium bloqueó esta descarga porque el archivo es engañoso y puede realizar cambios inesperados en tu dispositivo</translation>
-<translation id="2088953378266246249">Información sobre cómo Chromium administra sus certificados raíz</translation>
 <translation id="2099452623287920103">Se quitarán de este dispositivo tus contraseñas y otros datos de Chromium que guardaste en tu Cuenta de Google. Para volver a usarlas en Chromium, vuelve a acceder.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Tu organización borra automáticamente los datos de navegación si no usas Chromium durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas permanecerán abiertas.}other{Tu organización borra automáticamente los datos de navegación si no usas Chromium durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas permanecerán abiertas.}}</translation>
 <translation id="2126108037660393668">Falló la verificación del archivo descargado.</translation>
@@ -603,7 +602,6 @@
 <translation id="9190841055450128916">Chromium (tráfico mDNS entrante)</translation>
 <translation id="924957577793602335">Personaliza Chromium a tu medida</translation>
 <translation id="93478295209880648">Es posible que Chromium no funcione correctamente porque ya no es compatible con Windows XP ni Windows Vista</translation>
-<translation id="942598560705308788">Certificados administrados por Chromium</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="965162752251293939">¿Quién usa Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguridad más sólida de Chromium</translation>

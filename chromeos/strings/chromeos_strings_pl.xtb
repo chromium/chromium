@@ -1455,7 +1455,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> – więcej opcji</translation>
 <translation id="7388959671917308825">Touchpad wbudowany</translation>
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
-<translation id="7400166052988585408">Za <ph name="NUM_SECONDS" /> s nauczyciel zablokuje Twój ekran</translation>
 <translation id="7401543881546089382">Usuń skrót</translation>
 <translation id="7405493795721832710">Oprogramowanie <ph name="DEVICE_NAME" /> jest gotowe do zaktualizowania</translation>
 <translation id="741244894080940828">przeliczanie</translation>
@@ -1610,7 +1609,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8088963492174775412">Naciśnij, aby nagrywać</translation>
 <translation id="8094062939584182041">Zezwalaj Google na wysyłanie e-maili dotyczących tego problemu</translation>
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
-<translation id="8110942816572072814">Nauczyciel zablokował Twój ekran</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>

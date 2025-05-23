@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Открыть статистику страницы</translation>
 <translation id="1108938384783527433">Синхронизация истории</translation>
 <translation id="1111673857033749125">Здесь появятся закладки, сохраненные на других устройствах.</translation>
-<translation id="1113597929977215864">Упрощенный просмотр</translation>
 <translation id="1126696498560056882">Управление аккаунтами на этом устройстве</translation>
 <translation id="1129510026454351943">Сведения об ошибке: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Сведения о ваших действиях в режиме инкогнито недоступны другим людям, которые используют это устройство</translation>
@@ -1878,7 +1877,6 @@
 <translation id="961856697154696964">Удалить данные браузера</translation>
 <translation id="963246339335003378">Открыть диспетчер задач</translation>
 <translation id="966131775676567255">Удаление данных из аккаунта</translation>
-<translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>

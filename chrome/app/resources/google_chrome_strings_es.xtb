@@ -100,7 +100,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2199691482078155239">Chrome te ofrece más control sobre los anuncios que ves y limita la información que los sitios pueden obtener sobre ti cuando te muestran anuncios personalizados</translation>
 <translation id="2216543877350048334">Para eliminar de Chrome tu cuenta de Google, cierra sesión</translation>
 <translation id="2236949375853147973">Mi Actividad</translation>
-<translation id="223889379102603431">Información sobre cómo gestiona Chrome sus certificados raíz</translation>
 <translation id="2290014774651636340">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Google Chrome.</translation>
 <translation id="2290095356545025170">¿Seguro que quieres desinstalar Google Chrome?</translation>
 <translation id="2309047409763057870">Esta instalación de Google Chrome es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
@@ -572,7 +571,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando la cámara y el micrófono.</translation>
 <translation id="8257796129973882597">Puedes abrir los marcadores, el modo Lectura y más desde el menú de Chrome</translation>
 <translation id="8267953129876836456">Chrome ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
-<translation id="8270775718612349140">Certificados gestionados por Chrome</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="829923460755755423">Añade un acceso directo al Gestor de contraseñas de Google</translation>
 <translation id="8313851650939857356">Error de arranque: <ph name="STARTUP_ERROR" />.</translation>

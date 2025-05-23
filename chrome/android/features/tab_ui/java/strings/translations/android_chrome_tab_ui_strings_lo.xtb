@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1036348656032585052">ປິດ</translation>
-<translation id="1045448422538531528">ເພີ່ມໃສ່ກຸ່ມ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_WEEKS_ONE" /> ອາທິດກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_WEEKS_MANY" /> ອາທິດກ່ອນ}}</translation>
 <translation id="1063300264396686489">ເປີດກຸ່ມແຖບຈາກອຸປະກອນອື່ນໆໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1075622780330595106">ທ່ານບໍ່ໄດ້ໃຊ້ແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ປິດ <ph name="ONE_CLOSED" /> ແຖບແລ້ວ}other{ປິດ <ph name="MANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
 <translation id="2894757982205307093">ແຖບໃໝ່ໃນກຸ່ມ</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
-<translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
 <translation id="29919168204617356">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ຈະປິດໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດເບິ່ງແຖບເຫຼົ່ານີ້ໄດ້ໃນປະຫວັດສະເໝີ.</translation>
 <translation id="3008554597174452548">ຢຸດການຕິດຕາມສິນຄ້າ</translation>
 <translation id="3026391124054406831">ສ້າງກຸ່ມເພື່ອຈັດລະບຽບແຖບຂອງທ່ານ.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
+<translation id="6212567362666004597">ເພີ່ມແຖບໃສ່ກຸ່ມ</translation>
 <translation id="6220820548421939212">ໄດ້. ຕົກລົງ</translation>
 <translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
 <translation id="6271513594716432922">ປິດແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ທັງໝົດ</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome ຈະປິດລາຍການໃນພາກສ່ວນທີ່ທ່ານບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາ 3 ເດືອນໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດປິດຄຸນສົມບັດນີ້ຕອນນີ້ເລີຍ ຫຼື ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="8887921976452567404">ແຖບ ແລະ ກຸ່ມທີ່ປິດແລ້ວຂອງທ່ານແມ່ນສາມາດເປີດຄືນໃໝ່ໄດ້ຈາກພາກສ່ວນແຖບຫຼ້າສຸດ ແລະ ພາກສ່ວນກຸ່ມແຖບ.</translation>
 <translation id="8915916167043355778">ປິດທັງໝົດ</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ຍ້າຍໄປໜ້າຈໍໃໝ່}other{ຍ້າຍໄປຫາໜ້າຈໍອື່ນ}}</translation>
 <translation id="9090098097337832354">ປິດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແລ້ວ</translation>
 <translation id="9114502155681725011">ເປີດເມນູຄຳສັ່ງຂອງກຸ່ມແຖບສຳລັບກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" />, ສີ <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">ເພີ່ມແຖບໃໝ່ໃສ່ກຸ່ມ</translation>

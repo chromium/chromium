@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1036348656032585052">Deaktivieren</translation>
-<translation id="1045448422538531528">Zur Gruppe hinzufügen</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche erstellt}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen erstellt}}</translation>
 <translation id="1063300264396686489">Tabgruppen von anderen Geräten automatisch öffnen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> Tab geschlossen}other{<ph name="MANY_CLOSED" /> Tabs geschlossen}}</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
-<translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="29919168204617356">Inaktive Tabs werden automatisch geschlossen. Du kannst sie jederzeit im Verlauf finden.</translation>
 <translation id="3008554597174452548">Produkt nicht mehr beobachten</translation>
 <translation id="3026391124054406831">Erstelle Gruppen, um deine Tabs zu organisieren.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
+<translation id="6212567362666004597">Tab zu Gruppe hinzufügen</translation>
 <translation id="6220820548421939212">Ok</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome schließt automatisch Elemente im Bereich „Inaktiv“, die du seit 3 Monaten nicht verwendet hast. Du kannst diese Funktion jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="8887921976452567404">Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden.</translation>
 <translation id="8915916167043355778">Alle schließen</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Zu einem neuen Fenster wechseln}other{Zu anderen Fenstern wechseln}}</translation>
 <translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
 <translation id="9114502155681725011">Aktionsmenü für die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit der Farbe <ph name="COLOR_NAME" /> öffnen.</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>

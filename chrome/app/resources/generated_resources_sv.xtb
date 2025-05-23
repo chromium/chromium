@@ -4769,7 +4769,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="428963538941819373">Dessa webbplatser kan använda information som de har sparat om dig när du surfar på <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Välj pinkod</translation>
-<translation id="4290526909608432059">Stödet för Chrome-appar upphör snart. Kontakta apputvecklaren eller IT-supporten om du vill veta mer om dina alternativ.</translation>
 <translation id="4290791284969893584">När du stänger en sida kanske åtgärder som du startat inte slutförs</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Navigera mellan sidor genom att svepa</translation>
@@ -7637,6 +7636,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Lägg till familj och vänner</translation>
 <translation id="6367097275976877956">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS? I så fall trycker du på blanksteg.</translation>
+<translation id="6367196786591004737">Radera post</translation>
 <translation id="6367396429435748845">Tryck på <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> för att pausa och återaktivera mustangenterna</translation>
 <translation id="6367985768157257101">Vill du ta emot med Närdelning?</translation>
 <translation id="6368157733310917710">Adresser och annat</translation>
@@ -7970,7 +7970,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6610002944194042868">Översättningsalternativ</translation>
 <translation id="6610064275805055636">Hantera isolerade webbappar</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> flik</translation>
-<translation id="6611972847767394631">Här finns dina flikar</translation>
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6613267708691765962">Söker efter skadlig kod …</translation>
 <translation id="6615455863669487791">Visa mig</translation>
@@ -10005,6 +10004,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8037801708772278989">Genomsöktes alldeles nyss</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopierar 1 fil till <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} filer kopieras till <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Den här Chrome-appen slutar fungera när ChromeOS-versionen har uppdaterats. Spara appdata som du vill behålla. Kontakta apputvecklaren eller IT-supporten om du vill veta mer om dina alternativ.</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="8041093619605951337">Glad</translation>
 <translation id="8041267120753677077">Streama telefonens appar</translation>
@@ -10633,6 +10633,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8472623782143987204">hårdvarustödd</translation>
 <translation id="8473540203671727883">Läs upp text under muspekaren</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
+<translation id="847433688444405067">Bläddra bland enheter</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
 <translation id="8474561048882755118">Hjälper dig att visa liknande produkter sida vid sida, så att du enkelt kan jämföra detaljer som är viktiga för dig</translation>
 <translation id="8475313423285172237">Ett annat program i datorn har lagt till ett tillägg som kan ändra hur Chrome fungerar.</translation>

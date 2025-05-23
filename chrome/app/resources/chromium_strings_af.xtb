@@ -82,7 +82,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2049376729098081731">Kies of jy Chromium-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="2054039611381840095">Jy het macOS 12 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 11.</translation>
 <translation id="2086476982681781442">Chromium het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
-<translation id="2088953378266246249">Inligting oor hoe Chromium sy kernsertifikate bestuur</translation>
 <translation id="2099452623287920103">Jou wagwoorde en ander Chromium-data wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chromium wil gebruik.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Jou organisasie vee blaaierdata outomaties uit nadat Chromium 1 minuut lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou oortjies sal oopbly.}other{Jou organisasie vee blaaierdata outomaties uit nadat Chromium # minute lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou oortjies sal oopbly.}}</translation>
 <translation id="2126108037660393668">Die afgelaaide lêer kon nie geverifieer word nie.</translation>
@@ -611,7 +610,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Maak Chromium jou eie</translation>
 <translation id="93478295209880648">Chromium sal dalk nie reg werk nie omdat dit nie meer in Windows XP en Windows Vista gesteun word nie</translation>
-<translation id="942598560705308788">Sertifikate wat deur Chromium bestuur word</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="965162752251293939">Wie gebruik tans Chromium?</translation>
 <translation id="967427899662692980">Kry Chromium se sterkste sekuriteit</translation>

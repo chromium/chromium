@@ -99,7 +99,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2199691482078155239">Chrome vous permet de mieux contrôler les annonces que vous voyez et limite ce que les sites peuvent apprendre à votre sujet lorsqu'ils vous présentent des annonces personnalisées</translation>
 <translation id="2216543877350048334">Pour supprimer votre compte Google de Chrome, déconnectez-vous</translation>
 <translation id="2236949375853147973">Mon activité</translation>
-<translation id="223889379102603431">Informations sur la manière dont Chrome gère ses certificats racine</translation>
 <translation id="2290014774651636340">Les clés API Google sont manquantes. Certaines fonctionnalités de Google Chrome vont être désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome ?</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
@@ -571,7 +570,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
 <translation id="8257796129973882597">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome</translation>
 <translation id="8267953129876836456">Chrome a identifié des recommandations de sécurité à examiner</translation>
-<translation id="8270775718612349140">Certificats gérés par Chrome</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="829923460755755423">Ajoutez un raccourci au Gestionnaire de mots de passe de Google</translation>
 <translation id="8313851650939857356">Erreur au démarrage : <ph name="STARTUP_ERROR" />.</translation>

@@ -96,7 +96,6 @@
 <translation id="2199691482078155239">Chrome дає змогу краще керувати тим, які оголошення вам показуються, і обмежує обсяг даних про вас, які можуть отримувати сайти під час показу персоналізованої реклами</translation>
 <translation id="2216543877350048334">Щоб вилучити обліковий запис Google, вийдіть із Chrome</translation>
 <translation id="2236949375853147973">Мої дії</translation>
-<translation id="223889379102603431">Інформація про те, як Chrome керує кореневими сертифікатами</translation>
 <translation id="2290014774651636340">Ключі API Google відсутні. Деякі функції Google Chrome буде вимкнено.</translation>
 <translation id="2290095356545025170">Ви дійсно хочете видалити Google Chrome?</translation>
 <translation id="2309047409763057870">Це додаткове встановлення Google Chrome. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
@@ -564,7 +563,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8257796129973882597">У меню Chrome можна відкривати закладки, переходити в режим читання тощо</translation>
 <translation id="8267953129876836456">Веб-переглядач Chrome знайшов для вас кілька рекомендацій щодо безпеки</translation>
-<translation id="8270775718612349140">Сертифікати, якими керує Chrome</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="829923460755755423">Додайте ярлик Google Менеджера паролів</translation>
 <translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>

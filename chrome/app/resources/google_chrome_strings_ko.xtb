@@ -100,7 +100,6 @@
 <translation id="2199691482078155239">Chrome을 사용하면 나에게 표시되는 광고를 보다 세부적으로 관리할 뿐만 아니라 사이트가 개인 맞춤 광고를 표시할 때 나에 관해 얻을 수 있는 정보를 제한할 수 있습니다.</translation>
 <translation id="2216543877350048334">Chrome에서 Google 계정을 삭제하려면 로그아웃하세요.</translation>
 <translation id="2236949375853147973">내 활동</translation>
-<translation id="223889379102603431">Chrome의 루트 인증서 관리 방식에 관한 정보</translation>
 <translation id="2290014774651636340">Google API 키가 누락되었습니다. Chrome의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="2290095356545025170">Chrome을 제거하시겠습니까?</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
@@ -571,7 +570,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8257796129973882597">Chrome 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다.</translation>
 <translation id="8267953129876836456">Chrome에서 발견한 보안 권장사항을 검토해 주세요</translation>
-<translation id="8270775718612349140">Chrome이 관리하는 인증서</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
 <translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Katso tietoja sivusta</translation>
 <translation id="1108938384783527433">Historian synkronointi</translation>
 <translation id="1111673857033749125">Muilla laitteilla tallentamasi kirjanmerkit näytetään täällä.</translation>
-<translation id="1113597929977215864">Näytä yksinkertaistettu näkymä</translation>
 <translation id="1126696498560056882">Hallinnoi tämän laitteen tilejä</translation>
 <translation id="1129510026454351943">Tiedot: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Incognito-tila pitää selaamisen yksityisenä muilta laitteen käyttäjiltä</translation>
@@ -1878,7 +1877,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="961856697154696964">Poista selausdata</translation>
 <translation id="963246339335003378">Avaa tehtävänhallinta</translation>
 <translation id="966131775676567255">Tilin dataa poistetaan</translation>
-<translation id="96681097142096641">Näytetäänkö yksinkertaistettu sivu?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuuttia jäljellä</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>

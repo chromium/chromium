@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Visa sidinsikter</translation>
 <translation id="1108938384783527433">Synkronisera historiken</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
-<translation id="1113597929977215864">Använd förenklad visning</translation>
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1129510026454351943">Mer information: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Med inkognitoläget skyddas ditt surfande från andra som använder din enhet</translation>
@@ -1877,8 +1876,8 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
+<translation id="963246339335003378">Öppna Aktivitetshanteraren</translation>
 <translation id="966131775676567255">Radera kontodata</translation>
-<translation id="96681097142096641">Vill du öppna en förenklad sida?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuter kvar</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Stäng alla flikar</translation>

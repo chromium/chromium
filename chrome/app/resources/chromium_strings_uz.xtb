@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Kerak boʻlsa, Chromium tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
 <translation id="2054039611381840095">Chromium yangilanishlari macOS 12 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 11.</translation>
 <translation id="2086476982681781442">Chromium bu yuklamani blokladi, chunki fayl aldamchi va qurilmangizga kutilmagan oʻzgarishlar kiritishi mumkin</translation>
-<translation id="2088953378266246249">Chromium negiz sertifikatlarini qanday boshqarishi haqida axborot</translation>
 <translation id="2099452623287920103">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Ularni Chromiumda yana ishlatish uchun hisobingizga kiring.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}}</translation>
 <translation id="2126108037660393668">Yuklab olingan fayl tekshirilmadi.</translation>
@@ -606,7 +605,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromium brauzerini oʻzingizga moslashtiring</translation>
 <translation id="93478295209880648">Chromium brauzeri Windows XP yoki Windows Vista tizimlarida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu tizimlar ta’minoti to‘xtatiladi</translation>
-<translation id="942598560705308788">Chromium boshqaradigan sertifikatlar</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="965162752251293939">Chromiumni kim ochdi?</translation>
 <translation id="967427899662692980">Chromium brauzerining kuchli xavfsizligidan foydalaning</translation>

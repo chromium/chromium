@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Դիտել էջի վիճակագրությունը</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
 <translation id="1111673857033749125">Ձեր մյուս սարքերում պահված էջանիշները կտեսնեք այստեղ:</translation>
-<translation id="1113597929977215864">Ցուցադրել պարզեցված դիտակերպը</translation>
 <translation id="1126696498560056882">Հաշիվների կառավարում այս սարքում</translation>
 <translation id="1129510026454351943">Մանրամասներ՝ <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Ինկոգնիտո ռեժիմը թույլ է տալիս գաղտնի պահել ձեր դիտարկումները այս սարքի մյուս օգտագործողներից</translation>
@@ -1876,8 +1875,8 @@
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
 <translation id="95817756606698420">Չինաստանում որոնում կատարելու համար Chrome-ը կարող է օգտագործել <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> որոնման համակարգը: Սա կարող եք փոխել <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>
+<translation id="963246339335003378">Բացել խնդիրների կառավարիչը</translation>
 <translation id="966131775676567255">Հաշվի տվյալները ջնջվում են</translation>
-<translation id="96681097142096641">Դիտե՞լ էջը պարզեցված տեսքով։</translation>
 <translation id="970715775301869095">Մնացել է <ph name="MINUTES" /> րոպե</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>

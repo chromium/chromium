@@ -1459,7 +1459,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7388345524791662148">Més opcions per a <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ratolí tàctil integrat</translation>
 <translation id="7397270852490618635">Desactiva el tema clar</translation>
-<translation id="7400166052988585408">El professor fixarà la teva pantalla d'aquí a <ph name="NUM_SECONDS" /> segons</translation>
 <translation id="7401543881546089382">Suprimeix la drecera</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> està a punt per actualitzar-se</translation>
 <translation id="741244894080940828">conversió</translation>
@@ -1614,7 +1613,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8088963492174775412">Prem per gravar</translation>
 <translation id="8094062939584182041">Permet que Google t'enviï un correu electrònic sobre aquest problema</translation>
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
-<translation id="8110942816572072814">El professor ha bloquejat la teva pantalla</translation>
 <translation id="811820734797650957">(Android) Es pot fer ping a la passarel·la</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirma</translation>

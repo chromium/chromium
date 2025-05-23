@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Tingnan ang insight ng page</translation>
 <translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
-<translation id="1113597929977215864">Ipakita ang pinasimpleng view</translation>
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
 <translation id="1129510026454351943">Mga Detalye: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Pinapanatiling pribado ng Incognito mode ang pag-browse mo sa ibang taong gumagamit ng iyong device</translation>
@@ -1876,8 +1875,8 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="95817756606698420">Maaaring gamitin ng Chrome ang <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para sa paghahanap sa China. Maaari mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>
+<translation id="963246339335003378">Buksan ang Task Manager</translation>
 <translation id="966131775676567255">Dine-delete ang data ng account</translation>
-<translation id="96681097142096641">Tingnan ang pinasimpleng page?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Gweld mewnwelediadau tudalen</translation>
 <translation id="1108938384783527433">Cysoni hanes</translation>
 <translation id="1111673857033749125">Bydd nodau tudalen sydd wedi'u cadw ar eich dyfeisiau eraill yn ymddangos yma.</translation>
-<translation id="1113597929977215864">Dangos y wedd syml</translation>
 <translation id="1126696498560056882">Rheoli cyfrifon ar y ddyfais hon</translation>
 <translation id="1129510026454351943">Manylion: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Mae modd anhysbys yn cadw eich pori'n breifat rhag eraill sy'n defnyddio'ch dyfais</translation>
@@ -122,6 +121,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1480287803138246127">Mae'n bosib na fydd rhywfaint o'ch hanes yn ymddangos yma. I weld eich holl hanes Chrome, agorwch hanes Chrome llawn.</translation>
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
 <translation id="1493287004536771723">Rydych yn dilyn <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">enw defnyddiwr</translation>
 <translation id="1501480321619201731">Dileu grŵp</translation>
 <translation id="1502010315804028179">I reoli eich cyfrineiriau, diweddarwch wasanaethau Google Play</translation>
 <translation id="1506061864768559482">Peiriant chwilio</translation>
@@ -221,6 +221,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="197288927597451399">Cadw</translation>
 <translation id="1973912524893600642">Cadw Data</translation>
 <translation id="1974060860693918893">Uwch</translation>
+<translation id="1984087999855033707">rhif ffôn</translation>
 <translation id="1984417487208496350">Dim diogelwch (ni argymhellir)</translation>
 <translation id="1986685561493779662">Mae'r enw eisoes yn bodoli</translation>
 <translation id="200114059308480249">Cynnwys testun o'i amgylch mewn chwiliadau Google?</translation>
@@ -1877,7 +1878,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="961856697154696964">Dileu data pori</translation>
 <translation id="963246339335003378">Agor y Rheolwr Tasgau</translation>
 <translation id="966131775676567255">Wrthi'n dileu data'r cyfrif</translation>
-<translation id="96681097142096641">Gweld tudalen sydd wedi'i symleiddio?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> o funudau ar ôl</translation>
 <translation id="981121421437150478">All-lein</translation>
 <translation id="983192555821071799">Cau pob tab</translation>

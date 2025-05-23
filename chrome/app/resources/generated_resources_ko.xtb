@@ -2516,7 +2516,7 @@
 <translation id="2715751256863167692">이 업그레이드를 설치하면 Chromebook이 재설정되며, 현재 사용자 데이터가 삭제됩니다.</translation>
 <translation id="2715934493766003251">파일 동기화가 사용 설정되어 있는 동안에는 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2716986496990888774">보호자가 관리하는 설정입니다.</translation>
-<translation id="271749239614426244">미세한 커서 이동 무시</translation>
+<translation id="271749239614426244">미세한 커서 움직임 무시</translation>
 <translation id="2718395828230677721">야간 조명</translation>
 <translation id="2718998670920917754">바이러스 백신 소프트웨어가 바이러스를 감지했습니다.</translation>
 <translation id="2719936478972253983">다음 쿠키가 차단됨</translation>
@@ -2691,7 +2691,7 @@
 <translation id="2819167288942847344">앱이 오작동하지 않도록 휴대전화 및 태블릿용으로 미리 설정된 창 크기나 크기 조절이 가능한 창을 사용</translation>
 <translation id="2819519502129272135">파일 동기화 사용 중지됨</translation>
 <translation id="2820957248982571256">검색 중...</translation>
-<translation id="282230978681804245">조직에서 관리하는 프로필로 다음과 같은 정보를 볼 수 있습니다</translation>
+<translation id="282230978681804245">조직에서 프로필을 관리하며 다음과 같은 일부 정보를 볼 수 있습니다</translation>
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2822634587701817431">축소 / 확대</translation>
 <translation id="2822910719211888134">Linux 백업 중에 오류가 발생했습니다.</translation>
@@ -4769,7 +4769,6 @@
 <translation id="4289540628985791613">개요</translation>
 <translation id="428963538941819373">이러한 사이트에서는 내가 <ph name="HOST" /> 사이트를 탐색할 때 나에 관해 저장된 정보를 사용할 수 있습니다.</translation>
 <translation id="4289732974614035569">PIN 선택</translation>
-<translation id="4290526909608432059">Chrome 앱 지원이 곧 종료됩니다. 옵션에 대해 알아보려면 앱 개발자 또는 IT 지원팀에 문의하세요.</translation>
 <translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
 <translation id="4290826901752066702">멤버 <ph name="NUM" />명</translation>
 <translation id="4290898381118933198">스와이프하여 다른 페이지로 이동</translation>
@@ -7638,6 +7637,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">친구 및 가족 추가</translation>
 <translation id="6367097275976877956">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
+<translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6367396429435748845">마우스 키를 일시중지하고 다시 시작하려면 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 키를 누르세요.</translation>
 <translation id="6367985768157257101">Nearby Share로 받으시겠습니까?</translation>
 <translation id="6368157733310917710">주소 및 기타</translation>
@@ -7971,7 +7971,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6610064275805055636">분리형 웹 앱 관리</translation>
 <translation id="6611432349566876829">탭 <ph name="NUM" />개</translation>
-<translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6613267708691765962">멀웨어 검사 중...</translation>
 <translation id="6615455863669487791">보기</translation>
@@ -9785,7 +9784,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7898725031477653577">항상 번역</translation>
-<translation id="7900950034255258543">기기를 안전하게 사용하기 위해 조직에서 운영체제, 브라우저, 설정, 기기에 설치된 소프트웨어에 관한 정보를 확인할 수 있습니다.</translation>
+<translation id="7900950034255258543">이 기기를 안전하게 사용하도록 하기 위해 조직에서 운영체제, 브라우저, 설정에 관한 정보와 기기에 설치된 소프트웨어를 확인할 수 있습니다.</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903481341948453971">비밀번호 입력 시 화면 잠금 사용</translation>
@@ -10634,6 +10633,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8472623782143987204">하드웨어 지원</translation>
 <translation id="8473540203671727883">마우스 커서를 올린 텍스트를 음성으로 알려줍니다.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
+<translation id="847433688444405067">여러 기기에서 탐색하기</translation>
 <translation id="8474378002946546633">알림 허용</translation>
 <translation id="8474561048882755118">비슷한 제품을 나란히 놓고 비교하여 나에게 중요한 세부정보를 손쉽게 비교할 수 있습니다.</translation>
 <translation id="8475313423285172237">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.</translation>

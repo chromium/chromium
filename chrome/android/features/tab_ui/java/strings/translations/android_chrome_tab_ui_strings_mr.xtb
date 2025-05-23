@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1036348656032585052">बंद करा</translation>
-<translation id="1045448422538531528">गटामध्ये जोडा</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> आठवड्यापूर्वी तयार केला आहे}other{<ph name="NUM_WEEKS_MANY" /> आठवड्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="1063300264396686489">इतर डिव्हाइसवरून टॅब गट आपोआप उघडा</translation>
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> टॅब बंद केला}other{<ph name="MANY_CLOSED" /> टॅब बंद केले}}</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
 <translation id="2928243913527329289">Google | या स्टोअरबद्दल</translation>
-<translation id="2977480621796371840">गटामधून काढून टाका</translation>
 <translation id="29919168204617356">इनॅक्टिव्ह टॅब आपोआप बंद केले जातील. तुम्ही ते इतिहास मध्ये कधीही पाहू शकता.</translation>
 <translation id="3008554597174452548">उत्पादनाचा माग ठेवणे थांबवा</translation>
 <translation id="3026391124054406831">तुमचे टॅब व्यवस्थापित करण्यासाठी गट तयार करा.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
+<translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>
 <translation id="6220820548421939212">होय. मी तयार आहे</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome हे तुम्ही ३ महिन्यांपासून न वापरलेल्या इनॅक्टिव्ह विभागामधील आयटम आपोआप बंद करते. तुम्ही हे सेटिंग्ज मध्ये आताच किंवा कधीही बंद करू शकता.</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>
 <translation id="8915916167043355778">सर्व बंद करा</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{नवीन विंडोवर हलवा}other{इतर विंडोवर हलवा}}</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1036348656032585052">Desaktibatu</translation>
-<translation id="1045448422538531528">Gehitu taldean</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Duela <ph name="NUM_WEEKS_ONE" /> aste sortua}other{Duela <ph name="NUM_WEEKS_MANY" /> aste sortua}}</translation>
 <translation id="1063300264396686489">Ireki beste gailu batzuetako fitxa taldeak automatikoki</translation>
 <translation id="1075622780330595106">Fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fitxa itxi da}other{<ph name="MANY_CLOSED" /> fitxa itxi dira}}</translation>
 <translation id="2894757982205307093">Gehitu fitxa bat taldean</translation>
 <translation id="2928243913527329289">Google | Denda honi buruz</translation>
-<translation id="2977480621796371840">Kendu taldetik</translation>
 <translation id="29919168204617356">Automatikoki itxiko dira fitxa inaktiboak. Historian aurkituko dituzu.</translation>
 <translation id="3008554597174452548">Utzi produktuaren jarraipena egiteari</translation>
 <translation id="3026391124054406831">Fitxak antolatzeko, sortu taldeak.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
+<translation id="6212567362666004597">Gehitu fitxa taldean</translation>
 <translation id="6220820548421939212">Bai. Ados</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6271513594716432922">Itxi fitxa inaktibo guztiak</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome-k automatikoki ixten ditu 3 hilabetetan erabili ez dituzun elementuak inaktiboen atalean. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8887921976452567404">Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro.</translation>
 <translation id="8915916167043355778">Itxi guztiak</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Eraman beste leiho batera}other{Eraman beste leiho batera}}</translation>
 <translation id="9090098097337832354">Denda honi buruzko informazioa itxita dago</translation>
 <translation id="9114502155681725011">Ireki <ph name="COLOR_NAME" /> koloreko <ph name="TITLE_OF_GROUP" /> fitxa taldearen ekintza-menua.</translation>
 <translation id="9169594135889675189">Gehitu beste fitxa bat taldean</translation>

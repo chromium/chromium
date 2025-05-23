@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Žr. puslapio įžvalgas</translation>
 <translation id="1108938384783527433">Istorijos sinchronizavimas</translation>
 <translation id="1111673857033749125">Čia bus rodomos kituose įrenginiuose išsaugotos žymės.</translation>
-<translation id="1113597929977215864">Rodyti supaprastintą rodinį</translation>
 <translation id="1126696498560056882">Tvarkyti paskyras šiame įrenginyje</translation>
 <translation id="1129510026454351943">Išsami informacija: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Naudodami inkognito režimą galite naršyti privačiai nuo kitų, naudojančių jūsų įrenginį</translation>
@@ -1878,7 +1877,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="961856697154696964">Ištrinti naršymo duomenis</translation>
 <translation id="963246339335003378">Atidaryti užduočių tvarkytuvę</translation>
 <translation id="966131775676567255">Trinami paskyros duomenys</translation>
-<translation id="96681097142096641">Peržiūrėti supaprastintą puslapį?</translation>
 <translation id="970715775301869095">Liko <ph name="MINUTES" /> min.</translation>
 <translation id="981121421437150478">Neprisijungus</translation>
 <translation id="983192555821071799">Uždar. visų skirtukų lapus</translation>

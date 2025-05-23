@@ -4766,7 +4766,6 @@
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="428963538941819373">این سایت‌ها می‌توانند از اطلاعاتی که هنگام مرور <ph name="HOST" /> درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="4289732974614035569">پین انتخاب کنید</translation>
-<translation id="4290526909608432059">‏پشتیبانی از برنامه‌های Chrome به‌زودی به‌پایان می‌رسد. برای اطلاع از گزینه‌هایی که در اختیار دارید، با توسعه‌دهنده نرم‌افزار یا تیم پشتیبانی فناوری اطلاعات خود تماس بگیرید.</translation>
 <translation id="4290791284969893584">پس‌از بستن صفحه، ممکن است کارهایی که شروع کرده‌اید تمام نشوند</translation>
 <translation id="4290826901752066702">‫<ph name="NUM" /> عضو</translation>
 <translation id="4290898381118933198">تند کشیدن برای پیمایش میان صفحه‌ها</translation>
@@ -7634,6 +7633,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">افزودن خانواده و دوستان</translation>
 <translation id="6367097275976877956">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟ اگر مایلید، کلید فاصله را فشار دهید.</translation>
+<translation id="6367196786591004737">حذف ورودی</translation>
 <translation id="6367396429435748845">برای توقف موقت و ازسرگیری کلیدهای موشواره، <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> را فشار دهید</translation>
 <translation id="6367985768157257101">«هم‌رسانی با اطراف» دریافت شود؟</translation>
 <translation id="6368157733310917710">&amp;نشانی‌ها و موارد دیگر</translation>
@@ -7969,7 +7969,6 @@
 <translation id="6610002944194042868">گزینه‌های ترجمه</translation>
 <translation id="6610064275805055636">مدیریت برنامه‌های وب مجزا</translation>
 <translation id="6611432349566876829">‫<ph name="NUM" /> برگه</translation>
-<translation id="6611972847767394631">برگه‌هایتان را در اینجا پیدا کنید</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
 <translation id="6613267708691765962">درحال اسکن کردن برای یافتن بدافزار…</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
@@ -10631,6 +10630,7 @@
 <translation id="8472623782143987204">سخت‌افزار پشتیبانی</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
+<translation id="847433688444405067">مرور بین دستگاه‌ها</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
 <translation id="8474561048882755118">به شما کمک می‌کند محصولات مشابه را در کنار هم ببینید و جزئیاتی را که برایتان مهم است به‌راحتی مقایسه کنید</translation>
 <translation id="8475313423285172237">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه افزودنی را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>

@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">عرض إحصاءات الصفحة</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
-<translation id="1113597929977215864">إظهار العرض المبسَّط</translation>
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">يحافظ وضع التصفّح المتخفي على خصوصية تصفّحك لكي لا تظهر بيانات التصفّح للأشخاص الآخرين الذين يستخدمون جهازك</translation>
@@ -1882,7 +1881,6 @@
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
 <translation id="963246339335003378">فتح "إدارة المهام"</translation>
 <translation id="966131775676567255">جارٍ حذف بيانات الحساب</translation>
-<translation id="96681097142096641">هل تريد عرض صفحة مبسّطة؟</translation>
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>

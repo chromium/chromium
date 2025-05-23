@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Odaberite želite li uključiti povijest na Chromiumu za prilagođenije doživljaje na Googleovim uslugama</translation>
 <translation id="2054039611381840095">Da biste primali buduća Chromiumova ažuriranja, trebat će vam macOS 12 ili novija verzija. Na ovom se računalu upotrebljava macOS 11.</translation>
 <translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je ova datoteka obmanjujuća i može napraviti neočekivane promjene na vašem uređaju</translation>
-<translation id="2088953378266246249">Informacije o tome kako Chromium upravlja svojim korijenskim certifikatima</translation>
 <translation id="2099452623287920103">Vaše zaporke i drugi podaci iz Chromiuma koje ste spremili na Google račun uklonit će se s ovog uređaja. Da biste ih ponovo upotrebljavali u Chromiumu, ponovo se prijavite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi jednu minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minute. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minuta. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
 <translation id="2126108037660393668">Preuzeta datoteka nije zadovoljila provjeru.</translation>
@@ -609,7 +608,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
 <translation id="93478295209880648">Chromium možda neće ispravno raditi jer više nije podržan na sustavima Windows XP i Windows Vista</translation>
-<translation id="942598560705308788">Certifikati kojima upravlja Chromium</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="965162752251293939">Tko upotrebljava Chromium?</translation>
 <translation id="967427899662692980">Odaberite najsnažniju Chromiumovu zaštitu sigurnosti</translation>

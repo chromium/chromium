@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Afficher les statistiques au sujet de la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
-<translation id="1113597929977215864">Afficher l'affichage simplifié</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1129510026454351943">Détails : <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Le mode Navigation privée préserve la confidentialité de votre navigation des autres personnes qui utilisent votre appareil</translation>
@@ -122,6 +121,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1480287803138246127">Une partie de votre historique peut ne pas s'afficher ici. Pour consulter tout votre historique de Chrome, ouvrez l'historique complet.</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1493287004536771723">Vous suivez <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">nom d'utilisateur</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
 <translation id="1502010315804028179">Mettez à jour les services Google Play pour gérer vos mots de passe</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
@@ -221,6 +221,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="197288927597451399">Garder</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
+<translation id="1984087999855033707">numéro de téléphone</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1986685561493779662">Ce nom existe déjà</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
@@ -1876,7 +1877,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
 <translation id="966131775676567255">Suppression des données du compte en cours…</translation>
-<translation id="96681097142096641">Affichez la page simplifiée?</translation>
 <translation id="970715775301869095">Il reste <ph name="MINUTES" /> minutes</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>

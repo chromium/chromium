@@ -265,6 +265,7 @@
 <translation id="1432187715652018471">സേവനം കൈകാര്യം ചെയ്യുന്ന സംവിധാനം ഇൻസ്റ്റാൾ ചെയ്യാൻ ഈ പേജ് താൽപ്പര്യപ്പെടുന്നു.</translation>
 <translation id="1432581352905426595">തിരയൽ യന്ത്രം മാനേജ് ചെയ്യുക</translation>
 <translation id="1433225466058025572">ഉള്ളടക്കം നീക്കാൻ വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="1433478348197382180">റീഡിംഗ് മോഡ്</translation>
 <translation id="1436185428532214179">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളും ഫോൾഡറുകളും എഡിറ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="1442386063175183758">റൈറ്റ് ഗേറ്റ് മടക്ക്</translation>
 <translation id="1442987760062738829">പഞ്ച് ചെയ്യുക</translation>
@@ -635,6 +636,7 @@
 <translation id="2088913896151127116">ടെക്‌സ്റ്റ് ചേർക്കുക</translation>
 <translation id="2090451897496479509">കൂടുതൽ വിവരങ്ങൾക്ക്, സേവനദാതാവിനെ ബന്ധപ്പെടുക</translation>
 <translation id="2091887806945687916">ശബ്‌ദം</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" /> എന്നതിൽ തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2093982008204312032">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓഫാക്കാൻ Google Chrome ശ്രമിക്കുന്നു.</translation>
 <translation id="2094505752054353250">ഡൊമെയ്‌ൻ പൊരുത്തമില്ലായ്‌മ</translation>
 <translation id="2094704029599359040">പതിപ്പ് വിവരങ്ങൾ</translation>
@@ -839,7 +841,6 @@
 <translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
-<translation id="2418292431699242678">ഏതൊരു ChromeOS ഉപകരണത്തിലും നിങ്ങളുടെ മുമ്പത്തെയും നിലവിലെയും സെഷനുകൾ തമ്മിൽ സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ ഇനിപ്പറയുന്നവ പ്രവർത്തനക്ഷമമാക്കുന്നു:</translation>
 <translation id="2429716554270894715">ഫാബ്രിക് (വാട്ടർപ്രൂഫ്)</translation>
 <translation id="2436186046335138073">എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="2436976580469434549">ഫൈബർ, ടെക്‌സ്‌റ്റൈൽ ആർട്ട്സ്</translation>
@@ -1175,7 +1176,6 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
 <translation id="3039406992698062762">കുടുംബത്തോടൊപ്പമുള്ള യാത്ര</translation>
-<translation id="3040636468789770340">കുക്കികൾ (നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ച വെബ്‌സൈറ്റുകളിൽ സൈൻ ചെയ്തിരിക്കുന്ന സ്ഥിതി)</translation>
 <translation id="3041176923638368519">കാർഡ് ആനുകൂല്യ നിബന്ധനകൾ കാണുക</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3045769629416806687">എക്‌സ്ട്രീം സ്പോർട്‌സ്</translation>
@@ -1682,7 +1682,6 @@
 <translation id="3869939189466884821">നിങ്ങളുടെ ലോക്കൽ ഫയലുകൾ <ph name="MINUTES" /> മിനിറ്റിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
-<translation id="387681220560687945">വിൻഡോകൾ (വിൻഡോകളുടെയും ടാബുകളുടെയും അറേഞ്ച്മെന്റും ക്രമീകരണവും)</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
 <translation id="3880589673277376494">ഇന്റർനെറ്റും ടെലികോമും</translation>
@@ -2248,7 +2247,6 @@
 <translation id="4866506163384898554">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
 <translation id="4873616204573862158">കണ്ണടകൾ</translation>
 <translation id="4873807733347502026">നിങ്ങളുടെ മൗസ് ലോക്ക് ചെയ്ത് ഉപയോഗിക്കാൻ</translation>
-<translation id="4876188919622883022">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
 <translation id="4876305945144899064">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="4876327226315760474">ഇതിനർത്ഥം സൈറ്റ് ഫീച്ചറുകൾ പ്രതീക്ഷിച്ചത് പോലെ പ്രവർത്തിക്കണം, എന്നാൽ നിങ്ങൾക്ക് ബ്രൗസിംഗ് പരിരക്ഷ കുറവായിരിക്കാം.</translation>
 <translation id="4877047577339061095">വീട്ടിലെ സ്റ്റോറേജും ഷെൽഫുകളും</translation>
@@ -2398,7 +2396,6 @@
 <translation id="5115232566827194440">നിയന്ത്രിത 'മാനേജ് ചെയ്യുന്ന അതിഥി സെഷൻ' അസാധുവാക്കൽ</translation>
 <translation id="5115563688576182185">(64-ബിറ്റ്)</translation>
 <translation id="5120526915373271910">കുടുംബ സിനിമകൾ</translation>
-<translation id="5121592697493894155">സൈഡ് പാനലിലെ Google Search</translation>
 <translation id="5122786942953798871">എൻവലപ്പ് (കോട്ടൺ)</translation>
 <translation id="5123063207673082822">വാരാന്ത്യം</translation>
 <translation id="5123433949759960244">ബാസ്ക്കറ്റ്ബോൾ</translation>
@@ -3029,7 +3026,6 @@
 <translation id="622039917539443112">സമാന്തര മടക്ക്</translation>
 <translation id="6221286101741304627">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="6221311046884916259">ഈ കാർഡ് നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കണോ?</translation>
-<translation id="6221892641068781024">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
 <translation id="6222527803348563979">സ്‌റ്റേഷനറി</translation>
 <translation id="62231116988543150">വെബ് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയും</translation>
 <translation id="6224281071334553713">രത്നക്കല്ലുകളും ആഭരണങ്ങളും</translation>

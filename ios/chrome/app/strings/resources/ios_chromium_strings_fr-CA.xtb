@@ -332,6 +332,7 @@ Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous dé
 <translation id="9059693977935746710">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe de ce compte : <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>
 <translation id="9152995302810511799">Astuce Chromium : Bénéficiez de la sécurité la plus robuste de Chromium</translation>
+<translation id="9177628952266852500"><ph name="EMAIL" />. Chromium est géré.</translation>
 <translation id="921174536258924340">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Personnalisez Chromium</translation>
 <translation id="981812233959540767">Jouer au jeu du dinosaure de Chromium</translation>

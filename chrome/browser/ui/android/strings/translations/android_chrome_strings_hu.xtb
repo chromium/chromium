@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Oldalstatisztikák mutatása</translation>
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
-<translation id="1113597929977215864">Egyszerűsített nézet megjelenítése</translation>
 <translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
 <translation id="1129510026454351943">Részletek: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Az inkognitó mód használatával az Ön böngészési tevékenységei privát jellegűek maradnak az eszközt használó többi személy előtt</translation>
@@ -1876,8 +1875,8 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="939598580284253335">Összetett jelszó megadása</translation>
 <translation id="95817756606698420">A Chrome igénybe veheti a <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> keresőszolgáltatást, hogy Kínában kereshessen. Ezt a <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> módosíthatja.</translation>
 <translation id="961856697154696964">Böngészési adatok törlése</translation>
+<translation id="963246339335003378">Feladatkezelő megnyitása</translation>
 <translation id="966131775676567255">Fiókadatok törlése…</translation>
-<translation id="96681097142096641">Megtekinti az egyszerűsített oldalt?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> perc van hátra</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Az összes lap bezárása</translation>

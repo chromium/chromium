@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">பக்க புள்ளிவிவரத்தை காட்டு</translation>
 <translation id="1108938384783527433">தேடல் விவரங்களை ஒத்திசை</translation>
 <translation id="1111673857033749125">உங்கள் பிற சாதனங்களில் சேமிக்கும் புக்மார்க்குகள் இங்கே தோன்றும்.</translation>
-<translation id="1113597929977215864">எளிதாக்கப்பட்ட காட்சியைக் காட்டு</translation>
 <translation id="1126696498560056882">இந்தச் சாதனத்தில் உள்ள கணக்குகளை நிர்வகியுங்கள்</translation>
 <translation id="1129510026454351943">விவரங்கள்: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">உங்கள் சாதனத்தைப் பயன்படுத்தும் பிறரிடம் இருந்து உங்கள் உலாவலை மறைநிலைப் பயன்முறை தனிப்பட்டதாக வைத்திருக்கும்</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">இதுவரையிலான செயல்பாடுகளில் சில இங்கே காட்டப்படாமல் போகலாம். இதுவரையிலான Chrome செயல்பாடுகள் முழுவதையும் பார்க்க, Chrome செயல்பாடுகளை முழுமையாகக் காட்டு என்பதைத் தட்டவும்.</translation>
 <translation id="1492417797159476138">இந்தத் தளத்தில் இந்தப் பயனர்பெயரை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> தளத்தைப் பின்தொடர்கிறீர்கள்</translation>
+<translation id="1496514951988037011">பயனர்பெயர்</translation>
 <translation id="1501480321619201731">குழுவை நீக்கு</translation>
 <translation id="1502010315804028179">கடவுச்சொற்களை நிர்வகிக்க Google Play சேவைகளைப் புதுப்பிக்க வேண்டும்</translation>
 <translation id="1506061864768559482">தேடல் இன்ஜின்</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">வைத்திரு</translation>
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
+<translation id="1984087999855033707">ஃபோன் எண்</translation>
 <translation id="1984417487208496350">பாதுகாப்பற்ற பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="1986685561493779662">பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="200114059308480249">சுற்றியுள்ள வார்த்தைகளையும் Google தேடல்களில் சேர்க்கவா?</translation>
@@ -1876,7 +1877,6 @@
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>
 <translation id="963246339335003378">செயல் நிர்வாகியைத் திறக்கும்</translation>
 <translation id="966131775676567255">கணக்குத் தரவை நீக்குகிறது</translation>
-<translation id="96681097142096641">படிப்பதற்கான பயன்முறையில் காட்டவா?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>
 <translation id="983192555821071799">எல்லா தாவல்களையும் மூடு</translation>

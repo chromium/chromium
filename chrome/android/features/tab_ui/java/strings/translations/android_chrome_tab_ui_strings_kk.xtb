@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1036348656032585052">Өшіру</translation>
-<translation id="1045448422538531528">Топқа қосу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> апта бұрын жасалды.}other{<ph name="NUM_WEEKS_MANY" /> апта бұрын жасалды.}}</translation>
 <translation id="1063300264396686489">Қойындылар топтарын басқа құрылғылардан автоматты түрде ашу</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> қойынды жабылды.}other{<ph name="MANY_CLOSED" /> қойынды жабылды.}}</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
 <translation id="2928243913527329289">Google | Дүкен туралы ақпарат</translation>
-<translation id="2977480621796371840">Топтан өшіру</translation>
 <translation id="29919168204617356">Әрекетсіз қойындылар автоматты түрде жабылады. Оларды тарихтан табуға болады.</translation>
 <translation id="3008554597174452548">Өнімді бақылауды тоқтату</translation>
 <translation id="3026391124054406831">Қойындыларды реттеу үшін топтар жасаңыз.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
+<translation id="6212567362666004597">Топқа қойынды қосу</translation>
 <translation id="6220820548421939212">Иә. Жарайды</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome әрекетсіз бөлімдегі сіз 3 ай қолданбаған элементтерді автоматты түрде жабады. Бұл функцияны параметрлерде кез келген уақытта өшіре аласыз.</translation>
 <translation id="8887921976452567404">Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады.</translation>
 <translation id="8915916167043355778">Барлығын жабу</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Жаңа терезеге жылжыту}other{Басқа терезеге жылжыту}}</translation>
 <translation id="9090098097337832354">Бұл дүкеннің жабық екендігі туралы ақпарат</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> түсті <ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашыңыз.</translation>
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>

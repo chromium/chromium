@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Shiko statistikat e faqes</translation>
 <translation id="1108938384783527433">Sinkronizimi i historikut</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
-<translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1129510026454351943">Detajet: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Modaliteti "I fshehtë" ruan privatësinë e shfletimit tënd nga personat e tjerë që përdorin pajisjen tënde</translation>
@@ -122,6 +121,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1480287803138246127">Një pjesë e historikut tënd mund të mos shfaqet këtu. Për të parë të gjithë historikun e Chrome, hap historikun e plotë të Chrome.</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
 <translation id="1493287004536771723">Po ndjek <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">emri i përdoruesit</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
 <translation id="1502010315804028179">Për të menaxhuar fjalëkalimet e tua, përditëso shërbimet e Google Play</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
@@ -221,6 +221,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="197288927597451399">Mbaje</translation>
 <translation id="1973912524893600642">Mbaj të dhënat</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
+<translation id="1984087999855033707">numri i telefonit</translation>
 <translation id="1984417487208496350">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="1986685561493779662">Emri ekziston tashmë</translation>
 <translation id="200114059308480249">Të përfshihet teksti përreth në kërkimet e Google?</translation>
@@ -1874,8 +1875,8 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="95817756606698420">Chrome mund të përdorë <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> për kërkimin në Kinë. Mund ta ndryshosh këtë te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Fshi të dhënat e shfletimit</translation>
+<translation id="963246339335003378">Hap "Menaxherin e detyrave"</translation>
 <translation id="966131775676567255">Të dhënat e llogarisë po fshihen</translation>
-<translation id="96681097142096641">Të shikohet faqja e thjeshtuar?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>

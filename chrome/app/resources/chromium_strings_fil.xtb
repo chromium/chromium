@@ -82,7 +82,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2049376729098081731">Piliin kung isasama ang history ng Chromium para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>
 <translation id="2054039611381840095">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng macOS 12 o mas bago. Gumagamit ng macOS 11 ang computer na ito.</translation>
 <translation id="2086476982681781442">Na-block ng Chromium ang pag-download na ito dahil mapanlinlang ang file at posible itong gumawa ng mga hindi inaasahang pagbabago sa iyong device</translation>
-<translation id="2088953378266246249">Impormasyon tungkol sa kung paano pinapamahalaan ng Chromium ang mga root certificate nito</translation>
 <translation id="2099452623287920103">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chromium na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chromium, mag-sign in ulit.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang 1 minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}one{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}other{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # na minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}}</translation>
 <translation id="2126108037660393668">Hindi na-verify ang na-download na file.</translation>
@@ -611,7 +610,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Gawing iyo ang Chromium</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
-<translation id="942598560705308788">Mga certificate na pinapamahalaan ng Chromium</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="965162752251293939">Sino ang gumagamit ng Chromium?</translation>
 <translation id="967427899662692980">Kunin ang pinakamahusay na seguridad ng Chromium</translation>

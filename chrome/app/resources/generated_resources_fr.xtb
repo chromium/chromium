@@ -218,7 +218,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1147322039136785890">C'est au tour de l'utilisateur <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, contactez l'administrateur de cet appareil.</translation>
 <translation id="1148464196693569530">Autoriser les scripts utilisateur</translation>
-<translation id="1148624853678088576">Vous êtes prêt !</translation>
+<translation id="1148624853678088576">Tout est prêt !</translation>
 <translation id="1148669835763563782">La dernière mise à jour logicielle s'installe pour vous offrir une sécurité renforcée et les dernières fonctionnalités Chromebook. Cette mise à jour inclut une expérience de configuration améliorée pour vous aider à bien démarrer sur votre Chromebook.</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149483087970735785">Technologie d'assistance</translation>
@@ -1028,7 +1028,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1696555181932908973">Vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Serveur SSH configuré sur l'appareil. Ne vous connectez pas avec un compte sensible.</translation>
 <translation id="1697122132646041614">"Je n'aime pas" permet d'ouvrir un formulaire où indiquer précisément pourquoi ces résultats ne vous conviennent pas.</translation>
-<translation id="1697532407822776718">Vous êtes prêt !</translation>
+<translation id="1697532407822776718">Tout est prêt !</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Modes de paiement</translation>
 <translation id="1698899521169711967">Navigation au clavier</translation>
@@ -4755,7 +4755,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="428963538941819373">Ces sites peuvent utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous parcourez <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
-<translation id="4290526909608432059">Les applications Chrome ne seront bientôt plus prises en charge. Pour connaître vos options, contactez le développeur de l'appli ou votre équipe d'assistance informatique.</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer l'écran pour changer de page</translation>
@@ -7622,6 +7621,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ajouter des proches</translation>
 <translation id="6367097275976877956">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour Chrome OS ? Si oui, appuyez sur la barre d'espace.</translation>
+<translation id="6367196786591004737">Supprimer l'entrée</translation>
 <translation id="6367396429435748845">Appuyez sur <ph name="ALT" />+<ph name="LAUNCHER" />+<ph name="NUM_4" /> pour suspendre et réactiver les boutons de la souris</translation>
 <translation id="6367985768157257101">Recevoir via le Partage à proximité ?</translation>
 <translation id="6368157733310917710">Adresses et plus</translation>
@@ -7957,7 +7957,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6610064275805055636">Gérer les applications Web isolées</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> onglet</translation>
-<translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Recherche de logiciels malveillants…</translation>
 <translation id="6615455863669487791">Démonstration</translation>
@@ -10620,6 +10619,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8472623782143987204">matériel requis</translation>
 <translation id="8473540203671727883">Lire à haute voix le texte sous la souris</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
+<translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8474561048882755118">Vous permet de voir côte à côte des produits similaires et de comparer facilement les détails qui vous intéressent</translation>
 <translation id="8475313423285172237">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Google Chrome.</translation>

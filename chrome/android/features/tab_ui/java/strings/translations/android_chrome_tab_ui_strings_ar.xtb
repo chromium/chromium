@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1036348656032585052">إيقاف</translation>
-<translation id="1045448422538531528">إضافة إلى مجموعة</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{تم إنشاء المجموعة قبل أسبوع واحد (<ph name="NUM_WEEKS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}two{تم إنشاء المجموعة قبل أسبوعَين (<ph name="NUM_WEEKS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسابيع}many{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوعًا}other{تم إنشاء المجموعة قبل <ph name="NUM_WEEKS_MANY" /> أسبوع}}</translation>
 <translation id="1063300264396686489">فتح مجموعات علامات التبويب من الأجهزة الأخرى تلقائيًا</translation>
 <translation id="1075622780330595106">لم يتم استخدام <ph name="NUMBER_OF_TABS" /> من علامات التبويب مؤخرًا. هل تريد إغلاقها؟</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{تم إغلاق علامة تبويب واحدة (<ph name="ONE_CLOSED" />)}zero{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}two{تم إغلاق علامتَي تبويب (<ph name="MANY_CLOSED" />)}few{تم إغلاق <ph name="MANY_CLOSED" /> علامات تبويب}many{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}other{تم إغلاق <ph name="MANY_CLOSED" /> علامة تبويب}}</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
-<translation id="2977480621796371840">الإزالة من المجموعة</translation>
 <translation id="29919168204617356">سيتم تلقائيًا إغلاق علامات التبويب غير النشطة. ويمكنك العثور عليها في أي وقت ضمن "السجلّ".</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3026391124054406831">أنشِئ مجموعات لتنظيم علامات التبويب.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
 <translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
+<translation id="6212567362666004597">إضافة علامة التبويب إلى المجموعة</translation>
 <translation id="6220820548421939212">نعم، أريد ذلك</translation>
 <translation id="6228793724645064692">(تقييم المتجر)</translation>
 <translation id="6271513594716432922">إغلاق جميع علامات التبويب غير النشطة</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">‏يغلق متصفّح Chrome تلقائيًا علامات التبويب في القسم غير النشط التي لم يتم استخدامها منذ 3 أشهر. يمكنك إيقاف هذه الميزة الآن أو في أي وقت من خلال "الإعدادات".</translation>
 <translation id="8887921976452567404">يمكن إعادة فتح علامات التبويب والمجموعات المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب".</translation>
 <translation id="8915916167043355778">إغلاق الكل</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{النقل إلى نافذة جديدة}zero{النقل إلى نافذة أخرى}two{النقل إلى نافذة أخرى}few{النقل إلى نافذة أخرى}many{النقل إلى نافذة أخرى}other{النقل إلى نافذة أخرى}}</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9114502155681725011">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /></translation>
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>

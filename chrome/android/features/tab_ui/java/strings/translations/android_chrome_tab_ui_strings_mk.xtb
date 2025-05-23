@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1036348656032585052">Исклучи</translation>
-<translation id="1045448422538531528">Додајте во група</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Создадено пред <ph name="NUM_WEEKS_ONE" /> седмица}one{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмица}other{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
 <translation id="1063300264396686489">Автоматски отворај групи картички од други уреди</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Затворени картички: <ph name="ONE_CLOSED" />}one{Затворени картички: <ph name="MANY_CLOSED" />}other{Затворени картички: <ph name="MANY_CLOSED" />}}</translation>
 <translation id="2894757982205307093">Нова картичка во групата</translation>
 <translation id="2928243913527329289">Google | За продавницава</translation>
-<translation id="2977480621796371840">Отстрани од групата</translation>
 <translation id="29919168204617356">Неактивните картички ќе се затвораат автоматски. Секогаш може да ги најдете во „Историја“.</translation>
 <translation id="3008554597174452548">Запри со следење на производот</translation>
 <translation id="3026391124054406831">Создајте групи за да ги организирате вашите картички.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">Вашите групи картички се зачувуваат автоматски</translation>
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
+<translation id="6212567362666004597">Додајте картичка во групата</translation>
 <translation id="6220820548421939212">Да. Прифаќам</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="6271513594716432922">Затвори ги сите неактивни картички</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">Chrome автоматски ќе ги затвора ставките што не сте ги користеле 3 месеци во делот со неактивни картички. Ова може да го исклучите сега или кога сакате во „Поставки“.</translation>
 <translation id="8887921976452567404">Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“.</translation>
 <translation id="8915916167043355778">Затвори ги сите</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Преместете во нов прозорец}one{Преместете во друг прозорец}other{Преместете во друг прозорец}}</translation>
 <translation id="9090098097337832354">Информациите за продавницава се затворени</translation>
 <translation id="9114502155681725011">Отворете го менито со дејства на група картички за групата картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>

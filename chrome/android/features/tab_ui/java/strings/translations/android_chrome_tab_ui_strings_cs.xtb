@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1036348656032585052">Vypnout</translation>
-<translation id="1045448422538531528">Přidat do skupiny</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vytvořeno před <ph name="NUM_WEEKS_ONE" /> týdnem}few{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdny}many{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdne}other{Vytvořeno před <ph name="NUM_WEEKS_MANY" /> týdny}}</translation>
 <translation id="1063300264396686489">Automaticky otevírat skupiny karet z jiných zařízení</translation>
 <translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Zavřena <ph name="ONE_CLOSED" /> karta}few{Zavřeny <ph name="MANY_CLOSED" /> karty}many{Zavřeno <ph name="MANY_CLOSED" /> karty}other{Zavřeno <ph name="MANY_CLOSED" /> karet}}</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
 <translation id="2928243913527329289">Google | Informace o obchodu</translation>
-<translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="29919168204617356">Neaktivní karty se automaticky zavřou. Vždy je najdete v historii.</translation>
 <translation id="3008554597174452548">Přestat produkt sledovat</translation>
 <translation id="3026391124054406831">Vytvořením skupin si můžete uspořádat své karty.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Cena této položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Všechny duplicitní karty s výjimkou naposledy použité kopie teď budou archivovány.</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
+<translation id="6212567362666004597">Přidat kartu do skupiny</translation>
 <translation id="6220820548421939212">Ano</translation>
 <translation id="6228793724645064692">(hodnocení v obchodu)</translation>
 <translation id="6271513594716432922">Zavřít všechny neaktivní karty</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome automaticky zavírá položky v neaktivní sekci, které jste 3 měsíce nepoužili. Tuto funkci můžete teď nebo kdykoli jindy v Nastavení vypnout.</translation>
 <translation id="8887921976452567404">Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet.</translation>
 <translation id="8915916167043355778">Zavřít vše</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Přesunout do nového okna}few{Přesunout do jiného okna}many{Přesunout do jiného okna}other{Přesunout do jiného okna}}</translation>
 <translation id="9090098097337832354">Informace o této prodejně jsou zavřeny</translation>
 <translation id="9114502155681725011">Otevřít nabídku akcí pro skupinu karet <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" /></translation>
 <translation id="9169594135889675189">Přidat do skupiny novou kartu</translation>

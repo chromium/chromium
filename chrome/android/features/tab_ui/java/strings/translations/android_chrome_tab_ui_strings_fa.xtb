@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1036348656032585052">خاموش کردن</translation>
-<translation id="1045448422538531528">افزودن به گروه</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش ایجاد شد}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}}</translation>
 <translation id="1063300264396686489">باز شدن خودکار گروه‌های برگه از دستگاه‌های دیگر</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
-<translation id="2977480621796371840">برداشتن از گروه</translation>
 <translation id="29919168204617356">برگه‌های غیرفعال به‌طور خودکار بسته خواهد شد. هرزمان بخواهید می‌توانید آن‌ها را در «سابقه» ببینید.</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3026391124054406831">با ایجاد گروه‌ها، برگه‌هایتان را سازمان‌دهی کنید.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
+<translation id="6212567362666004597">افزودن برگه به گروه</translation>
 <translation id="6220820548421939212">بله. مایلم</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6271513594716432922">بستن همه برگه‌های غیرفعال</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که طی ۳ ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هر زمان دیگری در «تنظیمات» خاموش کنید.</translation>
 <translation id="8887921976452567404">برگه‌ها و گروه‌های بسته‌شده از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز خواهند شد.</translation>
 <translation id="8915916167043355778">بستن همه</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{انتقال به پنجره جدید}one{انتقال به پنجره دیگر}other{انتقال به پنجره دیگر}}</translation>
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>
 <translation id="9114502155681725011">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>

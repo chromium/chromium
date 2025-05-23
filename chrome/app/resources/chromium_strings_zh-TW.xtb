@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">選擇是否要包含 Chromium 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
 <translation id="2054039611381840095">如果之後要更新 Chromium，請使用 macOS 12 以上版本。這部電腦目前搭載的版本為 macOS 11。</translation>
 <translation id="2086476982681781442">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
-<translation id="2088953378266246249">瞭解 Chromium 如何管理根憑證</translation>
 <translation id="2099452623287920103">Google 帳戶中儲存的密碼和其他 Chromium 資料將從這部裝置上移除。如要在 Chromium 中再次使用這些資料，請重新登入。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
 <translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
@@ -608,7 +607,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">享有個人化的 Chromium 體驗</translation>
 <translation id="93478295209880648">Chromium 已不適用於 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
-<translation id="942598560705308788">由 Chromium 管理的憑證</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>

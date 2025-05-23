@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1036348656032585052">Tắt</translation>
-<translation id="1045448422538531528">Thêm vào nhóm</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Tạo <ph name="NUM_WEEKS_ONE" /> tuần trước}other{Tạo <ph name="NUM_WEEKS_MANY" /> tuần trước}}</translation>
 <translation id="1063300264396686489">Tự động mở nhóm thẻ từ các thiết bị khác</translation>
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Đã đóng <ph name="ONE_CLOSED" /> thẻ}other{Đã đóng <ph name="MANY_CLOSED" /> thẻ}}</translation>
 <translation id="2894757982205307093">Thẻ mới trong nhóm</translation>
 <translation id="2928243913527329289">Google | Giới thiệu về cửa hàng này</translation>
-<translation id="2977480621796371840">Xóa khỏi nhóm</translation>
 <translation id="29919168204617356">Các thẻ không hoạt động sẽ tự động đóng. Bạn có thể tìm thấy các thẻ này bất cứ lúc nào trong phần Nhật ký.</translation>
 <translation id="3008554597174452548">Dừng theo dõi sản phẩm</translation>
 <translation id="3026391124054406831">Tạo nhóm để sắp xếp các thẻ.</translation>
@@ -122,7 +120,9 @@
 <translation id="6051432659151380973">Các nhóm thẻ của bạn sẽ tự động lưu</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Di chuyển nhóm sang cửa sổ mới}other{Di chuyển nhóm sang cửa sổ khác}}</translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
+<translation id="6212567362666004597">Thêm thẻ vào nhóm</translation>
 <translation id="6220820548421939212">Có. Tôi đồng ý</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="6271513594716432922">Đóng tất cả các thẻ không hoạt động</translation>
@@ -202,7 +202,6 @@
 <translation id="883379923675618699">Chrome tự động đóng các mục trong phần không hoạt động mà bạn không dùng đến trong vòng 3 tháng. Bạn có thể tắt tính năng này ngay bây giờ hoặc bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="8887921976452567404">Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ.</translation>
 <translation id="8915916167043355778">Đóng tất cả</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Chuyển sang cửa sổ mới}other{Chuyển sang cửa sổ khác}}</translation>
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9114502155681725011">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" /></translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>

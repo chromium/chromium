@@ -4769,7 +4769,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4289540628985791613">Ukubuka konke</translation>
 <translation id="428963538941819373">La masayithi angasebenzisa imininingwane ayilondolozile ngawe njengoba ubhrawuza <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Khetha Iphinikhodi</translation>
-<translation id="4290526909608432059">Ukusekelwa kwezinhlelo zokusebenza zeChrome kuzophela maduze. Ukuze ufunde mayelana nengakukhetha kukho, xhumana nonjiniyela wohlelo lokusebenza noma ithimba lakho losekelo lwe-IT.</translation>
 <translation id="4290791284969893584">Ngemuva kokuvala ikhasi, imisebenzi oyiqalile kungenzeka ingaqedi</translation>
 <translation id="4290826901752066702">Ilungu elingu-<ph name="NUM" /></translation>
 <translation id="4290898381118933198">Swayipha ukuze ufune phakathi namakhasi</translation>
@@ -7638,6 +7637,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6365069501305898914">I-Facebook</translation>
 <translation id="6365411474437319296">Engeza umndeni nabangani</translation>
 <translation id="6367097275976877956">Ingabe ufuna ukwenza i-ChromeVox isebenze, isifundi sesikrini esakhelwe phakathi se-ChromeOS? Uma kunjalo, cindezela i-space bar.</translation>
+<translation id="6367196786591004737">Susa okufakwayo</translation>
 <translation id="6367396429435748845">Cindezela u-<ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> ukuze umise futhi uqhubeke nokhiye bemawusi</translation>
 <translation id="6367985768157257101">Thola Ngokuthumela Eduze?</translation>
 <translation id="6368157733310917710">&amp;Amakheli nokuningi</translation>
@@ -7973,7 +7973,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6610002944194042868">Izinketho zokuhumusha</translation>
 <translation id="6610064275805055636">Phatha ama-app ewebhu abekwe wodwa</translation>
 <translation id="6611432349566876829">Ithebhu engu-<ph name="NUM" /></translation>
-<translation id="6611972847767394631">Thola amathebhu wakho lapha</translation>
 <translation id="661266467055912436">Kuthuthukisa ukuvikeleka kwakho nawo wonke umuntu okuwebhu.</translation>
 <translation id="6613267708691765962">Iskenela uhlelo olungayilungele ikhompuyutha...</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
@@ -10633,6 +10632,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8472623782143987204">izingxenyekazi zekhompyutha zenziwe isipele</translation>
 <translation id="8473540203671727883">Khuluma umbhalo ngaphansi kwegundane</translation>
 <translation id="8473863474539038330">Amakheli nokuningi</translation>
+<translation id="847433688444405067">Bhrawuza kumadivayisi wonkana</translation>
 <translation id="8474378002946546633">Vumela izaziso</translation>
 <translation id="8474561048882755118">Kukusiza ubone imikhiqizo efanayo ngapha nangapha futhi uqhathanise kalula imininingwane ebalulekile kuwe</translation>
 <translation id="8475313423285172237">Olunye uhlelo kukhompyutha yakho lungeze isandiso esingaguqula indlela i-Chrome esebenza ngayo.</translation>

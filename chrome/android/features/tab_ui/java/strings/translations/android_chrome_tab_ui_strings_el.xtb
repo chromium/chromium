@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
-<translation id="1045448422538531528">Προσθήκη στην ομάδα</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_ONE" /> εβδομάδα}other{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_MANY" /> εβδομάδες}}</translation>
 <translation id="1063300264396686489">Αυτόματο άνοιγμα ομάδων καρτελών από άλλες συσκευές</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Έκλεισε <ph name="ONE_CLOSED" /> καρτέλα}other{Έκλεισαν <ph name="MANY_CLOSED" /> καρτέλες}}</translation>
 <translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="2928243913527329289">Google | Σχετικά με αυτό το κατάστημα</translation>
-<translation id="2977480621796371840">Κατάργηση από την ομάδα</translation>
 <translation id="29919168204617356">Οι ανενεργές καρτέλες θα κλείσουν αυτόματα. Μπορείτε να τις βρείτε στο Ιστορικό ανά πάσα στιγμή.</translation>
 <translation id="3008554597174452548">Διακοπή παρακολούθησης προϊόντος</translation>
 <translation id="3026391124054406831">Δημιουργήστε ομάδες για να οργανώσετε τις καρτέλες σας.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
+<translation id="6212567362666004597">Προσθήκη καρτέλας σε ομάδα</translation>
 <translation id="6220820548421939212">Ναι. Συμφωνώ</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="6271513594716432922">Κλείσιμο όλων των ανενεργών καρτελών</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Το Chrome κλείνει αυτόματα στοιχεία στην ενότητα ανενεργών τα οποία δεν έχετε χρησιμοποιήσει εδώ και 3 μήνες. Μπορείτε να απενεργοποιήσετε αυτή τη λειτουργία τώρα ή ανά πάσα στιγμή από τις Ρυθμίσεις.</translation>
 <translation id="8887921976452567404">Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών.</translation>
 <translation id="8915916167043355778">Κλείσιμο όλων</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Μετακίνηση σε νέο παράθυρο}other{Μετακίνηση σε άλλα παράθυρα}}</translation>
 <translation id="9090098097337832354">Κλείσιμο πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="9114502155681725011">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, με χρώμα <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>

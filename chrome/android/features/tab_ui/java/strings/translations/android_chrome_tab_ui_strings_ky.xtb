@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1036348656032585052">Өчүрүү</translation>
-<translation id="1045448422538531528">Топко кошуу</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> апта мурун түзүлдү}other{<ph name="NUM_WEEKS_MANY" /> апта мурун түзүлдү}}</translation>
 <translation id="1063300264396686489">Башка түзмөктөрдөгү өтмөк топторун автоматтык түрдө ачуу</translation>
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_CLOSED" /> өтмөк жабылды}}</translation>
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
 <translation id="2928243913527329289">Google | Бул дүкөн тууралуу</translation>
-<translation id="2977480621796371840">Топтон алып салуу</translation>
 <translation id="29919168204617356">Жигерсиз өтмөктөр автоматтык түрдө жабылат. Аларды Таржымалдан каалаган убакта таба аласыз.</translation>
 <translation id="3008554597174452548">Товарга көз салууну токтотуу</translation>
 <translation id="3026391124054406831">Өтмөктөрдү иреттөө үчүн топторду түзүңүз.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6109251075362363230">Эми эң акыркы колдонулгандан башка бардык кайталанма өтмөктөр архивделет.</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
+<translation id="6212567362666004597">Өтмөктү топко кошуу</translation>
 <translation id="6220820548421939212">Ооба</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="6271513594716432922">Жигерсиз өтмөктөрдүн баарын жабуу</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">3 айдын ичинде колдонбогон Chrome'догу өтмөктөрүңүз автоматтык түрдө жабылат. Бул функцияны азыр же каалаган убакта параметрлерден өчүрүп койсоңуз болот.</translation>
 <translation id="8887921976452567404">Жабылган өтмөктөр менен топторду Акыркы өтмөктөр жана Өтмөк топтору бөлүмүнөн кайра ачууга болот.</translation>
 <translation id="8915916167043355778">Баарын жабуу</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Жаңы терезеге жылдыруу}other{Башка терезеге жылдыруу}}</translation>
 <translation id="9090098097337832354">Бул дүкөн тууралуу маалымат жабык</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> түсүндөгү <ph name="TITLE_OF_GROUP" /> өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз.</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>

@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Lege fest, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="2054039611381840095">Du benötigst macOS 12 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 11 ausgeführt.</translation>
 <translation id="2086476982681781442">Chromium hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
-<translation id="2088953378266246249">Informationen zur Verwaltung von Root-Zertifikaten in Chromium</translation>
 <translation id="2099452623287920103">Deine Passwörter und anderen in deinem Google-Konto gespeicherten Chromium-Daten werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chromium verwenden möchtest, melde dich einfach wieder an.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Deine Organisation löscht Browserdaten automatisch, wenn Chromium eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine Tabs bleiben dabei geöffnet.}other{Deine Organisation löscht Browserdaten automatisch, wenn Chromium # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine Tabs bleiben dabei geöffnet.}}</translation>
 <translation id="2126108037660393668">Die heruntergeladene Datei konnte nicht verifiziert werden.</translation>
@@ -608,7 +607,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromium personalisieren</translation>
 <translation id="93478295209880648">Chromium funktioniert unter Umständen nicht ordnungsgemäß, da es unter Windows XP und Windows Vista nicht mehr unterstützt wird</translation>
-<translation id="942598560705308788">Von Chromium verwaltete Zertifikate</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
 <translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>

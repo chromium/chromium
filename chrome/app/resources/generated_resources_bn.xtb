@@ -4770,7 +4770,6 @@
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="428963538941819373">আপনি <ph name="HOST" /> ব্রাউজ করার সময় এইসব সাইট আপনার সম্পর্কে যে তথ্য সেভ করেছে তা সাইটগুলি ব্যবহার করতে পারবে</translation>
 <translation id="4289732974614035569">পিন বেছে নিন</translation>
-<translation id="4290526909608432059">Chrome অ্যাপের জন্য শীঘ্রই সহায়তা বন্ধ করে দেওয়া হবে। আপনার বিকল্প সম্পর্কে জানতে, অ্যাপ ডেভেলপার বা আইটি সহায়তা টিমের সাথে যোগাযোগ করুন।</translation>
 <translation id="4290791284969893584">কোনও পৃষ্ঠা বন্ধ করে দিলে, আপনার শুরু করা টাস্ক নাও শেষ হতে পারে</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> জন মেম্বার</translation>
 <translation id="4290898381118933198">একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে সোয়াইপ করুন</translation>
@@ -7639,6 +7638,7 @@
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">পরিবার এবং বন্ধুদের যোগ করুন</translation>
 <translation id="6367097275976877956">আপনি কি ChromeOS-এর বিল্ট-ইন স্ক্রিন রিডার ChromeVox অ্যাক্টিভেট করতে চাইছেন? উত্তর হ্যাঁ হলে, স্পেসবার প্রেস করুন।</translation>
+<translation id="6367196786591004737">এন্ট্রি মুছুন</translation>
 <translation id="6367396429435748845">'মাউস কী' পজ ও আবার চালু করতে, <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> প্রেস করুন</translation>
 <translation id="6367985768157257101">'নিয়ারবাই শেয়ার' ফিচারের মাধ্যমে আপনি কি ডেটা পেতে চান?</translation>
 <translation id="6368157733310917710">&amp;অ্যাড্রেস ও আরও</translation>
@@ -7974,7 +7974,6 @@
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
 <translation id="6610064275805055636">আইসোলেটেড ওয়েব অ্যাপ ম্যানেজ করুন</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> ট্যাব</translation>
-<translation id="6611972847767394631">এখানে আপনার ট্যাবগুলি দেখুন</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6613267708691765962">ম্যালওয়্যারের জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
@@ -10636,6 +10635,7 @@
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473540203671727883">মাউস কার্সারের নিচে থাকা টেক্সট পড়ুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
+<translation id="847433688444405067">ডিভাইস জুড়ে ব্রাউজ করা</translation>
 <translation id="8474378002946546633">সূচনাকে মঞ্জুরী দিন</translation>
 <translation id="8474561048882755118">একই ধরনের প্রোডাক্ট পাশাপাশি রেখে দেখতে এবং আপনার কাছে গুরুত্বপূর্ণ তথ্য সহজে তুলনা করতে সাহায্য করে</translation>
 <translation id="8475313423285172237">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম এক্সটেনশন যোগ করেছে যা Chrome-এর কাজ করার ধরন পাল্টে দিতে পারে৷</translation>

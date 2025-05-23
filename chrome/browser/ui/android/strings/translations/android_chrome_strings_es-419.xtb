@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Ver estadísticas de la pág.</translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
-<translation id="1113597929977215864">Mostrar la vista simplificada</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">El modo Incógnito mantiene tu navegación privada ante las personas que usan tu dispositivo</translation>
@@ -1876,8 +1875,8 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
 <translation id="95817756606698420">Chrome puede usar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para realizar búsquedas en China. Puede cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
+<translation id="963246339335003378">Abrir el Administrador de tareas</translation>
 <translation id="966131775676567255">Borrando los datos de la cuenta</translation>
-<translation id="96681097142096641">¿Quieres ver una página simplificada?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>

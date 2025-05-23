@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Estadístiques de la pàgina</translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
-<translation id="1113597929977215864">Mostra la visualització simplificada</translation>
 <translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
 <translation id="1129510026454351943">Detalls: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">El mode d'incògnit manté la navegació privada perquè altres persones que utilitzin el teu dispositiu no la puguin veure</translation>
@@ -1878,7 +1877,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="961856697154696964">Suprimeix dades de navegació</translation>
 <translation id="963246339335003378">Obre el gestor de tasques</translation>
 <translation id="966131775676567255">S'estan suprimint les dades del compte</translation>
-<translation id="96681097142096641">Vols mostrar la pàgina simplificada?</translation>
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>

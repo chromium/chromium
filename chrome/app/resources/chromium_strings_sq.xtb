@@ -81,7 +81,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2049376729098081731">Zgjidh nëse do ta përfshish historikun e Chromium për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="2054039611381840095">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 12 ose një version i mëvonshëm. Ky kompjuter përdor macOS 11.</translation>
 <translation id="2086476982681781442">Chromium e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
-<translation id="2088953378266246249">Informacione rreth mënyrës se si i menaxhon Chromium certifikatat e veta rrënjë</translation>
 <translation id="2099452623287920103">Fjalëkalimet e tua dhe të dhënat e tjera të Chromium që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
@@ -610,7 +609,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
-<translation id="942598560705308788">Certifikatat e menaxhuara nga Chromium</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="965162752251293939">Kush po e përdor Chromium?</translation>
 <translation id="967427899662692980">Merr sigurinë më të fortë të Chromium</translation>

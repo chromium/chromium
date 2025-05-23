@@ -265,6 +265,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
 <translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
+<translation id="1433478348197382180">Leesmodus</translation>
 <translation id="1436185428532214179">Kan vragen of deze site bestanden en mappen op je apparaat mag bewerken</translation>
 <translation id="1442386063175183758">Gatefold rechts</translation>
 <translation id="1442987760062738829">Perforeren</translation>
@@ -839,7 +840,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
-<translation id="2418292431699242678">Je beheerder heeft het volgende aangezet om te synchroniseren tussen je vorige en huidige sessies op een ChromeOS-apparaat:</translation>
 <translation id="2429716554270894715">Stof (waterdicht)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen?</translation>
 <translation id="2436976580469434549">Textielkunst</translation>
@@ -1175,7 +1175,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3039406992698062762">Gezinsreizen</translation>
-<translation id="3040636468789770340">Cookies (ingelogde status op je recent bezochte websites)</translation>
 <translation id="3041176923638368519">Voorwaarden voor kaartvoordelen bekijken</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
 <translation id="3045769629416806687">Extreme sporten</translation>
@@ -1678,7 +1677,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3869939189466884821">Je lokale bestanden worden over <ph name="MINUTES" /> minuten verwijderd</translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
-<translation id="387681220560687945">Vensters (indeling en organisatie van vensters en tabbladen)</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
 <translation id="3880589673277376494">Internet en telecom</translation>
@@ -2243,7 +2241,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4866506163384898554">Druk op |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om je cursor te tonen</translation>
 <translation id="4873616204573862158">Brillen</translation>
 <translation id="4873807733347502026">Je muis vergrendelen en gebruiken</translation>
-<translation id="4876188919622883022">Vereenvoudigde weergave</translation>
 <translation id="4876305945144899064">Geen gebruikersnaam</translation>
 <translation id="4876327226315760474">Dit betekent dat sitefuncties werken zoals verwacht, maar dat je browser misschien minder goed beveiligd is.</translation>
 <translation id="4877047577339061095">Opbergmeubelen en kasten voor thuis</translation>
@@ -2393,7 +2390,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
 <translation id="5120526915373271910">Familiefilms</translation>
-<translation id="5121592697493894155">Google Zoeken in zijvenster</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5123433949759960244">Basketbal</translation>
@@ -3023,7 +3019,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="622039917539443112">Parallelvouw</translation>
 <translation id="6221286101741304627">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="6221311046884916259">Wil je deze kaart opslaan in je Google-account?</translation>
-<translation id="6221892641068781024">Vereenvoudigde weergave</translation>
 <translation id="6222527803348563979">Briefpapier</translation>
 <translation id="62231116988543150">Web-apps kunnen installeren</translation>
 <translation id="6224281071334553713">Juwelen en sieraden</translation>

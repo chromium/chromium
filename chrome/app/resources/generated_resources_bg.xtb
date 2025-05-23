@@ -4766,7 +4766,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="428963538941819373">При сърфиране на адрес <ph name="HOST" /> тези сайтове могат да използват информацията, която са запазили за вас</translation>
 <translation id="4289732974614035569">Изберете ПИН</translation>
-<translation id="4290526909608432059">Поддръжката за приложенията за Chrome скоро ще приключи. За да научите за възможностите, които имате, свържете се с програмиста на приложението или с екипа си за поддръжка по ИТ.</translation>
 <translation id="4290791284969893584">След като затворите дадена страница, стартираните от вас задачи може да не бъдат завършени</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> член</translation>
 <translation id="4290898381118933198">Прекарване на пръст за навигиране между страниците</translation>
@@ -7635,6 +7634,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Добавяне на близки и приятели</translation>
 <translation id="6367097275976877956">Искате ли да активирате ChromeVox – вградения екранен четец на Chrome OS? Ако е така, натиснете клавиша за интервал.</translation>
+<translation id="6367196786591004737">Изтриване на записа</translation>
 <translation id="6367396429435748845">Натиснете <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" />, за да поставяте на пауза и възобновявате функцията за клавиши за мишката</translation>
 <translation id="6367985768157257101">Искате ли да получите чрез „Споделяне наблизо“?</translation>
 <translation id="6368157733310917710">&amp;Адреси и др.</translation>
@@ -7968,7 +7968,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6610002944194042868">Опции за превод</translation>
 <translation id="6610064275805055636">Управление на изолираните уеб приложения</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> раздел</translation>
-<translation id="6611972847767394631">Намирайте разделите си тук</translation>
 <translation id="661266467055912436">Подобрява сигурността за вас и всички потребители в мрежата.</translation>
 <translation id="6613267708691765962">Сканира се за злонамерен софтуер...</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
@@ -10003,6 +10002,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8037801708772278989">Проверено току-що</translation>
 <translation id="8038111231936746805">(по подразбиране)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл се копира в <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} файла се копират в <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Това приложение за Chrome ще спре да работи, след като версията на ChromeOS бъде актуализирана. Запазете данните от приложението, които искате да съхраните. За да научите за възможностите, които имате, свържете се с програмиста на приложението или с екипа си за поддръжка по ИТ.</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8041093619605951337">Щастие</translation>
 <translation id="8041267120753677077">Предавайте поточно приложенията на телефона си</translation>
@@ -10631,6 +10631,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8472623782143987204">с хардуерна поддръжка</translation>
 <translation id="8473540203671727883">Изговаряне на текста под курсора на мишката</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
+<translation id="847433688444405067">Разглеждане от всички устройства</translation>
 <translation id="8474378002946546633">Разрешаване на известията</translation>
 <translation id="8474561048882755118">Помага ви да виждате подобни продукти един до друг и лесно да сравнявате важните за вас подробности</translation>
 <translation id="8475313423285172237">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chrome.</translation>

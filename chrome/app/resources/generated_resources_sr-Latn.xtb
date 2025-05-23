@@ -4754,7 +4754,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="428963538941819373">Ovi sajtovi mogu da koriste informacije koje su sačuvali o vama tokom pregledanja <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Izaberite PIN</translation>
-<translation id="4290526909608432059">Podrška za Chrome aplikacije će uskoro prestati. Da biste saznali više o opcijama, obratite se programeru aplikacije ili timu za IT podršku.</translation>
 <translation id="4290791284969893584">Posle zatvaranja stranice zadaci koje ste započeli se možda neće dovršiti</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Prevucite da biste prelazili s jedne stranice na drugu</translation>
@@ -7621,6 +7620,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Dodajte porodicu i prijatelje</translation>
 <translation id="6367097275976877956">Želite li da aktivirate ChromeVox, ugrađeni čitač ekrana za Chrome OS? Ako je tako, pritisnite taster za razmak.</translation>
+<translation id="6367196786591004737">Izbriši unos</translation>
 <translation id="6367396429435748845">Pritisnite <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> da biste pauzirali i nastavili korišćenje tastera miša</translation>
 <translation id="6367985768157257101">Želite da primate sadržaj pomoću Deljenja u blizini?</translation>
 <translation id="6368157733310917710">Adrese i drugo</translation>
@@ -7958,7 +7958,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6610002944194042868">Opcije prevoda</translation>
 <translation id="6610064275805055636">Upravljajte izolovanim veb-aplikacijama</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> kartica</translation>
-<translation id="6611972847767394631">Pronađite kartice ovde</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
 <translation id="6613267708691765962">Traži se malver...</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
@@ -10621,6 +10620,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8472623782143987204">hardverski podržan</translation>
 <translation id="8473540203671727883">Izgovaraj tekst pod mišem</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
+<translation id="847433688444405067">Pregledajte na više uređaja</translation>
 <translation id="8474378002946546633">Dozvoli obaveštenja</translation>
 <translation id="8474561048882755118">Omogućava vam da vidite slične proizvode jedan pored drugog i lako uporedite detalje koji su vam važni</translation>
 <translation id="8475313423285172237">Drugi program na računaru je dodao dodatak koji može da promeni način na koji Chrome funkcioniše.</translation>

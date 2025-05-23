@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Zobraziť štatistiky stránky</translation>
 <translation id="1108938384783527433">Synchronizácia histórie</translation>
 <translation id="1111673857033749125">Tu sa zobrazia záložky, ktoré ste uložili na iných zariadeniach.</translation>
-<translation id="1113597929977215864">Aktivovať zjednodušené zobrazenie</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1129510026454351943">Podrobnosti: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Režim inkognito chráni vaše prehliadanie pred ostatnými, ktorí používajú vaše zariadenie</translation>
@@ -122,6 +121,7 @@
 <translation id="1480287803138246127">Časť vašej histórie sa tu nemusí zobraziť. Ak si chcete pozrieť celú históriu Chromu, otvorte ju.</translation>
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
 <translation id="1493287004536771723">Sledujete web <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">používateľské meno</translation>
 <translation id="1501480321619201731">Odstrániť skupinu</translation>
 <translation id="1502010315804028179">Ak chcete svoje heslá spravovať, aktualizujte Služby Google Play</translation>
 <translation id="1506061864768559482">Vyhľadávač</translation>
@@ -221,6 +221,7 @@
 <translation id="197288927597451399">Uložiť</translation>
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
+<translation id="1984087999855033707">telefónne číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
 <translation id="1986685561493779662">Názov už existuje</translation>
 <translation id="200114059308480249">Chcete zahŕňať okolitý text vo vyhľadávaniach na Googli?</translation>
@@ -1874,8 +1875,8 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="939598580284253335">Zadať prístupovú frázu</translation>
 <translation id="95817756606698420">Chrome môže použiť <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> na vyhľadávanie v Číne. Táto možnosť sa dá zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
+<translation id="963246339335003378">Otvoriť správcu úloh</translation>
 <translation id="966131775676567255">Údaje účtu sa odstraňujú</translation>
-<translation id="96681097142096641">Chcete zobraziť zjednodušenú stránku?</translation>
 <translation id="970715775301869095">Zostáva: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavrieť všetky karty</translation>

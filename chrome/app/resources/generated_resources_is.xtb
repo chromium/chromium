@@ -720,6 +720,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1494349716233667318">Vefsvæði geta beðið um að nota leturgerðir sem eru uppsettar í tækinu</translation>
 <translation id="1494429729245089920">Sýndarvélin „<ph name="VM_NAME" />“ er til en virðist ekki vera gild <ph name="APP_NAME" />-sýndarvél. Hafðu samband við kerfisstjórann.</translation>
 <translation id="1495677929897281669">Aftur á flipa</translation>
+<translation id="1496514951988037011">notandanafn</translation>
 <translation id="1498498210836053409">Slökkva á festistillingu þegar unnið er með texta (snjöll festistilling)</translation>
 <translation id="1499041187027566160">hækka hljóð</translation>
 <translation id="1500297251995790841">Óþekkt tæki [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1448,6 +1449,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1981434377190976112">Lesa öll gögn þín á öllum vefsvæðum</translation>
 <translation id="1982851102516626421">Þú ert skráð(ur) út</translation>
 <translation id="1983612835086592681">Þú opnaðir þetta í liðinni viku</translation>
+<translation id="1984087999855033707">símanúmer</translation>
 <translation id="1984417487208496350">Engin vörn (ekki mælt með)</translation>
 <translation id="1984683754853869253">Viltu búa til nýjan prófíl fyrir skólann?</translation>
 <translation id="198507684520034826">Hjálp</translation>
@@ -4768,7 +4770,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="428963538941819373">Þessi vefsvæði geta notað upplýsingar sem þau hafa vistað um þig þegar þú vafrar um <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Veldu PIN-númer</translation>
-<translation id="4290526909608432059">Stuðningi við Chrome-forrit verður hætt innan skamms. Hafðu samband við þróunaraðila forritsins eða kerfisþjónustuteymið þitt til að fá upplýsingar um þá valkosti sem standa þér til boða.</translation>
 <translation id="4290791284969893584">Þegar þú lokar síðu er óvíst að verkefnum sem þú byrjaðir á verði lokið</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> meðlimur</translation>
 <translation id="4290898381118933198">Strjúktu til að fletta á milli síðna</translation>
@@ -7636,6 +7637,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Bættu fjölskyldu og vinum við</translation>
 <translation id="6367097275976877956">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir ChromeOS? Ýttu á bilslána ef þú vilt það.</translation>
+<translation id="6367196786591004737">Eyða færslu</translation>
 <translation id="6367396429435748845">Ýttu á <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> til að gera hlé á notkun músarlykla og halda henni áfram</translation>
 <translation id="6367985768157257101">Viltu taka við með nærdeilingu?</translation>
 <translation id="6368157733310917710">Heimilisföng og fleira</translation>
@@ -7971,7 +7973,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6610002944194042868">Valkostir þýðinga</translation>
 <translation id="6610064275805055636">Stjórna einangruðum vefforritum</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> flipi</translation>
-<translation id="6611972847767394631">Finndu flipana þína hér</translation>
 <translation id="661266467055912436">Eykur öryggi þitt og allra á vefnum.</translation>
 <translation id="6613267708691765962">Leitar að spilliforritum...</translation>
 <translation id="6615455863669487791">Sýndu mér</translation>
@@ -10632,6 +10633,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8472623782143987204">vélbúnaður</translation>
 <translation id="8473540203671727883">Textaupplestur á því sem er undir músarbendli</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
+<translation id="847433688444405067">Skoðaðu á milli tækja</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>
 <translation id="8474561048882755118">Hjálpar þér að sjá svipaðar vörur hlið við hlið og bera á auðveldan hátt saman þau smáatriði sem skipta máli fyrir þig</translation>
 <translation id="8475313423285172237">Annað forrit í tölvunni þinni bætti við viðbót sem gæti breytt því hvernig Chrome virkar.</translation>

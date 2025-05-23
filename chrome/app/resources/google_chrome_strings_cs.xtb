@@ -100,7 +100,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2199691482078155239">Chrome vám dává větší kontrolu nad reklamami, které se vám zobrazují, a omezuje, co se o vás weby mohou dozvědět, když vám zobrazují personalizované reklamy</translation>
 <translation id="2216543877350048334">Pokud z Chromu chcete odebrat svůj účet Google, odhlaste se</translation>
 <translation id="2236949375853147973">Moje aktivita</translation>
-<translation id="223889379102603431">Informace o tom, jak Chrome spravuje své kořenové certifikáty</translation>
 <translation id="2290014774651636340">Chybí klíče rozhraní Google API. Některé funkce Google Chrome nebudou k dispozici.</translation>
 <translation id="2290095356545025170">Opravdu chcete odinstalovat Google Chrome?</translation>
 <translation id="2309047409763057870">Toto je druhá instalace prohlížeče Google Chrome. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
@@ -571,7 +570,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8255190535488645436">Google Chrome používá vaši kameru a mikrofon.</translation>
 <translation id="8257796129973882597">Z nabídky Chrome můžete otevřít záložky, režim čtení a další věci</translation>
 <translation id="8267953129876836456">Prohlížeč Chrome našel několik bezpečnostních doporučení, která byste si měli projít</translation>
-<translation id="8270775718612349140">Certifikáty spravované prohlížečem Chrome</translation>
 <translation id="8286862437124483331">Aplikace Google Chrome se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="829923460755755423">Přidejte si zástupce do Správce hesel Google</translation>
 <translation id="8313851650939857356">Chyba při spuštění: <ph name="STARTUP_ERROR" />.</translation>

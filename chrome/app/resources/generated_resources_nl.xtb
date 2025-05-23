@@ -4753,7 +4753,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4289540628985791613">Overzicht</translation>
 <translation id="428963538941819373">Deze sites kunnen informatie die over jou is opgeslagen, gebruiken als je door <ph name="HOST" /> browset</translation>
 <translation id="4289732974614035569">Een pincode kiezen</translation>
-<translation id="4290526909608432059">De ondersteuning voor Chrome-apps wordt binnenkort beëindigd. Neem contact op met de app-ontwikkelaar of je IT-supportteam voor meer informatie over de mogelijkheden.</translation>
 <translation id="4290791284969893584">Nadat je een pagina hebt gesloten, kan het zijn dat gestarte taken niet worden afgerond</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> lid</translation>
 <translation id="4290898381118933198">Swipen om tussen pagina's te navigeren</translation>
@@ -7616,6 +7615,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Familie en vrienden toevoegen</translation>
 <translation id="6367097275976877956">Wil je ChromeVox aanzetten, de ingebouwde schermlezer voor Chrome OS? Druk dan op de spatiebalk.</translation>
+<translation id="6367196786591004737">Item verwijderen</translation>
 <translation id="6367396429435748845">Druk op <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> om muistoetsen te onderbreken en te hervatten</translation>
 <translation id="6367985768157257101">Ontvangen met Dichtbij delen?</translation>
 <translation id="6368157733310917710">&amp;Adressen en meer</translation>
@@ -7949,7 +7949,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6610002944194042868">Opties voor vertalen</translation>
 <translation id="6610064275805055636">Geïsoleerde web-apps beheren</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tabblad</translation>
-<translation id="6611972847767394631">Hier vind je je tabbladen</translation>
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
 <translation id="6613267708691765962">Scannen op malware...</translation>
 <translation id="6615455863669487791">Tonen</translation>
@@ -10610,6 +10609,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8472623782143987204">hardware-ondersteund</translation>
 <translation id="8473540203671727883">Spreek tekst onder de cursor uit</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
+<translation id="847433688444405067">Browse op verschillende apparaten</translation>
 <translation id="8474378002946546633">Meldingen toestaan</translation>
 <translation id="8474561048882755118">Hiermee kun je vergelijkbare producten naast elkaar bekijken en makkelijk de details vergelijken die voor jou belangrijk zijn</translation>
 <translation id="8475313423285172237">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>

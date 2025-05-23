@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Escolha se quer incluir o histórico do Chromium para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="2054039611381840095">Para receber atualizações futuras do Chromium, precisa do macOS 12 ou posterior. Este computador está a usar o macOS 11.</translation>
 <translation id="2086476982681781442">O Chromium bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
-<translation id="2088953378266246249">Informações sobre como o Chromium gere os respetivos certificados de raiz</translation>
 <translation id="2099452623287920103">As suas palavras-passe e outros dados do Chromium que guardou na sua Conta Google vão ser removidos deste dispositivo. Para os usar novamente no Chromium, volte a iniciar sessão.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}}</translation>
 <translation id="2126108037660393668">O ficheiro transferido falhou na validação.</translation>
@@ -609,7 +608,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalize o Chromium</translation>
 <translation id="93478295209880648">O Chromium pode não funcionar corretamente, uma vez que já não é suportado no Windows XP ou no Windows Vista.</translation>
-<translation id="942598560705308788">Certificados geridos pelo Chromium</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="965162752251293939">Quem está a utilizar o Chromium?</translation>
 <translation id="967427899662692980">Obtenha a segurança mais avançada do Chromium</translation>

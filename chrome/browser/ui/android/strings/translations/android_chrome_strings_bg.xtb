@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Статистика за страницата</translation>
 <translation id="1108938384783527433">Синхронизиране на историята</translation>
 <translation id="1111673857033749125">Тук ще се показват отметките, които сте запазили на другите си устройства.</translation>
-<translation id="1113597929977215864">Показване на опростения изглед</translation>
 <translation id="1126696498560056882">Управление на профилите на това устройство</translation>
 <translation id="1129510026454351943">Подробности: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режим „инкогнито“ скрива сърфирането ви от другите хора, които използват устройството ви</translation>
@@ -1878,7 +1877,6 @@
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="963246339335003378">Отваряне на „Диспечер на задачите“</translation>
 <translation id="966131775676567255">Данните в профила се изтриват</translation>
-<translation id="96681097142096641">Да се покаже ли опростена страница?</translation>
 <translation id="970715775301869095">Остават <ph name="MINUTES" /> мин</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Затваряне на всички раздели</translation>

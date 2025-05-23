@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
-<translation id="1045448422538531528">ಗುಂಪಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ವಾರದ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_WEEKS_MANY" /> ವಾರಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
 <translation id="1063300264396686489">ಇತರ ಸಾಧನಗಳಿಂದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1075622780330595106">ನೀವು ಈ ನಡುವೆ ಬಳಸದ <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳಿವೆ. ಅವುಗಳನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}one{<ph name="MANY_CLOSED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}other{<ph name="MANY_CLOSED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="2894757982205307093">ಗುಂಪಿನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="2928243913527329289">Google | ಈ ಸ್ಟೋರ್ ಕುರಿತು</translation>
-<translation id="2977480621796371840">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="29919168204617356">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮುಚ್ಚಲಾಗುತ್ತದೆ. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗಲೂ ಇತಿಹಾಸದಲ್ಲಿ ಕಾಣಬಹುದು.</translation>
 <translation id="3008554597174452548">ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="3026391124054406831">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವ್ಯವಸ್ಥಿತಗೊಳಿಸಲು ಗುಂಪುಗಳನ್ನು ರಚಿಸಿ.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">ಈ ಐಟಂನ ಬೆಲೆಯು ಇತ್ತೀಚೆಗೆ <ph name="PREVIOUS_PRICE" /> ದಿಂದ <ph name="NEW_PRICE" /> ಗೆ ಕುಸಿದಿದೆ</translation>
 <translation id="6109251075362363230">ತೀರಾ ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ನಕಲನ್ನು ಹೊರತುಪಡಿಸಿ, ಎಲ್ಲಾ ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಈಗ ಆರ್ಕೈವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6193448654517602979">ಟ್ಯಾಬ್‌ ಆಯ್ಕೆ</translation>
+<translation id="6212567362666004597">ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="6220820548421939212">ಹೌದು. ನಾನು ಸಮ್ಮತಿಸುತ್ತೇನೆ</translation>
 <translation id="6228793724645064692">(ಸ್ಟೋರ್ ರೇಟಿಂಗ್)</translation>
 <translation id="6271513594716432922">ಎಲ್ಲಾ ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">ನೀವು 3 ತಿಂಗಳಿನಿಂದ ಬಳಸದ ನಿಷ್ಕ್ರಿಯ ವಿಭಾಗದಲ್ಲಿರುವ ಐಟಂಗಳನ್ನು Chrome ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮುಚ್ಚುತ್ತದೆ. ನೀವು ಇದನ್ನು ಈಗ ಅಥವಾ ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8887921976452567404">ನಿಮ್ಮ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಗುಂಪುಗಳನ್ನು ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳ ವಿಭಾಗ ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ವಿಭಾಗದಿಂದ ಪುನಃ ತೆರೆಯಬಹುದು.</translation>
 <translation id="8915916167043355778">ಎಲ್ಲವನ್ನೂ ಮುಚ್ಚಿರಿ</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ}one{ಇತರ ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಇತರ ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>
 <translation id="9090098097337832354">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ ಮುಚ್ಚಲ್ಪಟ್ಟಿದೆ</translation>
 <translation id="9114502155681725011">ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" />, ಬಣ್ಣ <ph name="COLOR_NAME" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="9169594135889675189">ಗುಂಪಿಗೆ ಹೊಸ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>

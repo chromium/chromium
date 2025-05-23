@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1036348656032585052">Çaktivizo</translation>
-<translation id="1045448422538531528">Shto te grupi</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Krijuar <ph name="NUM_WEEKS_ONE" /> javë më parë}other{Krijuar <ph name="NUM_WEEKS_MANY" /> javë më parë}}</translation>
 <translation id="1063300264396686489">Hap automatikisht grupet e skedave nga pajisjet e tjera</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> skedë u mbyll}other{<ph name="MANY_CLOSED" /> skeda u mbyllën}}</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2928243913527329289">Google | Rreth këtij dyqani</translation>
-<translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="29919168204617356">Skedat joaktive do të mbyllen automatikisht. Mund t'i gjesh gjithmonë te "Historiku".</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3026391124054406831">Krijo grupe për të organizuar skedat e tua.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
+<translation id="6212567362666004597">Shto skedën te grupi</translation>
 <translation id="6220820548421939212">Po. Jam dakord</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome i mbyll automatikisht artikujt në seksionin joaktiv që nuk i ke përdorur për 3 muaj. Mund ta çaktivizosh këtë tani ose në çdo kohë te "Cilësimet"</translation>
 <translation id="8887921976452567404">Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave".</translation>
 <translation id="8915916167043355778">Mbylli të gjitha</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Zhvendos te një dritare e re}other{Zhvendos te dritarja tjetër}}</translation>
 <translation id="9090098097337832354">Informacioni për këtë dyqan është mbyllur</translation>
 <translation id="9114502155681725011">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />", ngjyrë <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Shto skedë të re te grupi</translation>

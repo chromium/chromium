@@ -1346,7 +1346,7 @@
 <translation id="6957792699151067488">పువ్వు</translation>
 <translation id="6961170852793647506">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="6965382102122355670">సరే</translation>
-<translation id="6965978654500191972">పరికరం</translation>
+<translation id="6965978654500191972">డివైజ్</translation>
 <translation id="6972754398087986839">ప్రారంభించండి</translation>
 <translation id="6975620886940770104">మెరిసే <ph name="GLOWSCAPES_FEATURE" />‌తో <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">కోలాలు</translation>
@@ -1459,7 +1459,6 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="7388959671917308825">బిల్ట్-ఇన్ టచ్‌ప్యాడ్</translation>
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
-<translation id="7400166052988585408">మీ స్క్రీన్‌ను మీ టీచర్ <ph name="NUM_SECONDS" /> సెకన్లలో లాక్ చేసేస్తారు</translation>
 <translation id="7401543881546089382">షార్ట్‌కట్‌ను తొలగించండి</translation>
 <translation id="7405493795721832710">ఇప్పుడిక <ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయవచ్చు</translation>
 <translation id="741244894080940828">మార్పిడి</translation>
@@ -1614,7 +1613,6 @@
 <translation id="8088963492174775412">రికార్డ్ చేయడానికి నొక్కండి</translation>
 <translation id="8094062939584182041">ఈ సమస్యకు గురించి మీకు ఈమెయిల్ చేయడానికి Googleకు అనుమతినివ్వండి</translation>
 <translation id="8104083085214006426">మీరు ఓపెన్, అసురక్షిత నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
-<translation id="8110942816572072814">మీ టీచర్ మీ స్క్రీన్‌ను లాక్ చేశారు</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

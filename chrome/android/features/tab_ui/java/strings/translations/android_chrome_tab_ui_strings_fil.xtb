@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1036348656032585052">I-off</translation>
-<translation id="1045448422538531528">Idagdag sa pangkat</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ginawa <ph name="NUM_WEEKS_ONE" /> linggo ang nakalipas}one{Ginawa <ph name="NUM_WEEKS_MANY" /> linggo ang nakalipas}other{Ginawa <ph name="NUM_WEEKS_MANY" /> na linggo ang nakalipas}}</translation>
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Isinara ang <ph name="ONE_CLOSED" />}one{Isinara ang <ph name="MANY_CLOSED" /> tab}other{Isinara ang <ph name="MANY_CLOSED" /> na tab}}</translation>
 <translation id="2894757982205307093">Bagong tab sa grupo</translation>
 <translation id="2928243913527329289">Google | Tungkol sa store na ito</translation>
-<translation id="2977480621796371840">Alisin sa grupo</translation>
 <translation id="29919168204617356">Awtomatikong isasara ang mga hindi aktibong tab. Makikita mo ang mga ito anumang oras sa History.</translation>
 <translation id="3008554597174452548">Ihinto ang pagsubaybay sa produkto</translation>
 <translation id="3026391124054406831">Gumawa ng mga grupo para isaayos ang iyong mga tab.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
+<translation id="6212567362666004597">Magdagdag ng tab sa grupo</translation>
 <translation id="6220820548421939212">Oo. Sige</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng 3 buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>
 <translation id="8915916167043355778">Isara lahat</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Ilipat sa bagong window}one{Ilipat sa ibang window}other{Ilipat sa ibang window}}</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9114502155681725011">Buksan ang menu ng aksyon ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>

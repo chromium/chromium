@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Angalia maarifa ya ukurasa</translation>
 <translation id="1108938384783527433">Usawazishaji wa historia</translation>
 <translation id="1111673857033749125">Alamisho zilizohifadhiwa katika vifaa vyako vingine zitaonekana hapa.</translation>
-<translation id="1113597929977215864">Onyesha mwonekano rahisi</translation>
 <translation id="1126696498560056882">Dhibiti akaunti kwenye kifaa hiki</translation>
 <translation id="1129510026454351943">Maelezo: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Kutumia faraghani hufanya hali yako ya kuvinjari iwe ya faragha ili isionekane na wengine wanaotumia kifaa chako</translation>
@@ -1878,7 +1877,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="961856697154696964">Futa data ya kuvinjari</translation>
 <translation id="963246339335003378">Fungua Kidhibiti cha Shughuli kwenye Chrome</translation>
 <translation id="966131775676567255">Inafuta data ya akaunti</translation>
-<translation id="96681097142096641">Ungependa kuangalia ukurasa uliorahisishwa?</translation>
 <translation id="970715775301869095">Zimesalia dakika <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="983192555821071799">Funga vichupo vyote</translation>

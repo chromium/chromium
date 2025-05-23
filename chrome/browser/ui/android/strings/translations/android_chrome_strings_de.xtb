@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Seitenstatistiken ansehen</translation>
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
 <translation id="1111673857033749125">Hier werden die Lesezeichen angezeigt, die auf deinen anderen Geräten gespeichert sind.</translation>
-<translation id="1113597929977215864">Vereinfachte Ansicht anzeigen</translation>
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Im Inkognitomodus kannst du auf gemeinsam verwendeten Geräten privat surfen</translation>
@@ -122,6 +121,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1480287803138246127">Möglicherweise wird ein Teil deines Verlaufs hier nicht angezeigt. Wenn du dir den gesamten Chrome-Verlauf ansehen möchtest, öffne den vollständigen Chrome-Verlauf.</translation>
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1493287004536771723">Du folgst „<ph name="SITE_NAME" />“</translation>
+<translation id="1496514951988037011">Nutzername</translation>
 <translation id="1501480321619201731">Gruppe löschen</translation>
 <translation id="1502010315804028179">Damit du deine Passwörter verwalten kannst, musst du die Google Play-Dienste aktualisieren</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
@@ -221,6 +221,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="197288927597451399">Behalten</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
+<translation id="1984087999855033707">Telefonnummer</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1986685561493779662">Name ist bereits vorhanden</translation>
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
@@ -1876,7 +1877,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="961856697154696964">Browserdaten löschen</translation>
 <translation id="963246339335003378">Task-Manager öffnen</translation>
 <translation id="966131775676567255">Kontodaten werden gelöscht</translation>
-<translation id="96681097142096641">Vereinfachte Seite ansehen?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> Minuten übrig</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>

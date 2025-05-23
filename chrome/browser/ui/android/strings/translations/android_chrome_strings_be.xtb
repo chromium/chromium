@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Праглядзець статыстыку старонкі</translation>
 <translation id="1108938384783527433">Сінхранізацыя гісторыі</translation>
 <translation id="1111673857033749125">Тут з’явяцца закладкі, захаваныя на вашых іншых прыладах.</translation>
-<translation id="1113597929977215864">Паказаць у спрошчаным выглядзе</translation>
 <translation id="1126696498560056882">Кіраваць уліковымі запісамі на гэтай прыладзе</translation>
 <translation id="1129510026454351943">Падрабязнасці: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Інфармацыя пра вашы дзеянні ў рэжыме інкогніта недаступная іншым людзям, якія таксама выкарыстоўваюць вашу прыладу</translation>
@@ -1876,8 +1875,8 @@
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="95817756606698420">Для пошуку ў Кітаі Chrome можа выкарыстоўваць <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Гэта можна змяніць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
+<translation id="963246339335003378">Адкрыць менеджар заданняў</translation>
 <translation id="966131775676567255">Выдаленне даных уліковага запісу</translation>
-<translation id="96681097142096641">Адкрыць спрошчаны выгляд старонкі?</translation>
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>

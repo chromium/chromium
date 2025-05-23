@@ -79,7 +79,6 @@
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2054039611381840095">Gelecekteki Chromium güncellemelerini almak için macOS 12 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 11 kullanıyor.</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
-<translation id="2088953378266246249">Chromium'un kök sertifikalarını nasıl yönettiği hakkında bilgi</translation>
 <translation id="2099452623287920103">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chromium verileri bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}other{Chromium # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}}</translation>
 <translation id="2126108037660393668">İndirilen dosya doğrulanamadı.</translation>
@@ -606,7 +605,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
-<translation id="942598560705308788">Chromium tarafından yönetilen sertifikalar</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="965162752251293939">Chromium'u kim kullanıyor?</translation>
 <translation id="967427899662692980">Chromium'un en güçlü güvenlik özelliğinden faydalanın</translation>

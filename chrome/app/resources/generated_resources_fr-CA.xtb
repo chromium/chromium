@@ -719,6 +719,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1494349716233667318">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
 <translation id="1494429729245089920">La machine virtuelle « <ph name="VM_NAME" /> » existe, mais ne semble pas être une machine virtuelle <ph name="APP_NAME" /> valide. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
+<translation id="1496514951988037011">nom d'utilisateur</translation>
 <translation id="1498498210836053409">Désactiver le mode rémanent lors de la modification du texte (mode rémanent intelligent)</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1438,6 +1439,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1981434377190976112">Lire l'intégralité de vos données sur tous les sites Web</translation>
 <translation id="1982851102516626421">Vous êtes déconnecté</translation>
 <translation id="1983612835086592681">Vous avez ouvert ce document la semaine passée</translation>
+<translation id="1984087999855033707">numéro de téléphone</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1984683754853869253">Voulez-vous créer un profil pour l'école?</translation>
 <translation id="198507684520034826">Aide</translation>
@@ -4757,7 +4759,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="428963538941819373">Ces sites peuvent utiliser les informations qu'ils ont enregistrées à votre sujet lorsque vous naviguez sur <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Choisir un NIP</translation>
-<translation id="4290526909608432059">La prise en charge des applis Chrome va bientôt prendre fin. Pour en savoir plus sur vos options, communiquez avec le développeur des applis ou votre équipe d'assistance informatique.</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer pour passer d'une page à l'autre</translation>
@@ -7623,6 +7624,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Ajouter des membres de la famille et des amis</translation>
 <translation id="6367097275976877956">Voulez-vous activer ChromeVox, le lecteur d'écran intégré de Chrome OS? Le cas échéant, appuyez sur la barre d'espacement.</translation>
+<translation id="6367196786591004737">Supprimer l'entrée</translation>
 <translation id="6367396429435748845">Appuyez sur <ph name="ALT" />+<ph name="LAUNCHER" />+<ph name="NUM_4" /> pour mettre en pause et reprendre les touches de souris</translation>
 <translation id="6367985768157257101">Recevoir à l'aide de la fonctionnalité Partage à proximité?</translation>
 <translation id="6368157733310917710">Adresses et plus</translation>
@@ -7958,7 +7960,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6610064275805055636">Gérer les applications Web isolées</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> onglet</translation>
-<translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Analyse de logiciels malveillants…</translation>
 <translation id="6615455863669487791">Démonstration</translation>
@@ -10619,6 +10620,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8472623782143987204">soutenue par du matériel</translation>
 <translation id="8473540203671727883">Dicter le texte sous la souris</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
+<translation id="847433688444405067">Passez d'un appareil à l'autre</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8474561048882755118">Vous aide à voir des produits similaires côte à côte et à comparer facilement les détails qui vous intéressent</translation>
 <translation id="8475313423285172237">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Google Chrome.</translation>

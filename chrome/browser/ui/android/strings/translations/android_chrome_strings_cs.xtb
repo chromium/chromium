@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Zobrazit statistiky stránky</translation>
 <translation id="1108938384783527433">Synchronizace historie</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
-<translation id="1113597929977215864">Zapnout zjednodušené zobrazení</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1129510026454351943">Podrobnosti: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Anonymní režim chrání soukromí vašeho prohlížení před ostatními uživateli vašeho zařízení</translation>
@@ -99,7 +98,7 @@
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
-<translation id="139752016751285248">Spodní tabulka s informacemi o ceně otevřená na celou výšku</translation>
+<translation id="139752016751285248">Spodní panel s informacemi o ceně otevřený přes celou výšku obrazovky</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Můžete <ph name="BEGIN_LINK1" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK1" /> do účtu Google.
 
@@ -122,6 +121,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1480287803138246127">Je možné, že se zde nezobrazuje část vaší historie. Pokud chcete vidět celou svou historii Chromu, otevřete ji.</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
 <translation id="1493287004536771723">Sledujete web <ph name="SITE_NAME" /></translation>
+<translation id="1496514951988037011">uživatelské jméno</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
 <translation id="1502010315804028179">Pokud chcete spravovat hesla, aktualizujte Služby Google Play</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
@@ -195,7 +195,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1879904908408734349">Spodní panel pro přihlášení je zavřený</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
-<translation id="1899175549411605574">Spodní tabulka s informacemi o ceně</translation>
+<translation id="1899175549411605574">Spodní panel s informacemi o ceně</translation>
 <translation id="1900260903084164610">Pokračováním vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1910950723001426294">Seznam možností sdílení je zavřený.</translation>
@@ -221,6 +221,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="197288927597451399">Uložit</translation>
 <translation id="1973912524893600642">Zachovat data</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
+<translation id="1984087999855033707">telefonní číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1986685561493779662">Název již existuje</translation>
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
@@ -580,7 +581,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Přejít na domovskou kartu aplikace Google</translation>
 <translation id="368329460027487650">Jste odhlášeni. Otevře možnosti přihlášení.</translation>
-<translation id="3684540848053703310">Zavřená spodní tabulka s informacemi o ceně</translation>
+<translation id="3684540848053703310">Zavřený spodní panel s informacemi o ceně</translation>
 <translation id="3687645719033307815">Prohlížíte si náhled této stránky</translation>
 <translation id="3692944402865947621">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo, protože umístění úložiště není dostupné.</translation>
 <translation id="3697705478071004188">Seřadit podle webu</translation>
@@ -655,7 +656,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4024768890073681126">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}few{# h}many{# h}other{# h}}</translation>
 <translation id="4042941173059740150">Pokračujte na web <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="4044708993631234325">Spodní tabulka</translation>
+<translation id="4044708993631234325">Spodní panel</translation>
 <translation id="4045441967987592849">Znovu otevřít</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardní karta s novou aktivitou ve sdílených skupinách karet}few{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}many{<ph name="TABS_COUNT_MANY" /> standardní karty s novou aktivitou ve sdílených skupinách karet}other{<ph name="TABS_COUNT_MANY" /> standardních karet s novou aktivitou ve sdílených skupinách karet}}</translation>
 <translation id="405365679581583349">Aktualizujte Služby Google Play</translation>
@@ -1874,8 +1875,8 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="95817756606698420">Chrome může v Číně k vyhledávání používat službu <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Tuto volbu můžete změnit v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>
+<translation id="963246339335003378">Otevřít Správce úloh</translation>
 <translation id="966131775676567255">Mazání dat účtu</translation>
-<translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>

@@ -97,7 +97,6 @@
 <translation id="2199691482078155239">Chrome sizga koʻrsatiladigan reklamalar ustidan koʻproq nazorat beradi va saytlar sizga moslangan reklama chiqarganida siz haqingizda nimani bilishini cheklaydi</translation>
 <translation id="2216543877350048334">Chromedan Google hisobini olib tashlash uchun hisobdan chiqing</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
-<translation id="223889379102603431">Chrome negiz sertifikatlarini qanday boshqarishi haqida axborot</translation>
 <translation id="2290014774651636340">Google API kalitlari topilmadi. Google Chrome’ning ba’zi funksiyalari o‘chirib qo‘yiladi.</translation>
 <translation id="2290095356545025170">Haqiqatan ham Google Chrome brauzerini o‘chirib tashlamoqchimisiz?</translation>
 <translation id="2309047409763057870">Google Chrome takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
@@ -242,6 +241,7 @@
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
 <translation id="408393047846373801">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chromega kiring. Hisobga kirilgandan keyin bu parol Google hisobida saqlanadi.</translation>
+<translation id="409936259433005390">Yaqinda Windows 11 tizimiga yangilaysizmi? OneDrive omboriga Chrome Installer vositasini oldindan yuklab oling.</translation>
 <translation id="4110895483821904099">Yangi Chrome profilini sozlang</translation>
 <translation id="4111566860456076004">Chrome bu kengaytma manbasini tekshira olmadi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="4128488089242627000">Chrome tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
@@ -568,7 +568,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8255190535488645436">Google Chrome kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="8257796129973882597">Chrome menyusidan bukmark, oʻqish rejimi va boshqalarni ochishingiz mumkin</translation>
 <translation id="8267953129876836456">Sizda Chrome bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
-<translation id="8270775718612349140">Chrome boshqaradigan sertifikatlar</translation>
 <translation id="8286862437124483331">Google Chrome parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="829923460755755423">Google Parollar menejeri uchun yorliq kiriting</translation>
 <translation id="8313851650939857356">Ishga tushirishda xato: <ph name="STARTUP_ERROR" />.</translation>

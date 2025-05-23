@@ -1636,6 +1636,25 @@ Si cette règle n'est pas configurée : pour les utilisateurs standards, c'est 
 <translation id="2180795125410219364">Les paramètres Origine/Fin sont désactivés</translation>
 <translation id="2180958780733364832">Contrôler l'utilisation du mode headless</translation>
 <translation id="2182291258410176649">L'utilisateur décide d'activer ou non le service de sauvegarde et de restauration</translation>
+<translation id="2182945089357619926">Cette règle permet aux administrateurs de définir un agrégateur de recherche d'entreprise dédié qui fournira des recommandations et des résultats de recherche dans la barre d'adresse lorsqu'il sera déclenché par un mot clé spécifique. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le mot clé indiqué dans le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, avec ou sans le préfixe @ (par exemple, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), puis en appuyant sur la barre d'espace ou la touche de tabulation.
+
+Les champs suivants sont obligatoires : <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> et <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Le champ <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au nom du moteur de recherche que l'utilisateur verra dans la barre d'adresse.
+
+Le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au mot clé que l'utilisateur saisit pour déclencher la recherche. Le raccourci peut contenir des mots et caractères bruts, mais il ne peut pas inclure d'espaces ni commencer par le symbole @. Les raccourcis doivent être uniques.
+
+Le champ <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> spécifie l'URL sur laquelle effectuer la recherche. Saisissez l'adresse Web de la page de résultats du moteur de recherche, et utilisez <ph name="SEARCH_TERM_MARKER" /> à la place de la requête.
+
+Le champ <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL qui fournit des suggestions de recherche. Une requête POST sera envoyée et la requête de l'utilisateur sera transmise dans les paramètres POST sous la clé <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Le champ <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL d'une image qui sera utilisée dans les suggestions de recherche. Si ce champ n'est pas défini, une icône par défaut sera utilisée. Nous vous recommandons d'utiliser une favicon (exemple : <ph name="ICON_URL_EXAMPLE" />). Formats de fichiers image acceptés : JPEG, PNG et ICO.
+
+Le champ <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique si le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse est requis pour afficher les recommandations de recherche. Si ce champ n'est pas défini, le <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> de la barre d'adresse n'est pas requis.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">Ne pas signaler les compteurs d'exécution de l'appareil</translation>
 <translation id="2187372280917024033">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces. Cette règle est très semblable à <ph name="DOH_TEMPLATES_POLICY_NAME" /> et l'ignore lorsqu'elle est spécifiée.
 Contrairement à <ph name="DOH_TEMPLATES_POLICY_NAME" />, cette règle permet de spécifier des informations d'identification.
@@ -1987,6 +2006,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2421779938235645781">La couleur de rétroéclairage du clavier s'accorde avec le fond d'écran actuel</translation>
 <translation id="2423255396068675416">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs sont autorisés à exécuter<ph name="PRODUCT_CROSTINI_NAME" />, tant que les règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si cette règle est désactivée, <ph name="PRODUCT_CROSTINI_NAME" /> est désactivé pour l'utilisateur. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
 <translation id="2423654977291507457">Désactiver les intégrations</translation>
+<translation id="2424141395604579502">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent ajouter, supprimer, modifier ou importer des favoris.
+
+      Si elle est définie sur "False", les utilisateurs ne peuvent pas ajouter, supprimer, modifier ni importer de favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="242521047682347997">Ne pas autoriser les utilisateurs à synchroniser les SMS entre leur téléphone et leur Chromebook</translation>
 <translation id="2426782419955104525">Activer la fonctionnalité de recherche instantanée de <ph name="PRODUCT_NAME" /> et empêcher les utilisateurs de modifier ce paramètre.
 
@@ -2930,6 +2952,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 Si cette règle est activée, le menu d'accessibilité flottant sera toujours affiché.
 
 Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottant ne sera jamais affiché.</translation>
+<translation id="312646755999968569">Désactiver TLS 1.3 Early Data</translation>
 <translation id="3126748868885248792">Le bouton de droite est le bouton principal</translation>
 <translation id="3128072319047570212">Paramètres de keygen</translation>
 <translation id="3131703464330936425">Ne pas autoriser l'itinérance des données mobiles</translation>
@@ -2955,7 +2978,7 @@ Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottan
 Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translation>
 <translation id="3163880369487075383">Cette règle détermine si window.name peut être supprimé pour les navigations intersites de premier niveau qui entraînent la création d'un autre groupe de contexte de navigation lorsque la variante ClearCrossSiteCrossBrowsingContextGroupWindowName est activée.
 
-La variante ClearCrossSiteCrossBrowsingContextGroupWindowName permet de déterminer si window.name sera supprimé pour les navigations intersites de premier niveau. Par exemple, si un utilisateur accède à un nouveau site via l'omnibox ou en s'il clique sur un lien vers un nouveau site et que ce lien utilise "target='_blank' rel='noopener'". Dans ce cas, la suppression de window.name empêche la fuite potentielle d'informations entre les sites via la propriété window.name, ce qui améliore la confidentialité des utilisateurs. La règle ClearWindowNameForNewBrowsingContext est là pour rétablir le comportement précédent. Lorsque la variante ClearCrossSiteCrossBrowsingContextGroupWindowName est activée, window.name sera supprimé pour les navigations éligibles si cette règle est définie sur "Activée" ou si elle n'est pas configurée. Si elle est désactivée, window.name ne sera pas supprimé.
+La variante ClearCrossSiteCrossBrowsingContextGroupWindowName permet de déterminer si window.name sera supprimé pour les navigations intersites de premier niveau. Par exemple, si un utilisateur accède à un nouveau site via l'omnibox ou s'il clique sur un lien vers un nouveau site et que ce lien utilise "target='_blank' rel='noopener'". Dans ce cas, la suppression de window.name empêche la fuite potentielle d'informations entre les sites via la propriété window.name, ce qui améliore la confidentialité des utilisateurs. La règle ClearWindowNameForNewBrowsingContext est là pour rétablir le comportement précédent. Lorsque la variante ClearCrossSiteCrossBrowsingContextGroupWindowName est activée, window.name sera supprimé pour les navigations éligibles si cette règle est définie sur "Activée" ou si elle n'est pas configurée. Si elle est désactivée, window.name ne sera pas supprimé.
 
 Si vous devez utiliser cette règle pour désactiver la suppression de window.name sur les navigations éligibles, veuillez signaler un bug sur <ph name="BUG_URL" /> en expliquant votre cas d'utilisation. Cette règle sera disponible jusqu'à la version 142 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3164531087779621747">Mode d'impression PostScript</translation>
@@ -4616,7 +4639,6 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 Si cette règle est désactivée, les fichiers PDF sont ouverts, sauf si les utilisateurs ont désactivé le plug-in PDF.
 
 Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si cette règle n'est pas configurée, les utilisateurs peuvent choisir d'ouvrir le PDF en externe ou non.</translation>
-<translation id="4413764344717830250">Contrôler la visibilité de l'attribution de l'extension sur la page "Nouvel onglet" des navigateurs gérés</translation>
 <translation id="4415603335307944578">Si cette règle est définie sur "True" ou n'est pas configurée, le navigateur affiche la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.
 
       Si cette règle est définie sur "False", le navigateur n'affiche pas la page de bienvenue à chaque premier lancement suivant une mise à jour de l'OS.</translation>
@@ -5128,6 +5150,21 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
 <translation id="4789450349513792856">Bloquer les pop-up sur ces sites</translation>
 <translation id="4790391579868456557">Utiliser des cookies essentiels et non essentiels dans la recherche.</translation>
 <translation id="4790588245699320140">Autoriser l'Assistant Google à accéder au contexte de l'écran</translation>
+<translation id="4799820756794591883">TLS 1.3 Early Data est une extension de TLS 1.3 qui permet d'envoyer une requête HTTP simultanément avec le handshake TLS.
+
+      Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour TLS 1.3 Early Data.
+
+      Si elle est activée, <ph name="PRODUCT_NAME" /> activera TLS 1.3 Early Data.
+
+      Si elle est désactivée, <ph name="PRODUCT_NAME" /> n'activera pas TLS 1.3 Early Data.
+
+      Lorsque cette fonctionnalité est activée, <ph name="PRODUCT_NAME" /> peut utiliser ou non TLS 1.3 Early Data en fonction de la compatibilité avec le serveur.
+
+      TLS 1.3 Early Data est un protocole établi. Les serveurs TLS, les boîtiers intermédiaires et les logiciels de sécurité existants devraient gérer ou rejeter TLS 1.3 Early Data sans interrompre la connexion.
+
+      Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner et se déconnecter lorsque TLS 1.3 Early Data est utilisée. Si cela se produit, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
+
+      Cette règle est une mesure temporaire pour contrôler la fonctionnalité et sera supprimée par la suite. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="4800438168909332958">Active la fonctionnalité d'annulation de l'écho audio du système. Cette fonctionnalité est un dispositif d'annulation de l'écho acoustique, c'est-à-dire un module de traitement audio qui supprime la lecture audio du système (écho) du signal du micro.
 Cette règle est temporaire et sera supprimée dès le lancement de l'annulation de l'écho audio du système.
 
@@ -6508,11 +6545,6 @@ Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING
 <translation id="5670249935663090320">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> est activé. Les utilisateurs pourront le lancer depuis le menu de l'application, les menus contextuels des pages, les commandes multimédias sur les sites Web compatibles Cast et l'icône Cast de la barre d'outils (si elle est affichée).
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.</translation>
-<translation id="5671392367521500075">Cette règle contrôle la visibilité de l'attribution de l'extension dans le pied de la page "Nouvel onglet" lorsque cette page est contrôlée par une extension. Par défaut, le pied de la page "Nouvel onglet" affiche des informations sur l'extension qui contrôle cette page.
-
-Si cette règle n'est pas configurée ou si elle est définie sur "True", les navigateurs dont la page "Nouvel onglet" est contrôlée par une extension affichent le nom de l'extension et un lien vers celle-ci.
-
-Si cette règle est définie sur "False", l'attribution de l'extension sera masquée.</translation>
 <translation id="5673254755365419402">Activer la fonctionnalité de protection contre le fingerprinting de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5673780539191375049">Définit l'intervalle de temps (en minutes) pour actualiser automatiquement le flux d'authentification de l'utilisateur sur son appareil <ph name="PRODUCT_OS_NAME" />. Cette règle permet de gérer l'expiration de certains services utilisés dans les flux d'authentification lorsque l'appareil est inactif pendant un certain temps.
@@ -6525,6 +6557,7 @@ L'intervalle d'actualisation maximal possible est d'une semaine (10 080 minute
 
 Cette règle concerne à la fois les flux d'authentification à la connexion et sur l'écran de verrouillage.</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
+<translation id="5679082773290670847">Activer TLS 1.3 Early Data</translation>
 <translation id="5679540979548648200">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, et soumet l'appareil à la réinitialisation Powerwash si le téléchargement indépendant était activé auparavant</translation>
 <translation id="5681258683432554972">Paramètre de pop-up par défaut</translation>
 <translation id="5683494457096171405">Les raccourcis avec la touche de recherche sont d'abord envoyés à l'appli avant d'être traités par l'OS uniquement lorsque l'appli sélectionnée est en plein écran.</translation>
@@ -6856,6 +6889,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5917897389577978190">Gmail (compatible depuis la version 135)</translation>
 <translation id="592036544845479336">Réactiver les événements de mutation obsolètes/supprimés</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
+<translation id="5923084443277419535">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M138.
+
+Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
+
+Si elle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Cette règle a été abandonnée, car la fonctionnalité qu'elle contrôle n'a jamais été lancée. Veuillez utiliser la règle <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> à la place.
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valeur 0), un libellé "Professionnel" ou "Scolaire" s'affiche à côté de l'avatar de la barre d'outils.
@@ -10051,6 +10089,7 @@ L'utilisateur doit autoriser explicitement l'exécution en mode navigation priv�
 Si une extension spécifiée dans cette règle n'est pas installée, la navigation privée est bloquée.
 
 Cette règle s'applique au mode navigation privée. Cela signifie que la navigation privée doit être activée dans le navigateur. Si le mode navigation privée est désactivé via la règle <ph name="INCOGNITO_MODE_AVAILABILITY" />, cette règle n'a aucun effet.</translation>
+<translation id="8218485948330739485">Activer TLS 1.3 Early Data</translation>
 <translation id="8219813789911069300">Bloquer les téléchargements malveillants. Recommandé.</translation>
 <translation id="8220023426952118761">Débit de téléchargement souhaité en kbit/s.</translation>
 <translation id="8220156281401380422">Configurer la liste d'autorisation de messagerie native</translation>

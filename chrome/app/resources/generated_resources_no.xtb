@@ -4761,7 +4761,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="428963538941819373">Disse nettstedene kan bruke informasjon de har lagret om deg, når du surfer på <ph name="HOST" /></translation>
 <translation id="4289732974614035569">Velg en PIN-kode</translation>
-<translation id="4290526909608432059">Støtten for Chrome-apper avsluttes snart. Kontakt apputvikleren eller IT-brukerstøtten for å finne ut hvilke muligheter du har.</translation>
 <translation id="4290791284969893584">Når du lukker sider, kan det hende at oppgaver du har startet, ikke fullføres</translation>
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Sveip for å navigere mellom sidene</translation>
@@ -7626,6 +7625,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Legg til familie og venner</translation>
 <translation id="6367097275976877956">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS? Hvis ja, trykk på mellomromstasten.</translation>
+<translation id="6367196786591004737">Slett oppføringen</translation>
 <translation id="6367396429435748845">Trykk på <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> for å sette museknappene på pause og gjenoppta dem</translation>
 <translation id="6367985768157257101">Vil du motta med nærdeling?</translation>
 <translation id="6368157733310917710">&amp;Adresser med mer</translation>
@@ -7959,7 +7959,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6610002944194042868">Alternativer for oversettelse</translation>
 <translation id="6610064275805055636">Administrer isolerte nettapper</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> fane</translation>
-<translation id="6611972847767394631">Se fanene dine her</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6613267708691765962">Skanner etter skadelig programvare …</translation>
 <translation id="6615455863669487791">Vis meg</translation>
@@ -9994,6 +9993,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8037801708772278989">Sjekket nettopp</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopierer 1 fil til <ph name="CLOUD_PROVIDER" />}other{Kopierer {NUM_OF_FILES} filer til <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Denne Chrome-appen slutter å fungere når ChromeOS-versjonen din er oppdatert. Lagre eventuelle appdata du vil ta vare på. Kontakt apputvikleren eller IT-brukerstøtten for å finne ut hvilke muligheter du har.</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8041093619605951337">Glad</translation>
 <translation id="8041267120753677077">Strøm apper fra telefonen</translation>
@@ -10622,6 +10622,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8472623782143987204">maskinvarestøttet</translation>
 <translation id="8473540203671727883">Les opp teksten som er under musepekeren</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
+<translation id="847433688444405067">Bla gjennom enheter</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
 <translation id="8474561048882755118">Hjelper deg med å se lignende produkter side om side og enkelt sammenligne detaljene som er viktige for deg</translation>
 <translation id="8475313423285172237">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.</translation>

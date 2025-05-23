@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Chọn xem có bao gồm nhật ký duyệt web trên Chromium hay không để mang lại trải nghiệm phù hợp hơn trong các dịch vụ của Google</translation>
 <translation id="2054039611381840095">Để nhận các bản cập nhật Chromium sau này, bạn cần có macOS 12 trở lên. Máy tính này đang sử dụng macOS 11.</translation>
 <translation id="2086476982681781442">Chromium đã chặn tệp tải xuống này vì tệp này chứa nội dung lừa đảo và có thể thực hiện các thay đổi không mong muốn đối với thiết bị của bạn</translation>
-<translation id="2088953378266246249">Thông tin về cách Chromium quản lý các chứng chỉ gốc của Chromium</translation>
 <translation id="2099452623287920103">Mật khẩu và các dữ liệu khác trên Chromium mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
@@ -609,7 +608,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="93478295209880648">Chromium có thể không hoạt động chính xác do không được hỗ trợ trên Windows XP hoặc Windows Vista nữa</translation>
-<translation id="942598560705308788">Chứng chỉ do Chromium quản lý</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="965162752251293939">Ai đang sử dụng Chromium?</translation>
 <translation id="967427899662692980">Có được chế độ bảo mật mạnh nhất của Chromium</translation>

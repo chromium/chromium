@@ -332,6 +332,7 @@
 <translation id="9059693977935746710">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的密码管理工具中</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9152995302810511799">Chromium 提示：获享 Chromium 的最强安全保护</translation>
+<translation id="9177628952266852500"><ph name="EMAIL" />。Chromium 处于受管理状态。</translation>
 <translation id="921174536258924340">Chromium 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="924957577793602335">定制您的专属 Chromium</translation>
 <translation id="981812233959540767">玩 Chromium 恐龙游戏</translation>

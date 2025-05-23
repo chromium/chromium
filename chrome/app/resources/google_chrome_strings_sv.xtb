@@ -100,7 +100,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2199691482078155239">Chrome ger dig större kontroll över annonserna du ser och begränsar vilken information webbplatser kan få om dig när de visar anpassade annonser</translation>
 <translation id="2216543877350048334">Du kan ta bort Google-kontot från Chrome genom att logga ut</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
-<translation id="223889379102603431">Information om hur Chrome hanterar sina rotcertifikat</translation>
 <translation id="2290014774651636340">Googles API-nycklar saknas. Vissa funktioner i Google Chrome kommer att vara inaktiverade.</translation>
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
@@ -572,7 +571,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8255190535488645436">Google Chrome använder din kamera och mikrofon.</translation>
 <translation id="8257796129973882597">Du kan öppna bokmärken, läsläge och annat via Chrome-menyn</translation>
 <translation id="8267953129876836456">Chrome har hittat några säkerhetsrekommendationer som du bör granska</translation>
-<translation id="8270775718612349140">Certifikat som hanteras av Chrome</translation>
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
 <translation id="829923460755755423">Lägg till en genväg till Google Lösenordshantering</translation>
 <translation id="8313851650939857356">Startfel: <ph name="STARTUP_ERROR" />.</translation>

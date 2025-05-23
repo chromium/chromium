@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1036348656032585052">Désactiver</translation>
-<translation id="1045448422538531528">Ajouter au groupe</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Créé il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="1063300264396686489">Ouvrir automatiquement les groupes d'onglets d'autres appareils</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
@@ -56,7 +55,6 @@
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> onglet fermé}one{<ph name="MANY_CLOSED" /> onglet fermé}other{<ph name="MANY_CLOSED" /> onglets fermés}}</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2928243913527329289">Google | À propos de ce magasin</translation>
-<translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="29919168204617356">Les onglets inactifs seront automatiquement fermés. Vous pourrez toujours les retrouver dans l'historique.</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
 <translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
@@ -123,6 +121,7 @@
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la dernière copie utilisée.</translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
+<translation id="6212567362666004597">Ajouter l'onglet à un groupe</translation>
 <translation id="6220820548421939212">Oui. J'accepte</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
@@ -202,7 +201,6 @@
 <translation id="883379923675618699">Chrome ferme automatiquement les éléments de la section des onglets inactifs que vous n'avez pas utilisés depuis trois mois. Vous pouvez désactiver cette option maintenant ou à tout moment dans les paramètres.</translation>
 <translation id="8887921976452567404">Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets".</translation>
 <translation id="8915916167043355778">Tout fermer</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Déplacer vers une nouvelle fenêtre}one{Déplacer vers autre fenêtre}other{Déplacer vers autre fenêtre}}</translation>
 <translation id="9090098097337832354">Fiche d'infos sur ce magasin fermée</translation>
 <translation id="9114502155681725011">Ouvrir le menu d'actions du groupe d'onglets <ph name="TITLE_OF_GROUP" />, couleur <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Ajouter un nouvel onglet au groupe</translation>

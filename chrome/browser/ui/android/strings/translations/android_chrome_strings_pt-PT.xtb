@@ -31,7 +31,6 @@
 <translation id="1108214977745280468">Ver estatísticas da página</translation>
 <translation id="1108938384783527433">Sincronização do histórico</translation>
 <translation id="1111673857033749125">Os marcadores guardados nos seus outros dispositivos são apresentados aqui.</translation>
-<translation id="1113597929977215864">Mostrar vista simplificada</translation>
 <translation id="1126696498560056882">Gerir contas neste dispositivo</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">O Modo de navegação anónima mantém a sua navegação privada para outras pessoas que usam o seu dispositivo</translation>
@@ -1878,7 +1877,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="963246339335003378">Abrir Gestor de tarefas</translation>
 <translation id="966131775676567255">A eliminar os dados da conta</translation>
-<translation id="96681097142096641">Quer ver a página simplificada?</translation>
 <translation id="970715775301869095">Faltam <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Fechar todos os separadores</translation>

@@ -98,7 +98,6 @@
 <translation id="2199691482078155239">Chrome giúp bạn có nhiều quyền kiểm soát hơn đối với những quảng cáo mà bạn thấy và hạn chế những thông tin mà các trang web có thể tìm hiểu về bạn khi cho bạn xem quảng cáo được cá nhân hoá</translation>
 <translation id="2216543877350048334">Để xoá Tài khoản Google của bạn khỏi Chrome, hãy đăng xuất</translation>
 <translation id="2236949375853147973">Hoạt động của tôi</translation>
-<translation id="223889379102603431">Thông tin về cách Chrome quản lý các chứng chỉ gốc của Chrome</translation>
 <translation id="2290014774651636340">Khóa API của Google bị thiếu. Một số chức năng của Google Chrome sẽ bị tắt.</translation>
 <translation id="2290095356545025170">Bạn có chắc chắn muốn gỡ cài đặt Google Chrome không?</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
@@ -244,6 +243,7 @@
 <translation id="4050175100176540509">Cải thiện bảo mật quan trọng và tính năng mới có trong phiên bản mới nhất.</translation>
 <translation id="4053720452172726777">Tùy chỉnh và kiểm soát Google Chrome</translation>
 <translation id="408393047846373801">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome. Mật khẩu này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
+<translation id="409936259433005390">Bạn sắp nâng cấp lên Windows 11? Hãy tải Trình cài đặt Chrome về OneDrive để sẵn sàng sử dụng ngay từ ngày đầu tiên.</translation>
 <translation id="4110895483821904099">Thiết lập hồ sơ Chrome mới</translation>
 <translation id="4111566860456076004">Chrome không thể xác minh nguồn gốc của tiện ích này. Tiện ích này có thể không an toàn. Hãy xoá khỏi Chrome để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web mà bạn truy cập nữa.</translation>
 <translation id="4128488089242627000">Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến (nên chọn)</translation>
@@ -568,7 +568,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8255190535488645436">Google Chrome đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="8257796129973882597">Bạn có thể mở dấu trang, chế độ đọc và nhiều nội dung khác từ trình đơn Chrome</translation>
 <translation id="8267953129876836456">Chrome có một số ý kiến đề xuất về sự an toàn cần bạn xem xét</translation>
-<translation id="8270775718612349140">Chứng chỉ do Chrome quản lý</translation>
 <translation id="8286862437124483331">Google Chrome đang cố gắng hiển thị mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="829923460755755423">Thêm lối tắt vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8313851650939857356">Lỗi khi khởi động: <ph name="STARTUP_ERROR" />.</translation>

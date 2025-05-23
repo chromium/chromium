@@ -18,6 +18,7 @@
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030706264415084469">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt jūsu ierīcē lielu datu apjomu.</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Nav}=1{No vienas vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }zero{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }one{No # vietnes. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }other{No # vietnēm. Jūs tiksiet izrakstīts no lielākās daļas vietņu. }}</translation>
+<translation id="1035509598913574970">Ciānzila 3</translation>
 <translation id="1035709686865413354">Ūdens filtri un attīrītāji</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1036881361735705143">Aploksne C4</translation>
@@ -264,6 +265,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433225466058025572">Mēģiniet vēlreiz pārvietot savus failus.</translation>
+<translation id="1433478348197382180">Lasīšanas režīms</translation>
 <translation id="1436185428532214179">Var pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="1442386063175183758">Abpusējs locījums pa labi</translation>
 <translation id="1442987760062738829">Caurums</translation>
@@ -631,6 +633,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Atļaut katrā apmeklējuma reizē</translation>
 <translation id="2085876078937250610">Saglabāt…</translation>
+<translation id="2088913896151127116">Pievienot tekstu</translation>
 <translation id="2090451897496479509">Sazinieties ar pakalpojumu sniedzēju, lai iegūtu plašāku informāciju.</translation>
 <translation id="2091887806945687916">Signāls</translation>
 <translation id="2093982008204312032">Google Chrome mēģina izslēgt funkciju Windows Hello, kas paredzēta paroļu aizpildei.</translation>
@@ -837,7 +840,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2414886740292270097">Tumšs</translation>
-<translation id="2418292431699242678">Jūsu administrators ļauj sinhronizēt tālāk norādītos datus starp jūsu iepriekšējām un pašreizējām sesijām jebkurā ChromeOS ierīcē.</translation>
 <translation id="2429716554270894715">Audums (ūdensdrošs)</translation>
 <translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="2436976580469434549">Šķiedras un tekstila māksla</translation>
@@ -1093,6 +1095,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2915068235268646559">Avārija no: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Gleznošana</translation>
 <translation id="2916038427272391327">Aizveriet citas programmas</translation>
+<translation id="2917630513638801879">Ciānzila 1</translation>
 <translation id="2919185931486062599">Medības un šaušana</translation>
 <translation id="2922350208395188000">Servera sertifikātu nevar pārbaudīt.</translation>
 <translation id="2922792708490674">{0,plural, =1{Faila lejupielāde ir bloķēta}zero{<ph name="FILE_COUNT" /> failu lejupielāde ir bloķēta}one{<ph name="FILE_COUNT" /> faila lejupielāde ir bloķēta}other{<ph name="FILE_COUNT" /> failu lejupielāde ir bloķēta}}</translation>
@@ -1172,7 +1175,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3037177537145227281">Notiek cenas izsekošana</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
 <translation id="3039406992698062762">Ceļojumi ģimenēm</translation>
-<translation id="3040636468789770340">Sīkfaili (pierakstīšanās statuss jūsu nesen apmeklētajās vietnēs)</translation>
 <translation id="3041176923638368519">Skatīt kartes priekšrocību noteikumus</translation>
 <translation id="3041612393474885105">Sertifikāta informācija</translation>
 <translation id="3045769629416806687">Ekstrēmie sporta veidi</translation>
@@ -1679,7 +1681,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3869939189466884821">Jūsu lokālie faili tiks dzēsti pēc <ph name="MINUTES" /> minūtēm</translation>
 <translation id="3872834068356954457">Zinātne</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
-<translation id="387681220560687945">Logi (logu un ciļņu izkārtojums un secība)</translation>
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3880456882942693779">Māksla un izklaide</translation>
 <translation id="3880589673277376494">Internets un telekomunikācijas</translation>
@@ -2080,6 +2081,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4562155266774382038">Noraidīt ieteikumu</translation>
 <translation id="4566017918361049074">Aktivitātes brīvā dabā</translation>
 <translation id="4569155249847375786">Verificēts</translation>
+<translation id="4570008401337135432">Teksta izlīdzināšana</translation>
 <translation id="457875822857220463">Piegāde</translation>
 <translation id="4579699065574932398">Banku darījumi</translation>
 <translation id="4582595824823167856">Saņemt īsziņu</translation>
@@ -2243,7 +2245,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4866506163384898554">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai parādītu kursoru.</translation>
 <translation id="4873616204573862158">Brilles</translation>
 <translation id="4873807733347502026">Bloķēt un izmantot peli</translation>
-<translation id="4876188919622883022">Vienkāršotais skats</translation>
 <translation id="4876305945144899064">Nav lietotājvārda</translation>
 <translation id="4876327226315760474">Tas nozīmē, ka vietnes funkcijas, visticamāk, darbosies paredzētajā veidā, taču, iespējams, pārlūkošanas aizsardzības līmenis būs zemāks.</translation>
 <translation id="4877047577339061095">Mājsaimniecības lietu uzglabāšana un plaukti</translation>
@@ -2603,6 +2604,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5481682542063333508">Piedāvāt palīdzību rakstīšanā</translation>
 <translation id="54817484435770891">Derīgas adreses pievienošana</translation>
 <translation id="5483838506518938965">Gatavs</translation>
+<translation id="5484396522446324950">Stili</translation>
 <translation id="5485100387355669506">Īpaši plats</translation>
 <translation id="5485973315555778056">Mākoņa ierīce</translation>
 <translation id="5488367146069768854">Tīmekļa lietotnes instalēšanas gadījumi</translation>
@@ -2941,6 +2943,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6062937464449575061">Atcelt cenas izsekošanu</translation>
 <translation id="6063415549109819824">Mājokļa finansējums</translation>
 <translation id="6070432475334343308">Viens vai vairāki faili netika augšupielādēti pakalpojuma “<ph name="CLOUD_PROVIDER" />” mapē “<ph name="FOLDER_NAME" />”.</translation>
+<translation id="6078069862923723141">Ciānzila 2</translation>
 <translation id="6085149458302186532">Etiķešu papīrs (krāsains)</translation>
 <translation id="6087312102907839798">Saistītie meklēšanas vaicājumi</translation>
 <translation id="6089505343295765444">No Chrome vēstures dzēstās cilnes joprojām būs redzamas salīdzinājuma tabulās.</translation>
@@ -3021,7 +3024,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="622039917539443112">Paralēls locījums</translation>
 <translation id="6221286101741304627">Lai izietu no pilnekrāna režīma, nospiediet taustiņu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6221311046884916259">Vai vēlaties saglabāt šo karti savā Google kontā?</translation>
-<translation id="6221892641068781024">Vienkāršotais skats</translation>
 <translation id="6222527803348563979">Rakstāmpapīrs</translation>
 <translation id="62231116988543150">instalēt tīmekļa lietotnes</translation>
 <translation id="6224281071334553713">Dārgakmeņi un juvelierizstrādājumi</translation>
@@ -3842,6 +3844,7 @@ Papildu informācija:
 <translation id="7598391785903975535">Mazāk nekā <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> pašlaik nevar apstrādāt šo pieprasījumu.</translation>
 <translation id="7599089013883397081">Lejupielādei iestājās noildze</translation>
+<translation id="7602868996817972616">Jautāt Google par šo lapu</translation>
 <translation id="7608583484192556132">To, vai jums rādītā reklāma tiek personalizēta, var ietekmēt daudzi faktori, tostarp šis iestatījums, <ph name="BEGIN_LINK_1" />vietņu ieteiktās reklāmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek personalizētas reklāmas. Uzziniet vairāk par <ph name="BEGIN_LINK_3" />reklāmu konfidencialitātes pārvaldību<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vērtība pārsniedz diapazonu: <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Plats</translation>

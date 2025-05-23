@@ -80,7 +80,6 @@
 <translation id="2049376729098081731">Válassza ki, hogy szeretné-e használni a Chromium-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
 <translation id="2054039611381840095">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a macOS 12-es vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 11 fut.</translation>
 <translation id="2086476982681781442">A Chromium letiltotta ezt a letöltést, mert a fájl megtévesztő, és váratlan módosításokat végezhet az eszközön</translation>
-<translation id="2088953378266246249">Információ arról, hogy a Chromium hogyan kezeli a főtanúsítványokat</translation>
 <translation id="2099452623287920103">A Google-fiókjába mentett jelszavai és egyéb Chromium-adatai el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chromiumban, jelentkezzen be újra.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Szervezete automatikusan törli a böngészési adatokat, ha a Chromium 1 percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A lapok nyitva maradnak.}other{Szervezete automatikusan törli a böngészési adatokat, ha a Chromium # percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A lapok nyitva maradnak.}}</translation>
 <translation id="2126108037660393668">A letöltött fájl az ellenőrzés során hibásnak bizonyult.</translation>
@@ -607,7 +606,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Tegye sajátjává a Chromiumot</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
-<translation id="942598560705308788">A Chromium által kezelt tanúsítványok</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>
 <translation id="967427899662692980">Állítsa be a Chromium legerősebb védelmét</translation>
