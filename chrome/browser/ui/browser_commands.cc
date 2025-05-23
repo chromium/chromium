@@ -1179,10 +1179,19 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+
+  if (tab_group_service && tab_group_service->GetGroup(group)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
   std::unique_ptr<DetachedTabCollection> detached_group =
       browser->tab_strip_model()->DetachTabGroupForInsertion(group);
   new_browser->tab_strip_model()->InsertDetachedTabGroupAt(
       std::move(detached_group), 0);
+
   new_browser->window()->Show();
 }
 
@@ -1308,10 +1317,20 @@ void MoveGroupToExistingWindow(Browser* source,
                                Browser* target,
                                tab_groups::TabGroupId group) {
   CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(source->profile());
+
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+  if (tab_group_service && tab_group_service->GetGroup(group)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
   std::unique_ptr<DetachedTabCollection> detached_group =
       source->tab_strip_model()->DetachTabGroupForInsertion(group);
   target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
                                                       0);
+
   target->window()->Show();
 }
 
