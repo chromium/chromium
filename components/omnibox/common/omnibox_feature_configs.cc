@@ -137,6 +137,8 @@ ContextualSearch::ContextualSearch() {
       base::FeatureParam<int>(&kContextualSearchAlternativeActionLabel,
                               "LabelIndex", 0)
           .Get();
+  show_open_lens_action =
+      feature_enabled(kOmniboxContextualSearchOnFocusSuggestions);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;
@@ -145,7 +147,7 @@ ContextualSearch& ContextualSearch::operator=(const ContextualSearch&) =
 ContextualSearch::~ContextualSearch() = default;
 
 bool ContextualSearch::IsContextualSearchEnabled() const {
-  return contextual_zps_limit > 0;
+  return show_open_lens_action;
 }
 
 bool ContextualSearch::IsEnabledWithPrefetch() const {

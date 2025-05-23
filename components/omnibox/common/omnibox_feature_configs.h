@@ -189,6 +189,9 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Which alternative action label to use for lens entrypoint action.
   int alternative_action_label;
+
+  // Whether the Lens entrypoint action should be shown in the Omnibox popup.
+  bool show_open_lens_action;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.

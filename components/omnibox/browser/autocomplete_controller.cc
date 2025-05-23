@@ -1650,7 +1650,6 @@ void AutocompleteController::AttachActions() {
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Attach the contextual search fulfillment actions in the @page keyword mode.
   if (omnibox_feature_configs::ContextualSearch::Get()
           .contextual_zero_suggest_lens_fulfillment &&
       input_.IsZeroSuggest()) {
@@ -1660,6 +1659,8 @@ void AutocompleteController::AttachActions() {
     const TemplateURL* keyword_turl =
         AutocompleteInput::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
+    // Attach the contextual search fulfillment actions in the @page keyword
+    // mode.
     if (keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kPage) {
       internal_result_.AttachContextualSearchFulfillmentActionToMatches();
       return;
