@@ -1476,7 +1476,8 @@ crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout 
 # Failing on Intel Mac11
 crbug.com/379233396 [ Mac11 ] external/wpt/ai/translator/* [ Failure ]
 
-### sheriff 2019-07-16
+# Failing (PRECONDITION_FAILED) without blink::features::kAIPromptAPIMultimodalInput flag
+crbug.com/419853199 wpt_internal/ai/language-model-api-prompt-multimodal.https.window.html [ Failure Pass ]
 
 ### sheriff 2018-05-28
 

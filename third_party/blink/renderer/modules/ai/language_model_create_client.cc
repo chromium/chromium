@@ -56,9 +56,6 @@ void LanguageModelCreateClient::Trace(Visitor* visitor) const {
 
 void LanguageModelCreateClient::Create() {
   mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
-  Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs;
-  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
-
   auto sampling_params_or_exception = ResolveSamplingParamsOption(options_);
   if (!sampling_params_or_exception.has_value()) {
     switch (sampling_params_or_exception.error()) {
@@ -79,8 +76,12 @@ void LanguageModelCreateClient::Create() {
   }
   sampling_params = std::move(sampling_params_or_exception.value());
 
+  Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
-    expected_inputs = ToMojoExpectedInputs(options_->expectedInputs());
+    expected_in = ToMojoExpectations(options_->expectedInputs());
+  }
+  if (options_->hasExpectedOutputs()) {
+    expected_out = ToMojoExpectations(options_->expectedOutputs());
   }
 
   // TODO(crbug.com/381974893): Remove this warning after a couple milestones.
@@ -91,7 +92,9 @@ void LanguageModelCreateClient::Create() {
         "`systemPrompt` is no longer supported. Use "
         "`initialPrompts: [{role: 'system', content: ... }, ...]` instead.");
   }
-  // TODO(crbug.com/419583879): Add better test coverage for this.
+
+  // TODO(crbug.com/419583879): Add better test coverage for initialPrompts.
+  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
   if (options_->hasInitialPrompts()) {
     for (const auto& message : options_->initialPrompts()) {
       if (message->role() == V8LanguageModelMessageRole::Enum::kSystem &&
@@ -138,7 +141,7 @@ void LanguageModelCreateClient::Create() {
       std::move(client_remote),
       mojom::blink::AILanguageModelCreateOptions::New(
           std::move(sampling_params), std::move(initial_prompts),
-          std::move(expected_inputs)));
+          std::move(expected_in), std::move(expected_out)));
 }
 
 void LanguageModelCreateClient::OnResult(

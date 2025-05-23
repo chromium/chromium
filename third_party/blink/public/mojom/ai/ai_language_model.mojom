@@ -64,8 +64,8 @@ enum AILanguageModelPromptType {
 };
 
 // The expected data type and languages specified with session creation.
-// See LanguageModelExpectedInput in IDL.
-struct AILanguageModelExpectedInput {
+// See LanguageModelExpected in IDL.
+struct AILanguageModelExpected {
   AILanguageModelPromptType type;
   array<AILanguageCode>? languages;
 };
@@ -93,7 +93,8 @@ struct AILanguageModelPrompt {
 struct AILanguageModelCreateOptions {
   AILanguageModelSamplingParams? sampling_params;
   array<AILanguageModelPrompt> initial_prompts;
-  array<AILanguageModelExpectedInput>? expected_inputs;
+  array<AILanguageModelExpected>? expected_inputs;
+  array<AILanguageModelExpected>? expected_outputs;
 };
 
 // The client interface that receives an AILanguageModel or errors from an

@@ -371,13 +371,6 @@ ScriptPromise<V8Availability> LanguageModel::availability(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
   mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
-  Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs;
-  String system_prompt;
-  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
-  if (options && options->hasExpectedInputs()) {
-    expected_inputs = ToMojoExpectedInputs(options->expectedInputs());
-  }
-
   auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
   if (!sampling_params_or_exception.has_value()) {
     resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
@@ -385,13 +378,22 @@ ScriptPromise<V8Availability> LanguageModel::availability(
   }
   sampling_params = std::move(sampling_params_or_exception.value());
 
+  Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
+  if (options && options->hasExpectedInputs()) {
+    expected_in = ToMojoExpectations(options->expectedInputs());
+  }
+  if (options && options->hasExpectedOutputs()) {
+    expected_out = ToMojoExpectations(options->expectedOutputs());
+  }
+
+  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(
           ExecutionContext::From(script_state));
   ai_manager_remote->CanCreateLanguageModel(
       mojom::blink::AILanguageModelCreateOptions::New(
           std::move(sampling_params), std::move(initial_prompts),
-          std::move(expected_inputs)),
+          std::move(expected_in), std::move(expected_out)),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8Availability>* resolver,
              mojom::blink::ModelAvailabilityCheckResult check_result) {

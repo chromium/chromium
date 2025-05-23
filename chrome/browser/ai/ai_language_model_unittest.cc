@@ -304,6 +304,10 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
         .WillByDefault(Return(on_device_model::Capabilities(
             {on_device_model::CapabilityFlags::kImageInput,
              on_device_model::CapabilityFlags::kAudioInput})));
+    ON_CALL(*mock_optimization_guide_keyed_service_,
+            GetOnDeviceModelEligibility(_))
+        .WillByDefault(Return(
+            optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   }
 
   mojo::Remote<blink::mojom::AILanguageModel> CreateSession(
@@ -697,7 +701,7 @@ TEST_F(AILanguageModelTest, UnsupportedLanguage) {
     future.SetValue(error);
   });
 
-  auto expected_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->languages.emplace();
   expected_input->languages->push_back(blink::mojom::AILanguageCode::New("ja"));
 
@@ -710,7 +714,7 @@ TEST_F(AILanguageModelTest, UnsupportedLanguage) {
             blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
 }
 
-TEST_F(AILanguageModelTest, UnsupportedCapability) {
+TEST_F(AILanguageModelTest, UnsupportedInputCapability) {
   ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
       .WillByDefault(Return(on_device_model::Capabilities()));
 
@@ -720,7 +724,7 @@ TEST_F(AILanguageModelTest, UnsupportedCapability) {
     future.SetValue(error);
   });
 
-  auto expected_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto expected_input = blink::mojom::AILanguageModelExpected::New();
   expected_input->type = blink::mojom::AILanguageModelPromptType::kImage;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
@@ -732,8 +736,30 @@ TEST_F(AILanguageModelTest, UnsupportedCapability) {
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
+TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
+  ON_CALL(*mock_optimization_guide_keyed_service_, GetOnDeviceCapabilities())
+      .WillByDefault(Return(on_device_model::Capabilities()));
+
+  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
+  AITestUtils::MockCreateLanguageModelClient language_model_client;
+  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
+    future.SetValue(error);
+  });
+
+  auto expected_output = blink::mojom::AILanguageModelExpected::New();
+  expected_output->type = blink::mojom::AILanguageModelPromptType::kImage;
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_outputs.emplace();
+  options->expected_outputs->push_back(std::move(expected_output));
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+  EXPECT_EQ(future.Take(),
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
 TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
-  auto audio_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_inputs.emplace();
@@ -769,7 +795,7 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
-  auto image_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto image_input = blink::mojom::AILanguageModelExpected::New();
   image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->expected_inputs.emplace();
@@ -805,9 +831,9 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInput) {
-  auto audio_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
-  auto image_input = blink::mojom::AILanguageModelExpectedInput::New();
+  auto image_input = blink::mojom::AILanguageModelExpected::New();
   image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
@@ -1039,10 +1065,6 @@ TEST_F(AILanguageModelTest, ServiceCrash) {
 #define MAYBE_CanCreate_WaitsForEligibility CanCreate_WaitsForEligibility
 #endif
 TEST_F(AILanguageModelTest, MAYBE_CanCreate_WaitsForEligibility) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillRepeatedly(
-          Return(optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   base::test::TestFuture<base::OnceCallback<void(
       optimization_guide::OnDeviceModelEligibilityReason)>>
       eligibility_future;
@@ -1065,18 +1087,17 @@ TEST_F(AILanguageModelTest, MAYBE_CanCreate_WaitsForEligibility) {
             blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 }
 
-TEST_F(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillRepeatedly(
-          Return(optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
-
+TEST_F(AILanguageModelTest, CanCreate_SupportedLanguages) {
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  options->expected_inputs =
-      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs.emplace();
   options->expected_inputs->push_back(
-      blink::mojom::AILanguageModelExpectedInput::New(
+      blink::mojom::AILanguageModelExpected::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"en"})));
+  options->expected_outputs.emplace();
+  options->expected_outputs->push_back(
+      blink::mojom::AILanguageModelExpected::New(
           blink::mojom::AILanguageModelPromptType::kText,
           AITestUtils::ToMojoLanguageCodes({"en"})));
   EXPECT_CALL(callback,
@@ -1085,20 +1106,28 @@ TEST_F(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
                                                   callback.Get());
 }
 
-TEST_F(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibility(_))
-      .WillRepeatedly(
-          Return(optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
-
+TEST_F(AILanguageModelTest, CanCreate_UnsupportedInputLanguages) {
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage));
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  options->expected_inputs =
-      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs.emplace();
   options->expected_inputs->push_back(
-      blink::mojom::AILanguageModelExpectedInput::New(
+      blink::mojom::AILanguageModelExpected::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"ja"})));
+  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                  callback.Get());
+}
+
+TEST_F(AILanguageModelTest, CanCreate_UnsupportedOutputLanguages) {
+  base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage));
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_outputs.emplace();
+  options->expected_outputs->push_back(
+      blink::mojom::AILanguageModelExpected::New(
           blink::mojom::AILanguageModelPromptType::kText,
           AITestUtils::ToMojoLanguageCodes({"ja"})));
   GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),

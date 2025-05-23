@@ -15,10 +15,11 @@ promise_test(async () => {
     {topK: [1, 1.5, 2, 3, 99]},  // Nominally int 1-10+.
     {temperature: [0, 0.5, 1, 2]},  // Nominally float 0-1.
     {expectedInputs: [undefined, [], [{type: 'text'}], [{type: 'text', languages: ['en']}], ]},
+    {expectedOutputs: [undefined, [], [{type: 'text'}], [{type: 'text', languages: ['en']}], ]},
   ];
   for (const options of generateOptionCombinations(kCreateOptionsSpec)) {
     const availability = await LanguageModel.availability(options);
-    assert_in_array(availability, kValidAvailabilities, options);
+    assert_in_array(availability, kValidAvailabilities, JSON.stringify(options));
   }
 }, 'LanguageModel.availability() returns available with supported options');
 
@@ -27,6 +28,9 @@ promise_test(async () => {
   // An array of unsupported test options.
   const kUnsupportedCreateOptions = [
     { expectedInputs: [{type: 'text', languages: ['unk']}] },  // Language not supported.
+    { expectedOutputs: [{type: 'text', languages: ['unk']}] },  // Language not supported.
+    { expectedOutputs: [{type: 'image' }] },  // Type not supported.
+    { expectedOutputs: [{type: 'audio' }] },  // Type not supported.
     { topK: 0, temperature: 0.5 },  // zero topK not supported.
     { topK: -3, temperature: 0.5 },  // negative topK not supported.
     { topK: 3, temperature: -0.5 },  // negative temperature not supported.
@@ -34,7 +38,7 @@ promise_test(async () => {
     { temperature: 0.5 },  // temperature without topK not supported.
   ];
   for (const options of kUnsupportedCreateOptions) {
-    assert_equals(await LanguageModel.availability(options), 'unavailable', options);
+    assert_equals(await LanguageModel.availability(options), 'unavailable', JSON.stringify(options));
   }
 }, 'LanguageModel.availability() returns unavailable with unsupported options');
 

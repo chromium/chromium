@@ -53,6 +53,47 @@ bool SupportedLanguages(const std::vector<AILanguageCodePtr>& input,
          is_language_supported(output);
 }
 
+// Returns whether optional LanguageModel expected_inputs or expected_outputs
+// vectors contain only supported languages. Returns true for absent languages.
+bool AreExpectedLanguagesSupported(
+    const std::optional<std::vector<blink::mojom::AILanguageModelExpectedPtr>>&
+        expected_vector) {
+  if (!expected_vector) {
+    return true;
+  }
+  for (const auto& expected_entry : expected_vector.value()) {
+    if (expected_entry->languages.has_value() &&
+        !IsLanguagesSupported(expected_entry->languages.value())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns whether `options` contains any unsupported AILanguageModelPromptType.
+bool HasUnsupportedType(
+    const blink::mojom::AILanguageModelCreateOptionsPtr& options) {
+  bool has_unsupported_type = false;
+  if (options) {
+    if (options->expected_inputs.has_value()) {
+      for (const auto& expected_input : options->expected_inputs.value()) {
+        has_unsupported_type |=
+            expected_input->type !=
+                blink::mojom::AILanguageModelPromptType::kText &&
+            !base::FeatureList::IsEnabled(
+                blink::features::kAIPromptAPIMultimodalInput);
+      }
+    }
+    if (options->expected_outputs.has_value()) {
+      for (const auto& expected_output : options->expected_outputs.value()) {
+        has_unsupported_type |= expected_output->type !=
+                                blink::mojom::AILanguageModelPromptType::kText;
+      }
+    }
+  }
+  return has_unsupported_type;
+}
+
 }  // namespace
 
 EchoAIManagerImpl::EchoAIManagerImpl() = default;
@@ -69,23 +110,16 @@ void EchoAIManagerImpl::Create(
 void EchoAIManagerImpl::CanCreateLanguageModel(
     blink::mojom::AILanguageModelCreateOptionsPtr options,
     CanCreateLanguageModelCallback callback) {
-  if (options->expected_inputs.has_value()) {
-    for (const auto& expected_input : options->expected_inputs.value()) {
-      if (expected_input->type !=
-              blink::mojom::AILanguageModelPromptType::kText &&
-          !base::FeatureList::IsEnabled(
-              blink::features::kAIPromptAPIMultimodalInput)) {
-        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                    kUnavailableModelAdaptationNotAvailable);
-        return;
-      }
-      if (expected_input->languages.has_value() &&
-          !IsLanguagesSupported(expected_input->languages.value())) {
-        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                    kUnavailableUnsupportedLanguage);
-        return;
-      }
-    }
+  if (HasUnsupportedType(options)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableModelAdaptationNotAvailable);
+    return;
+  }
+  if (options && (!AreExpectedLanguagesSupported(options->expected_inputs) ||
+                  !AreExpectedLanguagesSupported(options->expected_outputs))) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+    return;
   }
 
   std::move(callback).Run(
@@ -115,6 +149,17 @@ void EchoAIManagerImpl::CreateLanguageModel(
     }
   }
 
+  if (HasUnsupportedType(options)) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+  if (options && (!AreExpectedLanguagesSupported(options->expected_inputs) ||
+                  !AreExpectedLanguagesSupported(options->expected_outputs))) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    return;
+  }
   base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types;
   if (options->expected_inputs.has_value()) {
     for (const auto& expected_input : options->expected_inputs.value()) {
