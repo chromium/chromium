@@ -17,6 +17,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
+#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/grit/generated_resources.h"

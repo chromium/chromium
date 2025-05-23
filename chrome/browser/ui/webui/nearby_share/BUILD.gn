@@ -22,6 +22,7 @@ static_library("nearby_share") {
     "//chrome/browser/nearby_sharing/contacts",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/nearby_share:resources",
+    "//chrome/browser/sharesheet",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui",
     "//ui/webui",

@@ -13,9 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
-#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
@@ -28,6 +25,7 @@
 class Profile;
 
 namespace apps {
+class AppServiceProxyAsh;
 struct IntentLaunchInfo;
 }  // namespace apps
 
@@ -45,6 +43,8 @@ struct VectorIcon;
 
 namespace sharesheet {
 
+class ShareActionCache;
+class SharesheetController;
 class SharesheetServiceDelegator;
 class SharesheetUiDelegate;
 
@@ -188,7 +188,7 @@ class SharesheetService : public KeyedService {
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<ShareActionCache> share_action_cache_;
-  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  raw_ptr<apps::AppServiceProxyAsh> app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.
