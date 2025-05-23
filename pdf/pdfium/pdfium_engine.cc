@@ -3573,10 +3573,20 @@ PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
   return rects;
 }
 
-void PDFiumEngine::ChangeInvalidator::Invalidate(const gfx::Rect& rect) {
-  gfx::Rect expanded_rect = rect;
-  expanded_rect.Inset(-1);
-  engine_->client_->Invalidate(expanded_rect);
+bool PDFiumEngine::ChangeInvalidator::Invalidate(
+    base::span<const gfx::Rect> screen_rects) {
+  bool invalidated = false;
+  for (const auto& rect : screen_rects) {
+    if (rect.IsEmpty()) {
+      continue;
+    }
+
+    gfx::Rect expanded_rect = rect;
+    expanded_rect.Outset(1);
+    engine_->client_->Invalidate(expanded_rect);
+    invalidated = true;
+  }
+  return invalidated;
 }
 
 PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
@@ -3601,19 +3611,8 @@ PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
     }
   }
 
-  bool selection_changed = false;
-  for (const auto& old_selection : old_selections_) {
-    if (!old_selection.IsEmpty()) {
-      Invalidate(old_selection);
-      selection_changed = true;
-    }
-  }
-  for (const auto& new_selection : new_selections) {
-    if (!new_selection.IsEmpty()) {
-      Invalidate(new_selection);
-      selection_changed = true;
-    }
-  }
+  bool selection_changed = Invalidate(old_selections_);
+  selection_changed |= Invalidate(new_selections);
 
   if (selection_changed) {
     engine_->OnSelectionTextChanged();
@@ -3649,16 +3648,8 @@ PDFiumEngine::HighlightChangeInvalidator::~HighlightChangeInvalidator() {
     }
   }
 
-  for (const auto& old_highlight : old_highlights_) {
-    if (!old_highlight.IsEmpty()) {
-      Invalidate(old_highlight);
-    }
-  }
-  for (const auto& new_highlight : new_highlights) {
-    if (!new_highlight.IsEmpty()) {
-      Invalidate(new_highlight);
-    }
-  }
+  Invalidate(old_highlights_);
+  Invalidate(new_highlights);
 }
 
 std::vector<gfx::Rect>

@@ -577,9 +577,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     std::vector<gfx::Rect> GetVisibleScreenRectsFromRanges(
         base::span<const PDFiumRange> ranges) const;
 
-    // Invalidates `rect`, but with `rect` slightly expanded to
-    // compensate for any rounding errors.
-    void Invalidate(const gfx::Rect& rect);
+    // Invalidates all `screen_rects`, but with each rect slightly expanded to
+    // compensate for any rounding errors. Skips any empty rects. Returns
+    // whether any rect invalidation occurred.
+    bool Invalidate(base::span<const gfx::Rect> screen_rects);
 
     const raw_ptr<PDFiumEngine> engine_;
     // The origin at the time this object was constructed.
