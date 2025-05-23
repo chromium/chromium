@@ -16,6 +16,8 @@ static_library("arcvm_app") {
     "kiosk_arcvm_app_manager.h",
     "kiosk_arcvm_app_service.cc",
     "kiosk_arcvm_app_service.h",
+    "kiosk_arcvm_app_service_factory.cc",
+    "kiosk_arcvm_app_service_factory.h",
   ]
   deps = [
     "//ash",

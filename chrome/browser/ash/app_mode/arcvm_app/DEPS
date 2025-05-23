@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/ash/arc/policy",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/ui/ash/multi_user",
   "+chromeos/ash/components/settings",
 ]

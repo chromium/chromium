@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -39,8 +40,7 @@ KioskArcvmAppService* KioskArcvmAppService::Create(Profile* profile) {
 // static
 KioskArcvmAppService* KioskArcvmAppService::Get(
     content::BrowserContext* context) {
-  // TODO(crbug.com/413053884) : Implement KioskArcvmAppServiceFactory
-  return nullptr;
+  return KioskArcvmAppServiceFactory::GetForBrowserContext(context);
 }
 
 void KioskArcvmAppService::AddObserver(KioskAppLauncher::Observer* observer) {

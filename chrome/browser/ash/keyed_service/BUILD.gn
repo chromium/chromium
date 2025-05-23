@@ -25,6 +25,7 @@ static_library("keyed_service") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/session",
