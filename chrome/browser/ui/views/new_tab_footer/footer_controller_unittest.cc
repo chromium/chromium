@@ -341,6 +341,34 @@ TEST_F(FooterControllerExtensionTest, FooterShown_ExtensionNTP_Management) {
   EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_show_ui());
 }
 
+// Ensures the footer is hidden if the policy is set while the footer is shown.
+TEST_F(FooterControllerExtensionTest,
+       FooterHidden_ExtensionNTP_AttributionPolicyChange) {
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  // Force activation of the URL override. The usual observer for
+  // extension load isn't created in the unit test.
+  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+      profile_.get(),
+      extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
+
+  EXPECT_FALSE(browser_window()->NewTabFooterWebView()->did_show_ui());
+  tab_interface()->NavigateTo(extension->url());
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_show_ui());
+  EXPECT_FALSE(browser_window()->NewTabFooterWebView()->did_close_ui());
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, false);
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_close_ui());
+
+  browser_window()->NewTabFooterWebView()->Clear();
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kNTPFooterExtensionAttributionEnabled, true);
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_show_ui());
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Ensures footer is shown on non-extension NTP if the browser is also managed.
 TEST_F(FooterControllerExtensionTest, FooterShown_NonExtensionNTP_Management) {
@@ -493,5 +521,31 @@ TEST_F(FooterControllerEnterpriseTest, FooterHidden_NoticePolicyDisabled) {
   tab_interface()->NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
 
   EXPECT_FALSE(browser_window()->NewTabFooterWebView()->did_show_ui());
+}
+
+// Ensures that the footer becomes hidden after the policy is set while the
+// footer is showing.
+TEST_F(FooterControllerEnterpriseTest, FooterHidden_NoticePolicyChange) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  EXPECT_FALSE(browser_window()->NewTabFooterWebView()->did_show_ui());
+  tab_interface()->NavigateTo(GURL(chrome::kChromeUINewTabPageURL));
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_show_ui());
+  EXPECT_FALSE(browser_window()->NewTabFooterWebView()->did_close_ui());
+  profile_manager_->local_state()->Get()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, false);
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_close_ui());
+
+  browser_window()->NewTabFooterWebView()->Clear();
+  profile_manager_->local_state()->Get()->SetBoolean(
+      prefs::kNTPFooterManagementNoticeEnabled, true);
+
+  EXPECT_TRUE(browser_window()->NewTabFooterWebView()->did_show_ui());
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

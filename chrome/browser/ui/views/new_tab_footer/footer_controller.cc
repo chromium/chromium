@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -48,6 +49,17 @@ NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
       prefs::kNtpFooterVisible,
       base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
                           weak_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kNTPFooterExtensionAttributionEnabled,
+      base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
+                          weak_factory_.GetWeakPtr()));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+  local_state_pref_change_registrar_.Add(
+      prefs::kNTPFooterManagementNoticeEnabled,
+      base::BindRepeating(&NewTabFooterController::UpdateFooterVisibility,
+                          weak_factory_.GetWeakPtr()));
+#endif
 
   content::WebContentsObserver::Observe(tab_->GetContents());
   tab_did_activate_callback_subscription_ = tab_->RegisterDidActivate(

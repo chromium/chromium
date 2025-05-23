@@ -35,6 +35,7 @@ class NewTabFooterController : public content::WebContentsObserver {
   raw_ptr<new_tab_footer::NewTabFooterWebView> footer_web_view_;
   base::CallbackListSubscription tab_did_activate_callback_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<NewTabFooterController> weak_factory_{this};
