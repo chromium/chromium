@@ -9276,6 +9276,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "tabsearch-toolbar-button",
+    "owners": [ "estalin@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tabstrip-combo-button",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150

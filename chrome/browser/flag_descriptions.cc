@@ -3689,7 +3689,15 @@ const char kScrollableTabStripDescription[] =
 const char kTabstripComboButtonFlagId[] = "tabstrip-combo-button";
 const char kTabstripComboButtonName[] = "Tabstrip Combo Button";
 const char kTabstripComboButtonDescription[] =
-    "Combines tab search and the new tab button into a single combo button.";
+    "Combines tab search and the new tab button into a single combo button. "
+    "Might require tab search toolbar flag to be disabled to take effect in "
+    "specific regions.";
+
+const char kLaunchedTabSearchToolbarName[] = "Tab Search Toolbar Button";
+const char kLaunchedTabSearchToolbarDescription[] =
+    "Enables tab search button to be in toolbar area. "
+    "Might require enabling the tab strip combo button configuration to also "
+    "match to toolbar in specific regions.";
 
 const char kTabScrollingButtonPositionFlagId[] =
     "tab-scrolling-button-position";

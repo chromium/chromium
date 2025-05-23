@@ -16279,6 +16279,7 @@ from previous Chrome versions.
   <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
   <int value="830354646" label="SecondaryGoogleAccountUsage:disabled"/>
+  <int value="830607993" label="LaunchedTabSearchToolbarButton:enabled"/>
   <int value="831988687" label="PrivacySandboxEqualizedPromptButtons:disabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>
   <int value="832711367" label="RequestDesktopSiteForTablets:enabled"/>
@@ -18184,6 +18185,7 @@ from previous Chrome versions.
   <int value="1542266641" label="CrosSeparateGeoApiKey:disabled"/>
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
+  <int value="1543448038" label="LaunchedTabSearchToolbarButton:disabled"/>
   <int value="1543776185"
       label="SegmentationPlatformAndroidHomeModuleRanker:disabled"/>
   <int value="1544413751" label="PasswordStrengthIndicator:enabled"/>
