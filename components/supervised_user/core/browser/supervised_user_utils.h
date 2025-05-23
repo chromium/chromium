@@ -28,6 +28,7 @@ enum class FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
   MANUAL = 2,
+  FILTER_DISABLED = 3,
 };
 
 // Details degarding how a particular filtering classification was arrived at.

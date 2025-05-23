@@ -93,9 +93,11 @@ void SupervisedUserMetricsService::CheckForNewDay() {
   // time zone changes.
   if (day_id < current_day_id) {
     bool should_update_day_id = false;
-    // Since this service runs independently from the SupervisedUserService, do
-    // not emit if the filtering is inactive (for non-supervised users).
-    if (supervised_user_service_->GetURLFilter()->IsFilterInitialized()) {
+    // Since this service's periodical check runs independently from the
+    // SupervisedUserService, do not emit if the filtering expected to be
+    // inactive.
+    if (supervised_user_service_->GetURLFilter()->GetWebFilterType() !=
+        WebFilterType::kDisabled) {
       ClearMetricsCache();
       EmitMetrics();
       should_update_day_id = true;

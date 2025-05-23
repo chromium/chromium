@@ -36,6 +36,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilterTest() {
     RegisterProfilePrefs(pref_service_.registry());
     sync_data_fake_.Init();
+    EnableParentalControls(pref_service_);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
@@ -519,7 +520,7 @@ class SupervisedUserURLFilteringWithConflictsTest
   SupervisedUserURLFilteringWithConflictsTest() {
     RegisterProfilePrefs(pref_service_.registry());
     sync_data_fake_.Init();
-
+    EnableParentalControls(pref_service_);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
     sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
@@ -722,11 +723,6 @@ class SupervisedUserURLFilterMetricsTest
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
     sync_data_fake_.Init();
-  }
-
-  void EnableSafeSites() {
-    // This call enables parental controls, and default settings of parental
-    // controls is safe sites on.
     EnableParentalControls(pref_service_);
   }
 
@@ -809,7 +805,6 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncBlock) {
-  EnableSafeSites();
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   safe_search_api::FakeURLCheckerClient* client_ptr = client.get();
@@ -835,7 +830,6 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncAllow) {
-  EnableSafeSites();
   std::unique_ptr<safe_search_api::FakeURLCheckerClient> client =
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   safe_search_api::FakeURLCheckerClient* client_ptr = client.get();

@@ -32,13 +32,21 @@ enum class Channel;
 
 namespace supervised_user {
 
-// This class manages the filtering behavior for URLs, i.e. it tells callers
-// if a URL should be allowed or blocked. It uses information
-// from multiple sources:
-//   * A default setting (allow or block).
-//   * User-specified manual overrides (allow or block) for either sites
-//     (hostnames) or exact URLs, which take precedence over the previous
-//     sources.
+// The URL filter manages the filtering behavior for URLs, i.e. it tells
+// callers if a URL should be allowed or blocked. It uses information from
+// multiple sources:
+//   1) User-specified manual overrides (allow or block) for either sites
+//     (hostnames) or exact URLs,
+//   2) Then, depending on the mode of operation:
+//      a) without asynchronous check request, the default behavior (allow or
+//         block) is used,
+//      b) with asynchronous check request, the url is tested against remote
+//         service.
+//
+// Since the instance of this filter is in 1-1 relation with the supervised
+// user service, it is present all the time. However, when parental controls
+// are off or filtering is not requested, the filter operates in a disabled
+// state which transparently classifies all urls as allowed.
 class SupervisedUserURLFilter {
  public:
   // This enum describes whether the approved list or blocked list is used on
@@ -100,6 +108,10 @@ class SupervisedUserURLFilter {
     }
     bool IsFromDefaultSetting() const {
       return reason == FilteringBehaviorReason::DEFAULT;
+    }
+    bool IsAllowedBecauseOfDisabledFilter() const {
+      return reason == FilteringBehaviorReason::FILTER_DISABLED &&
+             behavior == FilteringBehavior::kAllow;
     }
 
     // True when the result of the classification means that the url is safe.
@@ -214,18 +226,10 @@ class SupervisedUserURLFilter {
   // Returns summary of url filtering settings.
   Statistics GetFilteringStatistics() const;
 
-  // Removes all filter entries, clears the async checker if present, and resets
-  // the default behavior to "allow".
-  void Clear();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   WebFilterType GetWebFilterType() const;
-
-  // Set or get the value for `is_filter_initialized_`.
-  bool IsFilterInitialized() const { return is_filter_initialized_; }
-  void SetFilterInitialized(bool is_filter_initialized);
 
   // Sets safe_search_api::URLCheckerClient for SafeSites classification.
   void SetURLCheckerClient(
@@ -274,8 +278,6 @@ class SupervisedUserURLFilter {
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  bool is_filter_initialized_ = false;
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };

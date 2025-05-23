@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -11,6 +13,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -157,6 +161,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
+                       UrlFilterIsOffByDefault) {
+  EXPECT_TRUE(SupervisedUserServiceFactory::GetForProfile(browser()->profile())
+                  ->GetURLFilter()
+                  ->GetWebFilterType() == WebFilterType::kDisabled);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserServiceForRegularUsersBrowserTest,
@@ -167,6 +178,70 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
         SupervisionMixin::SignInMode::kRegular),
     ::testing::PrintToStringParamName());
+
+// Suite for supervised user features behavior for supervised users.
+class SupervisedUserServiceForSupervisedUsersBrowserTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  SupervisionMixin supervision_mixin_{
+      mixin_host_,
+      this,
+      embedded_test_server(),
+      {.sign_in_mode = SupervisionMixin::SignInMode::kSupervised}};
+};
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
+                       UrlFilterIsOnByDefault) {
+  EXPECT_NE(WebFilterType::kDisabled,
+            SupervisedUserServiceFactory::GetForProfile(browser()->profile())
+                ->GetURLFilter()
+                ->GetWebFilterType());
+}
+
+IN_PROC_BROWSER_TEST_F(SupervisedUserServiceForSupervisedUsersBrowserTest,
+                       FilterIsNeutralized) {
+  Profile* profile = browser()->profile();
+  PrefService* pref_service = profile->GetPrefs();
+
+  supervised_user_test_util::SetWebFilterType(
+      profile, supervised_user::WebFilterType::kTryToBlockMatureSites);
+  supervised_user_test_util::SetManualFilterForHost(profile, "example1.com",
+                                                    /*allowlist=*/true);
+  supervised_user_test_util::SetManualFilterForHost(profile, "example2.com",
+                                                    /*allowlist=*/false);
+  supervised_user_test_util::SetManualFilterForUrl(profile, "example3.com",
+                                                   /*allowlist=*/true);
+  supervised_user_test_util::SetManualFilterForUrl(profile, "example4.com",
+                                                   /*allowlist=*/false);
+
+  EXPECT_FALSE(pref_service->FindPreference(prefs::kSupervisedUserManualHosts)
+                   ->IsDefaultValue());
+  EXPECT_FALSE(pref_service->FindPreference(prefs::kSupervisedUserManualURLs)
+                   ->IsDefaultValue());
+  EXPECT_FALSE(pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
+                   ->IsDefaultValue());
+  EXPECT_FALSE(
+      pref_service
+          ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+          ->IsDefaultValue());
+
+  DisableParentalControls(*pref_service);
+  EXPECT_EQ(WebFilterType::kDisabled,
+            SupervisedUserServiceFactory::GetForProfile(browser()->profile())
+                ->GetURLFilter()
+                ->GetWebFilterType());
+
+  EXPECT_TRUE(pref_service->FindPreference(prefs::kSupervisedUserManualHosts)
+                  ->IsDefaultValue());
+  EXPECT_TRUE(pref_service->FindPreference(prefs::kSupervisedUserManualURLs)
+                  ->IsDefaultValue());
+  EXPECT_TRUE(pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
+                  ->IsDefaultValue());
+  EXPECT_TRUE(
+      pref_service
+          ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+          ->IsDefaultValue());
+}
 
 }  // namespace
 }  // namespace supervised_user

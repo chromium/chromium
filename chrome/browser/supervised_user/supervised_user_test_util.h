@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -52,8 +53,18 @@ void PopulateAccountInfoWithName(AccountInfo& info,
 // SetManualFilterForHost(profile, "www.example.com", true) adds the host to the
 // allowlist. The supervised user will be able to access this host.
 void SetManualFilterForHost(Profile* profile,
-                            const std::string& host,
+                            std::string_view host,
                             bool allowlist);
+
+// Updates manual block/allow list with a given url.
+// e.g. SetManualFilterForUrl(profile, "http://www.example.com", false) adds the
+// given url to the blocklist and the supervised user
+// will not be able to access this url. Similarly
+// SetManualFilterForUrl(profile, "www.example.com", true) adds the url to the
+// allowlist. The supervised user will be able to access this url.
+void SetManualFilterForUrl(Profile* profile,
+                           std::string_view url,
+                           bool allowlist);
 
 // Convenience method for browser tests emulating parent changes to web
 // filtering.

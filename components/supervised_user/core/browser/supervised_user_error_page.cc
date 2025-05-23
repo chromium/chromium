@@ -35,8 +35,8 @@ std::string BuildAvatarImageUrl(const std::string& url, int size) {
   if (!gurl.is_valid())
     return url;
 
-  GURL to_return = signin::GetAvatarImageURLWithOptions(
-      gurl, size, false /* no_silhouette */);
+  GURL to_return =
+      signin::GetAvatarImageURLWithOptions(gurl, size, /*no_silhouette=*/false);
   return to_return.spec();
 }
 
@@ -52,6 +52,8 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
     case FilteringBehaviorReason::MANUAL:
       return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
                            : IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
+    case FilteringBehaviorReason::FILTER_DISABLED:
+      NOTREACHED() << "When filtering is disabled, nothing is blocked";
   }
 }
 
@@ -66,8 +68,8 @@ int GetInterstitialMessageID(FilteringBehaviorReason reason) {
         return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES;
       case FilteringBehaviorReason::MANUAL:
         return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL;
-      default:
-        NOTREACHED();
+      case FilteringBehaviorReason::FILTER_DISABLED:
+        NOTREACHED() << "When filtering is disabled, nothing is blocked";
     }
   }
   return IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2;

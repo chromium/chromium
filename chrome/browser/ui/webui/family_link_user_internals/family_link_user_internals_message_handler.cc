@@ -98,6 +98,8 @@ std::string WebFilterTypeToString(
       return "Try to block mature sites";
     case supervised_user::WebFilterType::kCertainSites:
       return "Only certain sites";
+    case supervised_user::WebFilterType::kDisabled:
+      return "Disabled";
     case supervised_user::WebFilterType::kMixed:
       NOTREACHED()
           << "That value is not intended to be set, but is rather "
@@ -130,6 +132,8 @@ std::string FilteringReasonToString(
       return "AsyncChecker";
     case supervised_user::FilteringBehaviorReason::MANUAL:
       return "Manual";
+    case supervised_user::FilteringBehaviorReason::FILTER_DISABLED:
+      return "Filtering is disabled";
   }
   NOTREACHED();
 }

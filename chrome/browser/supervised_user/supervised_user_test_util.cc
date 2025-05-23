@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -21,6 +22,29 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user_test_util {
+
+namespace {
+void SetManualFilter(Profile* profile,
+                     std::string_view content_pack_setting,
+                     std::string_view host,
+                     bool allowlist) {
+  supervised_user::SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+
+  const base::Value::Dict& local_settings =
+      settings_service->LocalSettingsForTest();
+  base::Value::Dict dict_to_insert;
+
+  if (const base::Value::Dict* dict_value =
+          local_settings.FindDict(content_pack_setting)) {
+    dict_to_insert = dict_value->Clone();
+  }
+
+  dict_to_insert.Set(host, allowlist);
+  settings_service->SetLocalSetting(content_pack_setting,
+                                    std::move(dict_to_insert));
+}
+}  // namespace
 
 void AddCustodians(Profile* profile) {
   DCHECK(profile->IsChild());
@@ -101,24 +125,17 @@ void PopulateAccountInfoWithName(AccountInfo& info,
 }
 
 void SetManualFilterForHost(Profile* profile,
-                            const std::string& host,
+                            std::string_view host,
                             bool allowlist) {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  SetManualFilter(profile, supervised_user::kContentPackManualBehaviorHosts,
+                  host, allowlist);
+}
 
-  const base::Value::Dict& local_settings =
-      settings_service->LocalSettingsForTest();
-  base::Value::Dict dict_to_insert;
-
-  if (const base::Value::Dict* dict_value = local_settings.FindDict(
-          supervised_user::kContentPackManualBehaviorHosts)) {
-    dict_to_insert = dict_value->Clone();
-  }
-
-  dict_to_insert.Set(host, allowlist);
-  settings_service->SetLocalSetting(
-      supervised_user::kContentPackManualBehaviorHosts,
-      std::move(dict_to_insert));
+void SetManualFilterForUrl(Profile* profile,
+                           std::string_view url,
+                           bool allowlist) {
+  SetManualFilter(profile, supervised_user::kContentPackManualBehaviorURLs, url,
+                  allowlist);
 }
 
 void SetWebFilterType(const Profile* profile,
@@ -156,6 +173,9 @@ void SetWebFilterType(const Profile* profile,
 
       // Value of kSupervisedUserSafeSites is not important here.
       break;
+    case supervised_user::WebFilterType::kDisabled:
+      NOTREACHED() << "To disable the URL filter, use "
+                      "supervised_user::DisableParentalControls(.)";
     case supervised_user::WebFilterType::kMixed:
       NOTREACHED() << "That value is not intended to be set, but is rather "
                       "used to indicate multiple settings used in profiles "

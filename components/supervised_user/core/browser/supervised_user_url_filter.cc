@@ -81,6 +81,9 @@ int GetHistogramValueForFilteringBehavior(
         case FilteringBehaviorReason::DEFAULT:
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_DEFAULT;
+        case FilteringBehaviorReason::FILTER_DISABLED:
+          NOTREACHED() << "Histograms must not be generated when the "
+                          "supervised URL filter is turned off.";
       }
     case FilteringBehavior::kInvalid:
       NOTREACHED();
@@ -101,6 +104,9 @@ SupervisedUserFilterTopLevelResult TopLevelResult(
           return SupervisedUserFilterTopLevelResult::kBlockManual;
         case FilteringBehaviorReason::DEFAULT:
           return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
+        case FilteringBehaviorReason::FILTER_DISABLED:
+          NOTREACHED() << "Histograms must not be generated when the "
+                          "supervised user URL filter is turned off.";
       }
     case FilteringBehavior::kInvalid:
       NOTREACHED();
@@ -162,6 +168,26 @@ bool ContainersAreEqual(const OrderedContainer& lhs,
                         const OrderedContainer& rhs) {
   return lhs.size() == rhs.size() &&
          std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+// Indicates if all prefs that configure this filter are unset, meaning that
+// filtering is not required.
+bool ConfigPrefsAreDefault(const PrefService& pref_service) {
+  bool are_prefs_default =
+      pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
+          ->IsDefaultValue() &&
+      pref_service.FindPreference(prefs::kSupervisedUserManualURLs)
+          ->IsDefaultValue() &&
+      pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
+          ->IsDefaultValue() &&
+      pref_service
+          .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+          ->IsDefaultValue();
+  CHECK_EQ(are_prefs_default, !IsSubjectToParentalControls(pref_service))
+      << "URL filter config prefs can only be default when the parental "
+         "controls are off. With parental controls on, the preferences above "
+         "have values set from the supervised user pref store";
+  return are_prefs_default;
 }
 
 FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {
@@ -452,6 +478,10 @@ bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
 SupervisedUserURLFilter::Result SupervisedUserURLFilter::GetFilteringBehavior(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetWebFilterType() == WebFilterType::kDisabled) {
+    return {url, FilteringBehavior::kAllow,
+            FilteringBehaviorReason::FILTER_DISABLED};
+  }
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid()) {
@@ -554,11 +584,14 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorWithAsyncChecks(
     bool skip_manual_parent_filter,
     FilteringContext filtering_context,
     std::optional<ui::PageTransition> transition_type) {
+  Result result = GetFilteringBehavior(url);
+  if (result.IsAllowedBecauseOfDisabledFilter()) {
+    NotifyCallerAndObservers(std::move(callback), result);
+    return true;
+  }
+
   callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
                                      transition_type);
-
-  Result result = GetFilteringBehavior(url);
-
   if (result.IsAllowed() && !result.IsFromDefaultSetting()) {
     NotifyCallerAndObservers(std::move(callback), result);
     return true;
@@ -583,10 +616,14 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameWithAsyncChecks(
     ResultCallback callback,
     FilteringContext filtering_context,
     std::optional<ui::PageTransition> transition_type) {
+  Result result = GetFilteringBehavior(url);
+  if (result.IsAllowedBecauseOfDisabledFilter()) {
+    NotifyCallerAndObservers(std::move(callback), result);
+    return true;
+  }
+
   callback = WrapCallbackWithMetrics(std::move(callback), filtering_context,
                                      transition_type);
-
-  Result result = GetFilteringBehavior(url);
 
   // If the reason is not default, then it is manually allowed or blocked.
   if (!result.IsFromDefaultSetting()) {
@@ -607,8 +644,6 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameWithAsyncChecks(
 }
 
 void SupervisedUserURLFilter::UpdateManualHosts() {
-  // TODO(crbug.com/305229682): Update this method to handle the two
-  // parental lists.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   blocked_host_list_.clear();
   allowed_host_list_.clear();
@@ -652,14 +687,6 @@ SupervisedUserURLFilter::GetFilteringStatistics() const {
   return statistics_;
 }
 
-void SupervisedUserURLFilter::Clear() {
-  url_map_.clear();
-  allowed_host_list_.clear();
-  blocked_host_list_.clear();
-  async_url_checker_.reset();
-  is_filter_initialized_ = false;
-}
-
 void SupervisedUserURLFilter::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -669,6 +696,10 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
 }
 
 WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
+  if (ConfigPrefsAreDefault(user_prefs_.get())) {
+    return WebFilterType::kDisabled;
+  }
+
   // If the default filtering behavior is not block, it means the web filter
   // was set to either "allow all sites" or "try to block mature sites".
   if (GetDefaultFilteringBehavior(user_prefs_.get()) ==
@@ -679,10 +710,6 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
   return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
-}
-
-void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
-  is_filter_initialized_ = is_filter_initialized;
 }
 
 bool SupervisedUserURLFilter::RunAsyncChecker(const GURL& url,
@@ -735,5 +762,4 @@ void SupervisedUserURLFilter::NotifyCallerAndObservers(ResultCallback callback,
     observer.OnURLChecked(result);
   }
 }
-
 }  // namespace supervised_user

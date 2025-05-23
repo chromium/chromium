@@ -27,6 +27,7 @@ class SupervisedUserUtilsTest : public ::testing::Test {
   SupervisedUserUtilsTest() {
     RegisterProfilePrefs(pref_service_.registry());
     sync_data_fake_.Init();
+    EnableParentalControls(pref_service_);
     filter_.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
   }

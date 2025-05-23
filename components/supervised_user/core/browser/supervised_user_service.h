@@ -70,12 +70,17 @@ class Custodian {
   std::string profile_image_url_;
 };
 
-// This class handles all the information related to a given supervised profile
-// (e.g. the default URL filtering behavior, or manual allowlist/denylist
-// overrides).
+// Orchestrates cooperation between components of user supervision. Manages the
+// lifecycle of url filtering, remote approval workflows, custodian data and
+// incognito mode availability.
+// The state of features is driven by changes to the following preferences:
+// * `profile.managed_user_id` for url filtering, remove approvals and custodian
+//    data,
+// * `incognito.mode_availability` for incognito mode.
 class SupervisedUserService : public KeyedService {
  public:
-  // Delegate encapsulating platform-specific logic that is invoked from SUS.
+  // Delegate encapsulating platform-specific logic that is invoked from this
+  // service.
   class PlatformDelegate {
    public:
     virtual ~PlatformDelegate() = default;
@@ -102,7 +107,7 @@ class SupervisedUserService : public KeyedService {
 
   ~SupervisedUserService() override;
 
-  supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
+  RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
   }
 
@@ -154,19 +159,24 @@ class SupervisedUserService : public KeyedService {
   void OnParentalControlsEnabled();
   void OnParentalControlsDisabled();
 
-  void OnDefaultFilteringBehaviorChanged();
-
-  void OnSafeSitesSettingChanged();
-
   void OnIncognitoModeAvailabilityChanged();
 
-  // Updates the manual overrides for hosts in the URL filters when the
-  // corresponding preference is changed.
-  void UpdateManualHosts();
+  // Single handler for all url filter changes.
+  // If present, `pref_name` indicates the actual pref that changed and might
+  // dispatch additional work to the URL filter (eg. to update its internal data
+  // structures). When `pref_name` is absent, the filter will refresh the data
+  // structures unconditionally.
+  void UpdateURLFilter(std::optional<std::string> pref_name = std::nullopt);
 
-  // Updates the manual overrides for URLs in the URL filters when the
-  // corresponding preference is changed.
-  void UpdateManualURLs();
+  // Interface for the above suitable for pref change registrar.
+  void OnURLFilterChanged(const std::string& pref_name);
+
+  // Add or remove all pref handlers related to URL filtering.
+  void AddURLFilterPrefChangeHandlers();
+  void RemoveURLFilterPrefChangeHandlers();
+  // Add or remove all pref handlers related to custodians.
+  void AddCustodianPrefChangeHandlers();
+  void RemoveCustodianPrefChangeHandlers();
 
   const raw_ref<PrefService> user_prefs_;
 
@@ -186,10 +196,12 @@ class SupervisedUserService : public KeyedService {
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
-  // Registrar for prefs that configure features offered by this service. It is
-  // only observing changes when the user is subject to family link parental
-  // controls.
-  PrefChangeRegistrar feature_pref_change_registrar_;
+  // Registrar for preferences that drive URL filtering. They're observed
+  // only when the profile is subject to parental controls.
+  PrefChangeRegistrar url_filter_pref_change_registrar_;
+  // Registrar for preferences that control custodian data. They're observed
+  // only when the profile is subject to parental controls.
+  PrefChangeRegistrar custodian_pref_change_registrar_;
 
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;

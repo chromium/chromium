@@ -82,6 +82,8 @@ class SupervisedUserSyncDataFake {
   void SetWebFilterType(WebFilterType web_filter_type) {
     switch (web_filter_type) {
       case WebFilterType::kAllowAllSites:
+        CHECK(IsSubjectToParentalControls(*pref_service_.get()))
+            << "This fake expects that parental controls are on";
         pref_service_->SetSupervisedUserPref(
             prefs::kDefaultSupervisedUserFilteringBehavior,
             base::Value(static_cast<int>(FilteringBehavior::kAllow)));
@@ -89,6 +91,8 @@ class SupervisedUserSyncDataFake {
                                              base::Value(false));
         break;
       case WebFilterType::kTryToBlockMatureSites:
+        CHECK(IsSubjectToParentalControls(*pref_service_.get()))
+            << "This fake expects that parental controls are on";
         pref_service_->SetSupervisedUserPref(
             prefs::kDefaultSupervisedUserFilteringBehavior,
             base::Value(static_cast<int>(FilteringBehavior::kAllow)));
@@ -96,11 +100,16 @@ class SupervisedUserSyncDataFake {
                                              base::Value(true));
         break;
       case WebFilterType::kCertainSites:
+        CHECK(IsSubjectToParentalControls(*pref_service_.get()))
+            << "This fake expects that parental controls are on";
         pref_service_->SetSupervisedUserPref(
             prefs::kDefaultSupervisedUserFilteringBehavior,
             base::Value(static_cast<int>(FilteringBehavior::kBlock)));
         // Value of kSupervisedUserSafeSites is not important here.
         break;
+      case WebFilterType::kDisabled:
+        NOTREACHED() << "To disable the URL filter, use "
+                        "supervised_user::DisableParentalControls(.)";
       case WebFilterType::kMixed:
         NOTREACHED() << "That value is not intended to be set, but is rather "
                         "used to indicate multiple settings used in profiles "
@@ -126,6 +135,8 @@ class SupervisedUserSyncDataFake {
     for (auto& [url, status] : exceptions) {
       dict.Set(url, base::Value(static_cast<bool>(status)));
     }
+    CHECK(IsSubjectToParentalControls(*pref_service_.get()))
+        << "This fake expects that parental controls are on";
     pref_service_->SetSupervisedUserPref(std::string(list_name), dict.Clone());
   }
 

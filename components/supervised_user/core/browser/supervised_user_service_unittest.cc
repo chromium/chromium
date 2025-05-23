@@ -82,7 +82,6 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         std::make_unique<SupervisedUserURLFilter>(
             syncable_pref_service_, std::make_unique<FakeURLFilterDelegate>()),
         std::make_unique<FakePlatformDelegate>());
-
     SupervisedUserMetricsService::RegisterProfilePrefs(
         syncable_pref_service_.registry());
     metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
@@ -128,7 +127,9 @@ TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
   syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       base::Value(static_cast<int>(FilteringBehavior::kBlock)));
-  EXPECT_TRUE(service_->IsBlockedURL(GURL("http://google.com")));
+  EXPECT_TRUE(service_->GetURLFilter()
+                  ->GetFilteringBehavior(GURL("http://google.com"))
+                  .IsBlocked());
 }
 
 // Tests that allowing all site navigation is applied to supervised users.
@@ -139,8 +140,9 @@ TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
       base::Value(static_cast<int>(FilteringBehavior::kAllow)));
   syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
                                                base::Value(false));
-
-  EXPECT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+  EXPECT_TRUE(service_->GetURLFilter()
+                  ->GetFilteringBehavior(GURL("http://google.com"))
+                  .IsAllowed());
 }
 
 // Tests that changes in parent configuration for web filter types are recorded.
