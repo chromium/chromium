@@ -1,0 +1,9 @@
+{
+  "browser": "Chrome",
+  "channel": "Dev",
+  "platform": "Android",
+  "version": "138.0.7178.0",
+  "chromium_main_branch_position": 1463168,
+  "skia_hash": "db50a61378fddb9a29efa40e0058cec56de88c1b",
+  "v8_hash": "770751e8c5989e59409a67716cceb8085f3d23ed"
+}

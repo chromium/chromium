@@ -1,0 +1,9 @@
+{
+  "browser": "Chrome",
+  "channel": "Dev",
+  "platform": "Windows",
+  "version": "138.0.7191.0",
+  "chromium_main_branch_position": 1462727,
+  "skia_hash": "3ead037d837c32c819d77607e01f208e91caca07",
+  "v8_hash": "746106c4a66d561ed6443d7298be8f2e59dc2273"
+}
