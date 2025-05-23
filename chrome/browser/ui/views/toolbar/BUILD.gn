@@ -66,6 +66,7 @@ source_set("toolbar") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
+    "//chrome/browser/sharing_hub",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_error",

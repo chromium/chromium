@@ -290,6 +290,7 @@ source_set("impl") {
       "//chrome/browser/search/background",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
+      "//chrome/browser/sharing_hub",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/tabs",
