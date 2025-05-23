@@ -1436,6 +1436,11 @@ TEST_P(SQLDatabaseTest, RazeAndPoison_TransactionBegin) {
   }
 }
 
+TEST_P(SQLDatabaseTest, RazeAndPoison_ComputeMmapSizeForOpen) {
+  ASSERT_TRUE(db_->RazeAndPoison());
+  EXPECT_EQ(db_->ComputeMmapSizeForOpen(), 0u);
+}
+
 TEST_P(SQLDatabaseTest, Close_IsSQLValid) {
   ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
 

@@ -856,6 +856,11 @@ bool Database::SetMmapAltStatus(int64_t status) {
 size_t Database::ComputeMmapSizeForOpen() {
   TRACE_EVENT0("sql", "Database::ComputeMmapSizeForOpen");
 
+  // If the database has been razed, disable memory mapping.
+  if (!db_ || poisoned_) {
+    return 0;
+  }
+
   // How much to map if no errors are found.  50MB encompasses the 99th
   // percentile of Chrome databases in the wild, so this should be good.
   const size_t kMmapEverything = 256 * 1024 * 1024;
@@ -2278,7 +2283,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   RecordTimingHistogram("Sql.Database.Success.OpenInternalTime.",
                         timer.Elapsed());
 
-  return true;
+  return is_open();
 }
 
 void Database::PreloadInternal(const base::FilePath& path) {
