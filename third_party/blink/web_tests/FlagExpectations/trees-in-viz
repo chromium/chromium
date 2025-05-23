@@ -52,8 +52,11 @@
 
 crbug.com/418116092 fast/dom/focus-contenteditable.html [ Failure ]
 
-# TODO(crbug.com/401453196): Resolve failing layout tests. Refine into child
-# bugs if/as it becomes clear that tests are failing due to distinct issues.
+crbug.com/419157427 fast/frames/frame-set-scaling-centered.html [ Failure ]
+crbug.com/419157427 fast/frames/frame-set-scaling.html [ Failure ]
+
+# TODO(crbug.com/401453196): Refine into child bugs if/as it becomes clear that
+# tests are failing due to distinct issues.
 crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Failure Timeout ]
 crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Failure Timeout ]
 crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Failure Timeout ]
@@ -65,8 +68,6 @@ crbug.com/401453196 fast/forms/color-scheme/media/video-overlay-play-button.html
 crbug.com/401453196 fast/forms/color-scheme/media/video-playback-speed-menu.html [ Failure Timeout ]
 crbug.com/401453196 fast/forms/huge-mac-input-clamped-height.html [ Failure Timeout ]
 crbug.com/401453196 fast/forms/huge-mac-input-clamped-width.html [ Failure Timeout ]
-crbug.com/401453196 fast/frames/frame-set-scaling-centered.html [ Failure Timeout ]
-crbug.com/401453196 fast/frames/frame-set-scaling.html [ Failure Timeout ]
 crbug.com/401453196 fast/hidpi/background-tile-bleed.html [ Failure Timeout ]
 crbug.com/401453196 fast/hidpi/border-background-align.html [ Failure Timeout ]
 crbug.com/401453196 fast/hidpi/broken-image-icon-hidpi.html [ Failure Timeout ]
