@@ -15987,6 +15987,30 @@
             ]
         }
     ],
+    "PageActionsMigration": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "lens_overlay": "true",
+                        "memory_saver": "true",
+                        "offer_notification": "true",
+                        "translate": "true"
+                    },
+                    "enable_features": [
+                        "PageActionsMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageAllocatorRetryOnCommitFailure": [
         {
             "platforms": [
