@@ -4135,8 +4135,6 @@ test("ash_unittests") {
     "shelf/swipe_home_to_overview_controller_unittest.cc",
     "shelf/test/hotseat_state_watcher.cc",
     "shelf/test/hotseat_state_watcher.h",
-    "shelf/test/widget_animation_smoothness_inspector.cc",
-    "shelf/test/widget_animation_smoothness_inspector.h",
     "shell_unittest.cc",
     "style/ash_color_mixer_unittest.cc",
     "style/ash_color_provider_unittest.cc",
