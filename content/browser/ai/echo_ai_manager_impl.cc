@@ -101,15 +101,17 @@ void EchoAIManagerImpl::CreateLanguageModel(
 
   size_t initial_size = 0;
   for (const auto& initial_prompt : options->initial_prompts) {
-    if (initial_prompt->content->is_text()) {
-      initial_size += initial_prompt->content->get_text().size();
-    } else {
-      initial_size += 100;  // TODO(crbug.com/415304330): Improve estimate.
-    }
-    if (initial_size > kMaxContextSizeInTokens) {
-      client_remote->OnError(
-          blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
-      return;
+    for (const auto& content : initial_prompt->content) {
+      if (content->is_text()) {
+        initial_size += content->get_text().size();
+      } else {
+        initial_size += 100;  // TODO(crbug.com/415304330): Improve estimate.
+      }
+      if (initial_size > kMaxContextSizeInTokens) {
+        client_remote->OnError(
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+        return;
+      }
     }
   }
 

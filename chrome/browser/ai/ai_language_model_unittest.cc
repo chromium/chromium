@@ -82,6 +82,14 @@ on_device_model::mojom::AudioDataPtr CreateTestAudio() {
   return on_device_model::mojom::AudioData::New();
 }
 
+// Convert a single AILanguageModelPromptContentPtr to a vector.
+std::vector<blink::mojom::AILanguageModelPromptContentPtr> ToVector(
+    blink::mojom::AILanguageModelPromptContentPtr content) {
+  std::vector<blink::mojom::AILanguageModelPromptContentPtr> vector;
+  vector.push_back(std::move(content));
+  return vector;
+}
+
 optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
   optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
   safety_config.set_feature(
@@ -94,7 +102,8 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
 blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
                                                   const std::string& text) {
   return blink::mojom::AILanguageModelPrompt::New(
-      role, blink::mojom::AILanguageModelPromptContent::NewText(text));
+      role,
+      ToVector(blink::mojom::AILanguageModelPromptContent::NewText(text)));
 }
 
 // Build a mojo prompt struct array holding a single piece of text.
@@ -735,8 +744,9 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
     std::vector<blink::mojom::AILanguageModelPromptPtr> input =
         MakeInput("foo");
     input.push_back(blink::mojom::AILanguageModelPrompt::New(
-        Role::kUser, blink::mojom::AILanguageModelPromptContent::NewBitmap(
-                         CreateTestBitmap(10, 10))));
+        Role::kUser,
+        ToVector(blink::mojom::AILanguageModelPromptContent::NewBitmap(
+            CreateTestBitmap(10, 10)))));
     return input;
   };
   {
@@ -770,8 +780,9 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
     std::vector<blink::mojom::AILanguageModelPromptPtr> input =
         MakeInput("foo");
     input.push_back(blink::mojom::AILanguageModelPrompt::New(
-        Role::kUser, blink::mojom::AILanguageModelPromptContent::NewAudio(
-                         CreateTestAudio())));
+        Role::kUser,
+        ToVector(blink::mojom::AILanguageModelPromptContent::NewAudio(
+            CreateTestAudio()))));
     return input;
   };
   {
@@ -807,11 +818,13 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
 
   std::vector<blink::mojom::AILanguageModelPromptPtr> input = MakeInput("foo");
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
-      Role::kUser, blink::mojom::AILanguageModelPromptContent::NewBitmap(
-                       CreateTestBitmap(10, 10))));
+      Role::kUser,
+      ToVector(blink::mojom::AILanguageModelPromptContent::NewBitmap(
+          CreateTestBitmap(10, 10)))));
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
       Role::kUser,
-      blink::mojom::AILanguageModelPromptContent::NewAudio(CreateTestAudio())));
+      ToVector(blink::mojom::AILanguageModelPromptContent::NewAudio(
+          CreateTestAudio()))));
   EXPECT_THAT(Prompt(*session, std::move(input)),
               ElementsAreArray(FormatResponses({"UfooEU<image>EU<audio>EM"})));
 }

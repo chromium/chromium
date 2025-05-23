@@ -15,8 +15,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -36,7 +36,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
  public:
   // Get the mojo enum value for the given V8 `role` enum value.
   static mojom::blink::AILanguageModelPromptRole ConvertRoleToMojo(
-      V8LanguageModelPromptRole role);
+      V8LanguageModelMessageRole role);
 
   LanguageModel(
       ExecutionContext* execution_context,
@@ -67,20 +67,20 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       ExceptionState& exception_state);
 
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
-                                  const V8LanguageModelPromptInput* input,
+                                  const V8LanguageModelPrompt* input,
                                   const LanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ReadableStream* promptStreaming(ScriptState* script_state,
-                                  const V8LanguageModelPromptInput* input,
+                                  const V8LanguageModelPrompt* input,
                                   const LanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ScriptPromise<IDLUndefined> append(ScriptState* script_state,
-                                     const V8LanguageModelPromptInput* input,
+                                     const V8LanguageModelPrompt* input,
                                      const LanguageModelAppendOptions* options,
                                      ExceptionState& exception_state);
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
-      const V8LanguageModelPromptInput* input,
+      const V8LanguageModelPrompt* input,
       const LanguageModelPromptOptions* options,
       ExceptionState& exception_state);
   double inputQuota() const { return input_quota_; }
@@ -125,7 +125,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   // Returns std::nullopt on failure.
   std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
   ValidateAndProcessPromptInput(ScriptState* script_state,
-                                const V8LanguageModelPromptInput* input,
+                                const V8LanguageModelPrompt* input,
                                 const LanguageModelPromptOptions* options,
                                 ExceptionState& exception_state);
 

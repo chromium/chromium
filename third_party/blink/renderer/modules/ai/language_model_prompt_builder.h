@@ -14,7 +14,7 @@ namespace blink {
 
 class ScriptState;
 class AbortSignal;
-class V8LanguageModelPromptInput;
+class V8LanguageModelPrompt;
 
 // Helper function to convert V8 prompt input into mojo objects for transport
 // across IPC. Works asynchronously to allow for asynchronous fetching/decoding
@@ -22,7 +22,7 @@ class V8LanguageModelPromptInput;
 void ConvertPromptInputsToMojo(
     ScriptState* script_state,
     AbortSignal* abort_signal,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
     base::OnceCallback<void(
         WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)> resolved_callback,

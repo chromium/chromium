@@ -59,32 +59,36 @@ on_device_model::mojom::InputPtr ConvertToInput(
   auto input = on_device_model::mojom::Input::New();
   for (const auto& prompt : prompts) {
     input->pieces.push_back(ConvertToToken(prompt->role));
-    switch (prompt->content->which()) {
-      case blink::mojom::AILanguageModelPromptContent::Tag::kText:
-        input->pieces.push_back(prompt->content->get_text());
-        break;
-      case blink::mojom::AILanguageModelPromptContent::Tag::kBitmap:
-        if (!capabilities.Has(on_device_model::CapabilityFlags::kImageInput)) {
-          return nullptr;
-        }
-        input->pieces.push_back(prompt->content->get_bitmap());
-        break;
-      case blink::mojom::AILanguageModelPromptContent::Tag::kAudio:
-        if (!capabilities.Has(on_device_model::CapabilityFlags::kAudioInput)) {
-          return nullptr;
-        }
-        // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
-        const on_device_model::mojom::AudioDataPtr& audio_data =
-            prompt->content->get_audio();
-        ml::AudioBuffer audio_buffer;
-        audio_buffer.sample_rate_hz = audio_data->sample_rate;
-        audio_buffer.num_channels = audio_data->channel_count;
-        audio_buffer.num_frames = audio_data->frame_count;
-        audio_buffer.data = audio_data->data;
-        input->pieces.push_back(std::move(audio_buffer));
-        break;
+    for (const auto& content : prompt->content) {
+      switch (content->which()) {
+        case blink::mojom::AILanguageModelPromptContent::Tag::kText:
+          input->pieces.push_back(content->get_text());
+          break;
+        case blink::mojom::AILanguageModelPromptContent::Tag::kBitmap:
+          if (!capabilities.Has(
+                  on_device_model::CapabilityFlags::kImageInput)) {
+            return nullptr;
+          }
+          input->pieces.push_back(content->get_bitmap());
+          break;
+        case blink::mojom::AILanguageModelPromptContent::Tag::kAudio:
+          if (!capabilities.Has(
+                  on_device_model::CapabilityFlags::kAudioInput)) {
+            return nullptr;
+          }
+          // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
+          const on_device_model::mojom::AudioDataPtr& audio_data =
+              content->get_audio();
+          ml::AudioBuffer audio_buffer;
+          audio_buffer.sample_rate_hz = audio_data->sample_rate;
+          audio_buffer.num_channels = audio_data->channel_count;
+          audio_buffer.num_frames = audio_data->frame_count;
+          audio_buffer.data = audio_data->data;
+          input->pieces.push_back(std::move(audio_buffer));
+          break;
+      }
+      input->pieces.push_back(ml::Token::kEnd);
     }
-    input->pieces.push_back(ml::Token::kEnd);
   }
   return input;
 }

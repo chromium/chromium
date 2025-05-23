@@ -5,24 +5,27 @@
 // https://github.com/webmachinelearning/prompt-api
 
 // The argument to the prompt() method and others like it
-typedef (LanguageModelPrompt or sequence<LanguageModelPrompt>) LanguageModelPromptInput;
-
-// Prompt lines
 typedef (
-  DOMString                   // interpreted as { role: "user", type: "text", content: providedValue }
-  or LanguageModelPromptDict  // canonical form
+  sequence<LanguageModelMessage>
+  // Shorthand for `[{ role: "user", content: [{ type: "text", value: providedValue }] }]`
+  or DOMString
 ) LanguageModelPrompt;
 
-// Prompt content inside the lines
-dictionary LanguageModelPromptDict {
-  LanguageModelPromptRole role = "user";
-  LanguageModelPromptType type = "text";
-  required LanguageModelPromptContent content;
+dictionary LanguageModelMessage {
+  required LanguageModelMessageRole role;
+
+  // The DOMString branch is shorthand for `[{ type: "text", value: providedValue }]`
+  required (DOMString or sequence<LanguageModelMessageContent>) content;
 };
 
-enum LanguageModelPromptRole { "system", "user", "assistant" };
+dictionary LanguageModelMessageContent {
+  required LanguageModelMessageType type;
+  required LanguageModelMessageValue value;
+};
 
-enum LanguageModelPromptType { "text", "image", "audio" };
+enum LanguageModelMessageRole { "system", "user", "assistant" };
+
+enum LanguageModelMessageType { "text", "image", "audio" };
 
 typedef (
   ImageBitmapSource
@@ -30,7 +33,7 @@ typedef (
   or HTMLAudioElement
   or BufferSource
   or DOMString
-) LanguageModelPromptContent;
+) LanguageModelMessageValue;
 
 dictionary LanguageModelCreateCoreOptions {
   // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
@@ -45,7 +48,8 @@ dictionary LanguageModelCreateCoreOptions {
 dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
   AbortSignal signal;
   CreateMonitorCallback monitor;
-  sequence<LanguageModelPrompt> initialPrompts;
+
+  sequence<LanguageModelMessage> initialPrompts;
 
   // DEPRECATED: Use `initialPrompts: [{role: 'system', content: ... }, ...]`.
   // TODO(crbug.com/381974893): Remove this along with the console warning.
@@ -53,6 +57,6 @@ dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
 };
 
 dictionary LanguageModelExpectedInput {
-  required LanguageModelPromptType type;
+  required LanguageModelMessageType type;
   sequence<DOMString> languages;
 };

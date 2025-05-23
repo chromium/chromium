@@ -17,10 +17,9 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_content.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_input.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelpromptdict_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -270,13 +269,13 @@ bool ParseConstraint(
 
 // static
 mojom::blink::AILanguageModelPromptRole LanguageModel::ConvertRoleToMojo(
-    V8LanguageModelPromptRole role) {
+    V8LanguageModelMessageRole role) {
   switch (role.AsEnum()) {
-    case V8LanguageModelPromptRole::Enum::kSystem:
+    case V8LanguageModelMessageRole::Enum::kSystem:
       return mojom::blink::AILanguageModelPromptRole::kSystem;
-    case V8LanguageModelPromptRole::Enum::kUser:
+    case V8LanguageModelMessageRole::Enum::kUser:
       return mojom::blink::AILanguageModelPromptRole::kUser;
-    case V8LanguageModelPromptRole::Enum::kAssistant:
+    case V8LanguageModelMessageRole::Enum::kAssistant:
       return mojom::blink::AILanguageModelPromptRole::kAssistant;
   }
   NOTREACHED();
@@ -441,7 +440,7 @@ ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
 
 ScriptPromise<IDLString> LanguageModel::prompt(
     ScriptState* script_state,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
@@ -478,7 +477,7 @@ ScriptPromise<IDLString> LanguageModel::prompt(
 
 ReadableStream* LanguageModel::promptStreaming(
     ScriptState* script_state,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
@@ -584,7 +583,7 @@ void LanguageModel::ExecuteMeasureInputUsage(
 std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
 LanguageModel::ValidateAndProcessPromptInput(
     ScriptState* script_state,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -627,7 +626,7 @@ LanguageModel::ValidateAndProcessPromptInput(
 
 ScriptPromise<IDLUndefined> LanguageModel::append(
     ScriptState* script_state,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     const LanguageModelAppendOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -704,7 +703,7 @@ ScriptPromise<LanguageModel> LanguageModel::clone(
 
 ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     ScriptState* script_state,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     const LanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {

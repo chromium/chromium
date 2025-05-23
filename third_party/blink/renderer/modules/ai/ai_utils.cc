@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_type.h"
 
 namespace blink {
 
@@ -162,13 +163,13 @@ mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptionsImpl(
 }
 
 mojom::blink::AILanguageModelPromptType ToMojoInputType(
-    V8LanguageModelPromptType type) {
+    V8LanguageModelMessageType type) {
   switch (type.AsEnum()) {
-    case V8LanguageModelPromptType::Enum::kText:
+    case V8LanguageModelMessageType::Enum::kText:
       return mojom::blink::AILanguageModelPromptType::kText;
-    case V8LanguageModelPromptType::Enum::kAudio:
+    case V8LanguageModelMessageType::Enum::kAudio:
       return mojom::blink::AILanguageModelPromptType::kAudio;
-    case V8LanguageModelPromptType::Enum::kImage:
+    case V8LanguageModelMessageType::Enum::kImage:
       return mojom::blink::AILanguageModelPromptType::kImage;
   }
 }

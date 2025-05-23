@@ -51,7 +51,7 @@ interface LanguageModel : EventTarget {
     RaisesException
   ]
   Promise<DOMString> prompt(
-    LanguageModelPromptInput input,
+    LanguageModelPrompt input,
     optional LanguageModelPromptOptions options = {}
   );
   [
@@ -60,7 +60,7 @@ interface LanguageModel : EventTarget {
     RaisesException
   ]
   ReadableStream promptStreaming(
-    LanguageModelPromptInput input,
+    LanguageModelPrompt input,
     optional LanguageModelPromptOptions options = {}
   );
   [
@@ -69,7 +69,7 @@ interface LanguageModel : EventTarget {
     RaisesException
   ]
   Promise<undefined> append(
-    LanguageModelPromptInput input,
+    LanguageModelPrompt input,
     optional LanguageModelAppendOptions options = {}
   );
 
@@ -79,7 +79,7 @@ interface LanguageModel : EventTarget {
     RaisesException
   ]
   Promise<double> measureInputUsage(
-    LanguageModelPromptInput input,
+    LanguageModelPrompt input,
     optional LanguageModelPromptOptions options = {}
   );
 

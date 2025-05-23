@@ -13,7 +13,6 @@
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"

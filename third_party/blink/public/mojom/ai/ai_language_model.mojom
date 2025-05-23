@@ -83,10 +83,10 @@ union AILanguageModelPromptContent {
   on_device_model.mojom.AudioData audio;
 };
 
-// A prompt includes a role and content. See AILanguageModelPromptDict in IDL.
+// A prompt includes a role and content. See LanguageModelMessage in IDL.
 struct AILanguageModelPrompt {
   AILanguageModelPromptRole role;
-  AILanguageModelPromptContent content;
+  array<AILanguageModelPromptContent> content;
 };
 
 // This is used when creating a new AILanguageModel.
@@ -140,9 +140,9 @@ interface AILanguageModel {
   // Destroys the session.
   Destroy();
 
-  // Counts the number of token in the given prompt text `input` which can
-  // be an arbitrary string from the JavaScript API. If it's unable to
-  // measure, the method will return null.
-  MeasureInputUsage(
-      array<AILanguageModelPrompt> input) => (uint32? number_of_tokens);
+  // Counts the number of token in the given prompt `input` which can
+  // be arbitrary strings or multimodal data from the JavaScript API. If it's
+  // unable to measure, the method will return null.
+  MeasureInputUsage(array<AILanguageModelPrompt> input)
+      => (uint32? number_of_tokens);
 };

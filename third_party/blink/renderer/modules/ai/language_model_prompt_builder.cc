@@ -8,11 +8,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_content.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_input.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelpromptdict_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -38,6 +39,57 @@ using ResolveCallback = base::OnceCallback<void(
     WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)>;
 using RejectCallback = base::OnceCallback<void(const ScriptValue& error)>;
 
+LanguageModelMessageContent* MakeMessageTextContent(const WTF::String& value) {
+  auto* content = MakeGarbageCollected<LanguageModelMessageContent>();
+  content->setType(
+      V8LanguageModelMessageType(V8LanguageModelMessageType::Enum::kText));
+  content->setValue(MakeGarbageCollected<V8LanguageModelMessageValue>(value));
+  return content;
+}
+
+// Normalizes a prompt message into a list of canonical
+// LanguageModelMessageContent. Shorthand styles are converted into canonical
+// formats.
+HeapVector<Member<LanguageModelMessageContent>> NormalizePromptContent(
+    const LanguageModelMessage* message) {
+  V8UnionLanguageModelMessageContentSequenceOrString* content =
+      message->content();
+  if (content->IsLanguageModelMessageContentSequence()) {
+    return content->GetAsLanguageModelMessageContentSequence();
+  }
+  CHECK(content->IsString());
+  HeapVector<Member<LanguageModelMessageContent>> content_list;
+  content_list.push_back(MakeMessageTextContent(content->GetAsString()));
+  return content_list;
+}
+
+// Normalizes a prompt into a list of canonical LanguageModelMessage. Shorthand
+// styles are converted into canonical formats.
+HeapVector<Member<LanguageModelMessage>> NormalizePrompt(
+    const V8LanguageModelPrompt* prompt) {
+  if (prompt->IsLanguageModelMessageSequence()) {
+    for (const auto& message : prompt->GetAsLanguageModelMessageSequence()) {
+      message->setContent(MakeGarbageCollected<
+                          V8UnionLanguageModelMessageContentSequenceOrString>(
+          NormalizePromptContent(message)));
+    }
+    return prompt->GetAsLanguageModelMessageSequence();
+  }
+  CHECK(prompt->IsString());
+  HeapVector<Member<LanguageModelMessageContent>> content_list;
+  content_list.push_back(MakeMessageTextContent(prompt->GetAsString()));
+
+  HeapVector<Member<LanguageModelMessage>> messages;
+  auto* message = MakeGarbageCollected<LanguageModelMessage>();
+  message->setRole(
+      V8LanguageModelMessageRole(V8LanguageModelMessageRole::Enum::kUser));
+  message->setContent(
+      MakeGarbageCollected<V8UnionLanguageModelMessageContentSequenceOrString>(
+          std::move(content_list)));
+  messages.push_back(std::move(message));
+  return messages;
+}
+
 // Helper class for converting types and managing async processing.
 class LanguageModelPromptBuilder
     : public GarbageCollected<LanguageModelPromptBuilder>,
@@ -47,7 +99,7 @@ class LanguageModelPromptBuilder
       ScriptState* script_state,
       AbortSignal* abort_signal,
       WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
-      const V8LanguageModelPromptInput* input,
+      const V8LanguageModelPrompt* input,
       ResolveCallback resolve_callback,
       RejectCallback reject_callback);
   void Trace(Visitor*) const override;
@@ -56,14 +108,19 @@ class LanguageModelPromptBuilder
  private:
   // Contains some metadata about a input being processed.
   struct PendingEntry : public GarbageCollected<PendingEntry> {
-    PendingEntry(size_t result_index, LanguageModelPromptDict* original_dict)
-        : result_index(result_index), original_dict(original_dict) {}
-    void Trace(Visitor* visitor) const { visitor->Trace(original_dict); }
-    // Index of processed_prompts_ to write the processed result to.
-    size_t result_index;
-    Member<LanguageModelPromptDict> original_dict;
+    PendingEntry() = delete;
+    explicit PendingEntry(LanguageModelMessageContent* content,
+                          size_t message_index,
+                          size_t content_index)
+        : content(content),
+          message_index(message_index),
+          content_index(content_index) {}
+    void Trace(Visitor* visitor) const { visitor->Trace(content); }
+    Member<LanguageModelMessageContent> content;
+    size_t message_index = 0;
+    size_t content_index = 0;
   };
-  void Build(const V8LanguageModelPromptInput* input);
+  void Build(const V8LanguageModelPrompt* input);
   // Called to reject the promise and return an error to the callback.
   void Reject(DOMException* value);
   void Reject(ScriptValue value);
@@ -90,6 +147,7 @@ class LanguageModelPromptBuilder
 
   SelfKeepAlive<LanguageModelPromptBuilder> keep_alive_{this};
   WTF::Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts_;
+
   int processed_remaining_ = 0;
   Member<ScriptState> script_state_;
   Member<AbortSignal> abort_signal_;
@@ -103,7 +161,7 @@ LanguageModelPromptBuilder::LanguageModelPromptBuilder(
     ScriptState* script_state,
     AbortSignal* abort_signal,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback)
     : script_state_(script_state),
@@ -144,56 +202,59 @@ void LanguageModelPromptBuilder::Cleanup() {
 void LanguageModelPromptBuilder::OnPromptContentProcessed(
     mojom::blink::AILanguageModelPromptContentPtr content,
     PendingEntry* entry) {
-  CHECK(entry);
   if (resolve_callback_.is_null() || reject_callback_.is_null() ||
       !script_state_->ContextIsValid()) {
     return;
   }
-  auto mojo_prompt = mojom::blink::AILanguageModelPrompt::New();
-  mojo_prompt->role =
-      LanguageModel::ConvertRoleToMojo(entry->original_dict->role());
-  mojo_prompt->content = std::move(content);
-  processed_prompts_.at(entry->result_index) = std::move(mojo_prompt);
+  CHECK(entry);
+  mojom::blink::AILanguageModelPromptContentPtr& dest_ptr =
+      processed_prompts_.at(entry->message_index)
+          ->content.at(entry->content_index);
+  CHECK(!dest_ptr);  // Each slot should only be written once.
+  dest_ptr = std::move(content);
   if (!reject_callback_.is_null() && --processed_remaining_ == 0) {
     Resolve();
   }
 }
 
-void LanguageModelPromptBuilder::Build(
-    const V8LanguageModelPromptInput* input) {
-  HeapVector<Member<V8UnionLanguageModelPromptDictOrString>> entries;
-  if (input->IsLanguageModelPromptDictOrStringSequence()) {
-    entries = std::move(input->GetAsLanguageModelPromptDictOrStringSequence());
-  } else if (input->IsV8LanguageModelPrompt()) {
-    entries.push_back(input->GetAsV8LanguageModelPrompt());
-  }
+void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
+  CHECK_EQ(processed_remaining_, 0);  // Prevent parallel Build() calls.
+  HeapVector<Member<LanguageModelMessage>> messages = NormalizePrompt(input);
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       ExecutionContext::From(script_state_)
           ->GetTaskRunner(TaskType::kInternalDefault);
-  CHECK_EQ(processed_remaining_, 0);
-  processed_prompts_.resize(entries.size());
+  // In order to maintain the ordering of the messages and their respective
+  // content pre-allocate, the message and content lists.
+  processed_prompts_.reserve(messages.size());
+  for (const auto& message : messages) {
+    // Should be normalized to just contain content list.
+    CHECK(message->content()->IsLanguageModelMessageContentSequence());
 
-  for (const auto& entry : entries) {
-    LanguageModelPromptDict* dict = nullptr;
-    if (entry->IsString()) {
-      dict = MakeGarbageCollected<LanguageModelPromptDict>();
-      V8LanguageModelPromptContent* content =
-          MakeGarbageCollected<V8LanguageModelPromptContent>(
-              entry->GetAsString());
-      dict->setRole(V8LanguageModelPromptRole::Enum::kUser);
-      dict->setType(V8LanguageModelPromptType::Enum::kText);
-      dict->setContent(std::move(content));
-    } else {
-      CHECK(entry->IsLanguageModelPromptDict());
-      dict = entry->GetAsLanguageModelPromptDict();
+    HeapVector<Member<LanguageModelMessageContent>> content_sequence =
+        message->content()->GetAsLanguageModelMessageContentSequence();
+    processed_remaining_ += content_sequence.size();
+    // Pre-allocate the mojo struct and content array.
+    processed_prompts_.push_back(mojom::blink::AILanguageModelPrompt::New(
+        LanguageModel::ConvertRoleToMojo(message->role()),
+        Vector<mojom::blink::AILanguageModelPromptContentPtr>(
+            content_sequence.size())));
+  }
+
+  size_t message_index = 0;
+  for (const auto& message : messages) {
+    size_t content_index = 0;
+    for (const auto& content :
+         message->content()->GetAsLanguageModelMessageContentSequence()) {
+      // Track the pre-allocated message and content slot that the resulting
+      // content will be written to.
+      PendingEntry* pending_entry = MakeGarbageCollected<PendingEntry>(
+          content, message_index, content_index++);
+      task_runner->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&LanguageModelPromptBuilder::ProcessEntry,
+                        WrapPersistent(this), WrapPersistent(pending_entry)));
     }
-    PendingEntry* pending_entry =
-        MakeGarbageCollected<PendingEntry>(processed_remaining_++, dict);
-    // TODO(crbug.com/417530133): Restore sync processing for some types (text).
-    task_runner->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&LanguageModelPromptBuilder::ProcessEntry,
-                      WrapPersistent(this), WrapPersistent(pending_entry)));
+    message_index++;
   }
 }
 
@@ -212,20 +273,20 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
     return;
   }
   ScriptState::Scope scope(script_state_);
-  V8LanguageModelPromptContent* content =
-      pending_entry->original_dict->content();
-  switch (pending_entry->original_dict->type().AsEnum()) {
-    case V8LanguageModelPromptType::Enum::kText:
-      if (!content->IsString()) {
+  LanguageModelMessageContent* content = pending_entry->content;
+  V8LanguageModelMessageValue* content_value = content->value();
+  switch (content->type().AsEnum()) {
+    case V8LanguageModelMessageType::Enum::kText:
+      if (!content_value->IsString()) {
         // TODO(crbug.com/409615288): Throw a TypeError to match the explainer.
         Reject(DOMException::Create(
             "The value must be a String for type:'text'",
             DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
         return;
       }
-      ToMojo(content->GetAsString(), pending_entry);
+      ToMojo(content_value->GetAsString(), pending_entry);
       return;
-    case V8LanguageModelPromptType::Enum::kImage: {
+    case V8LanguageModelMessageType::Enum::kImage: {
       if (!allowed_types_.Contains(
               mojom::blink::AILanguageModelPromptType::kImage)) {
         Reject(DOMException::Create(
@@ -237,17 +298,17 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
 
       UseCounter::Count(ExecutionContext::From(script_state_),
                         WebFeature::kLanguageModel_Prompt_Input_Image);
-      if (content->IsV8ImageBitmapSource()) {
-        ToMojo(content->GetAsV8ImageBitmapSource(), pending_entry);
+      if (content_value->IsV8ImageBitmapSource()) {
+        ToMojo(content_value->GetAsV8ImageBitmapSource(), pending_entry);
         return;
       }
-      if (content->IsArrayBuffer()) {
-        BitmapToMojo(content->GetAsArrayBuffer()->Content()->ByteSpan(),
+      if (content_value->IsArrayBuffer()) {
+        BitmapToMojo(content_value->GetAsArrayBuffer()->Content()->ByteSpan(),
                      pending_entry);
         return;
       }
-      if (content->IsArrayBufferView()) {
-        BitmapToMojo(content->GetAsArrayBufferView()->ByteSpan(),
+      if (content_value->IsArrayBufferView()) {
+        BitmapToMojo(content_value->GetAsArrayBufferView()->ByteSpan(),
                      pending_entry);
         return;
       }
@@ -256,7 +317,7 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
           DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
       return;
     }
-    case V8LanguageModelPromptType::Enum::kAudio: {
+    case V8LanguageModelMessageType::Enum::kAudio: {
       if (!allowed_types_.Contains(
               mojom::blink::AILanguageModelPromptType::kAudio)) {
         Reject(DOMException::Create(
@@ -267,19 +328,19 @@ void LanguageModelPromptBuilder::ProcessEntry(PendingEntry* pending_entry) {
       }
       UseCounter::Count(ExecutionContext::From(script_state_),
                         WebFeature::kLanguageModel_Prompt_Input_Audio);
-      switch (content->GetContentType()) {
-        case V8LanguageModelPromptContent::ContentType::kAudioBuffer:
-          ToMojo(content->GetAsAudioBuffer(), pending_entry);
+      switch (content_value->GetContentType()) {
+        case V8LanguageModelMessageValue::ContentType::kAudioBuffer:
+          ToMojo(content_value->GetAsAudioBuffer(), pending_entry);
           return;
-        case V8LanguageModelPromptContent::ContentType::kBlob:
-          ToMojo(content->GetAsBlob(), pending_entry);
+        case V8LanguageModelMessageValue::ContentType::kBlob:
+          ToMojo(content_value->GetAsBlob(), pending_entry);
           return;
-        case V8LanguageModelPromptContent::ContentType::kArrayBuffer:
-          AudioToMojo(content->GetAsArrayBuffer()->Content()->ByteSpan(),
+        case V8LanguageModelMessageValue::ContentType::kArrayBuffer:
+          AudioToMojo(content_value->GetAsArrayBuffer()->Content()->ByteSpan(),
                       pending_entry);
           return;
-        case V8LanguageModelPromptContent::ContentType::kArrayBufferView:
-          AudioToMojo(content->GetAsArrayBufferView()->ByteSpan(),
+        case V8LanguageModelMessageValue::ContentType::kArrayBufferView:
+          AudioToMojo(content_value->GetAsArrayBufferView()->ByteSpan(),
                       pending_entry);
           return;
         default:
@@ -401,6 +462,7 @@ void LanguageModelPromptBuilder::ToMojo(Blob* blob, PendingEntry* entry) {
 
 void LanguageModelPromptBuilder::ToMojo(V8ImageBitmapSource* bitmap,
                                         PendingEntry* entry) {
+  // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
   class Resolve : public ThenCallable<ImageBitmap, Resolve> {
    public:
     explicit Resolve(LanguageModelPromptBuilder* builder, PendingEntry* entry)
@@ -455,7 +517,6 @@ void LanguageModelPromptBuilder::ToMojo(V8ImageBitmapSource* bitmap,
   // Note: GetBitmapFromV8ImageBitmapSource doesn't support async which is
   // required for blobs so async ImageBitmapFactories::CreateImageBitmap is
   // preferred.
-  // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
   ImageBitmapFactories::CreateImageBitmap(
       script_state_, bitmap, MakeGarbageCollected<ImageBitmapOptions>(),
       exception_state)
@@ -473,7 +534,7 @@ void LanguageModelPromptBuilder::ToMojo(V8ImageBitmapSource* bitmap,
 void ConvertPromptInputsToMojo(
     ScriptState* script_state,
     AbortSignal* abort_signal,
-    const V8LanguageModelPromptInput* input,
+    const V8LanguageModelPrompt* input,
     WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
     ResolveCallback resolve_callback,
     RejectCallback reject_callback) {

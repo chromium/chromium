@@ -75,25 +75,27 @@ void EchoAILanguageModel::Prompt(
 
   std::string response = "";
   for (const auto& prompt : prompts) {
-    if (prompt->content->is_text()) {
-      response += prompt->content->get_text();
-    } else if (prompt->content->is_bitmap()) {
-      if (!input_types_.contains(
-              blink::mojom::AILanguageModelPromptType::kImage)) {
-        mojo::ReportBadMessage("Image input is not supported.");
-        return;
-      }
-      response += "<image>";
-    } else if (prompt->content->is_audio()) {
-      if (!input_types_.contains(
-              blink::mojom::AILanguageModelPromptType::kAudio)) {
-        mojo::ReportBadMessage("Audio input is not supported.");
-        return;
-      }
+    for (auto& content : prompt->content) {
+      if (content->is_text()) {
+        response += content->get_text();
+      } else if (content->is_bitmap()) {
+        if (!input_types_.contains(
+                blink::mojom::AILanguageModelPromptType::kImage)) {
+          mojo::ReportBadMessage("Image input is not supported.");
+          return;
+        }
+        response += "<image>";
+      } else if (content->is_audio()) {
+        if (!input_types_.contains(
+                blink::mojom::AILanguageModelPromptType::kAudio)) {
+          mojo::ReportBadMessage("Audio input is not supported.");
+          return;
+        }
 
-      response += "<audio>";
-    } else {
-      NOTIMPLEMENTED_LOG_ONCE();
+        response += "<audio>";
+      } else {
+        NOTIMPLEMENTED_LOG_ONCE();
+      }
     }
   }
   mojo::RemoteSetElementId responder_id =
@@ -148,10 +150,12 @@ void EchoAILanguageModel::MeasureInputUsage(
     MeasureInputUsageCallback callback) {
   size_t total = 0;
   for (const auto& prompt : input) {
-    if (prompt->content->is_text()) {
-      total += prompt->content->get_text().size();
-    } else {
-      total += 100;  // TODO(crbug.com/415304330): Improve estimate.
+    for (const auto& content : prompt->content) {
+      if (content->is_text()) {
+        total += content->get_text().size();
+      } else {
+        total += 100;  // TODO(crbug.com/415304330): Improve estimate.
+      }
     }
   }
   std::move(callback).Run(total);

@@ -6,14 +6,18 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt_content.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelpromptdict_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/language_model_prompt_builder.h"
 
 namespace blink {
 
@@ -87,31 +91,41 @@ void LanguageModelCreateClient::Create() {
         "`systemPrompt` is no longer supported. Use "
         "`initialPrompts: [{role: 'system', content: ... }, ...]` instead.");
   }
-
+  // TODO(crbug.com/419583879): Add better test coverage for this.
   if (options_->hasInitialPrompts()) {
-    for (const auto& prompt : options_->initialPrompts()) {
-      // The API impl only accepts a prompt dict for now, more to come soon!
-      if (!prompt->IsLanguageModelPromptDict()) {
-        GetResolver()->RejectWithTypeError("Input type not supported");
-        return;
-      }
-      auto* dict = prompt->GetAsLanguageModelPromptDict();
-      if (dict->role() == V8LanguageModelPromptRole::Enum::kSystem &&
+    for (const auto& message : options_->initialPrompts()) {
+      if (message->role() == V8LanguageModelMessageRole::Enum::kSystem &&
           !initial_prompts.empty()) {
         // Only the first prompt supports the `system` role.
         GetResolver()->RejectWithTypeError(
             kExceptionMessageSystemPromptIsNotTheFirst);
         return;
       }
-      // The API impl only accepts string for now, more to come soon!
-      if (!dict->content()->IsString()) {
-        GetResolver()->RejectWithTypeError("Input type not supported");
-        return;
+      // TODO(crbug.com/417817645): Use ConvertPromptInputsToMojo here.
+      mojom::blink::AILanguageModelPromptPtr mojo_prompt =
+          mojom::blink::AILanguageModelPrompt::New();
+      mojo_prompt->role = LanguageModel::ConvertRoleToMojo(message->role());
+      if (message->content()->IsLanguageModelMessageContentSequence()) {
+        for (const auto& content :
+             message->content()->GetAsLanguageModelMessageContentSequence()) {
+          if (content->type().AsEnum() !=
+                  V8LanguageModelMessageType::Enum::kText ||
+              !content->value()->IsString()) {
+            GetResolver()->RejectWithTypeError("Input type not supported");
+            return;
+          }
+
+          mojo_prompt->content.push_back(
+              mojom::blink::AILanguageModelPromptContent::NewText(
+                  content->value()->GetAsString()));
+        }
+      } else {
+        CHECK(message->content()->IsString());
+        mojo_prompt->content.push_back(
+            mojom::blink::AILanguageModelPromptContent::NewText(
+                message->content()->GetAsString()));
       }
-      initial_prompts.push_back(mojom::blink::AILanguageModelPrompt::New(
-          LanguageModel::ConvertRoleToMojo(dict->role()),
-          mojom::blink::AILanguageModelPromptContent::NewText(
-              dict->content()->GetAsString())));
+      initial_prompts.push_back(std::move(mojo_prompt));
     }
   }
 
