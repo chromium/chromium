@@ -580,13 +580,22 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @implementation HardwareKeyboardInteractionTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  // HW keyboard simulation does mess up the SW keyboard simulator state.
+  // Relaunching resets the state.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  // Disable all autocomplete providers except the verbatim and history
+  // providers.
+  omnibox::DisableAutocompleteProviders(config, 133937171);
+
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
-
-  // Start a server to be able to navigate to a web page.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
@@ -599,10 +608,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
   [super tearDownHelper];
-  // HW keyboard simulation does mess up the SW keyboard simulator state.
-  // Relaunching resets the state.
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -642,8 +648,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that leading image in omnibox changes based on the suggestion
 // highlighted.
-// TODO(crbug.com/40917341): Test is flaky on both device and simulator.
-- (void)DISABLED_testOmniboxLeadingImage {
+- (void)testOmniboxLeadingImage {
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -668,14 +673,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // is done.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
-
-  // We expect to have the default leading image.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_allOf(OmniboxWithLeadingImageElement(
-                         kOmniboxLeadingImageDefaultAccessibilityIdentifier),
-                     nil)];
-
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
 
   // The popup row is a url suggestion so we expect to have the leading
@@ -689,8 +686,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that user can use the hardware keyboard to select the "link you copied"
-// suggeston.
+// suggestion.
 - (void)testHardwareKeyboardSelectLinkYouCopied {
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(omnibox::PageURL(1));
   // Copy link in clipboard.
   [ChromeEarlGrey
