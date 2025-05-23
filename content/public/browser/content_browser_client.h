@@ -1229,6 +1229,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       const blink::StorageKey& storage_key,
       net::CookieSettingOverrides overrides);
 
+  // Returns whether prefetch with service worker is allowed for the profile in
+  // a given context.
+  virtual bool IsPrefetchWithServiceWorkerAllowed(
+      content::BrowserContext* browser_context);
+
   // Temporarily allow `accessing_site` to access cookies when embedded on
   // `top_frame_site` when third-party cookies are otherwise blocked. After
   // `ttl` has passed, the access will be revoked. If `ignore_schemes` is true,

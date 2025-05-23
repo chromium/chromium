@@ -4277,6 +4277,11 @@ inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =
 inline constexpr char kManagedLocalNetworkAccessRestrictionsEnabled[] =
     "managed_local_network_access_restrictions_enabled";
 
+// Boolean that specifies whether SpeculationRules prefetch can be sent to
+// ServiceWorker-controlled URLs.
+inline constexpr char kPrefetchWithServiceWorkerEnabled[] =
+    "preloading.prefetch_with_service_worker_enabled";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

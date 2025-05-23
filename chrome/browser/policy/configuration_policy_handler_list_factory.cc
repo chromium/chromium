@@ -407,8 +407,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kAllowDeletingBrowserHistory,
     base::Value::Type::BOOLEAN },
   { key::kClearWindowNameForNewBrowsingContextGroup,
-      prefs::kClearWindowNameForNewBrowsingContextGroup,
-      base::Value::Type::BOOLEAN },
+    prefs::kClearWindowNameForNewBrowsingContextGroup,
+    base::Value::Type::BOOLEAN },
+  { key::kPrefetchWithServiceWorkerEnabled,
+    prefs::kPrefetchWithServiceWorkerEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

@@ -1508,6 +1508,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
                                 true);
   registry->RegisterBooleanPref(
       prefs::kClearWindowNameForNewBrowsingContextGroup, true);
+  registry->RegisterBooleanPref(prefs::kPrefetchWithServiceWorkerEnabled, true);
 }
 
 // static
@@ -3665,6 +3666,13 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
       url, storage_key.ToNetSiteForCookies(),
       url::Origin::Create(storage_key.top_level_site().GetURL()), overrides,
       storage_key.ToCookiePartitionKey());
+}
+
+bool ChromeContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(prefs::kPrefetchWithServiceWorkerEnabled);
 }
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(

@@ -537,7 +537,7 @@ PrefetchContainer::PrefetchContainer(
 
   // Disallow prefetching ServiceWorker-controlled responses for isolated
   // network contexts.
-  if (!base::FeatureList::IsEnabled(features::kPrefetchServiceWorker) ||
+  if (!features::IsPrefetchServiceWorkerEnabled(browser_context_.get()) ||
       IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
     service_worker_state_ = PrefetchServiceWorkerState::kDisallowed;
   }

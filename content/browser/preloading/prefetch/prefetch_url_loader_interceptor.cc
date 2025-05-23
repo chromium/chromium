@@ -74,7 +74,8 @@ PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
       initiator_document_token_(std::move(initiator_document_token)),
       serving_page_metrics_container_(
           std::move(serving_page_metrics_container)) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchServiceWorker)) {
+  if (!features::IsPrefetchServiceWorkerEnabled(
+          BrowserContextFromFrameTreeNodeId(frame_tree_node_id_))) {
     CHECK_EQ(expected_service_worker_state_,
              PrefetchServiceWorkerState::kDisallowed);
   }

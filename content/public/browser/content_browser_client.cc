@@ -719,6 +719,11 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
 void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
     content::BrowserContext* browser_context,
     const net::SchemefulSite& top_frame_site,

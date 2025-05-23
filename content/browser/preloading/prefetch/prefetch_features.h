@@ -9,6 +9,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace features {
 
 // This feature was used to launch the prefetch migration from embedder layer to
@@ -91,6 +95,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 
 // Allow prefetching ServiceWorker-controlled URLs.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
+bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context);
 
 // If enabled, prefetch caches are cleared when browsing data removal. Please
 // see crbug.com/40262310 for more details.
