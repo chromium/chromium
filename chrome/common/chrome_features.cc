@@ -391,14 +391,25 @@ const base::FeatureParam<std::string> kGlicDefaultHotkey{
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
-                                                    "glic-guest-url", ""};
+const base::FeatureParam<std::string> kGlicGuestURL{
+    &kGlicURLConfig, "glic-guest-url",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "https://gemini.google.com/glic"
+#else
+    ""
+#endif
+};
 
 BASE_FEATURE_PARAM(std::string,
                    kGlicUserStatusUrl,
                    &kGlicUserStatusCheck,
                    "glic-user-status-url",
-                   "");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                   "https://geminiweb-pa.googleapis.com/v1/glicStatus"
+#else
+                   ""
+#endif
+);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kGlicUserStatusRequestDelay,
@@ -410,7 +421,7 @@ BASE_FEATURE_PARAM(std::string,
                    kGeminiOAuth2Scope,
                    &kGlicUserStatusCheck,
                    "glic-user-status-oauth2-scope",
-                   "");
+                   "https://www.googleapis.com/auth/gemini");
 
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
@@ -419,7 +430,12 @@ BASE_FEATURE_PARAM(std::string,
                    kGlicFreURL,
                    &kGlicFreURLConfig,
                    "glic-fre-url",
-                   "");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                   "https://gemini.google.com/glic/intro?"
+#else
+                   ""
+#endif
+);
 
 BASE_FEATURE(kGlicLearnMoreURLConfig,
              "GlicLearnMoreURLConfig",
