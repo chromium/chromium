@@ -17,6 +17,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapSystemAudioLoopbackCapture);
+#endif
+
 }  // namespace features
 
 namespace media {

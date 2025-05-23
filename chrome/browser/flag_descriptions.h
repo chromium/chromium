@@ -3508,6 +3508,9 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacAccessibilityAPIMigrationName[];
 extern const char kMacAccessibilityAPIMigrationDescription[];
 
+extern const char kMacCatapSystemAudioLoopbackCaptureName[];
+extern const char kMacCatapSystemAudioLoopbackCaptureDescription[];
+
 extern const char kMacImeLiveConversionFixName[];
 extern const char kMacImeLiveConversionFixDescription[];
 

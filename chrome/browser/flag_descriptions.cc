@@ -5960,6 +5960,14 @@ const char kMacAccessibilityAPIMigrationName[] = "Mac A11y API Migration";
 const char kMacAccessibilityAPIMigrationDescription[] =
     "Enables the migration to the new Cocoa accessibility API.";
 
+const char kMacCatapSystemAudioLoopbackCaptureName[] =
+    "Mac Core Audio Tap System Loopback Capture";
+const char kMacCatapSystemAudioLoopbackCaptureDescription[] =
+    "Enable system audio loopback capture using the macOS CoreAudio tap API on "
+    "macOS 14.2+. For system audio loopback to be enabled in "
+    "getDisplayMedia(), the feature 'MacLoopbackAudioForScreenShare' must also "
+    "be enabled.";
+
 const char kMacImeLiveConversionFixName[] = "Mac IME Live Conversion";
 const char kMacImeLiveConversionFixDescription[] =
     "A fix for the Live Conversion feature of Japanese IME.";
@@ -5967,9 +5975,13 @@ const char kMacImeLiveConversionFixDescription[] =
 const char kMacLoopbackAudioForScreenShareName[] =
     "Mac System Audio Loopback for Screen Sharing";
 const char kMacLoopbackAudioForScreenShareDescription[] =
-    "Enable system audio sharing when screen sharing on macOS 13-14. This "
-    "won't have any effect on macOS 15+ unless the feature "
-    "MacSystemAudioLoopbackOverride is enabled.";
+    "Enables system audio sharing when using getDisplayMedia() for screen "
+    "sharing. This requires loopback audio capture to be enabled. On macOS "
+    "13-14, ScreenCaptureKit loopback capture is enabled by default. If "
+    "'MacSckSystemAudioLoopbackOverride' is enabled, ScreenCaptureKit "
+    "loopback capture can be used on all macOS versions that support it. "
+    "On macOS 14.2+, CoreAudio tap loopback capture will be used if the "
+    "'MacCatapSystemAudioLoopbackCapture' feature is enabled.";
 
 const char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";

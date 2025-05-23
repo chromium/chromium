@@ -5722,6 +5722,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
+    {"mac-catap-system-audio-loopback-capture",
+     flag_descriptions::kMacCatapSystemAudioLoopbackCaptureName,
+     flag_descriptions::kMacCatapSystemAudioLoopbackCaptureDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kMacCatapSystemAudioLoopbackCapture)},
+
     {"mac-loopback-audio-for-screen-share",
      flag_descriptions::kMacLoopbackAudioForScreenShareName,
      flag_descriptions::kMacLoopbackAudioForScreenShareDescription, kOsMac,

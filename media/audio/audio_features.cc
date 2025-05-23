@@ -14,13 +14,10 @@
 
 namespace {
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kMacSystemAudioLoopbackOverride,
-             "MacSystemAudioLoopbackOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// TODO(crbug.com/415953612): Make this into a Chrome flag.
-BASE_FEATURE(kMacCatapSystemAudioLoopbackCapture,
-             "MacCatapSystemAudioLoopbackCapture",
+// Enables system audio loopback capture using the macOS Screen Capture Kit
+// framework, regardless of the system version.
+BASE_FEATURE(kMacSckSystemAudioLoopbackOverride,
+             "MacSckSystemAudioLoopbackOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 }  // namespace
@@ -54,13 +51,30 @@ BASE_FEATURE(kAAudioPerStreamDeviceSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// Enables system audio loopback capture using the macOS CoreAudio tap API.
+BASE_FEATURE(kMacCatapSystemAudioLoopbackCapture,
+             "MacCatapSystemAudioLoopbackCapture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
 
 namespace media {
 #if BUILDFLAG(IS_MAC)
 bool IsMacCatapSystemAudioLoopbackCaptureEnabled() {
   return (base::mac::MacOSVersion() >= 14'02'00 &&
-          base::FeatureList::IsEnabled(kMacCatapSystemAudioLoopbackCapture));
+          base::FeatureList::IsEnabled(
+              features::kMacCatapSystemAudioLoopbackCapture));
+}
+
+bool IsMacSckSystemAudioLoopbackCaptureEnabled() {
+  // Only supported on macOS 13.0+.
+  // Disabled on macOS 15.0 due to problems with permission prompt.
+  // The override feature is useful for testing on unsupported versions.
+  return (base::mac::MacOSVersion() >= 13'00'00 &&
+          base::mac::MacOSVersion() < 15'00'00) ||
+         base::FeatureList::IsEnabled(kMacSckSystemAudioLoopbackOverride);
 }
 #endif
 
@@ -68,14 +82,11 @@ bool IsSystemLoopbackCaptureSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
   return true;
 #elif BUILDFLAG(IS_MAC)
-  // Only supported on macOS 13.0+.
-  // Not supported on macOS 15.0+ yet.
-  // The override feature is useful for testing on unsupported versions.
+  // For system audio loopback to be enabled in getDisplayMedia(), the feature
+  // kMacLoopbackAudioForScreenShare must also be enabled.
   // TODO(crbug.com/365602111): Implement SCContentPicker compatible capture
   // for MacOS 15.
-  return (base::mac::MacOSVersion() >= 13'00'00 &&
-          base::mac::MacOSVersion() < 15'00'00) ||
-         base::FeatureList::IsEnabled(kMacSystemAudioLoopbackOverride) ||
+  return IsMacSckSystemAudioLoopbackCaptureEnabled() ||
          IsMacCatapSystemAudioLoopbackCaptureEnabled();
 #elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
