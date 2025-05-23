@@ -5,5 +5,6 @@ include_rules = [
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
   "+ios/chrome/browser/ntp/ui_bundled",
-  "+third_party/material_color_utilities/src/cpp"
+  "+third_party/material_color_utilities/src/cpp",
+  "+ios/chrome/browser/image_fetcher",
 ]

@@ -20,6 +20,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 // Define constants within the namespace
 namespace {
@@ -179,6 +180,24 @@ const CGFloat kHeaderInsetSides = 7.5;
       _backgroundCustomizationConfigurationMap[itemIdentifier];
 
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(HomeCustomizationBackgroundCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  NSString* itemIdentifier =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  BackgroundCustomizationConfiguration* backgroundConfiguration =
+      _backgroundCustomizationConfigurationMap[itemIdentifier];
+
+  if (!backgroundConfiguration.thumbnailURL.is_empty()) {
+    [self.mutator
+        fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
+                                                          .thumbnailURL
+                                           completion:^(UIImage* image) {
+                                             [cell updateBackgroundImage:image];
+                                           }];
+  }
 }
 
 #pragma mark - HomeCustomizationViewControllerProtocol

@@ -9,6 +9,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/image_fetcher/core/image_fetcher.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
 @implementation HomeCustomizationMediator {
@@ -32,15 +35,21 @@
   // Browser agent to be notified of Discover eligibility.
   raw_ptr<DiscoverFeedVisibilityBrowserAgent>
       _discoverFeedVisibilityBrowserAgent;
+  // The image fetcher used to download individual background images.
+  raw_ptr<image_fetcher::ImageFetcher> _imageFetcher;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
-    discoverFeedVisibilityBrowserAgent:(DiscoverFeedVisibilityBrowserAgent*)
-                                           discoverFeedVisibilityBrowserAgent {
+    discoverFeedVisibilityBrowserAgent:
+        (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+                   imageFetcherService:(image_fetcher::ImageFetcherService*)
+                                           imageFetcherService {
   self = [super init];
   if (self) {
     _prefService = prefService;
     _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
+    _imageFetcher = imageFetcherService->GetImageFetcher(
+        image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
   }
   return self;
 }
@@ -259,6 +268,27 @@
 - (void)applyBackgroundForConfiguration:
     (BackgroundCustomizationConfiguration*)backgroundConfiguration {
   // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
+}
+
+- (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL
+                                           completion:
+                                               (void (^)(UIImage*))completion {
+  CHECK(!thumbnailURL.is_empty());
+  CHECK(thumbnailURL.is_valid());
+
+  _imageFetcher->FetchImage(
+      thumbnailURL,
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        if (!image.IsEmpty()) {
+          UIImage* uiImage = image.ToUIImage();
+          if (completion) {
+            completion(uiImage);
+          }
+        }
+      }),
+      // TODO (crbug.com/417234848): Add annotation.
+      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
 }
 
 @end

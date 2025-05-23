@@ -62,6 +62,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

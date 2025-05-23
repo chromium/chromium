@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_mutator.h"
 
+namespace image_fetcher {
+class ImageFetcherService;
+}
+
 @protocol HomeCustomizationBackgroundPresetGalleryPickerConsumer;
 
 // A mediator that generates and configures background presets for the Home
@@ -20,6 +24,11 @@
 @property(nonatomic, weak)
     id<HomeCustomizationBackgroundPresetGalleryPickerConsumer>
         consumer;
+
+// Initializes a new instance of the background preset gallery picker mediator
+// with the provided image fetcher service.
+- (instancetype)initWithImageFetcherService:
+    (image_fetcher::ImageFetcherService*)imageFetcherService;
 
 // Provide a collection of background configurations to the consumer.
 - (void)configureBackgroundConfigurations;

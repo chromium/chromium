@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -72,10 +74,14 @@ CGFloat const kSheetCornerRadius = 30;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  image_fetcher::ImageFetcherService* imageFetcherService =
+      ImageFetcherServiceFactory::GetForProfile(self.browser->GetProfile());
+
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
-                                             FromBrowser(self.browser)];
+                                             FromBrowser(self.browser)
+                     imageFetcherService:imageFetcherService];
   _mediator.navigationDelegate = self;
 
   // The Customization menu consists of a stack of presenting view controllers.

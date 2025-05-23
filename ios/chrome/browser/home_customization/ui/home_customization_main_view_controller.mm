@@ -224,6 +224,34 @@
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 }
 
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(UICollectionViewCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  CustomizationSection* section =
+      [self.diffableDataSource snapshot].sectionIdentifiers[indexPath.section];
+  NSString* itemIdentifier =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  if (![section isEqualToString:kCustomizationSectionBackground] ||
+      ![cell isKindOfClass:[HomeCustomizationBackgroundCell class]]) {
+    return;
+  }
+
+  BackgroundCustomizationConfiguration* backgroundConfiguration =
+      _backgroundCustomizationConfigurationMap[itemIdentifier];
+
+  if (backgroundConfiguration &&
+      !backgroundConfiguration.thumbnailURL.is_empty()) {
+    [self.mutator
+        fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
+                                                          .thumbnailURL
+                                           completion:^(UIImage* image) {
+                                             [(HomeCustomizationBackgroundCell*)
+                                                     cell
+                                                 updateBackgroundImage:image];
+                                           }];
+  }
+}
+
 #pragma mark - HomeCustomizationMainConsumer
 
 - (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap {

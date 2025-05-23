@@ -6,11 +6,31 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/image_fetcher/core/image_fetcher.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "ios/chrome/browser/home_customization/model/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_preset_gallery_picker_consumer.h"
+#import "ui/gfx/image/image.h"
+#import "url/gurl.h"
+
+@interface HomeCustomizationBackgroundPresetGalleryPickerMediator () {
+  // The image fetcher used to download individual background preset images.
+  raw_ptr<image_fetcher::ImageFetcher> _imageFetcher;
+}
+@end
 
 @implementation HomeCustomizationBackgroundPresetGalleryPickerMediator
+
+- (instancetype)initWithImageFetcherService:
+    (image_fetcher::ImageFetcherService*)imageFetcherService {
+  self = [super init];
+  if (self) {
+    _imageFetcher = imageFetcherService->GetImageFetcher(
+        image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  }
+  return self;
+}
 
 - (void)configureBackgroundConfigurations {
   NSMutableArray<BackgroundCollectionConfiguration*>* configurations =
@@ -74,9 +94,32 @@
                               selectedBackgroundId:selectedBackgroundId];
 }
 
+#pragma mark - HomeCustomizationBackgroundPresetGalleryPickerMutator
+
 - (void)applyBackgroundForConfiguration:
     (BackgroundCustomizationConfiguration*)backgroundConfiguration {
   // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
+}
+
+- (void)fetchBackgroundCustomizationThumbnailURLImage:(GURL)thumbnailURL
+                                           completion:
+                                               (void (^)(UIImage*))completion {
+  CHECK(!thumbnailURL.is_empty());
+  CHECK(thumbnailURL.is_valid());
+
+  _imageFetcher->FetchImage(
+      thumbnailURL,
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        if (!image.IsEmpty()) {
+          UIImage* uiImage = image.ToUIImage();
+          if (completion) {
+            completion(uiImage);
+          }
+        }
+      }),
+      // TODO (crbug.com/417234848): Add annotation.
+      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
 }
 
 @end

@@ -57,6 +57,9 @@ const CGFloat kLogoHeight = 11.0;
 @implementation HomeCustomizationBackgroundCell {
   // Associated background configuration.
   BackgroundCustomizationConfiguration* _backgroundConfiguration;
+
+  // The background image of the cell.
+  UIImageView* _backgroundImageView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -81,6 +84,15 @@ const CGFloat kLogoHeight = 11.0;
     self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
     self.innerContentView.layer.masksToBounds = YES;
     self.innerContentView.axis = UILayoutConstraintAxisVertical;
+
+    // Adds the empty background image.
+    _backgroundImageView = [[UIImageView alloc] init];
+    _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _backgroundImageView.clipsToBounds = YES;
+    _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.innerContentView addSubview:_backgroundImageView];
+    AddSameConstraints(_backgroundImageView, self.innerContentView);
+
     [self.borderWrapperView addSubview:self.innerContentView];
 
     // Constraints for positioning the border wrapper view inside the cell.
@@ -124,6 +136,10 @@ const CGFloat kLogoHeight = 11.0;
     [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
     [logoView.heightAnchor constraintEqualToConstant:kLogoHeight]
   ]];
+}
+
+- (void)updateBackgroundImage:(UIImage*)image {
+  [_backgroundImageView setImage:image];
 }
 
 #pragma mark - Setters

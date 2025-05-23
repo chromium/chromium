@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -62,10 +63,14 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
     pref_service_ = profile_->GetPrefs();
     discover_feed_visibility_browser_agent_ =
         DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser);
-    mediator_ =
-        [[HomeCustomizationMediator alloc] initWithPrefService:pref_service_
-                            discoverFeedVisibilityBrowserAgent:
-                                discover_feed_visibility_browser_agent_];
+    imageFetcherService_ =
+        ImageFetcherServiceFactory::GetForProfile(browser->GetProfile());
+
+    mediator_ = [[HomeCustomizationMediator alloc]
+                       initWithPrefService:pref_service_
+        discoverFeedVisibilityBrowserAgent:
+            discover_feed_visibility_browser_agent_
+                       imageFetcherService:imageFetcherService_];
   }
 
  protected:
@@ -75,6 +80,7 @@ class HomeCustomizationMediatorUnitTest : public PlatformTest {
       discover_feed_visibility_browser_agent_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<image_fetcher::ImageFetcherService> imageFetcherService_;
 };
 
 // Tests that the mediator populates the main page data for its consumer based

@@ -26,6 +26,9 @@
             (BackgroundCustomizationConfiguration*)backgroundConfiguration
                            logoVendor:(id<LogoVendor>)logoVendor;
 
+// Updates the background image displayed behind the cell’s content.
+- (void)updateBackgroundImage:(UIImage*)image;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CELL_H_
