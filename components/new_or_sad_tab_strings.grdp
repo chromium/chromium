@@ -120,7 +120,8 @@
         New Incognito Tab
       </message>
       <message name="IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL"
-          desc="Accessibility label for a link labeled 'Learn more' that links to a help article about Incognito mode.">
+          desc="Accessibility label for a link labeled 'Learn more' that links to a help article about Incognito mode."
+          formatter_data="android_java">
         Learn more about Incognito
       </message>
       <if expr="not is_android">

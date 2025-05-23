@@ -68,6 +68,7 @@ found in the LICENSE file.
         android:minHeight="@dimen/min_touch_target_size"
         android:gravity="center_vertical"
         android:text="@string/learn_more"
+        android:contentDescription="@string/incognito_tab_learn_more_accessibility_label"
         style="@style/IncognitoNewTabLearnMoreLinkModernTextView" />
 
     <!-- Placeholder for a Cookie Controls or a Tracking Protection card. -->
