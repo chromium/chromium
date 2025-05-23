@@ -59,12 +59,10 @@ TransferableResourceTracker::ImportResources(
 TransferableResourceTracker::PositionedResource
 TransferableResourceTracker::ImportResource(
     SurfaceSavedFrame::OutputCopyResult output_copy) {
-  TransferableResource::MetadataOverride overrides;
-  overrides.alpha_type = kPremul_SkAlphaType;
   auto resource = TransferableResource::Make(
       output_copy.shared_image,
       TransferableResource::ResourceSource::kViewTransition,
-      output_copy.sync_token, overrides);
+      output_copy.sync_token);
 
   TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.release_callback) {
