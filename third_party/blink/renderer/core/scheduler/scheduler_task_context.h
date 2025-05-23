@@ -33,7 +33,11 @@ class SchedulerTaskContext : public GarbageCollected<SchedulerTaskContext> {
  private:
   const Member<AbortSignal> abort_source_;
   const Member<DOMTaskSignal> priority_source_;
+  // The `SecurityOrigin` and `ExecutionContext` associated with the
+  // `DOMScheduler` from where this state originated. Used to determine if the
+  // state can be propagated to another `ExecutionContext`.
   const scoped_refptr<SecurityOrigin> security_origin_;
+  const WeakMember<ExecutionContext> scheduler_execution_context_;
 };
 
 }  // namespace blink

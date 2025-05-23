@@ -4144,7 +4144,7 @@
       status: "test",
     },
     {
-      name: "SchedulerYieldCrossOriginFix",
+      name: "SchedulerYieldDisallowCrossFrameInheritance",
       status: "stable",
     },
     {

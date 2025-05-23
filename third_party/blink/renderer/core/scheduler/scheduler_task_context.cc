@@ -19,11 +19,13 @@ SchedulerTaskContext::SchedulerTaskContext(ExecutionContext* context,
     : abort_source_(abort_source),
       priority_source_(priority_source),
       security_origin_(
-          base::WrapRefCounted(context->GetMutableSecurityOrigin())) {}
+          base::WrapRefCounted(context->GetMutableSecurityOrigin())),
+      scheduler_execution_context_(context) {}
 
 void SchedulerTaskContext::Trace(Visitor* visitor) const {
   visitor->Trace(abort_source_);
   visitor->Trace(priority_source_);
+  visitor->Trace(scheduler_execution_context_);
 }
 
 AbortSignal* SchedulerTaskContext::AbortSource() {
@@ -36,9 +38,10 @@ DOMTaskSignal* SchedulerTaskContext::PrioritySource() {
 
 bool SchedulerTaskContext::CanPropagateTo(
     const ExecutionContext& target) const {
-  return RuntimeEnabledFeatures::SchedulerYieldCrossOriginFixEnabled()
-             ? target.GetSecurityOrigin()->CanAccess(security_origin_.get())
-             : true;
+  return RuntimeEnabledFeatures::
+                 SchedulerYieldDisallowCrossFrameInheritanceEnabled()
+             ? &target == scheduler_execution_context_.Get()
+             : target.GetSecurityOrigin()->CanAccess(security_origin_.get());
 }
 
 }  // namespace blink
