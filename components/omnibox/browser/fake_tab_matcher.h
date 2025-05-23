@@ -30,7 +30,8 @@ class FakeTabMatcher : public TabMatcher {
                         const AutocompleteInput* input,
                         bool exclude_active_tab = true) const override;
   std::vector<TabMatcher::TabWrapper> GetOpenTabs(
-      const AutocompleteInput* input) const override;
+      const AutocompleteInput* input,
+      bool exclude_active_tab = true) const override;
 
  private:
   // Substring used to match URLs for IsTabOpenWithURL().

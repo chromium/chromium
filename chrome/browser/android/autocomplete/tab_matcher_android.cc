@@ -121,7 +121,8 @@ void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
 }
 
 std::vector<TabMatcher::TabWrapper> TabMatcherAndroid::GetOpenTabs(
-    const AutocompleteInput* input) const {
+    const AutocompleteInput* input,
+    bool unused_exclude_active_tab) const {
   std::vector<TabMatcher::TabWrapper> open_tabs;
   for (auto& open_tab : GetOpenAndroidTabs(input)) {
     open_tabs.emplace_back(open_tab->GetTitle(), open_tab->GetURL(),

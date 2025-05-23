@@ -21,6 +21,7 @@ bool FakeTabMatcher::IsTabOpenWithURL(const GURL& url,
 }
 
 std::vector<TabMatcher::TabWrapper> FakeTabMatcher::GetOpenTabs(
-    const AutocompleteInput* input) const {
+    const AutocompleteInput* input,
+    bool exclude_active_tab) const {
   return open_tabs_;
 }

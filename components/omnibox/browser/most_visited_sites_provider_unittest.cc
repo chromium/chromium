@@ -900,8 +900,6 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteWithPrefetching) {
 }
 
 TEST_F(MostVisitedSitesProviderTest, DuplicateSuggestions) {
-  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
-  history::MostVisitedURLList result;
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
@@ -915,9 +913,11 @@ TEST_F(MostVisitedSitesProviderTest, DuplicateSuggestions) {
       {false,
        {GURL("http://www.samesites.com/differentpath/#ref"),
         u"Different URL"}}};
+  history::MostVisitedURLList result;
   for (auto& data : test_data) {
     result.push_back(data.entry);
   }
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
   provider_->OnMostVisitedUrlsAvailable(input, result);
   // Filter by same titles and stripped urls when deduping suggestions within
   // the suggestion list.
@@ -965,6 +965,45 @@ TEST_F(MostVisitedSitesProviderTest, TestProviderDoneWithEmptyCachedSites) {
   // even if cached sites is empty.
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(MostVisitedSitesProviderTest, DedupingOpenTabs) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  history::MostVisitedURLList result;
+
+  FakeTabMatcher& tab_matcher = static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client_.GetTabMatcher()));
+
+  tab_matcher.AddOpenTab(FakeTabMatcher::TabWrapper(
+      u"Test", GURL("http://foo.org/path/#ref"), base::Time::Now()));
+  tab_matcher.AddOpenTab(FakeTabMatcher::TabWrapper(
+      u"Testing", GURL("http://bar.org"), base::Time::Now()));
+
+  std::vector<TestData> test_data = {
+      // Tabs with same title and url should be considered matches.
+      {false, {GURL("http://bar.org"), u"Testing"}},
+      // Tabs with same title should be considered matches even if urls are
+      // different.
+      {false, {GURL("http://different.org"), u"Testing"}},
+      // Sites with same path and different refs should be considered matches.
+      {false, {GURL("http://foo.org/path/#differentref"), u"Different Name"}},
+      // Sites with different path should not be considered matches.
+      {false, {GURL("http://foo.org/differentpath/#ref"), u"Different Name"}},
+      // Sites with same match and different refs and query params should be
+      // considered matches.
+      {false, {GURL("http://foo.org/path/#ref?param=123"), u"Different Name"}}};
+  for (auto& data : test_data) {
+    result.push_back(data.entry);
+  }
+  provider_->OnMostVisitedUrlsAvailable(input, result);
+  ASSERT_EQ(1u, provider_->matches().size());
+  ASSERT_EQ("http://foo.org/differentpath/#ref",
+            provider_->matches().at(0).destination_url.spec());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

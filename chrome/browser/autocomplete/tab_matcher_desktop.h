@@ -28,7 +28,8 @@ class TabMatcherDesktop : public TabMatcher {
       const GURL::Replacements& replacements,
       bool exclude_active_tab) const override;
   std::vector<TabMatcher::TabWrapper> GetOpenTabs(
-      const AutocompleteInput* input) const override;
+      const AutocompleteInput* input,
+      bool exclude_active_tab = true) const override;
 
  private:
   std::vector<content::WebContents*> GetOpenWebContents(
