@@ -20,10 +20,11 @@
 #include "services/audio/local_muter.h"
 #include "services/audio/loopback_stream.h"
 #include "services/audio/output_stream.h"
+#include "services/audio/reference_signal_provider.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "services/audio/loopback_reference_manager.h"
 #include "services/audio/output_device_mixer.h"
-#include "services/audio/system_loopback_listener.h"
 #endif
 
 namespace audio {
@@ -40,13 +41,13 @@ std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
       audio_manager, base::BindRepeating(&OutputDeviceMixer::Create));
 }
 
-std::unique_ptr<SystemLoopbackListener> MaybeCreateSystemLoopbackListener(
+std::unique_ptr<LoopbackReferenceManager> MaybeCreateLoopbackReferenceManager(
     media::AudioManager* audio_manager) {
   if (!media::IsSystemLoopbackAsAecReferenceEnabled()) {
     return nullptr;
   }
 
-  return std::make_unique<SystemLoopbackListener>(audio_manager);
+  return std::make_unique<LoopbackReferenceManager>(audio_manager);
 }
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
@@ -66,8 +67,8 @@ StreamFactory::StreamFactory(
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
-      system_loopback_listener_(
-          MaybeCreateSystemLoopbackListener(audio_manager)),
+      loopback_reference_manager_(
+          MaybeCreateLoopbackReferenceManager(audio_manager)),
 #endif
       loopback_worker_thread_("Loopback Worker", kReatimeThreadPeriod) {
 }
@@ -107,10 +108,12 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_, aecdump_recording_manager_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-      system_loopback_listener_
-          ? static_cast<DeviceOutputListener*>(system_loopback_listener_.get())
-          : static_cast<DeviceOutputListener*>(
-                output_device_mixer_manager_.get()),
+      (loopback_reference_manager_
+           ? static_cast<ReferenceSignalProviderFactory*>(
+                 loopback_reference_manager_.get())
+           : static_cast<ReferenceSignalProviderFactory*>(
+                 output_device_mixer_manager_.get()))
+          ->GetReferenceSignalProvider(),
       std::move(processing_config),
 #else
       nullptr, nullptr,

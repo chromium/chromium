@@ -43,6 +43,39 @@ enum class StreamCreation {
 
 namespace audio {
 
+class OutputDeviceMixerReferenceProvider : public ReferenceSignalProvider {
+ public:
+  OutputDeviceMixerReferenceProvider(
+      OutputDeviceMixerManager* output_device_mixer_manager)
+      : output_device_mixer_manager_(output_device_mixer_manager) {}
+
+  void StartListening(ReferenceOutput::Listener* listener,
+                      const std::string& device_id) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    output_device_mixer_manager_->StartListening(listener, device_id);
+  }
+
+  void StopListening(ReferenceOutput::Listener* listener) final {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    output_device_mixer_manager_->StopListening(listener);
+  }
+
+ private:
+  SEQUENCE_CHECKER(owning_sequence_);
+
+  // Ownership of the OutputDeviceMixerReferenceProvider goes:
+  // StreamFactory -> InputStream -> InputController -> OutputTapper ->
+  // ReferenceSignalProvider
+  //
+  // Ownership of the OutputDeviceMixerManager goes:
+  // StreamFactory -> OutputDeviceMixerManager
+  //
+  // Since input_streams_ is destroyed before output_device_mixer_manager_ in
+  // services/audio/stream_factory.h, this pointer will never be dangling.
+  const raw_ptr<OutputDeviceMixerManager> output_device_mixer_manager_
+      GUARDED_BY_CONTEXT(owning_sequence_);
+};
+
 OutputDeviceMixerManager::OutputDeviceMixerManager(
     media::AudioManager* audio_manager,
     OutputDeviceMixer::CreateCallback create_mixer_callback)
@@ -134,6 +167,12 @@ void OutputDeviceMixerManager::StartNewListener(
     return;
 
   mixer->StartListening(listener);
+}
+
+std::unique_ptr<ReferenceSignalProvider>
+OutputDeviceMixerManager::GetReferenceSignalProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  return std::make_unique<OutputDeviceMixerReferenceProvider>(this);
 }
 
 void OutputDeviceMixerManager::StartListening(

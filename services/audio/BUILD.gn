@@ -18,7 +18,6 @@ source_set("audio") {
     "device_listener_output_stream.h",
     "device_notifier.cc",
     "device_notifier.h",
-    "device_output_listener.h",
     "group_coordinator-impl.h",
     "group_coordinator.h",
     "in_process_audio_manager_accessor.cc",
@@ -55,6 +54,7 @@ source_set("audio") {
     "realtime_audio_thread.cc",
     "realtime_audio_thread.h",
     "reference_output.h",
+    "reference_signal_provider.h",
     "service.cc",
     "service.h",
     "service_factory.cc",
@@ -97,6 +97,8 @@ source_set("audio") {
     sources += [
       "audio_processor_handler.cc",
       "audio_processor_handler.h",
+      "loopback_reference_manager.cc",
+      "loopback_reference_manager.h",
       "mixing_graph.cc",
       "mixing_graph.h",
       "mixing_graph_impl.cc",
@@ -113,8 +115,6 @@ source_set("audio") {
       "processing_audio_fifo.h",
       "sync_mixing_graph_input.cc",
       "sync_mixing_graph_input.h",
-      "system_loopback_listener.cc",
-      "system_loopback_listener.h",
     ]
 
     public_deps += [ "//media/webrtc" ]
