@@ -28,9 +28,10 @@ public class Interpolators {
     // that mimics a spring.
     public static final Interpolator DEFAULT_SPATIAL =
             PathInterpolatorCompat.create(0.38f, 1.21f, 0.22f, 1f);
+    public static final Interpolator STANDARD_DEFAULT_EFFECTS =
+            PathInterpolatorCompat.create(0.34f, 0.80f, 0.34f, 1f);
     public static final Interpolator STANDARD_ACCELERATE =
             PathInterpolatorCompat.create(0.3f, 0f, 1f, 1f);
-
     public static final AccelerateInterpolator ACCELERATE_INTERPOLATOR =
             new AccelerateInterpolator();
     public static final DecelerateInterpolator DECELERATE_INTERPOLATOR =

@@ -222,6 +222,7 @@ public class StripLayoutHelperTest {
     private final TestTabModel mModel = spy(new TestTabModel());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
+    private static final int NEW_ANIM_TAB_RESIZE_MS = 200;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
     private static final String EXPECTED_TAB = "The view should be a tab.";
@@ -6237,6 +6238,59 @@ public class StripLayoutHelperTest {
                 /* verticalAxisScroll= */ -2.4f,
                 /* isRtl= */ true,
                 /* expectedScrollDelta= */ StripLayoutHelper.SCROLL_SPEED_FACTOR);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
+    public void testTabCreated_HorizontalAnimation() {
+        // Initialize with default amount of tabs. Clear any animations.
+        initializeTest(false, false, 3);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
+        assertNull(
+                "Animation should not be running.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+
+        // Act: Create new tab in model and trigger update in tab strip.
+        mModel.addTab("new tab");
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, true, false, false);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
+    public void testTabClosing_NoTabResize_HorizontalAnimation() {
+        // Arrange
+        int tabCount = 10;
+        initializeTest(false, false, 9, tabCount);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        setupForAnimations();
+
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Act: Call on close tab button handler.
+        mStripLayoutHelper.handleCloseButtonClick(
+                tabs[9], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+
+        // Assert: One set of animations started.
+        assertFalse(
+                "MultiStepAnimations should not have started.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+
+        // Act: End the tab closing animations to apply final values.
+        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
+        assertNotNull(runningAnimator);
+        runningAnimator.end();
+
+        // Assert: Tab is closed.
+        int expectedTabCount = 9;
+        assertEquals(
+                "Unexpected tabs count",
+                expectedTabCount,
+                mStripLayoutHelper.getStripLayoutTabsForTesting().length);
+
+        // Assert: There should only be one set of animations.
+        assertFalse(mStripLayoutHelper.getRunningAnimatorForTesting().isRunning());
     }
 
     /**
