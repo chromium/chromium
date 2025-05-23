@@ -7,6 +7,8 @@
 const kPrompt = 'describe this';
 const kValidImagePath = 'resources/media/apple.jpg';
 const kValidAudioPath = 'resources/media/speech.mp3';
+const kValidSVGImagePath = 'resources/media/wikipedia-logo.svg';
+const kValidVideoPath = 'resources/media/video.mp4';
 
 function messageWithContent(prompt, type, value) {
   return [{
@@ -157,6 +159,64 @@ promise_test(async () => {
       kPrompt, 'image', new DataView(await image_data.arrayBuffer())));
   assert_regexp_match(result, /<image>/);
 }, 'Prompt with ArrayBufferView image content');
+
+promise_test(async () => {
+  await ensureLanguageModel();
+  const newImage = new Image();
+  newImage.src = kValidSVGImagePath;
+  const session =
+      await LanguageModel.create({expectedInputs: [{type: 'image'}]});
+
+  const result =
+      await session.prompt(messageWithContent(
+        kPrompt, 'image', newImage));
+  assert_regexp_match(result, /<image>/);
+}, 'Prompt with HTMLImageElement image content (with SVG)');
+
+
+promise_test(async () => {
+  await ensureLanguageModel();
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '100');
+  svg.setAttribute('height', '100');
+  const svgImage =
+      document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  svgImage.setAttribute('href', kValidImagePath);
+  svgImage.setAttribute('decoding', 'sync');
+  svg.appendChild(svgImage);
+  document.body.appendChild(svg);
+
+  // Must wait for the SVG and image to load first.
+  // TODO(crbug.com/417260923): Make prompt Api await the image to be loaded.
+  const {promise, resolve} = Promise.withResolvers();
+  svgImage.addEventListener('load', resolve);
+  await promise;
+  const session =
+      await LanguageModel.create({expectedInputs: [{type: 'image'}]});
+
+  const result =
+      await session.prompt(messageWithContent(
+        kPrompt, 'image', svgImage));
+  assert_regexp_match(result, /<image>/);
+}, 'Prompt with SVGImageElement image content');
+
+promise_test(async () => {
+  await ensureLanguageModel();
+  var video = document.createElement('video');
+  video.src = kValidVideoPath;
+  video.width = 1224;
+  video.height = 768;
+  // Video must have frames fetched. See crbug.com/417249941#comment3
+  await video.play();
+
+  const session =
+      await LanguageModel.create({expectedInputs: [{type: 'image'}]});
+
+  const result =
+      await session.prompt(messageWithContent(
+        kPrompt, 'image', video));
+  assert_regexp_match(result, /<image>/);
+}, 'Prompt with HTMLVideoElement image content');
 
 /*****************************************
  * Audio tests

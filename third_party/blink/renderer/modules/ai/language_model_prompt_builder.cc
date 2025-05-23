@@ -145,6 +145,11 @@ class LanguageModelPromptBuilder
   void AudioToMojo(base::span<uint8_t> bytes, PendingEntry* entry);
   void BitmapToMojo(base::span<uint8_t> bytes, PendingEntry* entry);
 
+  // Called when an ImageBitmap is finished decoding.
+  void OnBitmapLoaded(PendingEntry* entry,
+                      ScriptState* script_state,
+                      ImageBitmap* bitmap);
+
   SelfKeepAlive<LanguageModelPromptBuilder> keep_alive_{this};
   WTF::Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts_;
 
@@ -460,73 +465,70 @@ void LanguageModelPromptBuilder::ToMojo(Blob* blob, PendingEntry* entry) {
   AudioToMojo(audio_contents.ByteSpan(), entry);
 }
 
+// ThenCallable wrapper that calls a callback with the resolved/rejected value.
+template <typename Type, typename ReactType = Type*>
+class ThenCallback : public ThenCallable<Type, ThenCallback<Type, ReactType>> {
+ public:
+  explicit ThenCallback(
+      base::OnceCallback<void(ScriptState*, ReactType)> callback)
+      : callback(std::move(callback)) {}
+  void React(ScriptState* script_state, ReactType value) {
+    std::move(callback).Run(script_state, value);
+  }
+  base::OnceCallback<void(ScriptState*, ReactType)> callback;
+};
+
 void LanguageModelPromptBuilder::ToMojo(V8ImageBitmapSource* bitmap,
                                         PendingEntry* entry) {
-  // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
-  class Resolve : public ThenCallable<ImageBitmap, Resolve> {
-   public:
-    explicit Resolve(LanguageModelPromptBuilder* builder, PendingEntry* entry)
-        : builder_(builder), entry_(entry) {}
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(builder_);
-      visitor->Trace(entry_);
-      ThenCallable<ImageBitmap, Resolve>::Trace(visitor);
-    }
-    void React(ScriptState* script_state, ImageBitmap* value) {
-      v8::Isolate* isolate = script_state->GetIsolate();
-      v8::TryCatch try_catch(isolate);
-      ExceptionState exception_state(isolate);
-      if (!value) {
-        builder_->Reject(DOMException::Create(
-            "Invalid image bitmap.",
-            DOMException::GetErrorName(DOMExceptionCode::kDataError)));
-        return;
-      }
-      std::optional<SkBitmap> skia_bitmap =
-          GetBitmapFromCanvasImageSource(*value, exception_state);
-      if (!skia_bitmap) {
-        CHECK(exception_state.HadException() && try_catch.HasCaught());
-        builder_->Reject(ScriptValue(isolate, try_catch.Exception()));
-        return;
-      }
-      builder_->OnPromptContentProcessed(
-          mojom::blink::AILanguageModelPromptContent::NewBitmap(
-              skia_bitmap.value()),
-          entry_);
-    }
-
-   private:
-    Member<LanguageModelPromptBuilder> builder_;
-    Member<PendingEntry> entry_;
-  };
-  class Reject : public ThenCallable<IDLAny, Reject> {
-   public:
-    explicit Reject(LanguageModelPromptBuilder* builder) : builder_(builder) {}
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(builder_);
-      ThenCallable<IDLAny, Reject>::Trace(visitor);
-    }
-    void React(ScriptState* script_state, ScriptValue value) {
-      builder_->Reject(value);
-    }
-    Member<LanguageModelPromptBuilder> builder_;
-  };
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
   ExceptionState exception_state(isolate);
   // Note: GetBitmapFromV8ImageBitmapSource doesn't support async which is
   // required for blobs so async ImageBitmapFactories::CreateImageBitmap is
   // preferred.
+  // TODO(crbug.com/419321438): Change CreateImageBitmap to not use JS promises.
   ImageBitmapFactories::CreateImageBitmap(
       script_state_, bitmap, MakeGarbageCollected<ImageBitmapOptions>(),
       exception_state)
-      .Then(script_state_, MakeGarbageCollected<Resolve>(this, entry),
-            MakeGarbageCollected<Reject>(this));
+      .Then(
+          script_state_,
+          MakeGarbageCollected<ThenCallback<ImageBitmap>>(
+              WTF::BindOnce(&LanguageModelPromptBuilder::OnBitmapLoaded,
+                            WrapPersistent(this), WrapPersistent(entry))),
+          MakeGarbageCollected<ThenCallback<IDLAny, ScriptValue>>(WTF::BindOnce(
+              [](LanguageModelPromptBuilder* builder, ScriptState* script_state,
+                 ScriptValue value) { builder->Reject(std::move(value)); },
+              WrapPersistent(this))));
 
   if (exception_state.HadException()) {
     CHECK(try_catch.HasCaught());
     this->Reject(ScriptValue(isolate, try_catch.Exception()));
   }
+}
+
+void LanguageModelPromptBuilder::OnBitmapLoaded(PendingEntry* entry,
+                                                ScriptState* script_state,
+                                                ImageBitmap* bitmap) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+  ExceptionState exception_state(isolate);
+  if (!bitmap) {
+    Reject(DOMException::Create(
+        "Invalid image bitmap.",
+        DOMException::GetErrorName(DOMExceptionCode::kDataError)));
+    return;
+  }
+  std::optional<SkBitmap> skia_bitmap =
+      GetBitmapFromCanvasImageSource(*bitmap, exception_state);
+  if (!skia_bitmap) {
+    CHECK(exception_state.HadException() && try_catch.HasCaught());
+    Reject(ScriptValue(isolate, try_catch.Exception()));
+    return;
+  }
+  OnPromptContentProcessed(
+      mojom::blink::AILanguageModelPromptContent::NewBitmap(
+          skia_bitmap.value()),
+      entry);
 }
 
 }  // namespace
