@@ -143,14 +143,12 @@ class ChangePasswordFormFillingSubmissionHelperTest
  public:
   ChangePasswordFormFillingSubmissionHelperTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        logs_uploader_(profile()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ChangePasswordFormFillingSubmissionHelperTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     OSCryptMocker::SetUp();
-
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
@@ -164,9 +162,11 @@ class ChangePasswordFormFillingSubmissionHelperTest
     // `ChromeAutofillClient` needs to be set up, too.
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
     FakeChromePasswordManagerClient::CreateForWebContentsAndGet(web_contents());
+    logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
   }
 
   void TearDown() override {
+    logs_uploader_.reset();
     OSCryptMocker::TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -189,7 +189,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
       password_manager::PasswordFormManager* manager,
       base::OnceCallback<void(bool)> result_callback) {
     auto verifier = std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-        web_contents(), &logs_uploader_, std::move(result_callback));
+        web_contents(), logs_uploader_.get(), std::move(result_callback));
     verifier->FillChangePasswordForm(manager, kOldPassword, kNewPassword);
     return verifier;
   }
@@ -210,7 +210,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   password_manager::FakeFormFetcher form_fetcher_;
-  ModelQualityLogsUploader logs_uploader_;
+  std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
   MockStubPasswordManagerDriver driver_;
 };
 

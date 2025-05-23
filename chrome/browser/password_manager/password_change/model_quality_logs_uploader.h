@@ -10,6 +10,10 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 // Helper class which handles Model Logging Quality logic and uploads the
 // logs to the Server.
 class ModelQualityLogsUploader {
@@ -17,7 +21,7 @@ class ModelQualityLogsUploader {
   using LoggingData =
       optimization_guide::proto::PasswordChangeSubmissionLoggingData;
 
-  explicit ModelQualityLogsUploader(Profile* profile);
+  explicit ModelQualityLogsUploader(content::WebContents* web_contents);
   ~ModelQualityLogsUploader();
   ModelQualityLogsUploader(const ModelQualityLogsUploader&) = delete;
   ModelQualityLogsUploader& operator=(const ModelQualityLogsUploader&) = delete;
@@ -62,10 +66,10 @@ class ModelQualityLogsUploader {
 #endif
 
  private:
-  std::unique_ptr<optimization_guide::ModelQualityLogEntry> CreateNewLogEntry();
-  optimization_guide::proto::LogAiDataRequest final_log_data_;
+  void SetCommonInformationQuality(content::WebContents* web_contents);
 
-  const raw_ptr<Profile> profile_;
+  optimization_guide::proto::LogAiDataRequest final_log_data_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ModelQualityLogsUploader> weak_ptr_factory_{this};
 };
 

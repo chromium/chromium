@@ -4,11 +4,18 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 
 #include "base/logging.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
 using QualityStatus = optimization_guide::proto::
@@ -20,6 +27,31 @@ using PageType = optimization_guide::proto::OpenFormResponseData_PageType;
 namespace {
 int64_t ComputeRequestLatencyMs(base::Time server_request_start_time) {
   return (base::Time::Now() - server_request_start_time).InMilliseconds();
+}
+
+std::string GetLocation() {
+  variations::VariationsService* variation_service =
+      g_browser_process->variations_service();
+  return variation_service
+             ? base::ToUpperASCII(variation_service->GetLatestCountry())
+             : std::string();
+}
+
+std::string GetPageDomain(content::WebContents* web_contents) {
+  CHECK(web_contents);
+  return affiliations::GetExtendedTopLevelDomain(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      /*psl_extensions=*/{});
+}
+
+std::string GetPageLanguage(content::WebContents* web_contents) {
+  CHECK(web_contents);
+  auto* translate_manager =
+      ChromeTranslateClient::GetManagerFromWebContents(web_contents);
+  if (translate_manager) {
+    return translate_manager->GetLanguageState()->source_language();
+  }
+  return std::string();
 }
 
 FinalModelStatus GetFinalModelStatus(
@@ -65,9 +97,26 @@ QualityStatus GetVerifySubmissionQualityStatus(
 }
 }  // namespace
 
-ModelQualityLogsUploader::ModelQualityLogsUploader(Profile* profile)
-    : profile_(profile) {}
+ModelQualityLogsUploader::ModelQualityLogsUploader(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  SetCommonInformationQuality(web_contents);
+}
 ModelQualityLogsUploader::~ModelQualityLogsUploader() = default;
+
+void ModelQualityLogsUploader::SetCommonInformationQuality(
+    content::WebContents* web_contents) {
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->set_domain(GetPageDomain(web_contents));
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->set_location(GetLocation());
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->set_language(GetPageLanguage(web_contents));
+}
 
 void ModelQualityLogsUploader::SetOpenFormQuality(
     const optimization_guide::proto::PasswordChangeResponse& response,

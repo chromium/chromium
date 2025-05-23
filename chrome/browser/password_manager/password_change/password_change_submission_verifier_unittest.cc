@@ -61,23 +61,27 @@ class PasswordChangeSubmissionVerifierTest
  public:
   PasswordChangeSubmissionVerifierTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        logs_uploader_(profile()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PasswordChangeSubmissionVerifierTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
+    logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
+  }
+
+  void TearDown() override {
+    logs_uploader_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   std::unique_ptr<PasswordChangeSubmissionVerifier> CreateVerifier(
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content) {
     auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-        web_contents(), &logs_uploader_);
+        web_contents(), logs_uploader_.get());
     verifier->set_annotated_page_callback(
         std::move(capture_annotated_page_content));
     return verifier;
@@ -89,7 +93,7 @@ class PasswordChangeSubmissionVerifierTest
   }
 
  private:
-  ModelQualityLogsUploader logs_uploader_;
+  std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
 };
 
 TEST_F(PasswordChangeSubmissionVerifierTest, Succeeded) {
