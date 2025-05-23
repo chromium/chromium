@@ -13,11 +13,7 @@ struct VIEWS_EXPORT GroupRange {
   size_t start;
   size_t length;
 
-  bool operator==(const GroupRange& other) const {
-    return start == other.start && length == other.length;
-  }
-
-  bool operator!=(const GroupRange& other) const { return !(*this == other); }
+  friend bool operator==(const GroupRange&, const GroupRange&) = default;
 };
 
 // TableGrouper is used by TableView to group a set of rows and treat them
