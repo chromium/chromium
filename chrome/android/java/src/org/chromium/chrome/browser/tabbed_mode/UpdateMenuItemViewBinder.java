@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.app.appmenu;
+package org.chromium.chrome.browser.tabbed_mode;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -17,57 +17,31 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
-import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A custom binder used to bind the update menu item. */
 @NullMarked
-class UpdateMenuItemViewBinder implements CustomViewBinder {
-    private static final int UPDATE_ITEM_VIEW_TYPE = 0;
-    private final @Nullable MenuItemState mItemState;
-
-    UpdateMenuItemViewBinder(Profile profile) {
-        super();
-        mItemState = UpdateMenuItemHelper.getInstance(profile).getUiState().itemState;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public int getItemViewType(int id) {
-        return id == R.id.update_menu_id ? UPDATE_ITEM_VIEW_TYPE : CustomViewBinder.NOT_HANDLED;
-    }
-
-    @Override
-    public int getLayoutId(int viewType) {
-        if (viewType == UPDATE_ITEM_VIEW_TYPE) {
-            return R.layout.update_menu_item;
-        }
-        return CustomViewBinder.NOT_HANDLED;
-    }
-
-    @Override
-    public void bind(PropertyModel model, View view, PropertyKey key) {
+class UpdateMenuItemViewBinder {
+    /** Handles binding the view and models changes. */
+    public static void bind(PropertyModel model, View view, PropertyKey key) {
         AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
+
+        @Nullable MenuItemState itemState =
+                ((MenuItemState) model.get(AppMenuItemProperties.CUSTOM_ITEM_DATA));
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             assert id == R.id.update_menu_id;
             view.setId(id);
 
-            if (mItemState != null) {
+            if (itemState != null) {
                 TextView summary = view.findViewById(R.id.menu_item_summary);
-                if (!TextUtils.isEmpty(mItemState.summary)) {
-                    summary.setText(mItemState.summary);
+                if (!TextUtils.isEmpty(itemState.summary)) {
+                    summary.setText(itemState.summary);
                     summary.setVisibility(View.VISIBLE);
                 } else {
                     summary.setText("");
@@ -76,49 +50,49 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
             }
         } else if (key == AppMenuItemProperties.TITLE) {
             TextView text = view.findViewById(R.id.menu_item_text);
-            if (mItemState == null) {
+            if (itemState == null) {
                 text.setText(model.get(AppMenuItemProperties.TITLE));
             } else {
-                text.setText(mItemState.title);
+                text.setText(itemState.title);
                 text.setTextColor(
                         AppCompatResources.getColorStateList(
-                                view.getContext(), mItemState.titleColorId));
+                                view.getContext(), itemState.titleColorId));
             }
         } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
             TextView text = view.findViewById(R.id.menu_item_text);
-            if (mItemState == null) {
+            if (itemState == null) {
                 CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
                 text.setContentDescription(titleCondensed);
             } else {
-                text.setContentDescription(view.getResources().getString(mItemState.title));
+                text.setContentDescription(view.getResources().getString(itemState.title));
             }
         } else if (key == AppMenuItemProperties.ICON) {
             ImageView image = view.findViewById(R.id.menu_item_icon);
 
-            if (mItemState == null) {
+            if (itemState == null) {
                 Drawable icon = model.get(AppMenuItemProperties.ICON);
                 image.setImageDrawable(icon);
                 image.setVisibility(View.VISIBLE);
                 return;
             }
 
-            image.setImageResource(mItemState.icon);
-            if (mItemState.iconTintId != 0) {
+            image.setImageResource(itemState.icon);
+            if (itemState.iconTintId != 0) {
                 DrawableCompat.setTint(
-                        image.getDrawable(), view.getContext().getColor(mItemState.iconTintId));
+                        image.getDrawable(), view.getContext().getColor(itemState.iconTintId));
             }
         } else if (key == AppMenuItemProperties.ENABLED) {
             view.findViewById(R.id.menu_item_text)
                     .setEnabled(model.get(AppMenuItemProperties.ENABLED));
-            if (mItemState != null) view.setEnabled(mItemState.enabled);
+            if (itemState != null) view.setEnabled(itemState.enabled);
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }
     }
 
-    @Override
-    public int getPixelHeight(Context context) {
+    /** Provides the minimum height for the view for menu sizing. */
+    public static int getPixelHeight(Context context) {
         int textSize =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.overflow_menu_update_min_height);

@@ -18,7 +18,12 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public interface AppMenuHandler {
-    @IntDef({AppMenuItemType.STANDARD, AppMenuItemType.TITLE_BUTTON, AppMenuItemType.BUTTON_ROW})
+    @IntDef({
+        AppMenuItemType.STANDARD,
+        AppMenuItemType.TITLE_BUTTON,
+        AppMenuItemType.BUTTON_ROW,
+        AppMenuItemType.DIVIDER
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AppMenuItemType {
         /** Regular Android menu item that contains a title and an icon if icon is specified. */
@@ -36,11 +41,14 @@ public interface AppMenuHandler {
          */
         int BUTTON_ROW = 2;
 
+        /** A divider item to distinguish between menu item groupings. */
+        int DIVIDER = 3;
+
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     /**

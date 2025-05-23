@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -24,7 +23,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.app.appmenu.DividerLineMenuItemViewBinder;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -39,14 +37,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,13 +116,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     @Override
     public int getAppMenuLayoutId() {
         return R.menu.custom_tabs_menu;
-    }
-
-    @Override
-    public @Nullable List<CustomViewBinder> getCustomViewBinders() {
-        List<CustomViewBinder> customViewBinders = new ArrayList<>();
-        customViewBinders.add(new DividerLineMenuItemViewBinder());
-        return customViewBinders;
     }
 
     @Override

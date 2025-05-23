@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.app.appmenu;
+package org.chromium.chrome.browser.tabbed_mode;
 
-
-import android.content.Context;
-import android.content.res.TypedArray;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
-import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -24,31 +20,9 @@ import org.chromium.ui.widget.ChromeImageView;
 
 /** A custom binder used to bind the incognito menu item. */
 @NullMarked
-class IncognitoMenuItemViewBinder implements CustomViewBinder {
-    private static final int INCOGNITO_ITEM_VIEW_TYPE = 0;
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public int getItemViewType(int id) {
-        return id == R.id.new_incognito_tab_menu_id
-                ? INCOGNITO_ITEM_VIEW_TYPE
-                : CustomViewBinder.NOT_HANDLED;
-    }
-
-    @Override
-    public int getLayoutId(int viewType) {
-        if (viewType == INCOGNITO_ITEM_VIEW_TYPE) {
-            return R.layout.custom_view_menu_item;
-        }
-        return CustomViewBinder.NOT_HANDLED;
-    }
-
-    @Override
-    public void bind(PropertyModel model, View view, PropertyKey key) {
+class IncognitoMenuItemViewBinder {
+    /** Handles binding the view and models changes. */
+    public static void bind(PropertyModel model, View view, PropertyKey key) {
         AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
 
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
@@ -92,13 +66,5 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }
-    }
-
-    @Override
-    public int getPixelHeight(Context context) {
-        TypedArray a =
-                context.obtainStyledAttributes(
-                        new int[] {android.R.attr.listPreferredItemHeightSmall});
-        return a.getDimensionPixelSize(0, 0);
     }
 }

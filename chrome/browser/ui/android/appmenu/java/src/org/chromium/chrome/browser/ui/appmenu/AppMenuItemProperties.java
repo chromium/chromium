@@ -93,6 +93,14 @@ public class AppMenuItemProperties {
     public static final WritableObjectPropertyKey<ModelList> ADDITIONAL_ICONS =
             new WritableObjectPropertyKey<>("ADDITIONAL_ICONS");
 
+    /**
+     * A generic key for non-standard data types.
+     *
+     * <p>TODO(crbug.com/40145539): Remove this super hacky key.
+     */
+    public static final WritableObjectPropertyKey<Object> CUSTOM_ITEM_DATA =
+            new WritableObjectPropertyKey<>("CUSTOM_ITEM_DATA");
+
     public static final PropertyKey[] ALL_ICON_KEYS =
             new PropertyKey[] {
                 MENU_ITEM_ID,
@@ -123,6 +131,7 @@ public class AppMenuItemProperties {
                 SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,
                 MENU_ICON_AT_START,
-                ADDITIONAL_ICONS
+                ADDITIONAL_ICONS,
+                CUSTOM_ITEM_DATA
             };
 }

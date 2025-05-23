@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
@@ -63,10 +66,30 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.url.GURL;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.function.Function;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
+    @IntDef({TabbedAppMenuItemType.UPDATE_ITEM, TabbedAppMenuItemType.NEW_INCOGNITO_TAB})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabbedAppMenuItemType {
+        /** Regular Android menu item that contains a title and an icon if icon is specified. */
+        int UPDATE_ITEM = AppMenuHandler.AppMenuItemType.NUM_ENTRIES;
+
+        /**
+         * Menu item that has two buttons, the first one is a title and the second one is an icon.
+         * It is different from the regular menu item because it contains two separate buttons.
+         */
+        int NEW_INCOGNITO_TAB = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 1;
+    }
+
     AppMenuDelegate mAppMenuDelegate;
     WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     ModalDialogManager mModalDialogManager;
@@ -119,6 +142,23 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         incognitoReauthController -> {
                             mIncognitoReauthController = incognitoReauthController;
                         }));
+    }
+
+    @Override
+    public void registerCustomViewBinders(
+            ModelListAdapter modelListAdapter,
+            SparseArray<Function<Context, Integer>> customSizingSuppliers) {
+        modelListAdapter.registerType(
+                TabbedAppMenuItemType.UPDATE_ITEM,
+                new LayoutViewBuilder(R.layout.update_menu_item),
+                UpdateMenuItemViewBinder::bind);
+        customSizingSuppliers.append(
+                TabbedAppMenuItemType.UPDATE_ITEM, UpdateMenuItemViewBinder::getPixelHeight);
+
+        modelListAdapter.registerType(
+                TabbedAppMenuItemType.NEW_INCOGNITO_TAB,
+                new LayoutViewBuilder(R.layout.custom_view_menu_item),
+                IncognitoMenuItemViewBinder::bind);
     }
 
     @Override
@@ -418,6 +458,30 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 hasItemBetweenDividers = true;
             }
         }
+    }
+
+    @Override
+    protected int getItemTypeForId(int menuItemId) {
+        if (menuItemId == R.id.new_incognito_tab_menu_id) {
+            return TabbedAppMenuItemType.NEW_INCOGNITO_TAB;
+        } else if (menuItemId == R.id.update_menu_id) {
+            return TabbedAppMenuItemType.UPDATE_ITEM;
+        }
+
+        return super.getItemTypeForId(menuItemId);
+    }
+
+    @Override
+    protected MVCListAdapter.ListItem buildPropertyModelForMenuItem(MenuItem item) {
+        MVCListAdapter.ListItem listItem = super.buildPropertyModelForMenuItem(item);
+        if (listItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == R.id.update_menu_id) {
+            listItem.model.set(
+                    AppMenuItemProperties.CUSTOM_ITEM_DATA,
+                    UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
+                            .getUiState()
+                            .itemState);
+        }
+        return listItem;
     }
 
     @VisibleForTesting

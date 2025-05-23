@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemIcon.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/DividerLineMenuItemViewBinder.java",
   ]
 
   deps = [
@@ -46,6 +47,7 @@ android_resources("java_resources") {
     "java/res/color-night/menu_action_bar_bg_color.xml",
     "java/res/color/menu_action_bar_bg_color.xml",
     "java/res/drawable/menu_action_bar_bg.xml",
+    "java/res/layout/divider_line_menu_item.xml",
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",

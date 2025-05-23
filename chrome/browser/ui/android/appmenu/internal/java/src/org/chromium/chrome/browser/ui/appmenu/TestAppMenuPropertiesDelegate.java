@@ -22,8 +22,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.List;
-
 class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     public final CallbackHelper menuDismissedCallback = new CallbackHelper();
     public final CallbackHelper footerInflatedCallback = new CallbackHelper();
@@ -37,15 +35,8 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
     @Override
     public void destroy() {}
 
-    @Nullable
     @Override
-    public List<CustomViewBinder> getCustomViewBinders() {
-        return null;
-    }
-
-    @Override
-    public ModelList getMenuItems(
-            CustomItemViewTypeProvider customItemViewTypeProvider, AppMenuHandler handler) {
+    public ModelList getMenuItems(AppMenuHandler handler) {
         ModelList modelList = new ModelList();
 
         PopupMenu popup = new PopupMenu(ContextUtils.getApplicationContext(), null);

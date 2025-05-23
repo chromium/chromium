@@ -17,6 +17,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -66,6 +67,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Shows a popup of menu items anchored to a host view.
@@ -180,7 +182,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      * @param highlightedItemId The resource id of the menu item that should be highlighted. Can be
      *     {@code null} if no item should be highlighted. Note that {@code 0} is dedicated to custom
      *     menu items and can be declared by external apps.
-     * @param customViewBinders See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
+     * @param customSizingProviders Provides sizing/height for item types that do not use the
+     *     default item height. If a item's type does not have an entry in this object, then it
+     *     should use the default sizing value.
      * @param isMenuIconAtStart Whether the menu is being shown from a menu icon positioned at the
      *     start.
      * @param addTopPaddingBeforeFirstRow Whether top padding is needed above the first row.
@@ -195,7 +199,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             @IdRes int headerResourceId,
             @IdRes int groupDividerResourceId,
             @Nullable Integer highlightedItemId,
-            @Nullable List<CustomViewBinder> customViewBinders,
+            SparseArray<Function<Context, Integer>> customSizingProviders,
             boolean isMenuIconAtStart,
             @ControlsPosition int controlsPosition,
             boolean addTopPaddingBeforeFirstRow) {
@@ -258,7 +262,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         for (int i = 0; i < mModelList.size(); i++) {
             int itemId = mModelList.get(i).model.get(AppMenuItemProperties.MENU_ITEM_ID);
             menuItemIds.add(itemId);
-            heightList.add(getMenuItemHeight(itemId, context, customViewBinders));
+            heightList.add(
+                    getMenuItemHeight(mModelList.get(i).type, context, customSizingProviders));
         }
 
         View contentView = createAppMenuContentView(context, addTopPaddingBeforeFirstRow);
@@ -776,15 +781,11 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     private int getMenuItemHeight(
-            int itemId, Context context, @Nullable List<CustomViewBinder> customViewBinders) {
-        // Check if |item| is custom type
-        if (customViewBinders != null) {
-            for (int i = 0; i < customViewBinders.size(); i++) {
-                CustomViewBinder binder = customViewBinders.get(i);
-                if (binder.getItemViewType(itemId) != CustomViewBinder.NOT_HANDLED) {
-                    return binder.getPixelHeight(context);
-                }
-            }
+            int itemType,
+            Context context,
+            SparseArray<Function<Context, Integer>> customSizingProviders) {
+        if (customSizingProviders.get(itemType) != null) {
+            return assumeNonNull(customSizingProviders.get(itemType)).apply(context);
         }
         return mItemRowHeight;
     }

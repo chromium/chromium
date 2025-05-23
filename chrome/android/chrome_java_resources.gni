@@ -509,7 +509,6 @@ chrome_java_resources = [
   "java/res/layout/default_search_engine_first_run_fragment.xml",
   "java/res/layout/distilled_page_font_family_spinner.xml",
   "java/res/layout/distilled_page_prefs_view.xml",
-  "java/res/layout/divider_line_menu_item.xml",
   "java/res/layout/empty_accessory_sheet.xml",
   "java/res/layout/fake_search_box_layout.xml",
   "java/res/layout/find_in_page.xml",

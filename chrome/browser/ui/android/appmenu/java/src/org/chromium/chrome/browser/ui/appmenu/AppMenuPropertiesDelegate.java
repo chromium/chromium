@@ -4,55 +4,49 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 
-import java.util.List;
+import java.util.function.Function;
 
 /** App Menu helper that handles hiding and showing menu items based on activity state. */
 @NullMarked
 public interface AppMenuPropertiesDelegate {
-    /** Provides unique custom item view type across all custom binders. */
-    public interface CustomItemViewTypeProvider {
-        /**
-         * Return custom item view type from menu item id.
-         * @param id The menu item id.
-         * @return The custom item view type.
-         */
-        int fromMenuItemId(int id);
-    }
-
     /** Called when the containing activity is being destroyed. */
     void destroy();
 
     /**
-     * @return A list of {@link CustomViewBinder}s to use for binding specific menu items or null if
-     *         there are no custom binders for this delegate.
+     * Registers additional view binders and sizing providers for sub-class specific menu item
+     * types.
+     *
+     * @param modelListAdapter The adapter that additional view binders should be registered to.
+     * @param customSizingSuppliers The list of sizing providers that allow specific custom item
+     *     types to specify their default height if it differs from the standard menu item height.
      */
-    @Nullable
-    List<CustomViewBinder> getCustomViewBinders();
+    default void registerCustomViewBinders(
+            ModelListAdapter modelListAdapter,
+            SparseArray<Function<Context, Integer>> customSizingSuppliers) {}
 
     /**
      * Gets the menu items for app menu.
-     * @param customItemViewTypeProvider Interface for obtaining custom item view type from menu
-     *         item id. The view type returned from this interface will be unique across all custom
-     *         binders and should be used to to create the ListItem's that populate the ModelList
-     *         returned by #getMenuItems.
+     *
      * @param handler The {@link AppMenuHandler} associated with {@code menu}.
      * @return The {@link ModelList} which contains the menu items for app menu.
      */
-    ModelList getMenuItems(
-            CustomItemViewTypeProvider customItemViewTypeProvider, AppMenuHandler handler);
+    ModelList getMenuItems(AppMenuHandler handler);
 
     /**
      * Allows the delegate to show and hide items before the App Menu is shown. It is called every
      * time the menu is shown. This assumes that the provided menu contains all the items expected
      * in the application menu (i.e. that the main menu has been inflated into it).
+     *
      * @param menu Menu that will be used as the source for the App Menu pop up.
      * @param handler The {@link AppMenuHandler} associated with {@code menu}.
      */

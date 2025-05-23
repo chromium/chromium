@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -47,9 +48,8 @@ import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Object responsible for handling the creation, showing, hiding of the AppMenu and notifying the
@@ -240,16 +240,7 @@ class AppMenuHandlerImpl
 
         assert !(isByPermanentButton && startDragging);
 
-        List<CustomViewBinder> customViewBinders = mDelegate.getCustomViewBinders();
-        Map<CustomViewBinder, Integer> customViewTypeOffsetMap =
-                populateCustomViewBinderOffsetMap(customViewBinders, AppMenuItemType.NUM_ENTRIES);
-        mModelList =
-                mDelegate.getMenuItems(
-                        (id) -> {
-                            return getCustomItemViewType(
-                                    id, customViewBinders, customViewTypeOffsetMap);
-                        },
-                        this);
+        mModelList = mDelegate.getMenuItems(this);
         mModelList.addObserver(mListObserver);
         ContextThemeWrapper wrapper =
                 new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
@@ -266,11 +257,9 @@ class AppMenuHandlerImpl
         setupModelForHighlightAndClick(mModelList, mHighlightMenuId, mAppMenu);
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         mAppMenu.updateMenu(mModelList, adapter);
-        registerViewBinders(
-                customViewBinders,
-                customViewTypeOffsetMap,
-                adapter,
-                mDelegate.shouldShowIconBeforeItem());
+
+        SparseArray<Function<Context, Integer>> customSizingProviders = new SparseArray<>();
+        registerViewBinders(adapter, customSizingProviders, mDelegate.shouldShowIconBeforeItem());
 
         Point pt = new Point();
         display.getSize(pt);
@@ -292,7 +281,7 @@ class AppMenuHandlerImpl
                                     finalIsByPermanentButton,
                                     rotation,
                                     mAppRect.get(),
-                                    customViewBinders,
+                                    customSizingProviders,
                                     startDragging);
                             // https://github.com/uber/NullAway/issues/1190
                             assumeNonNull(mKeyboardVisibilityListener);
@@ -309,7 +298,7 @@ class AppMenuHandlerImpl
                     isByPermanentButton,
                     rotation,
                     mAppRect.get(),
-                    customViewBinders,
+                    customSizingProviders,
                     startDragging);
         }
         return true;
@@ -485,29 +474,21 @@ class AppMenuHandlerImpl
                 AppMenuItemType.BUTTON_ROW,
                 new LayoutViewBuilder(R.layout.icon_row_menu_item),
                 AppMenuItemViewBinder::bindIconRowItem);
+        adapter.registerType(
+                AppMenuItemType.DIVIDER,
+                new LayoutViewBuilder(R.layout.divider_line_menu_item),
+                DividerLineMenuItemViewBinder::bind);
     }
 
     private void registerViewBinders(
-            @Nullable List<CustomViewBinder> customViewBinders,
-            Map<CustomViewBinder, Integer> customViewTypeOffsetMap,
             ModelListAdapter adapter,
+            SparseArray<Function<Context, Integer>> customSizingProviders,
             boolean iconBeforeItem) {
         registerDefaultViewBinders(adapter, iconBeforeItem);
+        customSizingProviders.append(
+                AppMenuItemType.DIVIDER, DividerLineMenuItemViewBinder::getPixelHeight);
 
-        if (customViewBinders == null) return;
-        for (int i = 0; i < customViewBinders.size(); i++) {
-            CustomViewBinder binder = customViewBinders.get(i);
-            if (customViewTypeOffsetMap.get(binder) == null) {
-                continue;
-            }
-
-            for (int j = 0; j < binder.getViewTypeCount(); j++) {
-                adapter.registerType(
-                        customViewTypeOffsetMap.get(binder) + j,
-                        new LayoutViewBuilder(binder.getLayoutId(j)),
-                        binder);
-            }
-        }
+        mDelegate.registerCustomViewBinders(adapter, customSizingProviders);
     }
 
     void setupModelForHighlightAndClick(
@@ -561,39 +542,9 @@ class AppMenuHandlerImpl
         }
     }
 
-    private Map<CustomViewBinder, Integer> populateCustomViewBinderOffsetMap(
-            @Nullable List<CustomViewBinder> customViewBinders, int startingOffset) {
-        Map<CustomViewBinder, Integer> customViewTypeOffsetMap = new HashMap<>();
-        if (customViewBinders == null) return customViewTypeOffsetMap;
-
-        int currentOffset = startingOffset;
-        for (int i = 0; i < customViewBinders.size(); i++) {
-            CustomViewBinder binder = customViewBinders.get(i);
-            customViewTypeOffsetMap.put(binder, currentOffset);
-            currentOffset += binder.getViewTypeCount();
-        }
-        return customViewTypeOffsetMap;
-    }
-
-    private int getCustomItemViewType(
-            int id,
-            @Nullable List<CustomViewBinder> customViewBinders,
-            Map<CustomViewBinder, Integer> customViewTypeOffsetMap) {
-        if (customViewBinders == null || customViewTypeOffsetMap == null) {
-            return CustomViewBinder.NOT_HANDLED;
-        }
-
-        for (int i = 0; i < customViewBinders.size(); i++) {
-            CustomViewBinder binder = customViewBinders.get(i);
-            int binderViewType = binder.getItemViewType(id);
-            if (binderViewType != CustomViewBinder.NOT_HANDLED) {
-                return binderViewType + assumeNonNull(customViewTypeOffsetMap.get(binder));
-            }
-        }
-        return CustomViewBinder.NOT_HANDLED;
-    }
-
-    /** @param reporter A means of reporting an exception without crashing. */
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         AppMenu.setExceptionReporter(reporter);
     }
@@ -613,7 +564,7 @@ class AppMenuHandlerImpl
             boolean isByPermanentButton,
             Integer rotation,
             Rect appRect,
-            @Nullable List<CustomViewBinder> customViewBinders,
+            SparseArray<Function<Context, Integer>> customSizingProviders,
             boolean startDragging) {
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
@@ -642,7 +593,7 @@ class AppMenuHandlerImpl
                 headerResourceId,
                 mDelegate.getGroupDividerId(),
                 mHighlightMenuId,
-                customViewBinders,
+                customSizingProviders,
                 mDelegate.isMenuIconAtStart(),
                 mBrowserControlsStateProvider.getControlsPosition(),
                 addTopPaddingBeforeFirstRow());

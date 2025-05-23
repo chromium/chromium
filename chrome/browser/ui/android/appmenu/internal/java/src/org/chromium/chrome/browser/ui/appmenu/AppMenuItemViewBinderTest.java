@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.appmenu;
 import static org.junit.Assert.assertThrows;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -43,9 +42,7 @@ import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
@@ -74,103 +71,6 @@ public class AppMenuItemViewBinderTest {
             onLongClickCallback.notifyCalled();
             lastLongClickedModel = model;
             return true;
-        }
-    }
-
-    private static class CustomViewBinderOne implements CustomViewBinder {
-        public static final int VIEW_TYPE_1 = 0;
-        public static final int VIEW_TYPE_2 = 1;
-        public static final int VIEW_TYPE_COUNT = 2;
-
-        public final int supportedId1;
-        public final int supportedId2;
-        public final int supportedId3;
-
-        public int lastBindId;
-
-        public final CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
-
-        public CustomViewBinderOne() {
-            supportedId1 = View.generateViewId();
-            supportedId2 = View.generateViewId();
-            supportedId3 = View.generateViewId();
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_TYPE_COUNT;
-        }
-
-        @Override
-        public int getItemViewType(int id) {
-            if (id == supportedId1 || id == supportedId2) {
-                return VIEW_TYPE_1;
-            } else if (id == supportedId3) {
-                return VIEW_TYPE_2;
-            } else {
-                return NOT_HANDLED;
-            }
-        }
-
-        @Override
-        public int getLayoutId(int viewType) {
-            return CustomViewBinder.NOT_HANDLED;
-        }
-
-        @Override
-        public void bind(PropertyModel model, View view, PropertyKey key) {
-            if (key == AppMenuItemProperties.MENU_ITEM_ID) {
-                lastBindId = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-                getViewItemCallbackHelper.notifyCalled();
-            }
-        }
-
-        @Override
-        public int getPixelHeight(Context context) {
-            return 0;
-        }
-    }
-
-    private static class CustomViewBinderTwo implements CustomViewBinder {
-        public static final int VIEW_TYPE_1 = 0;
-        public static final int VIEW_TYPE_COUNT = 1;
-
-        public final int supportedId1;
-
-        public int lastBindId;
-
-        public final CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
-
-        public CustomViewBinderTwo() {
-            supportedId1 = View.generateViewId();
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_TYPE_COUNT;
-        }
-
-        @Override
-        public int getItemViewType(int id) {
-            return id == supportedId1 ? VIEW_TYPE_1 : NOT_HANDLED;
-        }
-
-        @Override
-        public int getLayoutId(int viewType) {
-            return CustomViewBinder.NOT_HANDLED;
-        }
-
-        @Override
-        public void bind(PropertyModel model, View view, PropertyKey key) {
-            if (key == AppMenuItemProperties.MENU_ITEM_ID) {
-                lastBindId = model.get(AppMenuItemProperties.MENU_ITEM_ID);
-                getViewItemCallbackHelper.notifyCalled();
-            }
-        }
-
-        @Override
-        public int getPixelHeight(Context context) {
-            return 0;
         }
     }
 
@@ -313,19 +213,6 @@ public class AppMenuItemViewBinderTest {
                         .with(AppMenuItemProperties.ICON, icon)
                         .build();
         list.add(new ModelListAdapter.ListItem(0, model));
-    }
-
-    private PropertyModel createCustomMenuItem(
-            int menuId, int offset, CustomViewBinder customBinder) {
-        PropertyModel model =
-                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                        .build();
-        mMenuList.add(
-                new ModelListAdapter.ListItem(
-                        offset + customBinder.getItemViewType(menuId), model));
-
-        return model;
     }
 
     @Test
@@ -726,67 +613,6 @@ public class AppMenuItemViewBinderTest {
 
         View view3 = mModelListAdapter.getView(0, view2, parentView);
         Assert.assertNotEquals("Title button view should not have been re-used", view2, view3);
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void testCustomViewBinders() {
-        CustomViewBinderOne customBinder1 = new CustomViewBinderOne();
-        CustomViewBinderTwo customBinder2 = new CustomViewBinderTwo();
-        mModelListAdapter.registerType(
-                AppMenuItemType.NUM_ENTRIES,
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                customBinder1);
-        mModelListAdapter.registerType(
-                AppMenuItemType.NUM_ENTRIES + 1,
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                customBinder1);
-        mModelListAdapter.registerType(
-                AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(),
-                new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                customBinder2);
-
-        createStandardMenuItem(MENU_ID1, TITLE_1);
-        createCustomMenuItem(
-                customBinder1.supportedId1, AppMenuItemType.NUM_ENTRIES, customBinder1);
-        createCustomMenuItem(
-                customBinder1.supportedId2, AppMenuItemType.NUM_ENTRIES, customBinder1);
-        createCustomMenuItem(
-                customBinder1.supportedId3, AppMenuItemType.NUM_ENTRIES, customBinder1);
-        createCustomMenuItem(
-                customBinder2.supportedId1,
-                AppMenuItemType.NUM_ENTRIES + customBinder1.getViewTypeCount(),
-                customBinder2);
-
-        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
-        View view = mModelListAdapter.getView(0, null, parentView);
-        TextView titleView = view.findViewById(R.id.menu_item_text);
-        Assert.assertEquals("Incorrect title text for item 1", TITLE_1, titleView.getText());
-
-        view = mModelListAdapter.getView(1, null, parentView);
-        Assert.assertEquals(
-                "Binder1 not called", 1, customBinder1.getViewItemCallbackHelper.getCallCount());
-        Assert.assertEquals(
-                "Wrong ID is called", customBinder1.lastBindId, customBinder1.supportedId1);
-
-        view = mModelListAdapter.getView(2, null, parentView);
-        Assert.assertEquals(
-                "Binder1 not called", 2, customBinder1.getViewItemCallbackHelper.getCallCount());
-        Assert.assertEquals(
-                "Wrong ID is called", customBinder1.lastBindId, customBinder1.supportedId2);
-
-        view = mModelListAdapter.getView(3, null, parentView);
-        Assert.assertEquals(
-                "Binder1 not called", 3, customBinder1.getViewItemCallbackHelper.getCallCount());
-        Assert.assertEquals(
-                "Wrong ID is called", customBinder1.lastBindId, customBinder1.supportedId3);
-
-        view = mModelListAdapter.getView(4, null, parentView);
-        Assert.assertEquals(
-                "Binder2 not called", 1, customBinder2.getViewItemCallbackHelper.getCallCount());
-        Assert.assertEquals(
-                "Wrong ID is called", customBinder2.lastBindId, customBinder2.supportedId1);
     }
 
     @Test

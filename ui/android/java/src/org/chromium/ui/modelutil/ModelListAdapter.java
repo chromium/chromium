@@ -101,7 +101,11 @@ public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return mModelList.get(position).type;
+        int viewType = mModelList.get(position).type;
+        // TODO: Enable this assert once all incorrect usages have been fixed.
+        // assert viewType >= 0 && viewType < getViewTypeCount()
+        //        : "View types must be contiguous and within the range of 0 to type count - 1";
+        return viewType;
     }
 
     @Override
