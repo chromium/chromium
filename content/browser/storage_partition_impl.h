@@ -407,6 +407,10 @@ class CONTENT_EXPORT StoragePartitionImpl
     return shared_storage_header_observer_.get();
   }
 
+#if BUILDFLAG(IS_MAC)
+  bool IsStorageServiceRemoteValid() const;
+#endif  // BUILDFLAG(IS_MAC)
+
   // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
 

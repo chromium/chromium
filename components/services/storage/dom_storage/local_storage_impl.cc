@@ -603,6 +603,8 @@ void LocalStorageImpl::ForceFakeOpenStorageAreaForTesting(
 
 LocalStorageImpl::~LocalStorageImpl() {
   DCHECK_EQ(connection_state_, CONNECTION_SHUTDOWN);
+  // ShutDown() should run before this destructor and clear `areas_`.
+  CHECK(areas_.empty());
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }

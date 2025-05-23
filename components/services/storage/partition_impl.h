@@ -48,6 +48,11 @@ class PartitionImpl : public mojom::Partition {
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindLocalStorageControl(
       mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
+#if BUILDFLAG(IS_MAC)
+  void BindLocalStorageControlAndReportLifecycle(
+      mojom::LocalStorageLifecycle lifecycle,
+      mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   void OnDisconnect();

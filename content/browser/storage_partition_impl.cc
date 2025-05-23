@@ -2461,6 +2461,12 @@ void StoragePartitionImpl::OnAdAuctionEventRecordHeaderReceived(
       top_frame_origin, std::move(event_record));
 }
 
+#if BUILDFLAG(IS_MAC)
+bool StoragePartitionImpl::IsStorageServiceRemoteValid() const {
+  return GetStorageServiceRemoteStorage().is_bound();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void StoragePartitionImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

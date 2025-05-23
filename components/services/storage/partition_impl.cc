@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -89,6 +90,18 @@ void PartitionImpl::BindLocalStorageControl(
       path_.value_or(base::FilePath()),
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
 }
+
+#if BUILDFLAG(IS_MAC)
+void PartitionImpl::BindLocalStorageControlAndReportLifecycle(
+    mojom::LocalStorageLifecycle lifecycle,
+    mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
+  SCOPED_CRASH_KEY_NUMBER("396030877", "local_storage_lifecycle",
+                          static_cast<int>(lifecycle));
+  local_storage_ = std::make_unique<LocalStorageImpl>(
+      path_.value_or(base::FilePath()),
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 void PartitionImpl::OnDisconnect() {
   if (receivers_.empty()) {
