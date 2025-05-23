@@ -10,7 +10,11 @@ static_library("spotlight") {
   sources = [
     "spotlight_crd_manager_impl.cc",
     "spotlight_crd_manager_impl.h",
+    "spotlight_oauth_token_fetcher_impl.cc",
+    "spotlight_oauth_token_fetcher_impl.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
@@ -19,6 +23,7 @@ static_library("spotlight") {
     "//chrome/browser/ash/policy/remote_commands/crd/public",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chromeos/ash/components/boca:spotlight",
+    "//chromeos/ash/components/boca:spotlight_lib",
   ]
 }
 
@@ -35,6 +40,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",

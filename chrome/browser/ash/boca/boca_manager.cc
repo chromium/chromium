@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/boca/boca_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
@@ -15,6 +17,8 @@
 #include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/boca/spotlight/spotlight_crd_manager_impl.h"
+#include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +32,7 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/fake_spotlight_oauth_token_fetcher.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -102,6 +107,10 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
   return babel_orca_manager;
 }
 
+DeviceOAuth2TokenService& GetOAuthServiceForSpotlight() {
+  return CHECK_DEREF(DeviceOAuth2TokenServiceFactory::Get());
+}
+
 }  // namespace
 
 BocaManager::BocaManager(
@@ -119,6 +128,8 @@ BocaManager::BocaManager(
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
       spotlight_session_manager_(std::move(spotlight_session_manager)) {
+  spotlight_token_fetcher_ =
+      std::make_unique<boca::FakeSpotlightOAuthTokenFetcher>(std::nullopt, "");
   AddObservers(nullptr);
 }
 
@@ -156,6 +167,11 @@ BocaManager::BocaManager(Profile* profile,
 
   spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
       std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
+  if (ash::features::IsBocaSpotlightRobotRequesterEnabled() && !is_consumer) {
+    spotlight_token_fetcher_ =
+        std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
+            GetOAuthServiceForSpotlight());
+  }
 
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
@@ -193,6 +209,11 @@ void BocaManager::AddObservers(const user_manager::User* user) {
   }
   boca_session_manager_->AddObserver(boca_metrics_manager_.get());
   boca_session_manager_->AddObserver(spotlight_session_manager_.get());
+  if (ash::features::IsBocaSpotlightRobotRequesterEnabled() &&
+      ash::boca_util::IsProducer(user)) {
+    boca_session_manager_->set_spotlight_token_fetcher(
+        spotlight_token_fetcher_.get());
+  }
 }
 
 }  // namespace ash

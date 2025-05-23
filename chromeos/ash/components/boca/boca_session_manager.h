@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,8 @@
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_oauth_token_fetcher.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -39,6 +42,10 @@ class CaptionsConfig;
 
 namespace google_apis {
 enum ApiErrorCode;
+}
+
+namespace remoting {
+class RemotingClient;
 }
 
 namespace session_manager {
@@ -107,6 +114,8 @@ class BocaSessionManager
   BocaSessionManager(const BocaSessionManager&) = delete;
   BocaSessionManager& operator=(const BocaSessionManager&) = delete;
   ~BocaSessionManager() override;
+
+  void Reset();
 
   // Interface for observing events.
   class Observer : public base::CheckedObserver {
@@ -220,6 +229,18 @@ class BocaSessionManager
     soda_installer_ = soda_installer;
   }
   SodaStatus GetSodaStatus();
+
+  void set_spotlight_token_fetcher(
+      SpotlightOAuthTokenFetcher* spotlight_token_fetcher) {
+    spotlight_token_fetcher_ = spotlight_token_fetcher;
+  }
+  bool HasSpotlightTokenFetcher() { return spotlight_token_fetcher_; }
+  void StartCrdClientForTeacher(
+      base::OnceClosure done_callback,
+      SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+      std::string connection_code);
+  void EndSpotlightSession();
+
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
@@ -272,6 +293,12 @@ class BocaSessionManager
 
   void CloseAllCaptions();
 
+  void StartCrdSessionForTeacherInternal(
+      std::string connection_code,
+      std::optional<std::string> oauth_token);
+  void FetchSpotlightOAuthToken(
+      SpotlightOAuthTokenFetcher::OAuthTokenCallback callback);
+
   const bool is_producer_;
   base::OnceClosure end_session_callback_for_testing_;
   base::TimeDelta in_session_polling_interval_;
@@ -301,6 +328,8 @@ class BocaSessionManager
 
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
+  std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;
+  std::unique_ptr<remoting::RemotingClient> remoting_client_;
   bool is_network_connected_ = false;
   bool disabled_on_non_managed_network_ = false;
   // Remote for sending requests to the CrosNetworkConfig service.
@@ -315,6 +344,7 @@ class BocaSessionManager
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<babelorca::SodaInstaller> soda_installer_;
+  raw_ptr<SpotlightOAuthTokenFetcher> spotlight_token_fetcher_;
   bool is_local_caption_enabled_ = false;
   SessionCaptionInitializer session_caption_initializer_;
   net::BackoffEntry student_heartbeat_retry_backoff_;

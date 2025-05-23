@@ -28,6 +28,7 @@ static_library("boca") {
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//base",
+    "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
@@ -41,6 +42,8 @@ static_library("boca") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//remoting/client/common",
+    "//remoting/protocol",
     "//ui/base",
     "//ui/message_center",
   ]
@@ -106,6 +109,22 @@ static_library("spotlight") {
   ]
 }
 
+static_library("spotlight_lib") {
+  sources = [
+    "spotlight/fake_spotlight_oauth_token_fetcher.cc",
+    "spotlight/fake_spotlight_oauth_token_fetcher.h",
+    "spotlight/spotlight_frame_consumer.cc",
+    "spotlight/spotlight_frame_consumer.h",
+    "spotlight/spotlight_oauth_token_fetcher.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/client/common",
+    "//remoting/protocol",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -134,6 +153,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//chromeos/ash/components/boca/babelorca:soda_test_support",
     "//chromeos/ash/components/boca/proto",
