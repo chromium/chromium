@@ -12,14 +12,11 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_urls.h"
-#include "ui/base/interaction/polling_state_observer.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kZeroStatePromoWebUiIphId);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
-                                    kTabCountState);
 }  // namespace
 
 class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
@@ -41,14 +38,6 @@ class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
     auto auto_reset = ExtensionsToolbarContainerViewController::
         BlockZeroStatePromoForTesting();
     InProcessBrowserTest::PreRunTestOnMainThread();
-  }
-
-  auto WaitForTabCount(int expected_count) {
-    return Steps(
-        PollState(kTabCountState,
-                  [this]() { return browser()->tab_strip_model()->count(); }),
-        WaitForState(kTabCountState, expected_count),
-        StopObservingState(kTabCountState));
   }
 
   auto CheckZeroStatePromoClosedReason(
@@ -94,8 +83,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
       InAnyContext(WaitForPromo(
           feature_engagement::kIPHExtensionsZeroStatePromoFeature)),
-      PressDefaultPromoButton(), WaitForTabCount(2),
-      InstrumentTab(kSecondTabContents, 1),
+      InstrumentNextTab(kSecondTabContents), PressDefaultPromoButton(),
       WaitForWebContentsReady(kSecondTabContents,
                               extension_urls::GetWebstoreLaunchURL()));
 }
@@ -136,13 +124,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 0),
+      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kCouponButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabCount(2), InstrumentTab(kSecondTabContents, 1),
-      WaitForWebContentsReady(kSecondTabContents,
-                              GURL("https://chromewebstore.google.com/category/"
-                                   "extensions/lifestyle/shopping")),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
@@ -164,13 +152,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 0),
+      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kWritingButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabCount(2), InstrumentTab(kSecondTabContents, 1),
-      WaitForWebContentsReady(kSecondTabContents,
-                              GURL("https://chromewebstore.google.com/"
-                                   "collection/writing_essentials")),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
@@ -192,13 +180,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 0),
+      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kProductivityButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabCount(2), InstrumentTab(kSecondTabContents, 1),
-      WaitForWebContentsReady(kSecondTabContents,
-                              GURL("https://chromewebstore.google.com/category/"
-                                   "extensions/productivity/workflow")),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
@@ -220,13 +208,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 0),
+      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kAiButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForTabCount(2), InstrumentTab(kSecondTabContents, 1),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL("https://chromewebstore.google.com/collection/ai_productivity")),
+      WaitForWebContentsReady(kSecondTabContents,
+                              GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
@@ -244,6 +231,192 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           kZeroStatePromoWebUiIphId,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       ClickElement(kZeroStatePromoWebUiIphId, kDismissButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      CheckResult(
+          [this] { return browser()->tab_strip_model()->GetTabCount(); }, 1,
+          "CheckTabCount"),
+      CheckZeroStatePromoClosedReason(
+          user_education::FeaturePromoClosedReason::kDismiss));
+}
+
+class ExtensionsZeroStateCustomUiPlainLinkIphTest
+    : public ExtensionsZeroStatePromoTestBase {
+ public:
+  ExtensionsZeroStateCustomUiPlainLinkIphTest()
+      : ExtensionsZeroStatePromoTestBase(
+            feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                kCustomUIPlainLinkIph) {}
+
+  const DeepQuery kDismissButton{"extensions-zero-state-promo-app",
+                                 "#dismissButton"};
+  const DeepQuery kCouponLink{"extensions-zero-state-promo-app",
+                              "#couponsLink"};
+  const DeepQuery kWritingLink{"extensions-zero-state-promo-app",
+                               "#writingLink"};
+  const DeepQuery kProductivityLink{"extensions-zero-state-promo-app",
+                                    "#productivityLink"};
+  const DeepQuery kAiLink{"extensions-zero-state-promo-app", "#aiLink"};
+  const DeepQuery kCloseButton{"extensions-zero-state-promo-app",
+                               "#closeButton"};
+  const DeepQuery kDiscoverExtensionsButton{"extensions-zero-state-promo-app",
+                                            "#customActionButton"};
+  const DeepQuery kGotItButton{"extensions-zero-state-promo-app",
+                               "#closeButton"};
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickCouponLinkOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 0),
+      InstrumentNextTab(kSecondTabContents),
+      ClickElement(kZeroStatePromoWebUiIphId, kCouponLink,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickWritingLinkOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 0),
+      InstrumentNextTab(kSecondTabContents),
+      ClickElement(kZeroStatePromoWebUiIphId, kWritingLink,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickProductivityLinkOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 0),
+      InstrumentNextTab(kSecondTabContents),
+      ClickElement(kZeroStatePromoWebUiIphId, kProductivityLink,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickAiLinkOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kAi, 0),
+      InstrumentNextTab(kSecondTabContents),
+      ClickElement(kZeroStatePromoWebUiIphId, kAiLink,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(kSecondTabContents,
+                              GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickDiscoverExtensionsButtonOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 0),
+      InstrumentNextTab(kSecondTabContents),
+      ClickElement(kZeroStatePromoWebUiIphId, kDiscoverExtensionsButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kSecondTabContents,
+          GURL(zero_state_promo::mojom::kDiscoverExtensionWebStoreUrl)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       DismissPromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      ClickElement(kZeroStatePromoWebUiIphId, kDismissButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      CheckResult(
+          [this] { return browser()->tab_strip_model()->GetTabCount(); }, 1,
+          "CheckTabCount"),
+      CheckZeroStatePromoClosedReason(
+          user_education::FeaturePromoClosedReason::kDismiss));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
+                       ClickGotItButton) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      ClickElement(kZeroStatePromoWebUiIphId, kGotItButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
       CheckResult(

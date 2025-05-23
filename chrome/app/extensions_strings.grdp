@@ -724,6 +724,9 @@
   <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons for Chrome that can help you do more
   </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
+    Extensions are add-ons to Chrome that can help you
+  </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LABEL" desc="Label for the button that opens the Chrome Web Store shopping category page.">
     Find coupons
   </message>
@@ -738,6 +741,21 @@
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TITLE" desc="Title attribute for the button that dismisses the extensions zero state in-product-help promo.">
     Close
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LINK" desc="Link text for the button that opens the Chrome Web Store shopping category page.">
+    Find coupons
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WRITING_HELP_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store writing help collection page.">
+    Write better
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LINK" desc="Link text for the button that opens the Chrome Web Store producitivty category page.">
+    Boost productivity
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store ai productivity collection page.">
+    Enhance with AI
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT" desc="Text on the button that dismisses the extensions zero state promo IPH.">
+    Got it
   </message>
 </if>
 </grit-part>

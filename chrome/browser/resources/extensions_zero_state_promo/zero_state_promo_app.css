@@ -8,19 +8,21 @@
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
- * #include=cr-hidden-style-lit cr-shared-style-lit cr-icons-lit
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #include=cr-hidden-style-lit cr-shared-style-lit cr-icons-lit action-link-lit
  * #css_wrapper_metadata_end */
 
 :host {
   --zero-state-promo-background-color: var(--color-button-foreground);
   --zero-state-promo-foreground-color: var(--color-button-background);
+  --container-gap: 8px;
   --top-container-padding: 20px;
 
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
+  gap: var(--container-gap);
   padding: 20px;
   width: 300px;
   background-color: var(--zero-state-promo-background-color);
@@ -56,12 +58,41 @@
   padding-bottom: 4px;
 }
 
-#labelContainer {
+#labelContainer, #buttonContainer {
   display: flex;
   flex-direction: row;
+  gap: var(--container-gap);
+}
+
+#labelContainer {
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 0px;
+  padding: 0;
   --color-chip-foreground: var(--zero-state-promo-foreground-color);
   --color-chip-icon: var(--color-sys-inverse-primary);
+}
+
+#anchorContainer {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  padding-top: 4px;
+  width: calc(100% - var(--top-container-padding) * 2);
+}
+
+#anchorContainer a {
+  --cr-link-color: var(--zero-state-promo-foreground-color);
+}
+
+#buttonContainer {
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+#closeButton {
+  --cr-button-text-color: var(--zero-state-promo-foreground-color);
+}
+
+#customActionButton {
+  --cr-button-background-color: var(--zero-state-promo-foreground-color);
+  --cr-button-text-color: var(--zero-state-promo-background-color);
 }
