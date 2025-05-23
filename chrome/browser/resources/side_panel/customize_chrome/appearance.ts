@@ -22,8 +22,8 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './appearance.css.js';
 import {getHtml} from './appearance.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
-import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {NewTabPageType} from './customize_chrome.mojom-webui.js';
+import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface AppearanceElement {
@@ -77,6 +77,7 @@ export class AppearanceElement extends AppearanceElementBase {
       showThemeSnapshot_: {type: Boolean},
       showUploadedImageButton_: {type: Boolean},
       showSearchedImageButton_: {type: Boolean},
+      showManagedButton_: {type: Boolean},
       showManagedDialog_: {type: Boolean},
       showEditTheme_: {type: Boolean},
       newTabPageType_: {type: NewTabPageType},
@@ -87,6 +88,7 @@ export class AppearanceElement extends AppearanceElementBase {
       },
 
       wallpaperSearchEnabled_: {type: Boolean},
+      footerEnabled_: {type: Boolean},
     };
   }
 
@@ -101,11 +103,14 @@ export class AppearanceElement extends AppearanceElementBase {
   protected accessor showThemeSnapshot_: boolean = false;
   protected accessor showUploadedImageButton_: boolean = false;
   protected accessor showSearchedImageButton_: boolean = false;
+  protected accessor showManagedButton_: boolean = false;
   protected accessor showManagedDialog_: boolean = false;
   protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
   private accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
+  private accessor footerEnabled_: boolean =
+      loadTimeData.getBoolean('footerEnabled');
   protected accessor newTabPageType_: NewTabPageType =
       NewTabPageType.kFirstPartyWebUI;
   protected accessor showEditTheme_: boolean = true;
@@ -189,6 +194,7 @@ export class AppearanceElement extends AppearanceElementBase {
       this.showThemeSnapshot_ = this.computeShowThemeSnapshot_();
       this.showUploadedImageButton_ = this.computeShowUploadedImageButton_();
       this.showSearchedImageButton_ = this.computeShowSearchedImageButton_();
+      this.showManagedButton_ = this.computeShowManagedButton_();
     }
 
     this.showBottomDivider_ = this.computeShowBottomDivider_();
@@ -241,6 +247,12 @@ export class AppearanceElement extends AppearanceElementBase {
   }
 
   private computeShowClassicChromeButton_(): boolean {
+    if (this.footerEnabled_) {
+      return !!(
+          this.theme_ && this.theme_.backgroundImage &&
+          (this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI ||
+           this.newTabPageType_ === NewTabPageType.kThirdPartyWebUI));
+    }
     return !!(
         this.theme_ &&
         (this.theme_.backgroundImage || this.theme_.thirdPartyThemeInfo));
@@ -261,7 +273,7 @@ export class AppearanceElement extends AppearanceElementBase {
            this.theme_.backgroundImage.isUploadedImage)) &&
         // TODO(crbug.com/404247286) Enable snapshots for extension NTP with 1P
         // theme.
-        this.isSourceTabFirstPartyNtp_();
+        this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI;
   }
 
   private computeShowUploadedImageButton_(): boolean {
@@ -277,8 +289,9 @@ export class AppearanceElement extends AppearanceElementBase {
         this.theme_.backgroundImage.localBackgroundId);
   }
 
-  protected isSourceTabFirstPartyNtp_(): boolean {
-    return this.newTabPageType_ === NewTabPageType.kFirstPartyWebUI;
+  private computeShowManagedButton_(): boolean {
+    return this.newTabPageType_ !== NewTabPageType.kFirstPartyWebUI &&
+        !!this.ntpManagedByName_;
   }
 
   protected onEditThemeClicked_() {

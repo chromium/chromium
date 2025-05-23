@@ -19,6 +19,16 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
 
+const newTabPageTypes = [
+  NewTabPageType.kFirstPartyWebUI,
+  NewTabPageType.kThirdPartyWebUI,
+  NewTabPageType.kThirdPartyRemote,
+  NewTabPageType.kExtension,
+  NewTabPageType.kIncognito,
+  NewTabPageType.kGuestMode,
+  NewTabPageType.kNone,
+];
+
 suite('AppearanceTest', () => {
   let appearanceElement: AppearanceElement;
   let callbackRouterRemote: CustomizeChromePageRemote;
@@ -619,6 +629,31 @@ suite('AppearanceTest', () => {
     });
   });
 
+  suite('NtpFooterEnabled', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        footerEnabled: true,
+      });
+    });
+
+    newTabPageTypes.forEach((t) => {
+      test(`classic chrome button NTP type ${t}`, async () => {
+        // Arrange.
+        const theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+        callbackRouterRemote.setTheme(theme);
+        callbackRouterRemote.attachedTabStateUpdated(t);
+        await microtasksFinished();
+
+        // Assert.
+        assertEquals(
+            t === NewTabPageType.kFirstPartyWebUI ||
+                t === NewTabPageType.kThirdPartyWebUI,
+            !appearanceElement.$.setClassicChromeButton.hidden);
+      });
+    });
+  });
+
   test('source tab type should update the content', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
       '#editButtonsContainer',
@@ -632,19 +667,8 @@ suite('AppearanceTest', () => {
       '#chromeColors',
       '#followThemeToggle',
       '#followThemeToggleControl',
-      '#setClassicChromeButton',
       '#editThemeButton',
       '#editThemeIcon',
-    ];
-
-    const newTabPageTypes = [
-      NewTabPageType.kFirstPartyWebUI,
-      NewTabPageType.kThirdPartyWebUI,
-      NewTabPageType.kThirdPartyRemote,
-      NewTabPageType.kExtension,
-      NewTabPageType.kIncognito,
-      NewTabPageType.kGuestMode,
-      NewTabPageType.kNone,
     ];
 
     const checkIdsVisibility = (sourceTabType: NewTabPageType) => {

@@ -32,7 +32,7 @@ export function getHtml(this: AppearanceElement) {
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
-${(!this.isSourceTabFirstPartyNtp_() && !!this.ntpManagedByName_) ? html`
+${this.showManagedButton_ ? html`
   <customize-chrome-hover-button id="thirdPartyManageLinkButton"
       aria-button-label="${this.i18n('newTabPageManagedByA11yLabel',
                            this.ntpManagedByName_)}"
