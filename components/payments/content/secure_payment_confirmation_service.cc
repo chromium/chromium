@@ -12,6 +12,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/secure_payment_confirmation_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -151,7 +152,8 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
             key_store, web_data_service_);
       }
     }
-    if (passkey_browser_binder_) {
+    if (passkey_browser_binder_ &&
+        !render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
       // TODO(crbug.com/384940850): Regenerate the browser bound key identifier
       // if a browser bound key with the same identifier already exists.
       // TODO(crbug.com/377278827): Provide the browser bound public key
