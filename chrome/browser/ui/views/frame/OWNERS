@@ -1,5 +1,3 @@
-bsep@chromium.org
-
 per-file *_ash*=jamescook@chromium.org
 per-file *_chromeos*=jamescook@chromium.org
 per-file *x11*=file://ui/ozone/platform/x11/OWNERS
