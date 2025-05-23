@@ -614,42 +614,6 @@ class SSLUITestBase : public InProcessBrowserTest,
     return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
   }
 
-  // Sets the policy identified by |policy_name| to be true, ensuring
-  // that the corresponding boolean pref |pref_name| is updated to match.
-  void EnablePolicy(PrefService* pref_service,
-                    const char* policy_name,
-                    const char* pref_name) {
-    policy::PolicyMap policy_map;
-    policy_map.Set(policy_name, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                   base::Value(true), nullptr);
-
-    EXPECT_NO_FATAL_FAILURE(UpdateChromePolicy(policy_map));
-
-    EXPECT_TRUE(pref_service->GetBoolean(pref_name));
-    EXPECT_TRUE(pref_service->IsManagedPreference(pref_name));
-
-    // Wait for the updated SSL configuration to be sent to the network service,
-    // to avoid a race.
-    g_browser_process->system_network_context_manager()
-        ->FlushSSLConfigManagerForTesting();
-  }
-
-  // Sets the policy identified by |policy_name| to |policy_value|.
-  void SetPolicy(const char* policy_name, base::Value policy_value) {
-    policy::PolicyMap policy_map;
-    policy_map.Set(policy_name, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                   std::move(policy_value), nullptr);
-
-    EXPECT_NO_FATAL_FAILURE(UpdateChromePolicy(policy_map));
-
-    // Wait for the updated SSL configuration to be sent to the network service,
-    // to avoid a race.
-    g_browser_process->system_network_context_manager()
-        ->FlushSSLConfigManagerForTesting();
-  }
-
   // Helper function for TestInterstitialLinksOpenInNewTab. Implemented as a
   // test fixture method because the whole test fixture class is friended by
   // SSLBlockingPage.
