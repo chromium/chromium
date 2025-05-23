@@ -250,9 +250,12 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
+  // Note that `consent_level` is not actually guaranteed at this stage. In
+  // particular, live tests require closing the sync confirmation dialog before
+  // signin::ConsentLevel::kSync is granted.
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  CHECK(identity_manager->HasPrimaryAccount(consent_level));
-  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
   CHECK(!service()->GetAccountInfo().IsEmpty());
 
   return true;
@@ -351,6 +354,14 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
     return false;
   }
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  // Note that `ConsentLevel::kSync` is not actually guaranteed at this stage.
+  // Namely, live tests require closing the sync confirmation dialog before
+  // `ConsentLevel::kSync` is granted. This is achieved later below with
+  // `ConfirmSyncUI()`.
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
   if (!AwaitEngineInitialization()) {
     return false;
   }
@@ -364,9 +375,16 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
-  if (signin_type_ == SigninType::UI_SIGNIN) {
-    return signin_delegate_->ConfirmSyncUI(profile_);
+  if (signin_type_ == SigninType::UI_SIGNIN &&
+      !signin_delegate_->ConfirmSyncUI(profile_)) {
+    return false;
   }
+
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSync));
+  CHECK(!service()->GetAccountInfo().IsEmpty());
+
   return true;
 }
 

@@ -72,7 +72,14 @@ class SyncServiceImplHarness {
   // the account is not signed in.
   GaiaId GetGaiaIdForDefaultTestAccount() const;
 
-  // Signs in to a primary account without actually enabling sync the feature.
+  // Signs in to a primary account with without actually enabling sync the
+  // feature.
+  // TODO(crbug.com/41496149): Remove parameter `consent_level` because it is
+  // rather misleading: it isn't realistic to complete the sign-in flow with
+  // `signin::ConsentLevel::kSync` without also closing the sync confirmation
+  // dialog or opening settings from it (advanced flow), both of which make
+  // additional state changes in SyncService. This becomes obvious in Live tests
+  // using real Gaia and Sync servers.
   [[nodiscard]] bool SignInPrimaryAccount(
       signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
 

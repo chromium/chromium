@@ -54,8 +54,7 @@ const char kGetPasswordFieldFromDiceSigninPage[] =
 // success or failure notification is fired.
 class SignInObserver : public signin::IdentityManager::Observer {
  public:
-  explicit SignInObserver(signin::ConsentLevel consent_level)
-      : consent_level_(consent_level) {}
+  SignInObserver() = default;
 
   // Returns whether a GoogleSigninSucceeded event has happened.
   bool DidSignIn() { return signed_in_; }
@@ -89,7 +88,10 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    if (event.GetEventTypeFor(consent_level_) !=
+    // Note that `kSignin` is used here regardless of the ConsentLevel passed to
+    // `SignInWithUI()`, because ConsentLevel::kSync requires closing the sync
+    // confirmation dialog.
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
@@ -109,7 +111,6 @@ class SignInObserver : public signin::IdentityManager::Observer {
   }
 
  private:
-  const signin::ConsentLevel consent_level_;
   // Bool to mark an observed event as seen prior to calling Wait(), used to
   // prevent the observer from blocking.
   bool seen_ = false;
@@ -446,7 +447,7 @@ bool SignInWithUI(Browser* browser,
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
-  SignInObserver signin_observer(consent_level);
+  SignInObserver signin_observer;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_signin_observation(&signin_observer);
@@ -474,6 +475,10 @@ bool SignInWithUI(Browser* browser,
   DCHECK(active_contents);
   content::TestNavigationObserver observer(
       active_contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
+  // Note that SignInObserver always uses `ConsentLevel::kSignin` regardless of
+  // the consent level passed to this function. This is because granting
+  // `ConsentLevel::kSync` requires closing the sync confirmation dialog, e.g.
+  // by invoking `ConfirmSyncConfirmationDialog()`.
   observer.Wait();
   DVLOG(1) << "Sign in user: " << username;
   ExecuteJsToSigninInSigninFrame(active_contents, username, password);
