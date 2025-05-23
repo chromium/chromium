@@ -338,6 +338,12 @@ StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader() {
   if (on_destruction_callback_for_testing_) {
     std::move(on_destruction_callback_for_testing_).Run();
   }
+
+  if (should_be_serving_to_activation_navigation_ &&
+      forwarding_result_ == ForwardingResult::kNotServed) {
+    base::trace_event::EmitNamedTrigger(
+        "search-prefetch-destroyed-unexpectedly");
+  }
 }
 
 // static
@@ -849,11 +855,6 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
             ? "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender"
             : "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender",
         forwarding_result_);
-  }
-  if (should_be_serving_to_activation_navigation_ &&
-      forwarding_result_ == ForwardingResult::kNotServed) {
-    base::trace_event::EmitNamedTrigger(
-        "search-prefetch-destroyed-unexpectedly");
   }
 
   // To avoid UAF bugs, post a separate task to delete this object.
