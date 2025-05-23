@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -183,7 +184,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void UpdateFocusDataForSnapAreas() {}
 
   // SnapAtCurrentPosition(), SnapForEndPosition(), SnapForDirection(), and
-  // SnapForEndAndDirection() return true if snapping was performed, and false
+  // SnapForDisplacement() return true if snapping was performed, and false
   // otherwise. Note that this does not necessarily mean that any scrolling was
   // performed as a result e.g., if we are already at the snap point.
   // The scroll callback parameter is used to set the hover state dirty and
@@ -201,10 +202,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       bool scrolled_x,
       bool scrolled_y,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
-  bool SnapForDirection(
-      const ScrollOffset& delta,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
-  bool SnapForEndAndDirection(const ScrollOffset& delta);
+  bool SnapForDirection(ScrollDirectionPhysical direction);
+  bool SnapForPageScroll(ScrollDirectionPhysical direction);
+  bool SnapForDocumentScroll(ScrollDirectionPhysical direction);
+  std::unique_ptr<cc::SnapSelectionStrategy> PageScrollSnapStrategy(
+      ScrollDirectionPhysical direction) const;
   void SnapAfterLayout();
 
   // Tries to find a target snap position. If found, returns the target
@@ -550,6 +552,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void OnScrollFinished(bool enqueue_scrollend);
 
   float ScrollStep(ui::ScrollGranularity, ScrollbarOrientation) const;
+  std::unique_ptr<cc::SnapSelectionStrategy> PageSnap(
+      ScrollbarOrientation) const;
 
   // Injects a gesture scroll event based on the given parameters for mouse
   // events on a scrollbar of this scrollable area.
@@ -695,6 +699,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual int PageStep(ScrollbarOrientation) const;
   virtual int DocumentStep(ScrollbarOrientation) const;
   virtual float PixelStep(ScrollbarOrientation) const;
+
+  gfx::Size PageSize() const;
 
   // Returns true if a snap point was found.
   bool PerformSnapping(

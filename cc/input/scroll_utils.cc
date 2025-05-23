@@ -37,6 +37,17 @@ gfx::Vector2dF ScrollUtils::ResolveScrollPercentageToPixels(
 }
 
 // static
+int ScrollUtils::CalculateMinPageSnap(int length) {
+  const int min_page_step = length * kMinFractionToStepWhenSnapPaging;
+  return std::max(min_page_step, 1);
+}
+
+// static
+int ScrollUtils::CalculateMaxPageSnap(int length) {
+  return std::max(length, 1);
+}
+
+// static
 int ScrollUtils::CalculatePageStep(int length) {
   const int min_page_step = length * kMinFractionToStepWhenPaging;
   const int page_step =

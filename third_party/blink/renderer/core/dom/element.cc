@@ -2625,7 +2625,7 @@ void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
     gfx::PointF new_position = current_position + displacement;
 
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-        cc::SnapSelectionStrategy::CreateForEndAndDirection(
+        cc::SnapSelectionStrategy::CreateForDisplacement(
             current_position, displacement,
             RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
     new_position =
@@ -2726,7 +2726,7 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
   gfx::PointF new_position = viewport->ScrollPosition() + displacement;
   gfx::PointF current_position = viewport->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndAndDirection(
+      cc::SnapSelectionStrategy::CreateForDisplacement(
           current_position, displacement,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   new_position =

@@ -530,7 +530,11 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
   float base_position =
       horiz ? strategy.base_position().x() : strategy.base_position().y();
 
+  // True if we have found a "preferred" candidate.
+  bool preferred_candidate = false;
   float smallest_distance = horiz ? proximity_range_.x() : proximity_range_.y();
+  float proximity_distance =
+      horiz ? proximity_range_.x() : proximity_range_.y();
 
   auto evaluate = [&](const SnapSearchResult& candidate,
                       const SnapAreaData& area) {
@@ -541,20 +545,38 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
       return;
     }
     float distance = std::abs(candidate.snap_offset() - base_position);
-    if (distance > smallest_distance) {
+    if (distance > proximity_distance) {
+      return;
+    }
+
+    bool is_preferred_candidate =
+        strategy.IsPreferredSnapPosition(axis, candidate.snap_offset());
+    // If we have a preferred candidate, skip those which are not preferred.
+    if (preferred_candidate && !is_preferred_candidate) {
+      return;
+    }
+    // If this snap area is further away from the best candidate, and
+    // we either already have a preferred candidate or this candidate is not
+    // preferred, then skip it.
+    if (distance > smallest_distance &&
+        (preferred_candidate || !is_preferred_candidate)) {
       return;
     }
     // Aligned snap areas that have focus should be given preference when
     // selecting snap targets.
-    if (distance < smallest_distance || candidate.has_focus_within()) {
+    if (distance < smallest_distance ||
+        (is_preferred_candidate &&
+         (!preferred_candidate || candidate.has_focus_within()))) {
       smallest_distance = distance;
       closest = candidate;
+      preferred_candidate = is_preferred_candidate;
     } else if (closest && !closest->has_focus_within()) {
       if (closest->element_id() == targeted_area_id_) {
         return;
       }
       if (candidate.element_id() == targeted_area_id_) {
         closest = candidate;
+        preferred_candidate = is_preferred_candidate;
         return;
       }
       const auto candidate_rect = candidate.rect();
@@ -568,11 +590,13 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
           closest_rect != candidate_rect) {
         smallest_distance = distance;
         closest = candidate;
+        preferred_candidate = is_preferred_candidate;
       } else if ((scroll_snap_type_.axis == SnapAxis::kBoth) &&
                  (area.scroll_snap_align.alignment_block !=
                   SnapAlignment::kNone) &&
                  (area.scroll_snap_align.alignment_inline !=
-                  SnapAlignment::kNone)) {
+                  SnapAlignment::kNone) &&
+                 is_preferred_candidate == preferred_candidate) {
         // This candidate is equally aligned with the current closest. Since it
         // can be snapped to in both axes, designate it a potential alternative
         // if we don't already have a potential alternative or it is a better

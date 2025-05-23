@@ -1019,7 +1019,7 @@ bool InputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   // CC side always uses fractional scroll deltas.
   bool use_fractional_offsets = true;
   std::unique_ptr<SnapSelectionStrategy> strategy =
-      SnapSelectionStrategy::CreateForEndAndDirection(
+      SnapSelectionStrategy::CreateForDisplacement(
           current_offset, snap_displacement, use_fractional_offsets);
 
   double snapport_height_adjustment =

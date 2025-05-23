@@ -18,6 +18,7 @@ class SizeF;
 namespace cc {
 
 static constexpr int kPixelsPerLineStep = 40;
+static constexpr float kMinFractionToStepWhenSnapPaging = 0.4f;
 static constexpr float kMinFractionToStepWhenPaging = 0.875f;
 #if BUILDFLAG(IS_MAC)
 static constexpr int kMaxOverlapBetweenPages = 40;
@@ -38,6 +39,8 @@ class CC_EXPORT ScrollUtils {
       const gfx::SizeF& scroller_size,
       const gfx::SizeF& viewport_size);
 
+  static int CalculateMinPageSnap(int length);
+  static int CalculateMaxPageSnap(int length);
   static int CalculatePageStep(int length);
 };
 
