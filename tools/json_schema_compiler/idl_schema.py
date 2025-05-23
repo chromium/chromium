@@ -447,7 +447,7 @@ class Namespace(object):
     self.manifest_keys = None
     self.types = []
     self.callbacks = OrderedDict()
-    self.description = description
+    self.description = description.strip().replace('\n', '')
     self.deprecated = deprecated
 
   def process(self):

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Tests a variety of basic API definition features.
+// Tests a variety of basic API definition features, ensuring things are parsed
+// and processed as expected.
 
 namespace idl_basics {
   // Enum description
