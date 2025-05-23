@@ -137,18 +137,14 @@ const sqlite3_io_methods* GetSqliteIoMethods() {
 // static
 void SandboxedVfsFile::Create(base::File file,
                               base::FilePath file_path,
-#if DCHECK_IS_ON()
                               SandboxedVfsFileType file_type,
-#endif  // DCHECK_IS_ON()
                               SandboxedVfs* vfs,
                               sqlite3_file& buffer) {
   SandboxedVfsFileSqliteBridge& bridge =
       SandboxedVfsFileSqliteBridge::FromSqliteFile(buffer);
   bridge.sandboxed_vfs_file =
       new SandboxedVfsFile(std::move(file), std::move(file_path),
-#if DCHECK_IS_ON()
                            file_type,
-#endif  // DCHECK_IS_ON()
                            vfs);
   bridge.sqlite_file.pMethods = GetSqliteIoMethods();
 }
@@ -224,13 +220,11 @@ int SandboxedVfsFile::Write(const void* buffer,
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
 
-#if DCHECK_IS_ON()
   // SQLite's locking protocol only acquires locks on the database file. The
   // journal and the WAL file are always unlocked.
   DCHECK(sqlite_lock_mode_ == SQLITE_LOCK_EXCLUSIVE ||
          file_type_ != SandboxedVfsFileType::kDatabase)
       << "Write to database file with lock mode " << sqlite_lock_mode_;
-#endif  // DCHECK_IS_ON()
 
   const char* data = reinterpret_cast<const char*>(buffer);
 
@@ -563,16 +557,12 @@ int SandboxedVfsFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
 
 SandboxedVfsFile::SandboxedVfsFile(base::File file,
                                    base::FilePath file_path,
-#if DCHECK_IS_ON()
                                    SandboxedVfsFileType file_type,
-#endif  // DCHECK_IS_ON()
                                    SandboxedVfs* vfs)
     : file_(std::move(file)),
       sqlite_lock_mode_(SQLITE_LOCK_NONE),
       vfs_(vfs),
-#if DCHECK_IS_ON()
       file_type_(file_type),
-#endif  // DCHECK_IS_ON()
       file_path_(std::move(file_path)) {
 }
 
