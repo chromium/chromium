@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
@@ -222,7 +223,13 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // Return a computed value for the passed-in property:value pair in the
   // context of the current ComputedStyle of the 'element'.
   // Returns nullptr for custom property values that are IACVT.
-  static const CSSValue* ComputeValue(Element* element,
+  static const CSSValue* ComputeValue(Element*,
+                                      const CSSPropertyName&,
+                                      const CSSValue&,
+                                      CSSToLengthConversionData::Flags&);
+  // A wrapper for the function above when not interested in the conversion
+  // flags.
+  static const CSSValue* ComputeValue(Element*,
                                       const CSSPropertyName&,
                                       const CSSValue&);
   // Resolves a single CSSValue in the context of some element's computed style.
