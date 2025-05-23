@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -29,6 +31,29 @@
 #include "ui/views/paint_info.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+namespace {
+
+class DragContentsButton : public views::LabelButton {
+  METADATA_HEADER(DragContentsButton, views::LabelButton)
+
+ public:
+  DragContentsButton(PressedCallback callback, std::u16string title)
+      : LabelButton(std::move(callback), title) {
+#if BUILDFLAG(IS_WIN)
+    // For windows, label button paints icon to a layer by default, which
+    // causes the drag image to not render correctly. Disable this behavior.
+    // This is a workaround for crbug.com/394380766
+    image_container_view()->DestroyLayer();
+#endif
+  }
+  ~DragContentsButton() override = default;
+};
+
+BEGIN_METADATA(DragContentsButton)
+END_METADATA
+
+}  // namespace
 
 namespace button_drag_utils {
 
@@ -80,8 +105,8 @@ void SetDragImage(const GURL& url,
   drag_widget->Init(std::move(params));
 
   // Create a button to render the drag image for us.
-  views::LabelButton* button =
-      drag_widget->SetContentsView(std::make_unique<views::LabelButton>(
+  DragContentsButton* button =
+      drag_widget->SetContentsView(std::make_unique<DragContentsButton>(
           views::Button::PressedCallback(),
           title.empty() ? base::UTF8ToUTF16(url.spec()) : title));
   button->SetTextSubpixelRenderingEnabled(false);
