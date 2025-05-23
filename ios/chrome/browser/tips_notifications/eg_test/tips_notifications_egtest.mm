@@ -142,9 +142,6 @@ void MaybeDismissNotification() {
 // Opt in to Tips Notications via the SetUpList long-press menu. Mark all
 // Tips Notifications as "sent", except for the ones included in `types`.
 - (void)optInToTipsNotifications:(std::vector<TipsNotificationType>)types {
-  // Ensure that the SetUpList reloads.
-  [ChromeEarlGrey closeCurrentTab];
-  [ChromeEarlGrey openNewTab];
   // Long press the SetUpList module.
   id<GREYMatcher> setUpList =
       grey_accessibilityID(set_up_list::kSetUpListContainerID);
@@ -402,6 +399,24 @@ void MaybeDismissNotification() {
 
   GREYAssert(notificationRequested,
              @"Reactivation notification request was not added.");
+}
+
+// Tests that the CPE Promo appears when tapping on the CPE tip notification.
+- (void)testCPENotification {
+  MaybeDismissNotification();
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self optInToTipsNotifications:{}];
+
+  // Request the notification and tap it.
+  [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kCPE];
+  TapNotification();
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId")];
+  // Close the promo.
+  id<GREYMatcher> noThanksButton = grey_accessibilityID(
+      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+  [ChromeEarlGrey waitForAndTapButton:noThanksButton];
 }
 
 @end
