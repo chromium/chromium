@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -136,6 +137,20 @@ void TabSnapshotAndFaviconConfigurator::FetchSnapshotAndFaviconFromWebState(
         group_item, tab_snapshot_and_favicon, tab_group_infos, request_index,
         number_of_requests, request_id, completion);
     return;
+  }
+
+  // Use the favicon driver.
+  favicon::FaviconDriver* favicon_driver =
+      favicon::WebFaviconDriver::FromWebState(web_state);
+  if (favicon_driver) {
+    gfx::Image favicon = favicon_driver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      tab_snapshot_and_favicon.favicon = favicon.ToUIImage();
+      OnSnapshotAndFaviconFromWebStateFetched(
+          group_item, tab_snapshot_and_favicon, tab_group_infos, request_index,
+          number_of_requests, request_id, completion);
+      return;
+    }
   }
 
   // Set the default favicon.
