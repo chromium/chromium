@@ -23,6 +23,7 @@ source_set("impl") {
   deps = [
     ":qrcode_generator",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui/sharing_hub",
     "//chrome/common:constants",
     "//components/prefs",
     "//url",

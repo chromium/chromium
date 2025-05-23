@@ -3627,10 +3627,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "bubble_anchor_util.h",
-      "sharing_hub/screenshot/screenshot_captured_bubble_controller.cc",
-      "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
-      "sharing_hub/sharing_hub_bubble_controller.h",
-      "sharing_hub/sharing_hub_bubble_view.h",
       "side_search/side_search_prefs.cc",
       "side_search/side_search_prefs.h",
       "sync/one_click_signin_links_delegate.h",
@@ -4973,6 +4969,8 @@ static_library("ui") {
       "//chrome/browser/ui/qrcode_generator:impl",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/send_tab_to_self:impl",
+      "//chrome/browser/ui/sharing_hub",
+      "//chrome/browser/ui/sharing_hub:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
@@ -5041,6 +5039,7 @@ static_library("ui") {
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/commerce:impl",
+      "//chrome/browser/ui/sharing_hub:impl",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
       # chrome_{typography,layout_provider} get modularized.
@@ -5070,15 +5069,7 @@ static_library("ui") {
     }
 
     if (is_chromeos) {
-      sources += [
-        "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.cc",
-        "sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h",
-        "views/status_icons/status_tray_chromeos.cc",
-      ]
-
-      # TODO(crbug.com/419210492): Remove this dep when sharing_hub_bubble_controller_chromeos_impl.h (above)
-      # gets componentized.
-      public_deps += [ "//chrome/browser/sharesheet" ]
+      sources += [ "views/status_icons/status_tray_chromeos.cc" ]
 
       deps += [
         "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
@@ -5169,8 +5160,6 @@ static_library("ui") {
     if (!is_chromeos) {
       sources += [
         "idle_dialog.h",
-        "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
-        "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
         "sync/sync_passphrase_dialog.cc",
         "sync/sync_passphrase_dialog.h",
         "views/accessibility/accessibility_focus_highlight.cc",

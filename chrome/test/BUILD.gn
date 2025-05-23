@@ -9447,8 +9447,12 @@ test("unit_tests") {
 
     deps += [
       # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/sharing_hub/sharing_hub_model_unittest.cc
-      # test (above) gets componentized.
+      # (above) gets componentized.
       "//chrome/browser/sharing_hub",
+
+      # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc
+      # (above) gets componentized.
+      "//chrome/browser/ui/sharing_hub:test_support_ui",
     ]
   }
 
@@ -10805,12 +10809,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [
-        "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.cc",
-        "../browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h",
+      deps += [
+        "//chrome/browser/ui/sharing_hub:test_support_ui",
+        "//chrome/browser/ui/webui/app_settings",
       ]
-
-      deps += [ "//chrome/browser/ui/webui/app_settings" ]
     }
 
     if (use_ozone) {
