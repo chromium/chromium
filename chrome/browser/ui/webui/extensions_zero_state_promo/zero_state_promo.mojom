@@ -1,0 +1,48 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module zero_state_promo.mojom;
+
+// Enum depicting the webstore link the user clicked on the promo. Used for
+// UMA reporting.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebStoreLinkClicked)
+enum WebStoreLinkClicked {
+  // The 'Discover Extensions' link.
+  kDiscoverExtension = 0,
+  // The 'Find Coupons' link.
+  kCoupon = 1,
+  // The 'Write better' link.
+  kWriting = 2,
+  // The 'Boost productivity' link.
+  kProductivity = 3,
+  // The 'Enhance with AI' link.
+  kAi = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebStoreLinkClicked)
+
+// URL for each WebStoreLinkClicked.
+const string kDiscoverExtensionWebStoreUrl = "https://chromewebstore.google.com/";
+const string kCouponWebStoreUrl = "https://chromewebstore.google.com/category/extensions/lifestyle/shopping";
+const string kWritingWebStoreUrl = "https://chromewebstore.google.com/collection/writing_essentials";
+const string kProductivityWebStoreUrl = "https://chromewebstore.google.com/category/extensions/productivity/workflow";
+const string kAiWebStoreUrl = "https://chromewebstore.google.com/collection/ai_productivity";
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // WebUI calls this method when the page is initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from the WebUI page.
+interface PageHandler {
+  // Launch a new tab to the specified Chrome Web Store link.
+  //
+  // TODO(crbug.com/418027382) Remove this method and invoke 'window.open' directly
+  // in script after TopChrome WebUI bubble supports 'window.open'.
+  LaunchWebStoreLink(WebStoreLinkClicked link);
+};

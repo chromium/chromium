@@ -94,6 +94,10 @@ source_set("browser_tests") {
     sources += [ "extensions/extensions_browsertest.cc" ]
   }
 
+  if (enable_extensions) {
+    sources += [ "extensions_zero_state/zero_state_promo_browsertest.cc" ]
+  }
+
   if (enable_webui_tab_strip) {
     sources += [ "tab_strip/tab_strip_browsertest.cc" ]
   }
@@ -593,6 +597,11 @@ generate_grd("build_grd") {
   if (enable_extensions_core) {
     deps += [ "extensions:build_grdp" ]
     grdp_files += [ "$target_gen_dir/extensions/resources.grdp" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "extensions_zero_state:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/extensions_zero_state/resources.grdp" ]
   }
 
   if (enable_print_preview && !is_chromeos) {

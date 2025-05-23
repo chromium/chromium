@@ -91,7 +91,10 @@ group("resources") {
   }
 
   if (enable_extensions) {
-    public_deps += [ "accessibility:reading_mode_gdocs_extension_resources" ]
+    public_deps += [
+      "accessibility:reading_mode_gdocs_extension_resources",
+      "extensions_zero_state_promo:resources",
+    ]
   }
 
   if (is_mac) {

@@ -716,4 +716,28 @@
     The only way to undo this is to re-install <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph>
   </message>
 </if>
+<if expr="enable_extensions">
+  <!-- Extensions Zero State Promo IPH -->
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER" desc="Header of the extensions zero state in-product help promo.">
+    Supercharge your browser with extensions and themes
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
+    Extensions are add-ons for Chrome that can help you do more
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_SHOPPING_CATEGORY_LABEL" desc="Label for the button that opens the Chrome Web Store shopping category page.">
+    Find coupons
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WRITING_HELP_COLLECTION_LABEL" desc="Label for the button that opens the Chrome Web Store writing help collection page.">
+    Help me write
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LABEL" desc="Label for the button that opens the Chrome Web Store producitivty category page.">
+    Boost productivity
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LABEL" desc="Label for the button that opens the Chrome Web Store ai productivity collection page.">
+    Enhance with AI
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TITLE" desc="Title attribute for the button that dismisses the extensions zero state in-product-help promo.">
+    Close
+  </message>
+</if>
 </grit-part>

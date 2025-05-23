@@ -96,6 +96,12 @@ template("chrome_repack_percent") {
       sources += [ "$root_gen_dir/extensions/extensions_browser_resources_${percent}_percent.pak" ]
       deps += [ "//extensions:extensions_browser_resources" ]
     }
+    if (enable_extensions) {
+      sources +=
+          [ "$root_gen_dir/chrome/extensions_zero_state_promo_resources.pak" ]
+      deps +=
+          [ "//chrome/browser/resources/extensions_zero_state_promo:resources" ]
+    }
 
     output = "${invoker.output_dir}/chrome_${percent}_percent.pak"
   }

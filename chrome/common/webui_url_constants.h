@@ -114,6 +114,10 @@ inline constexpr char kChromeUIExtensionsHost[] = "extensions";
 inline constexpr char kChromeUIExtensionsInternalsHost[] =
     "extensions-internals";
 inline constexpr char kChromeUIExtensionsURL[] = "chrome://extensions/";
+inline constexpr char kChromeUIExtensionsZeroStatePromoHost[] =
+    "extensions-zero-state";
+inline constexpr char kChromeUIExtensionsZeroStatePromoURL[] =
+    "chrome://extensions-zero-state";
 inline constexpr char kChromeUIFamilyLinkUserInternalsHost[] =
     "family-link-user-internals";
 inline constexpr char kChromeUIFavicon2Host[] = "favicon2";

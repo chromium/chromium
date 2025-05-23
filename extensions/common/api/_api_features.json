@@ -360,6 +360,7 @@
       "chrome://shopping-insights-side-panel.top-chrome/*",
       "chrome://eche-app/*",
       "chrome://extensions/*",
+      "chrome://extensions-zero-state/*",
       "chrome://file-manager/*",
       "chrome://glic/*",
       "chrome://help-app/*",

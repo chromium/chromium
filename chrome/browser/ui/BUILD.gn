@@ -5333,6 +5333,7 @@ static_library("ui") {
       "//chrome/browser/policy:policy_util",
       "//chrome/browser/profiles",
       "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+      "//chrome/browser/ui/webui/extensions_zero_state_promo:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_share_target",
@@ -5457,6 +5458,10 @@ static_library("ui") {
       "web_applications/webui_web_app_navigation_throttle.h",
       "webui/extensions/extension_basic_info.cc",
       "webui/extensions/extension_basic_info.h",
+      "webui/extensions_zero_state_promo/zero_state_promo_page_handler.cc",
+      "webui/extensions_zero_state_promo/zero_state_promo_page_handler.h",
+      "webui/extensions_zero_state_promo/zero_state_promo_ui.cc",
+      "webui/extensions_zero_state_promo/zero_state_promo_ui.h",
     ]
 
     if (is_mac) {

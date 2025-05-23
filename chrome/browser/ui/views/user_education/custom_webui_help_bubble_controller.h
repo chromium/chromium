@@ -58,9 +58,13 @@ class CustomWebUIHelpBubbleController
     ControllerClass##Config()                                                \
         : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, HostName) {} \
     ~ControllerClass##Config() override = default;                           \
-    bool ShouldAutoResizeHost() override {                                   \
-      return true;                                                           \
-    }                                                                        \
+    bool ShouldAutoResizeHost() override;                                    \
+  }
+
+// You need to do this in your custom help bubble WebUI controller `.cc` file.
+#define DEFINE_TOP_CHROME_WEBUI_CONFIG(ControllerClass)  \
+  bool ControllerClass##Config::ShouldAutoResizeHost() { \
+    return true;                                         \
   }
 
 // In order to be considered a controller for a custom help bubble WebUI, a

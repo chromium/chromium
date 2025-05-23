@@ -725,6 +725,7 @@ chromium-metrics-reviews@google.com.
   <int value="-485494550" label="chrome://interventions-internals/"/>
   <int value="-451371558" label="chrome://serviceworker-internals/"/>
   <int value="-443189279" label="chrome://enterprise-profile-welcome/"/>
+  <int value="-412283693" label="chrome://extensions-zero-state/"/>
   <int value="-407160627" label="chrome://on-device-translation-internals/"/>
   <int value="-394586044" label="chrome://confirm-password-change/"/>
   <int value="-377028639" label="chrome://copresence/"/>

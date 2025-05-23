@@ -91,6 +91,7 @@ class TestWebUIHelpBubbleController : public TopChromeWebUIController,
 };
 
 DECLARE_TOP_CHROME_WEBUI_CONFIG(TestWebUIHelpBubbleController, kTestWebUIHost);
+DEFINE_TOP_CHROME_WEBUI_CONFIG(TestWebUIHelpBubbleController)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIHelpBubbleController)
 

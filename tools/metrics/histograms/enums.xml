@@ -26125,6 +26125,18 @@ This is true even if the type has been removed from the mojom file.
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->
 
+<!-- LINT.IfChange(WebStoreLinkClicked) -->
+
+<enum name="WebStoreLinkClicked">
+  <int value="0" label="'Discover Extensions' link"/>
+  <int value="1" label="'Find Coupons' link"/>
+  <int value="2" label="'Write Better' link"/>
+  <int value="3" label="'Boost Productivity' link"/>
+  <int value="4" label="'Enhance with AI' link"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom:WebStoreLinkClicked) -->
+
 <enum name="WebUsbChooserClosed">
   <int value="0" label="User cancelled"/>
   <int value="1" label="User cancelled, no devices available"/>

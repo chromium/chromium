@@ -136,7 +136,7 @@
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
@@ -370,6 +370,10 @@
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
 #include "chrome/browser/ui/webui/reset_password/reset_password_ui.h"
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
+#endif
 
 namespace chrome::internal {
 
@@ -1257,6 +1261,15 @@ void PopulateChromeWebUIFrameBinders(
         ash::graduation::GraduationUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  RegisterWebUIControllerInterfaceBinder<
+      zero_state_promo::mojom::PageHandlerFactory,
+      extensions::ZeroStatePromoController>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      custom_help_bubble::mojom::CustomHelpBubbleHandlerFactory,
+      extensions::ZeroStatePromoController>(map);
+#endif
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(

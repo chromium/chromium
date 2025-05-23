@@ -408,6 +408,10 @@
     "META": {"sizes": {"includes": [120],}},
     "includes": [3920],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions_zero_state_promo/resources.grd": {
+    "META": {"sizes": {"includes": [8],}},
+    "includes": [3925],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/family_link_user_internals/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [3930],

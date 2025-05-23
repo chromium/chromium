@@ -5601,6 +5601,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ZeroStatePromo.WebStoreLinkClicked.{Link}"
+    enum="WebStoreLinkClicked" expires_after="2025-07-27">
+  <owner>uwyiming@chromium.org</owner>
+  <owner>cws-consumer-team@google.com</owner>
+  <summary>
+    Records that the users clicked a link or button in the Extension Zero State
+    promo page. The value indicates the link that the user clicked.
+  </summary>
+  <token key="Link"/>
+</histogram>
+
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
     enum="ManifestInvalidError" expires_after="never">
