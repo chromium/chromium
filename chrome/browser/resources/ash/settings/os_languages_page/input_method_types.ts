@@ -38,7 +38,6 @@ export enum JapaneseKeymapStyle {
   ATOK = 'Atok',
   MS_IME = 'MsIme',
   KOTOERI = 'Kotoeri',
-  MOBILE = 'Mobile',
   CHROME_OS = 'ChromeOs',
 }
 
