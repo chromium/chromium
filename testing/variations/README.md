@@ -123,6 +123,14 @@ platforms, you will need to use different studies.
 `--enable-benchmarking` is passed at start up this experiment should not be
 enabled. This should be used extremely sparingly.
 
+> Warning: `disable_benchmarking` works as described above on most platforms
+> however when using the
+> [fieldtrial_util.py](https://source.chromium.org/chromium/chromium/src/+/main:tools/variations/fieldtrial_util.py)
+> script we will always exclude `disable_benchmarking` experiments. This is
+> due to this script being primarily used for benchmarking, and because it
+> generates command lines flags to set state we don't know if
+> `--enable-benchmarking` will be passed or not.
+
 `params` is a dictionary mapping parameter name to parameter value.
 
 > Reminder: The variations framework does not actually fetch any field trial

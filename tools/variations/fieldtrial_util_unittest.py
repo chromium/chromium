@@ -70,6 +70,50 @@ class FieldTrialUtilUnittest(unittest.TestCase):
         '--enable-features=a<SimpleParams,b<SimpleParams,x<c',
         '--disable-features=y<c'], result)
 
+  def test_GenArgsSomeExperimentsDisabledForBenchmarking(self):
+    config = '''{
+      "BrowserBlackList": [
+        {
+          "platforms": ["windows"],
+          "experiments": [{"name": "Enabled"}]
+        }
+      ],
+      "SimpleParams": [
+        {
+          "platforms": ["windows"],
+          "experiments": [
+            {
+              "name": "Default",
+              "params": {"id": "abc"},
+              "enable_features": ["a", "b"],
+              "disable_benchmarking": "true"
+            }
+          ]
+        }
+      ],
+      "c": [
+        {
+          "platforms": ["windows"],
+          "experiments": [
+            {
+              "name": "d.",
+              "params": {"url": "http://www.google.com"},
+              "enable_features": ["x"],
+              "disable_features": ["y"],
+              "disable_benchmarking": "false"
+            }
+          ]
+        }
+      ]
+    }'''
+    result = self.runGenerateArgs(config, 'windows')
+    self.assertEqual(['--force-fieldtrials='
+        'BrowserBlackList/Enabled/c/d.',
+        '--force-fieldtrial-params='
+        'c.d%2E:url/http%3A%2F%2Fwww%2Egoogle%2Ecom',
+        '--enable-features=x<c',
+        '--disable-features=y<c'], result)
+
   def test_GenArgsDuplicateEnableFeatures(self):
     config = '''{
       "X": [
