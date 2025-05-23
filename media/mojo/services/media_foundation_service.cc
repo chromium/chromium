@@ -395,6 +395,12 @@ CdmCapabilityOrStatus GetCdmCapability(
     }
 #endif
 
+    // Remove VP9 from the OS CDM capabilities check
+    // since it does not support clearlead.
+    if (is_os_cdm && is_hw_secure && (video_codec == VideoCodec::kVP9)) {
+      continue;
+    }
+
     if (is_type_supported_cb.Run(
             is_hw_secure,
             GetTypeString(video_codec, /*audio_codec=*/std::nullopt,
