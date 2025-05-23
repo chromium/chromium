@@ -68,7 +68,7 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
       read_position_(kNullPosition),
       correction_fps_(0),
       resampler_(
-          // For efficiency, a |channel_mix_strategy_| is chosen so that the
+          // For efficiency, a `channel_mix_strategy_` is chosen so that the
           // resampler is always processing the fewest number of channels.
           std::min(input_params_.channels(), output_params_.channels()),
           perfect_io_ratio_,
@@ -77,10 +77,10 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
                               base::Unretained(this))),
       channel_mix_strategy_(
           (input_params_.channel_layout() == output_params_.channel_layout())
-              ? kNone
+              ? ChannelMixStrategy::kNone
               : ((output_params_.channels() < input_params_.channels())
-                     ? kBefore
-                     : kAfter)),
+                     ? ChannelMixStrategy::kBefore
+                     : ChannelMixStrategy::kAfter)),
       channel_mixer_(input_params_, output_params_) {
   TRACE_EVENT2("audio", "SnooperNode::SnooperNode", "input_params",
                input_params.AsHumanReadableString(), "output_params",
@@ -92,7 +92,7 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
 
   // If channel mixing is to be performed after resampling, allocate a buffer to
   // hold the resampler's output.
-  if (channel_mix_strategy_ == kAfter) {
+  if (channel_mix_strategy_ == ChannelMixStrategy::kAfter) {
     mix_bus_ = media::AudioBus::Create(input_params_.channels(),
                                        output_params_.frames_per_buffer());
   }
@@ -127,7 +127,7 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
       TRACE_EVENT_INSTANT1("audio", "SnooperNode Discards Input",
                            TRACE_EVENT_SCOPE_THREAD, "wait_time_remaining (μs)",
                            (-delta).InMicroseconds());
-      // It's illegal to back-track the |write_position_| and/or attempt to
+      // It's illegal to back-track the `write_position_` and/or attempt to
       // "rewrite history" in the delay buffer. Thus, simply drop input until it
       // catches up. Events such as this are generally only caused by device-
       // switching in audio::OutputController, where the delay timestamps may
@@ -137,17 +137,17 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
       TRACE_EVENT_INSTANT1("audio", "SnooperNode Input Gap",
                            TRACE_EVENT_SCOPE_THREAD, "gap (μs)",
                            delta.InMicroseconds());
-      // Skip the |write_position_| forward, which will create a zero-fill gap
+      // Skip the `write_position_` forward, which will create a zero-fill gap
       // in the delay buffer.
       write_position_ +=
           Helper::TimeToFrames(delta, input_params_.sample_rate());
     } else {
       // Normal case: Continue writing into the delay buffer at the current
-      // |write_position_|.
+      // `write_position_`.
       //
       // Note that, if input was being discarded (in the prior OnData() call),
-      // there will be no "recovery adjustment" to the |write_position_|.
-      // Instead, any significant jump in |write_reference_time_| will cause
+      // there will be no "recovery adjustment" to the `write_position_`.
+      // Instead, any significant jump in `write_reference_time_` will cause
       // Render() to gradually re-synchronize the audio. There will be no
       // zero-fill gap inserted into the delay buffer.
     }
@@ -205,14 +205,14 @@ void SnooperNode::Render(base::TimeTicks reference_time,
 
   // Use the difference in reference times between OnData() and Render() to
   // estimate the position of the audio about to come out of the resampler.
-  lock_.Acquire();
-  const FrameTicks estimated_output_position =
-      (write_position_ == kNullPosition)
-          ? kNullPosition
-          : (write_position_ +
-             Helper::TimeToFrames(reference_time - write_reference_time_,
-                                  input_params_.sample_rate()));
-  lock_.Release();
+  const FrameTicks estimated_output_position = [this, &reference_time]() {
+    base::AutoLock scoped_lock(lock_);
+    return (write_position_ == kNullPosition)
+               ? kNullPosition
+               : (write_position_ +
+                  Helper::TimeToFrames(reference_time - write_reference_time_,
+                                       input_params_.sample_rate()));
+  }();
 
   // If recording has not started, just output silence.
   if (estimated_output_position == kNullPosition) {
@@ -255,8 +255,8 @@ void SnooperNode::Render(base::TimeTicks reference_time,
       DCHECK_GT(fps_step, 0);
 
       // Adjust the correction rate (and resampling ratio) if the above-computed
-      // |target_correction_fps| is more than one |fps_step| different than the
-      // current |correction_fps_|. Otherwise, leave the current rate unchanged,
+      // `target_correction_fps` is more than one `fps_step` different than the
+      // current `correction_fps_`. Otherwise, leave the current rate unchanged,
       // to avoid reconfiguring the resampler too often.
       const int diff = target_correction_fps - correction_fps_;
       if (diff > fps_step || diff < -fps_step) {
@@ -286,8 +286,8 @@ void SnooperNode::Render(base::TimeTicks reference_time,
 
   // Perform resampling and also channel mixing, if required. The resampler will
   // call ReadFromDelayBuffer(), as needed, to supply itself with more input
-  // data; and this will move the |read_position_| forward.
-  if (channel_mix_strategy_ == kAfter) {
+  // data; and this will move the `read_position_` forward.
+  if (channel_mix_strategy_ == ChannelMixStrategy::kAfter) {
     resampler_.Resample(mix_bus_->frames(), mix_bus_.get());
     channel_mixer_.Transform(mix_bus_.get(), output_bus);
   } else {
@@ -312,10 +312,10 @@ void SnooperNode::ReadFromDelayBuffer(int ignored,
   TRACE_EVENT2("audio", "SnooperNode::ReadFromDelayBuffer", "read_position",
                read_position_, "frames", frames_to_read);
 
-  if (channel_mix_strategy_ == kBefore) {
+  if (channel_mix_strategy_ == ChannelMixStrategy::kBefore) {
     DCHECK_EQ(resampler_bus->channels(), output_params_.channels());
 
-    // Reallocate the |mix_bus_| if needed.
+    // Reallocate the `mix_bus_` if needed.
     if (!mix_bus_ || mix_bus_->frames() < frames_to_read) {
       mix_bus_ = nullptr;  // Free memory before allocating more.
       mix_bus_ =
@@ -323,16 +323,18 @@ void SnooperNode::ReadFromDelayBuffer(int ignored,
     }
 
     // Do the read and also channel remix before resampling.
-    lock_.Acquire();
-    buffer_.Read(read_position_, frames_to_read, mix_bus_.get());
-    lock_.Release();
+    {
+      base::AutoLock scoped_lock(lock_);
+      buffer_.Read(read_position_, frames_to_read, mix_bus_.get());
+    }
     channel_mixer_.TransformPartial(mix_bus_.get(), frames_to_read,
                                     resampler_bus);
   } else {
     DCHECK_EQ(resampler_bus->channels(), input_params_.channels());
-    lock_.Acquire();
-    buffer_.Read(read_position_, frames_to_read, resampler_bus);
-    lock_.Release();
+    {
+      base::AutoLock scoped_lock(lock_);
+      buffer_.Read(read_position_, frames_to_read, resampler_bus);
+    }
   }
 
   read_position_ += frames_to_read;
