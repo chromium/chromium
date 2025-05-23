@@ -91,6 +91,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/rt_end_to_end_test.cc",
   "//third_party/libaom/source/libaom/test/sad_test.cc",
   "//third_party/libaom/source/libaom/test/scalability_test.cc",
+  "//third_party/libaom/source/libaom/test/screen_content_detection_mode_2_test.cc",
   "//third_party/libaom/source/libaom/test/sse_sum_test.cc",
   "//third_party/libaom/source/libaom/test/subtract_test.cc",
   "//third_party/libaom/source/libaom/test/sum_squares_test.cc",

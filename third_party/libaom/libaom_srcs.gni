@@ -44,8 +44,10 @@ aom_av1_common_intrin_neon_i8mm = [
   "//third_party/libaom/source/libaom/av1/common/arm/resize_neon_i8mm.c",
 ]
 
-aom_av1_common_intrin_rvv =
-    [ "//third_party/libaom/source/libaom/av1/common/riscv/cdef_block_rvv.c" ]
+aom_av1_common_intrin_rvv = [
+  "//third_party/libaom/source/libaom/av1/common/riscv/cdef_block_rvv.c",
+  "//third_party/libaom/source/libaom/av1/common/riscv/convolve_rvv.c",
+]
 
 aom_av1_common_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/common/x86/av1_txfm_sse2.h",
