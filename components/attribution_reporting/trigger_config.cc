@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -144,8 +145,12 @@ std::optional<uint32_t> TriggerDataSet::find(
       }
       // `std::next()` is constant-time due to the underlying iterator being
       // random-access.
-      return *std::next(trigger_data_.begin(),
-                        trigger_data % trigger_data_.size());
+      const uint32_t out = *std::next(trigger_data_.begin(),
+                                      trigger_data % trigger_data_.size());
+      base::UmaHistogramBoolean(
+          "Conversions.TriggerDataMatchingModulusSameInputOutput",
+          trigger_data == out);
+      return out;
   }
 }
 

@@ -50,7 +50,11 @@ enum class ReadProcMaps { kFailed, kEmpty, kSuccess, kMaxValue = kSuccess };
 
 // This constant is chosen arbitrarily, to allow time for the background tasks
 // to finish running BEFORE collecting metrics.
-const base::TimeDelta kDelayForMetrics = base::Seconds(2);
+constexpr base::TimeDelta kDelayForMetrics = base::Seconds(2);
+
+// Based on UMA data, >99.5% of the compaction should take < 6s, so 10s should
+// be more than enough.
+constexpr base::TimeDelta kCompactionTimeout = base::Seconds(10);
 
 uint64_t BytesToMiB(uint64_t v) {
   return v / 1024 / 1024;
@@ -508,6 +512,13 @@ bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueCompaction(
 }
 
 // static
+bool PreFreezeBackgroundMemoryTrimmer::TimeoutExceeded() {
+  base::AutoLock locker(lock());
+  return Instance().compaction_last_started_ + kCompactionTimeout <=
+         base::TimeTicks::Now();
+}
+
+// static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueCompaction(
     base::TimeTicks compaction_triggered_at) {
   base::AutoLock locker(lock());
@@ -518,6 +529,14 @@ void PreFreezeBackgroundMemoryTrimmer::MaybePostCompactionTask(
     std::unique_ptr<CompactionState> state,
     scoped_refptr<CompactionMetric> metric) {
   TRACE_EVENT0("base", "MaybePostCompactionTask");
+  // Compaction is taking too long, so cancel it. This happens in practice in
+  // the field sometimes, according to UMA data.
+  if (TimeoutExceeded()) {
+    MaybeCancelCompaction(CompactCancellationReason::kTimeout);
+    // We do not return here, despite the fact that we will not be doing any
+    // more compaction, in order to run |FinishCompaction| below.
+  }
+
   if (ShouldContinueCompaction(*state) && !state->regions_.empty()) {
     auto task_runner = state->task_runner_;
     task_runner->PostDelayedTask(
@@ -548,11 +567,13 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionTask(
 
 void PreFreezeBackgroundMemoryTrimmer::StartCompaction(
     std::unique_ptr<CompactionState> state) {
-  scoped_refptr<CompactionMetric> metric = state->MakeCompactionMetric();
-  TRACE_EVENT0("base", "StartCompaction");
-  base::trace_event::EmitNamedTrigger("start-self-compaction");
+  scoped_refptr<CompactionMetric> metric;
   {
     base::AutoLock locker(lock());
+    compaction_last_started_ = base::TimeTicks::Now();
+    metric = state->MakeCompactionMetric(compaction_last_started_);
+    TRACE_EVENT0("base", "StartCompaction");
+    base::trace_event::EmitNamedTrigger("start-self-compaction");
     process_compacted_metadata_.emplace(
         "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
         /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
@@ -603,7 +624,7 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompactionInternal(
   if (compaction_last_cancelled_ < compaction_last_triggered_ &&
       compaction_last_finished_ < compaction_last_triggered_) {
     UmaHistogramEnumeration(
-        "Memory.RunningOrSelfCompact.Renderer.CancellationReason",
+        "Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason",
         cancellation_reason);
   }
   compaction_last_finished_ = compaction_last_cancelled_ =
@@ -650,10 +671,10 @@ PreFreezeBackgroundMemoryTrimmer::SelfCompactionState::GetMetricName(
 }
 
 scoped_refptr<PreFreezeBackgroundMemoryTrimmer::CompactionMetric>
-PreFreezeBackgroundMemoryTrimmer::SelfCompactionState::MakeCompactionMetric()
-    const {
-  return MakeRefCounted<CompactionMetric>(
-      "Memory.SelfCompact2.Renderer.", triggered_at_, base::TimeTicks::Now());
+PreFreezeBackgroundMemoryTrimmer::SelfCompactionState::MakeCompactionMetric(
+    base::TimeTicks started_at) const {
+  return MakeRefCounted<CompactionMetric>("Memory.SelfCompact2.Renderer.",
+                                          triggered_at_, started_at);
 }
 
 PreFreezeBackgroundMemoryTrimmer::RunningCompactionState::
@@ -686,10 +707,10 @@ PreFreezeBackgroundMemoryTrimmer::RunningCompactionState::GetMetricName(
 }
 
 scoped_refptr<PreFreezeBackgroundMemoryTrimmer::CompactionMetric>
-PreFreezeBackgroundMemoryTrimmer::RunningCompactionState::MakeCompactionMetric()
-    const {
-  return MakeRefCounted<CompactionMetric>(
-      "Memory.RunningCompact.Renderer.", triggered_at_, base::TimeTicks::Now());
+PreFreezeBackgroundMemoryTrimmer::RunningCompactionState::MakeCompactionMetric(
+    base::TimeTicks started_at) const {
+  return MakeRefCounted<CompactionMetric>("Memory.RunningCompact.Renderer.",
+                                          triggered_at_, started_at);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::CompactionState::MaybeReadProcMaps() {

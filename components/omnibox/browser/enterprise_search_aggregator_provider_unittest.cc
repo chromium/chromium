@@ -1748,7 +1748,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   ASSERT_EQ(matches.size(), 3u);
 
   // Verifies use of MIME type.
-  EXPECT_EQ(matches[0].contents, u"Quicktime Video");
+  EXPECT_EQ(matches[0].contents, u"QuickTime Video");
   EXPECT_EQ(matches[0].description, u"Evolution of Dance");
   EXPECT_EQ(matches[0].destination_url, GURL("https://url1/"));
 
@@ -1758,7 +1758,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
   EXPECT_EQ(matches[1].destination_url, GURL("https://url2/"));
 
   // Verifies that MIME type takes precedent over source type.
-  EXPECT_EQ(matches[2].contents, u"PNG");
+  EXPECT_EQ(matches[2].contents, u"PNG Image");
   EXPECT_EQ(matches[2].description, u"Same thing we do every night, Pinky");
   EXPECT_EQ(matches[2].destination_url, GURL("https://url3/"));
 }

@@ -167,79 +167,80 @@ struct MimeInfo {
   const std::string_view file_type_description;
 };
 
-// A mapping from `mime_type` to the human readable `file_type_description`.
+// A mapping from `mime_type` to the human readable `file_type_description` for
+// selected MIME types.
 // Mappings documentation:
 // https://developers.google.com/drive/api/guides/mime-types
 // https://developers.google.com/drive/api/guides/ref-export-formats
-// TODO(crbug.com/402436108): Localize the following strings.
-const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view,
-                                                     std::string_view>({
-    {"application/vnd.google-apps.audio", "Audio"},
-    {"application/vnd.google-apps.document", "Google Docs"},
-    {"application/vnd.google-apps.drive-sdk", "Third-party shortcut"},
-    {"application/vnd.google-apps.drawing", "Google Drawings"},
-    {"application/vnd.google-apps.file", "Google Drive file"},
-    {"application/vnd.google-apps.folder", "Google Drive folder"},
-    {"application/vnd.google-apps.form", "Google Forms"},
-    {"application/vnd.google-apps.fusiontable", "Google Fusion Tables"},
-    {"application/vnd.google-apps.jam", "Google Jamboard"},
-    {"application/vnd.google-apps.mail-layout", "Email layout"},
-    {"application/vnd.google-apps.map", "Google My Maps"},
-    {"application/vnd.google-apps.photo", "Google Photos"},
-    {"application/vnd.google-apps.presentation", "Google Slides"},
-    {"application/vnd.google-apps.script", "Google Apps Script"},
-    {"application/vnd.google-apps.shortcut", "Shortcut"},
-    {"application/vnd.google-apps.site", "Google Sites"},
-    {"application/vnd.google-apps.spreadsheet", "Google Sheets"},
-    {"application/vnd.google-apps.unknown", ""},
-    {"application/vnd.google-apps.vid", "MP4"},
-    {"application/vnd.google-apps.video", "Video"},
-    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-     "Microsoft Word"},
-    {"application/vnd.oasis.opendocument.text", "OpenDocument"},
-    {"application/rtf", "Rich Text"},
-    {"application/pdf", "PDF"},
-    {"text/plain", "Plain Text"},
-    {"application/zip", "ZIP"},
-    {"application/epub+zip", "EPUB ZIP"},
-    {"text/markdown", "Markdown"},
-    {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-     "Microsoft Excel"},
-    {"application/x-vnd.oasis.opendocument.spreadsheet",
-     "OpenDocument Spreadsheet"},
-    {"text/csv", "Comma Separated Values"},
-    {"text/tab-separated-values", "Tab Separated Values"},
+const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view, int>({
+    {"application/json", IDS_CONTENT_SUGGESTION_DESCRIPTION_JSON},
+    {"application/rtf", IDS_CONTENT_SUGGESTION_DESCRIPTION_RICH_TEXT_FORMAT},
+    {"application/pdf", IDS_CONTENT_SUGGESTION_DESCRIPTION_PDF},
+    {"application/vnd.google-apps.document",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DOCS},
+    {"application/vnd.google-apps.drawing",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRAWINGS},
+    {"application/vnd.google-apps.folder",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_DRIVE_FOLDER},
+    {"application/vnd.google-apps.form",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_FORMS},
+    {"application/vnd.google-apps.jam",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_JAMBOARD},
+    {"application/vnd.google-apps.photo",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_PHOTOS},
+    {"application/vnd.google-apps.presentation",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SLIDES},
+    {"application/vnd.google-apps.script",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_APPS_SCRIPT},
+    {"application/vnd.google-apps.site",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SITES},
+    {"application/vnd.google-apps.spreadsheet",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_GOOGLE_SHEETS},
     {"application/"
      "vnd.openxmlformats-officedocument.presentationml.presentation",
-     "Microsoft PowerPoint"},
-    {"application/vnd.oasis.opendocument.presentation", "ODP"},
-    {"image/jpeg", "JPEG"},
-    {"image/png", "PNG"},
-    {"image/svg+xml", "Scalable Vector Graphics"},
-    {"application/vnd.google-apps.script+json", "JSON"},
-    {"video/quicktime", "Quicktime Video"},
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_POWERPOINT},
+    {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_EXCEL},
+    {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_MS_WORD},
+    {"application/vnd.oasis.opendocument.presentation",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_PRESENTATION},
+    {"application/vnd.oasis.opendocument.spreadsheet",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_SPREADSHEET},
+    {"application/vnd.oasis.opendocument.text",
+     IDS_CONTENT_SUGGESTION_DESCRIPTION_OPEN_DOCUMENT_TEXT},
+    {"application/zip", IDS_CONTENT_SUGGESTION_DESCRIPTION_ZIP_FILE},
+    {"image/jpeg", IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_JPEG},
+    {"image/png", IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_PNG},
+    {"image/svg+xml", IDS_CONTENT_SUGGESTION_DESCRIPTION_IMAGE_SVG},
+    {"text/csv", IDS_CONTENT_SUGGESTION_DESCRIPTION_COMMA_SEPARATED_VALUES},
+    {"text/markdown", IDS_CONTENT_SUGGESTION_DESCRIPTION_MARKDOWN},
+    {"text/plain", IDS_CONTENT_SUGGESTION_DESCRIPTION_PLAIN_TEXT},
+    {"video/mp4", IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_MP4},
+    {"video/quicktime", IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_QUICKTIME},
+    {"video/webm", IDS_CONTENT_SUGGESTION_DESCRIPTION_VIDEO_WEBM},
 });
 
 // A mapping from `source_type` to the human readable `content_type_description`.
-const auto kSourceTypeMapping = base::MakeFixedFlatMap<std::string_view,
-                                                       std::string_view>({
-    {"buganizer", "Buganizer Issue"},
-    {"jira", "Jira Issue"},
-    {"salesforce", "Salesforce"},
-    {"slack", "Slack Message"},
+const auto kSourceTypeMapping = base::MakeFixedFlatMap<std::string_view, int>({
+    {"buganizer", IDS_CONTENT_SUGGESTION_DESCRIPTION_BUGANIZER},
+    {"jira", IDS_CONTENT_SUGGESTION_DESCRIPTION_JIRA},
+    {"salesforce", IDS_CONTENT_SUGGESTION_DESCRIPTION_SALESFORCE},
+    {"slack", IDS_CONTENT_SUGGESTION_DESCRIPTION_SLACK},
 });
 
 // Helper for converting `mime_type` and `source_type` into a human readable
 // string. Prioritizes `mime_type` over `source_type`.
-std::string_view ContentTypeToDescription(const std::string_view& mime_type,
-                                          const std::string_view& source_type) {
+std::u16string ContentTypeToDescription(const std::string_view& mime_type,
+                                        const std::string_view& source_type) {
   const auto mimeTypeIter = kMimeTypeMapping.find(mime_type);
   if (mimeTypeIter != kMimeTypeMapping.end()) {
-    return mimeTypeIter->second;
+    return l10n_util::GetStringUTF16(mimeTypeIter->second);
   }
   const auto sourceTypeIter = kSourceTypeMapping.find(source_type);
-  return sourceTypeIter != kSourceTypeMapping.end() ? sourceTypeIter->second
-                                                    : "";
+  return sourceTypeIter != kSourceTypeMapping.end()
+             ? l10n_util::GetStringUTF16(sourceTypeIter->second)
+             : std::u16string();
 }
 
 // Helper for converting unix timestamp `time` into an abbreviated date.
@@ -931,12 +932,11 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     const std::u16string owner = base::UTF8ToUTF16(ptr_to_string(
         result.FindStringByDottedPath("document.derivedStructData.owner")));
 
-    const std::u16string content_type_description = base::UTF8ToUTF16(
-        ContentTypeToDescription(
-            ptr_to_string(result.FindStringByDottedPath(
-                "document.derivedStructData.mime_type")),
-            ptr_to_string(result.FindStringByDottedPath(
-                "document.derivedStructData.source_type"))));
+    const std::u16string content_type_description = ContentTypeToDescription(
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.mime_type")),
+        ptr_to_string(result.FindStringByDottedPath(
+            "document.derivedStructData.source_type")));
 
     return base::UTF16ToUTF8(GetLocalizedContentMetadata(
         last_updated, owner, content_type_description));

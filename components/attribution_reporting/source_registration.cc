@@ -65,6 +65,8 @@ void RecordFeatureUsage(const SourceRegistration& result) {
       /*exclusive_max=*/25 + 1);
   static_assert(attribution_reporting::kMaxAggregatableNamedBudgetsPerSource ==
                 25);
+  base::UmaHistogramEnumeration("Conversions.TriggerDataMatchingRegistration",
+                                result.trigger_data_matching);
 }
 
 void RecordSourceRegistrationError(SourceRegistrationError error) {

@@ -8,6 +8,6 @@
     Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface PromiseRejectionEvent : Event {
     [CallWith=ScriptState] constructor(DOMString type, PromiseRejectionEventInit eventInitDict);
-    [CallWith=ScriptState] readonly attribute Promise<any> promise;
+    [CallWith=ScriptState] readonly attribute object promise;
     [CallWith=ScriptState] readonly attribute any reason;
 };

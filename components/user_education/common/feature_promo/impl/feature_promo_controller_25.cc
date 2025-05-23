@@ -383,9 +383,6 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
                  : FeaturePromoClosedReason::kOverrideForPrecedence);
   }
 
-  // If the session policy allows overriding other help bubbles, close them.
-  CloseHelpBubbleIfPresent(anchor_element->context());
-
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   if (build_params.spec->promo_type() !=
@@ -402,6 +399,9 @@ FeaturePromoResult FeaturePromoController25::ShowPromo(PromoData& promo_data) {
       !feature_engagement_tracker()->ShouldTriggerHelpUI(feature)) {
     return FeaturePromoResult::kBlockedByConfig;
   }
+
+  // If the session policy allows overriding other help bubbles, close them.
+  CloseHelpBubbleIfPresent(anchor_element->context());
 
   // Store the current promo.
   set_current_promo(std::move(lifecycle));

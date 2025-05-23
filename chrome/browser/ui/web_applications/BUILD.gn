@@ -162,6 +162,9 @@ source_set("app_service_browser_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/fileapi" ]
+    deps += [
+      "//chrome/browser/ash/fileapi",
+      "//chrome/browser/sharesheet",
+    ]
   }
 }

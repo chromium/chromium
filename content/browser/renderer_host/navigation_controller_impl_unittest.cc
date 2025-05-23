@@ -4107,7 +4107,8 @@ TEST_F(NavigationControllerTest,
   // NavigateToNavigationApiKey(). No navigation should occur.
   controller.NavigateToNavigationApiKey(
       main_test_rfh(),
-      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_key);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_key,
+      /*actual_navigation_start=*/base::TimeTicks::Now());
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
@@ -4143,14 +4144,15 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
       main_test_rfh()->frame_tree_node()->child_at(0);
   controller_impl().NavigateToNavigationApiKey(
       subframe_node->current_frame_host(),
-      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_main_key);
+      /*soft_navigation_heuristics_task_id=*/std::nullopt, first_main_key,
+      /*actual_navigation_start=*/base::TimeTicks::Now());
   EXPECT_FALSE(controller_impl().GetPendingEntry());
 
   // Call NavigateToNavigationApiKey() on the main frame with the key from the
   // main frame. This time a navigation should begin.
   controller_impl().NavigateToNavigationApiKey(
       main_test_rfh(), /*soft_navigation_heuristics_task_id=*/std::nullopt,
-      first_main_key);
+      first_main_key, /*actual_navigation_start=*/base::TimeTicks::Now());
   EXPECT_TRUE(controller_impl().GetPendingEntry());
 }
 

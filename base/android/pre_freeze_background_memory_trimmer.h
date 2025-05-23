@@ -41,7 +41,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   enum class CompactCancellationReason {
     kAppFreezer,
     kPageResumed,
-    kMaxValue = kPageResumed
+    kTimeout,
+    kMaxValue = kTimeout
   };
 
   static PreFreezeBackgroundMemoryTrimmer& Instance();
@@ -127,7 +128,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // If we are currently running self compaction, cancel it. If it was running,
   // record a metric with the reason for the cancellation.
   static void MaybeCancelCompaction(
-      CompactCancellationReason cancellation_reason);
+      CompactCancellationReason cancellation_reason) LOCKS_EXCLUDED(lock());
 
   static void SetSupportsModernTrimForTesting(bool is_supported);
   static void ClearMetricsForTesting() LOCKS_EXCLUDED(lock());
@@ -166,7 +167,9 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   friend class PreFreezeSelfCompactionTestWithParam;
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Disabled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, Cancel);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTestWithParam, TimeoutCancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, SimpleCancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
@@ -275,7 +278,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     virtual bool IsFeatureEnabled() const = 0;
     virtual std::string GetMetricName(std::string_view name) const = 0;
     void MaybeReadProcMaps();
-    virtual scoped_refptr<CompactionMetric> MakeCompactionMetric() const = 0;
+    virtual scoped_refptr<CompactionMetric> MakeCompactionMetric(
+        base::TimeTicks started_at) const = 0;
     virtual base::TimeDelta GetDelayAfterPreFreezeTasks() const = 0;
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
@@ -294,7 +298,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     bool IsFeatureEnabled() const override;
     base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
     std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric() const override;
+    scoped_refptr<CompactionMetric> MakeCompactionMetric(
+        base::TimeTicks started_at) const override;
   };
 
   class RunningCompactionState final : public CompactionState {
@@ -307,7 +312,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     bool IsFeatureEnabled() const override;
     base::TimeDelta GetDelayAfterPreFreezeTasks() const override;
     std::string GetMetricName(std::string_view name) const override;
-    scoped_refptr<CompactionMetric> MakeCompactionMetric() const override;
+    scoped_refptr<CompactionMetric> MakeCompactionMetric(
+        base::TimeTicks started_at) const override;
   };
 
   PreFreezeBackgroundMemoryTrimmer();
@@ -338,6 +344,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       LOCKS_EXCLUDED(lock());
   static bool ShouldContinueCompaction(base::TimeTicks compaction_triggered_at)
       LOCKS_EXCLUDED(lock());
+  static bool TimeoutExceeded();
 
   static std::optional<uint64_t> CompactMemory(
       std::vector<debug::MappedMemoryRegion>* regions,
@@ -403,6 +410,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeTicks::Min();
   // When we last triggered self compaction. Used to record metrics.
   base::TimeTicks compaction_last_triggered_ GUARDED_BY(lock()) =
+      base::TimeTicks::Min();
+  // When we last started self compaction. Used to know if we should cancel
+  // compaction due to it taking too long.
+  base::TimeTicks compaction_last_started_ GUARDED_BY(lock()) =
       base::TimeTicks::Min();
   // When we last finished self compaction (either successfully, or from
   // being cancelled). Used to record metrics.

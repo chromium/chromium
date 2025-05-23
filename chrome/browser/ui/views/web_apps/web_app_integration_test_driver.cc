@@ -170,6 +170,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #else
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
@@ -1777,6 +1778,17 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   ASSERT_TRUE(app_browser_->is_type_app());
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
   active_app_id_ = app_browser()->app_controller()->app_id();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // In certain tests where window controls overlay is being tested, if the app
+  // does not capture navigations by default, the EnableLinkCapturingInfoBar
+  // shows up, preventing the WCO area from being drawn. Since current tests
+  // using the integration testing framework do not interact with that UI, close
+  // it to prevent WCO related tests from flaking.
+  apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(
+      app_browser_->tab_strip_model()->GetActiveWebContents());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   AfterStateChangeAction();
 }
 

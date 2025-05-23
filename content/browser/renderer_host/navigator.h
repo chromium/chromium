@@ -108,7 +108,8 @@ class CONTENT_EXPORT Navigator {
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
       blink::LocalFrameToken initiator_frame_token,
-      int initiator_process_id);
+      int initiator_process_id,
+      base::TimeTicks actual_navigation_start);
 
   // Navigation requests -------------------------------------------------------
 

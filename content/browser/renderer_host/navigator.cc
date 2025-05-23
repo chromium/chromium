@@ -472,10 +472,11 @@ bool Navigator::StartHistoryNavigationInNewSubframe(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
     blink::LocalFrameToken initiator_frame_token,
-    int initiator_process_id) {
+    int initiator_process_id,
+    base::TimeTicks actual_navigation_start) {
   return controller_.StartHistoryNavigationInNewSubframe(
       render_frame_host, navigation_client, initiator_frame_token,
-      initiator_process_id);
+      initiator_process_id, actual_navigation_start);
 }
 
 void Navigator::DidNavigate(
@@ -1220,7 +1221,8 @@ void Navigator::OnBeginNavigation(
     if (begin_params->initiator_frame_token &&
         frame_tree_node->navigator().StartHistoryNavigationInNewSubframe(
             frame_tree_node->current_frame_host(), &navigation_client,
-            *begin_params->initiator_frame_token, initiator_process_id)) {
+            *begin_params->initiator_frame_token, initiator_process_id,
+            common_params->actual_navigation_start)) {
       return;
     }
   }

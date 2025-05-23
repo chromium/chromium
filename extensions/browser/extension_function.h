@@ -400,6 +400,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   bool is_from_service_worker() const { return worker_id_.has_value(); }
 
+  bool did_initialize() const { return did_initialize_; }
+  void set_did_initialize() { did_initialize_ = true; }
+
   ResponseType* response_type() const { return response_type_.get(); }
 
   // Whether this function has responded.
@@ -668,6 +671,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Any class that gets a malformed message should set this to true before
   // returning.  Usually we want to kill the message sending process.
   bool bad_message_ = false;
+
+  // Set to true when an extension function is created successfully without
+  // error. This implies all setup state should be valid on the function for
+  // some assertions made during destruction.
+  bool did_initialize_ = false;
 
   // Set to true when RunWithValidation() is called, to look for callers using
   // the method more than once on a single ExtensionFunction. Note that some

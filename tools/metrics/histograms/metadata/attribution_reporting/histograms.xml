@@ -1421,6 +1421,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.TriggerDataMatchingModulusSameInputOutput"
+    units="bool" expires_after="2025-08-24">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When a chosen source for attribution contains the trigger data matching mode
+    `modulus`, measures whether the passed trigger data equals the source's
+    chosen trigger data. Recorded when creating an event-level report.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerDataMatchingRegistration"
+    enum="ConversionTriggerDataMatching" expires_after="2025-08-24">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the trigger data matching mode when registering a source (modulus is
+    the default mode). Recorded on successful source registration.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.TriggerRegistrationError11"
     enum="ConversionTriggerRegistrationError" expires_after="2025-08-24">
   <owner>tquintanilla@chromium.org</owner>

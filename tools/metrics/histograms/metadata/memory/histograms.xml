@@ -2757,7 +2757,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.RunningOrSelfCompact.Renderer.CancellationReason"
+<histogram name="Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason"
     enum="SelfCompactionCancellationReason" expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>

@@ -827,16 +827,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
         1);
-    // This navigation has no start adjustment or delayed start time, so there
-    // are no IgnoredIncorrectly metrics reported.
+    // This navigation has no start adjustment, but the
+    //`actual_navigation_start` is now recorded at an earlier time (closer to
+    // the start of the navigation) than the web-facing `navigation_start_time`
+    // in NavigateWithoutEntry, so this triggers IgnoredIncorrectly metrics.
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.Duration", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 1);
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 1);
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 1);
     histogram_tester.ExpectTotalCount(
-        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 0);
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 1);
   }
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.

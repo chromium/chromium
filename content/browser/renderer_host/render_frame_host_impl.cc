@@ -8343,6 +8343,8 @@ void RenderFrameHostImpl::GoToEntryAtOffset(
         soft_navigation_heuristics_task_id) {
   OPTIONAL_TRACE_EVENT2("content", "RenderFrameHostImpl::GoToEntryAtOffset",
                         "render_frame_host", this, "offset", offset);
+  // TODO(crbug.com/385170155): Pass the actual start time from the renderer.
+  base::TimeTicks actual_navigation_start = base::TimeTicks::Now();
 
   // Non-user initiated navigations coming from the renderer should be ignored
   // if there is an ongoing browser-initiated navigation.
@@ -8358,7 +8360,8 @@ void RenderFrameHostImpl::GoToEntryAtOffset(
   // All frames are allowed to navigate the global history.
   if (delegate_->IsAllowedToGoToEntryAtOffset(offset)) {
     frame_tree_->controller().GoToOffsetFromRenderer(
-        offset, this, soft_navigation_heuristics_task_id);
+        offset, this, soft_navigation_heuristics_task_id,
+        actual_navigation_start);
   }
 }
 
@@ -8366,6 +8369,9 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(
     const std::string& key,
     bool has_user_gesture,
     std::optional<blink::scheduler::TaskAttributionId> task_id) {
+  // TODO(crbug.com/385170155): Pass the actual start time from the renderer.
+  base::TimeTicks actual_navigation_start = base::TimeTicks::Now();
+
   // Non-user initiated navigations coming from the renderer should be ignored
   // if there is an ongoing browser-initiated navigation.
   // See https://crbug.com/879965.
@@ -8376,7 +8382,8 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(
           frame_tree_->root()->navigation_request(), has_user_gesture)) {
     return;
   }
-  frame_tree_->controller().NavigateToNavigationApiKey(this, task_id, key);
+  frame_tree_->controller().NavigateToNavigationApiKey(this, task_id, key,
+                                                       actual_navigation_start);
 }
 
 void RenderFrameHostImpl::NavigateEventHandlerPresenceChanged(bool present) {

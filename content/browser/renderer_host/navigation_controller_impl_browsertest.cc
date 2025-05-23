@@ -21405,8 +21405,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // NavigateToNavigationApiKey() should not crash if the renderer manages to
   // call it when there is no committed origin.
-  controller.NavigateToNavigationApiKey(current_main_frame_host(), std::nullopt,
-                                        "key_doesnt_matter");
+  controller.NavigateToNavigationApiKey(
+      current_main_frame_host(), std::nullopt, "key_doesnt_matter",
+      /*actual_navigation_start=*/base::TimeTicks::Now());
 }
 
 // Tests that renderer-initiated navigation cancellation from the same JS task
