@@ -1484,9 +1484,7 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
                    update_type == UpdateType::kSyncPass ||
                    update_type == UpdateType::kLastAsyncPass ||
                    update_type == UpdateType::kMatchDeletion ||
-                   (omnibox_feature_configs::DocumentProvider::Get()
-                        .ignore_when_debouncing &&
-                    update_type == UpdateType::kLastAsyncPassExceptDoc);
+                   update_type == UpdateType::kLastAsyncPassExceptDoc;
 
   RequestNotifyChanged(default_match_changed, !immediate);
 }

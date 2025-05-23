@@ -1349,13 +1349,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxDriveSuggestionsIgnoreWhenDebouncing[] = {
-        {"DocumentProviderIgnoreWhenDebouncing", "true"}};
-const FeatureEntry::FeatureVariation kOmniboxDriveSuggestionsVariations[] = {
-    {"ignore when debouncing", kOmniboxDriveSuggestionsIgnoreWhenDebouncing,
-     std::size(kOmniboxDriveSuggestionsIgnoreWhenDebouncing), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionPreProdUrl[] = {
     {"StarterPackGeminiUrlOverride", "https://gemini.google.com/corp/prompt"}};
 const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionStagingUrl[] = {
@@ -6711,12 +6704,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDomainSuggestions)},
 
-    {"omnibox-drive-suggestions",
-     flag_descriptions::kOmniboxDriveSuggestionsName,
-     flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
-                                    kOmniboxDriveSuggestionsVariations,
-                                    "OmniboxDocumentProvider")},
     {"omnibox-drive-suggestions-no-sync-requirement",
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementName,
      flag_descriptions::kOmniboxDriveSuggestionsNoSyncRequirementDescription,

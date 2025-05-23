@@ -5732,12 +5732,6 @@ const char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "
     "with the main landmark on the node identified as main.";
 
-const char kOmniboxDriveSuggestionsName[] =
-    "Omnibox Google Drive Document suggestions";
-const char kOmniboxDriveSuggestionsDescription[] =
-    "Display suggestions for Google Drive documents in the omnibox when Google "
-    "is the default search engine.";
-
 const char kOmniboxDriveSuggestionsNoSyncRequirementName[] =
     "Omnibox Google Drive Document suggestions don't require Chrome Sync";
 const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[] =

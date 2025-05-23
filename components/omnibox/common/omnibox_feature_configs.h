@@ -224,9 +224,6 @@ struct DocumentProvider : Config<DocumentProvider> {
   bool enabled;
   // The minimum input length required before requesting document suggestions.
   size_t min_query_length;
-  // Whether to ignore the state of the document provider when deciding to
-  // finish debouncing.
-  bool ignore_when_debouncing;
   // Whether to scope backoff state to the profile instead of the current
   // window.
   bool scope_backoff_to_profile;

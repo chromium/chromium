@@ -6993,11 +6993,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-drive-suggestions",
-    "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "omnibox-drive-suggestions-no-setting",
     "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com", "chrome-privacy-controls@google.com" ],
     "expiry_milestone": 132
