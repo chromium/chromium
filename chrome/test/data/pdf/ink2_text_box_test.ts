@@ -7,10 +7,10 @@ import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefg
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertDeepEquals, getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import {assertDeepEquals, getRequiredElement, setUpInkTestContext} from './test_util.js';
 
 // Set up a dummy viewport so that we can get a predictable initial state.
-const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
+const {viewport, mockPlugin} = setUpInkTestContext();
 const manager = Ink2Manager.getInstance();
 manager.initializeTextAnnotations();
 const textbox = document.createElement('ink-text-box');
@@ -784,6 +784,9 @@ chrome.test.runTests([
     // Initialize to a 100x100 box at 10, 10. Place the box in the top corner
     // so that the viewport won't scroll when it is focused.
     initializeBox(100, 100, 10, 10);
+    // Wait for focus to happen so that we can correctly test focus changes
+    // later.
+    await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
@@ -799,10 +802,18 @@ chrome.test.runTests([
     textbox.$.textbox.value = testAnnotation.text;
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
-    // Escape on the textarea focuses the top level box.
-    const whenFocused = eventToPromise('focus', textbox);
+    // Escape on the textarea blurs the textarea to focus the top level box.
+    // This won't actually fire a focus event to the textbox since focus stays
+    // within the box, so we wait for the blur event instead.
+    const whenBlurred = eventToPromise('blur', textbox.$.textbox);
     keyDownOn(textbox.$.textbox, 0, [], 'Escape');
-    await whenFocused;
+    await whenBlurred;
+    // Textbox is still visible, because this event does not commit the
+    // annotation.
+    chrome.test.assertFalse(textbox.hidden);
+    chrome.test.assertTrue(isVisible(textbox));
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
 
     // Escape on the textbox commits the annotation and hides the box.
     keyDownOn(textbox, 0, [], 'Escape');
@@ -951,6 +962,7 @@ chrome.test.runTests([
     // Using manager initialization to get correct coordinates for the zoom
     // level.
     manager.initializeTextAnnotation({x: 20, y: 20});
+    await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     const styles = getComputedStyle(textbox);
     chrome.test.assertEq('20px', styles.getPropertyValue('left'));

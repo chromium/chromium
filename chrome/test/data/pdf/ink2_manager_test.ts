@@ -7,9 +7,9 @@ import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertDeepEquals, MockDocumentDimensions, setGetAnnotationBrushReply, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertDeepEquals, MockDocumentDimensions, setGetAnnotationBrushReply, setUpInkTestContext} from './test_util.js';
 
-const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
+const {viewport, mockPlugin, mockWindow} = setUpInkTestContext();
 const manager = Ink2Manager.getInstance();
 
 function getTestAnnotation(id: number): TextAnnotation {
@@ -336,6 +336,112 @@ chrome.test.runTests([
     whenViewportChanged = eventToPromise('viewport-changed', manager);
     viewport.setZoom(1.0);
     await whenViewportChanged;
+
+    chrome.test.succeed();
+  },
+
+  async function testInitializeTextboxNoLocation() {
+    // Update the viewport to be sufficiently large to accommodate a default
+    // size textbox for testing.
+    const documentDimensions = new MockDocumentDimensions(0, 0);
+    documentDimensions.addPage(400, 500);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    // Make the viewport window larger.
+    mockWindow.setSize(500, 500);
+
+    let whenInitEvent = eventToPromise('initialize-text-box', manager);
+    // Initialize without a location. This is what happens when the user creates
+    // a textbox by using "Enter" on the plugin, instead of with the mouse.
+    manager.initializeTextAnnotation();
+    let initEvent = await whenInitEvent;
+
+    // The full document fits in the window.
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+    // The page is centered on the viewport in the x direction, so it runs from
+    // 55 to 445 after subtracting the 5px shadows on each side. The center is
+    // at (55 + 445) / 2 = 250. Subtract half the default width to get the left
+    // edge.
+    chrome.test.assertEq(
+        250 - DEFAULT_TEXTBOX_WIDTH / 2,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    // The visible page starts at the y shadow/margin, which is 3, and is 490
+    // tall after accounting for shadows. The center is at
+    // (493 + 3) / 2 = 248. Subtract half the default height to get the top
+    // edge.
+    chrome.test.assertEq(
+        248 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
+    chrome.test.assertEq(55, initEvent.detail.pageCoordinates.x);
+    chrome.test.assertEq(3, initEvent.detail.pageCoordinates.y);
+
+    // Zoom to 2.0. Now, the new annotation should be centered on the visible
+    // portion of the page.
+    viewport.setZoom(2.0);
+    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    // Initialize without a location. This is what happens when the user creates
+    // a textbox by using "Enter" on the plugin, instead of with the mouse.
+    manager.initializeTextAnnotation();
+    initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+    // The page starts at the x shadow/margin, which is 10, and goes to the
+    // viewport edge. The center is (500 + 10) / 2 = 255. Subtract half the
+    // default width to get the left edge.
+    chrome.test.assertEq(
+        255 - DEFAULT_TEXTBOX_WIDTH / 2,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    // The visible page starts at the y shadow/margin, which is 6, and goes to
+    // the viewport edge. The center is (500 + 6) / 2 = 253. Subtract half the
+    // default height to get the top edge.
+    chrome.test.assertEq(
+        253 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
+    chrome.test.assertEq(10, initEvent.detail.pageCoordinates.x);
+    chrome.test.assertEq(6, initEvent.detail.pageCoordinates.y);
+
+    // Zoom to 0.5. The new box should still be centered on the page, even
+    // though it is not centered in the viewport.
+    viewport.setZoom(0.5);
+    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    // Initialize without a location. This is what happens when the user creates
+    // a textbox by using "Enter" on the plugin, instead of with the mouse.
+    Ink2Manager.getInstance().initializeTextAnnotation();
+    initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+    // The page is centered on the viewport in the x direction, so it runs from
+    // 152.5 to 347.5. The center is at (152.5 + 347.5) / 2 = 250. Subtract half
+    // the default width to get the left edge.
+    chrome.test.assertEq(
+        250 - DEFAULT_TEXTBOX_WIDTH / 2,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    // The page starts at the y margin/shadow of 1.5 and runs to 246.5 since it
+    // is 245 tall without the shadows. The center is at
+    // (1.5 + 246.5) / 2 = 124. Subtract half the default height to get the top
+    // edge.
+    chrome.test.assertEq(
+        124 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
+    chrome.test.assertEq(152.5, initEvent.detail.pageCoordinates.x);
+    chrome.test.assertEq(1.5, initEvent.detail.pageCoordinates.y);
+
+    // Reset zoom, window size and annotation id for next test.
+    viewport.setZoom(1.0);
+    manager.resetAnnotationIdForTest();
+    mockWindow.setSize(100, 100);
 
     chrome.test.succeed();
   },

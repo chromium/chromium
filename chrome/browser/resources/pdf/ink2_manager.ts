@@ -138,6 +138,10 @@ export class Ink2Manager extends EventTarget {
     this.viewport_ = viewport;
   }
 
+  resetAnnotationIdForTest() {
+    this.nextAnnotationId_ = 0;
+  }
+
   private isClickOnScrollbar_(location: Point): boolean {
     assert(this.viewport_);
     const hasScrollbars = this.viewport_.documentHasScrollbars();
@@ -155,14 +159,20 @@ export class Ink2Manager extends EventTarget {
 
   // Initialize a text annotation at `location` in screen coordinates.
   // No-op if there is no PDF page at `location`.
-  initializeTextAnnotation(location: Point) {
+  // If location is not provided, creates the annotation at the center of
+  // the visible portion of the most visible page.
+  initializeTextAnnotation(location?: Point) {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
 
-    // Only actually compute the page if the click isn't on a scrollbar.
-    const page = this.isClickOnScrollbar_(location) ?
-        -1 :
-        this.viewport_.getPageAtPoint(location);
+    let page = -1;
+    if (!location) {
+      page = this.viewport_.getMostVisiblePage();
+    } else if (!this.isClickOnScrollbar_(location)) {
+      // Only actually compute the page if the click isn't on a scrollbar.
+      page = this.viewport_.getPageAtPoint(location);
+    }
+
     if (page === -1) {
       // In any case where we ignore the click, blur the textbox. Otherwise,
       // the textarea will remain in focus and will continue handling all
@@ -173,6 +183,20 @@ export class Ink2Manager extends EventTarget {
     }
 
     const pageDimensions = this.viewport_.getPageScreenRect(page);
+    // Set location to the middle of the visible portion of the page.
+    if (!location) {
+      const minX = Math.max(pageDimensions.x, 0);
+      const minY = Math.max(pageDimensions.y, 0);
+      const maxX = Math.min(
+          pageDimensions.x + pageDimensions.width, this.viewport_.size.width);
+      const maxY = Math.min(
+          pageDimensions.y + pageDimensions.height, this.viewport_.size.height);
+      location = {
+        x: Math.max(0, (minX + maxX) / 2 - DEFAULT_TEXTBOX_WIDTH / 2),
+        y: Math.max(0, (minY + maxY) / 2 - DEFAULT_TEXTBOX_HEIGHT / 2),
+      };
+    }
+
     // Is the click in an existing box?
     let existing = null;
     // Get the annotations for the current page.

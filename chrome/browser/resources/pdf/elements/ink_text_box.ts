@@ -347,6 +347,16 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.pageNumber_ = data.annotation.pageNumber;
     this.textOrientation_ = data.annotation.textOrientation;
     this.updateTextAttributes_(data.annotation.textAttributes);
+
+    this.focusTextboxWhenReady_();
+  }
+
+  private async focusTextboxWhenReady_() {
+    await this.updateComplete;
+    setTimeout(() => {
+      this.$.textbox.focus();
+      this.fire('textbox-focused-for-test');
+    }, 0);
   }
 
   private onViewportChanged_(update: ViewportParams) {

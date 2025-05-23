@@ -560,9 +560,12 @@ export function setupTestMockPluginForInk(): MockPdfPluginElement {
 // Sets up zoomable viewport and a dummy plugin for Ink. This combines the
 // functionality of getZoomableViewport() and setupTestMockPluginForInk(), which
 // are mutually exclusive since they both attempt to call setContent() on the
-// viewport. Returns a reference to the new viewport and plugin.
-export function setupTestViewportAndMockPluginForInk():
-    {viewport: Viewport, mockPlugin: MockPdfPluginElement} {
+// viewport. Returns a reference to the new viewport, plugin and mock window.
+export function setUpInkTestContext(): {
+  viewport: Viewport,
+  mockPlugin: MockPdfPluginElement,
+  mockWindow: MockElement,
+} {
   // Clear the DOM and create dummy content.
   document.body.innerHTML = '';
   const dummyContent = document.createElement('div');
@@ -608,7 +611,7 @@ export function setupTestViewportAndMockPluginForInk():
   // changes. In prod these are piped through the top level pdf-viewer element.
   viewport.setViewportChangedCallback(() => manager.viewportChanged());
 
-  return {viewport, mockPlugin};
+  return {viewport, mockPlugin, mockWindow};
 }
 
 /**

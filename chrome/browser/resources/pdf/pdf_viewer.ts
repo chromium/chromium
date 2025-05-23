@@ -464,6 +464,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           e.preventDefault();
         }
         return;
+      // <if expr="enable_pdf_ink2">
+      case 'Enter':
+        if ((e as ExtendedKeyEvent).fromPlugin &&
+            this.isInTextAnnotationMode_()) {
+          Ink2Manager.getInstance().initializeTextAnnotation();
+        }
+        // </if>
     }
 
     // Handle toolbar related key events.
