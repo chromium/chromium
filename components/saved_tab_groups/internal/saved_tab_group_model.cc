@@ -543,6 +543,30 @@ void SavedTabGroupModel::UpdateTabLastSeenTime(const base::Uuid& group_id,
   }
 }
 
+void SavedTabGroupModel::UpdatePositionForSharedGroupFromSync(
+    const base::Uuid& group_id,
+    std::optional<size_t> position) {
+  const SavedTabGroup* group = Get(group_id);
+  if (!group || !group->is_shared_tab_group() ||
+      group->position() == position) {
+    return;
+  }
+
+  // Remove the tab group, set position and reinsert.
+  const int index = GetIndexOf(group_id).value();
+  SavedTabGroup saved_group = RemoveImpl(index);
+  if (position.has_value()) {
+    saved_group.SetPosition(position.value());
+  } else {
+    saved_group.SetPinned(false);
+  }
+  InsertGroupImpl(std::move(saved_group));
+
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(group_id, /*tab_guid=*/std::nullopt);
+  }
+}
+
 void SavedTabGroupModel::UpdateLastUpdaterCacheGuidForGroup(
     const std::optional<std::string>& cache_guid,
     const LocalTabGroupID& group_id,

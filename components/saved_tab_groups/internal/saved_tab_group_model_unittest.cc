@@ -1382,6 +1382,49 @@ TEST_F(SavedTabGroupModelObserverTest,
                                 .last_seen_time());
 }
 
+TEST_F(SavedTabGroupModelTest, UpdatePositionForSharedGroupFromSyncFromSync) {
+  RemoveTestData();
+
+  // Create some tab groups with initial orders.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {}, 0);
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {},
+                        1);
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {},
+                        2);
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {},
+                        std::nullopt);
+
+  group_1.SetCollaborationId(CollaborationId("collaboration"));
+  group_2.SetCollaborationId(CollaborationId("collaboration"));
+  group_3.SetCollaborationId(CollaborationId("collaboration"));
+  group_4.SetCollaborationId(CollaborationId("collaboration"));
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_3, group_2, group_4, group_1};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->AddedLocally(group_1);
+  saved_tab_group_model_->AddedLocally(group_2);
+  saved_tab_group_model_->AddedLocally(group_3);
+  saved_tab_group_model_->AddedLocally(group_4);
+
+  // Change the order of groups.
+  saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(
+      group_1.saved_guid(), std::nullopt);
+  saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(
+      group_2.saved_guid(), 1);
+  saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(
+      group_3.saved_guid(), 0);
+  saved_tab_group_model_->UpdatePositionForSharedGroupFromSync(
+      group_4.saved_guid(), 2);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_EQ(groups[i].saved_guid(),
+              saved_tab_group_model_->saved_tab_groups()[i].saved_guid());
+  }
+}
+
 }  // namespace
 
 }  // namespace tab_groups

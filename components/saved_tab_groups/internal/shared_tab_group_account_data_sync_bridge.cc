@@ -46,6 +46,11 @@ std::string CreateClientTagForSharedTab(const CollaborationId& collaboration_id,
   return tab_guid.AsLowercaseString() + "|" + collaboration_id.value();
 }
 
+std::string CreateClientTagForSharedGroup(const SavedTabGroup& group) {
+  return group.saved_guid().AsLowercaseString() + "|" +
+         group.collaboration_id().value().value();
+}
+
 // Returns the client tag for this specifics object. Note that
 // SharedTabGroupAccountDataSpecifics uses the client tag as a storage key.
 std::string GetClientTagFromSpecifics(
@@ -98,6 +103,24 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
   return entity_data;
 }
 
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSharedTabGroup(
+    const SavedTabGroupModel& model,
+    const SavedTabGroup& tab_group) {
+  CHECK(tab_group.is_shared_tab_group());
+
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
+  specifics.set_guid(tab_group.saved_guid().AsLowercaseString());
+  specifics.set_collaboration_id(tab_group.collaboration_id()->value());
+
+  sync_pb::SharedTabGroupDetails* tab_group_details =
+      specifics.mutable_shared_tab_group_details();
+  if (tab_group.position().has_value()) {
+    tab_group_details->set_pinned_position(tab_group.position().value());
+  }
+
+  return CreateEntityDataFromSpecifics(specifics);
+}
+
 bool SharedTabExistsForSpecifics(
     const SavedTabGroupModel& model,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
@@ -113,6 +136,28 @@ bool SharedTabExistsForSpecifics(
 
   const base::Uuid tab_id = base::Uuid::ParseCaseInsensitive(specifics.guid());
   return group->GetTab(tab_id) != nullptr;
+}
+
+bool IsTabDetailsValid(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  if (!specifics.has_shared_tab_details()) {
+    // Non-tab account specifics should be handled here.
+    return false;
+  }
+
+  const sync_pb::SharedTabDetails& tab_details = specifics.shared_tab_details();
+  if (!base::Uuid::ParseCaseInsensitive(tab_details.shared_tab_group_guid())
+           .is_valid() ||
+      !tab_details.has_last_seen_timestamp_windows_epoch()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool IsTabGroupDetailsValid(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  return specifics.has_shared_tab_group_details();
 }
 
 }  // namespace
@@ -182,6 +227,8 @@ SharedTabGroupAccountDataSyncBridge::ApplyIncrementalSyncChanges(
         // find the specifics in-memory.
         if (specifics.has_shared_tab_details()) {
           UpdateTabDetailsModel(specifics);
+        } else if (specifics.has_shared_tab_group_details()) {
+          UpdateTabGroupDetailsModel(specifics);
         }
 
         break;
@@ -276,19 +323,7 @@ bool SharedTabGroupAccountDataSyncBridge::IsEntityDataValid(
     return false;
   }
 
-  if (!specifics.has_shared_tab_details()) {
-    // Non-tab account specifics should be handled here.
-    return false;
-  }
-
-  const sync_pb::SharedTabDetails& tab_details = specifics.shared_tab_details();
-  if (!base::Uuid::ParseCaseInsensitive(tab_details.shared_tab_group_guid())
-           .is_valid() ||
-      !tab_details.has_last_seen_timestamp_windows_epoch()) {
-    return false;
-  }
-
-  return true;
+  return IsTabDetailsValid(specifics) || IsTabGroupDetailsValid(specifics);
 }
 
 sync_pb::EntitySpecifics
@@ -354,6 +389,7 @@ syncer::ConflictResolution SharedTabGroupAccountDataSyncBridge::ResolveConflict(
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupModelLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplyMissingTabData();
+  ApplyMissingTabGroupData();
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
@@ -417,32 +453,42 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedLocally(
 
   const SavedTabGroup* group = model_->Get(group_guid);
   CHECK(group);
-  if (!group->is_shared_tab_group() || !tab_guid) {
+  if (!group->is_shared_tab_group()) {
     return;
   }
 
-  const SavedTabGroupTab* tab = group->GetTab(tab_guid.value());
-  if (tab) {
-    return;
+  if (tab_guid) {
+    MaybeRemoveTabDetailsOnGroupUpdate(*group, tab_guid);
+  } else {
+    // Handle shared tab group details.
+    WriteTabGroupDetailToSyncIfPositionChanged(*group);
   }
-
-  // This is an update for a shared tab deletion from local. Remove the
-  // corresponding entity from sync.
-  const std::string storage_key = CreateClientTagForSharedTab(
-      group->collaboration_id().value(), tab_guid.value());
-  RemoveEntitySpecifics(storage_key);
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
     const std::optional<base::Uuid>& tab_guid) {
-  // Regardless of update source, we need to detect tab deletions and clean them
-  // up from sync.
-  SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(group_guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group()) {
+    return;
+  }
+
+  MaybeRemoveTabDetailsOnGroupUpdate(*group, tab_guid);
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedLocally(
     const SavedTabGroup& removed_group) {
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
   if (!removed_group.is_shared_tab_group()) {
     return;
   }
@@ -451,11 +497,62 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedLocally(
   for (const SavedTabGroupTab& tab : removed_group.saved_tabs()) {
     RemoveEntitySpecifics(CreateClientTagForSharedTab(removed_group, tab));
   }
+
+  // Remove tab group details entity.
+  RemoveEntitySpecifics(CreateClientTagForSharedGroup(removed_group));
 }
 
 void SharedTabGroupAccountDataSyncBridge::SavedTabGroupRemovedFromSync(
     const SavedTabGroup& removed_group) {
   SavedTabGroupRemovedLocally(removed_group);
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupAddedLocally(
+    const base::Uuid& guid) {
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(guid);
+
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  WriteTabGroupDetailToSyncIfPositionChanged(*group);
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupAddedFromSync(
+    const base::Uuid& guid) {
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(guid);
+
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  std::string client_tag = CreateClientTagForSharedGroup(*group);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      GetSpecificsForStorageKey(client_tag);
+  if (specifics.has_value()) {
+    UpdateTabGroupDetailsModel(specifics.value());
+  }
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupReorderedLocally() {
+  if (!is_initialized_) {
+    // Ignore any changes before the model is successfully initialized.
+    return;
+  }
+
+  for (const SavedTabGroup* group : model_->GetSharedTabGroupsOnly()) {
+    WriteTabGroupDetailToSyncIfPositionChanged(*group);
+  }
 }
 
 bool SharedTabGroupAccountDataSyncBridge::IsInitialized() const {
@@ -516,9 +613,12 @@ void SharedTabGroupAccountDataSyncBridge::OnReadAllDataAndMetadata(
       // GUID is used as a storage key, so it should always match.
       continue;
     }
+
     specifics_[storage_key] = specifics;
     if (specifics.has_shared_tab_details()) {
       UpdateTabDetailsModel(specifics);
+    } else if (specifics.has_shared_tab_group_details()) {
+      UpdateTabGroupDetailsModel(specifics);
     }
   }
 
@@ -565,6 +665,29 @@ void SharedTabGroupAccountDataSyncBridge::UpdateTabDetailsModel(
   storage_keys_for_missing_tabs_.erase(storage_key);
 }
 
+void SharedTabGroupAccountDataSyncBridge::UpdateTabGroupDetailsModel(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  CHECK(specifics.has_shared_tab_group_details());
+
+  const std::string storage_key = GetClientTagFromSpecifics(specifics);
+  const base::Uuid tab_group_id =
+      base::Uuid::ParseCaseInsensitive(specifics.guid());
+  const SavedTabGroup* group = model_->Get(tab_group_id);
+  if (!group) {
+    storage_keys_for_missing_tab_groups_.insert(storage_key);
+    return;
+  }
+
+  // If the group is in the model, update its position based on the specifics.
+  std::optional<size_t> position;
+  if (specifics.shared_tab_group_details().has_pinned_position()) {
+    position = specifics.shared_tab_group_details().pinned_position();
+  }
+  model_->UpdatePositionForSharedGroupFromSync(tab_group_id, position);
+
+  storage_keys_for_missing_tab_groups_.erase(storage_key);
+}
+
 void SharedTabGroupAccountDataSyncBridge::ApplyMissingTabData() {
   // Find previously missing tabs have now been added. Create a copy of
   // the strings from `storage_keys_for_missing_tabs_` so this set can
@@ -585,6 +708,28 @@ void SharedTabGroupAccountDataSyncBridge::ApplyMissingTabData() {
   }
 }
 
+void SharedTabGroupAccountDataSyncBridge::ApplyMissingTabGroupData() {
+  // Find previously missing tab groups have now been added. Create a copy of
+  // the strings from `storage_keys_for_missing_tab_groups_` so this set can
+  // be mutated in `UpdateTabGroupDetailsModel`.
+  std::vector<std::string> groups_in_model;
+  groups_in_model.reserve(storage_keys_for_missing_tab_groups_.size());
+
+  for (const std::string& storage_key : storage_keys_for_missing_tab_groups_) {
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+        specifics_.at(storage_key);
+    const base::Uuid tab_group_id =
+        base::Uuid::ParseCaseInsensitive(specifics.guid());
+    if (model_->Get(tab_group_id)) {
+      groups_in_model.emplace_back(storage_key);
+    }
+  }
+
+  for (const std::string& storage_key : groups_in_model) {
+    UpdateTabGroupDetailsModel(specifics_.at(storage_key));
+  }
+}
+
 void SharedTabGroupAccountDataSyncBridge::WriteEntityToSync(
     std::unique_ptr<syncer::EntityData> entity) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
@@ -598,7 +743,10 @@ void SharedTabGroupAccountDataSyncBridge::WriteEntityToSync(
   if (specifics.has_shared_tab_details()) {
     // For tab details, remove them from the missing tabs.
     storage_keys_for_missing_tabs_.erase(storage_key);
+  } else if (specifics.has_shared_tab_group_details()) {
+    storage_keys_for_missing_tab_groups_.erase(storage_key);
   }
+
   batch->WriteData(storage_key, specifics.SerializeAsString());
 
   change_processor()->Put(storage_key, std::move(entity),
@@ -662,6 +810,51 @@ SharedTabGroupAccountDataSyncBridge::CreateEntityDataFromSavedTabGroupTab(
       SerializeTime(tab.last_seen_time().value()));
 
   return CreateEntityDataFromSpecifics(specifics);
+}
+
+void SharedTabGroupAccountDataSyncBridge::MaybeRemoveTabDetailsOnGroupUpdate(
+    const SavedTabGroup& group,
+    const std::optional<base::Uuid>& tab_guid) {
+  if (!tab_guid) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group.GetTab(tab_guid.value());
+  if (tab) {
+    return;
+  }
+
+  // This is an update for a shared tab deletion from local. Remove the
+  // corresponding entity from sync.
+  const std::string storage_key = CreateClientTagForSharedTab(
+      group.collaboration_id().value(), tab_guid.value());
+  RemoveEntitySpecifics(storage_key);
+}
+
+void SharedTabGroupAccountDataSyncBridge::
+    WriteTabGroupDetailToSyncIfPositionChanged(const SavedTabGroup& group) {
+  std::string client_tag = CreateClientTagForSharedGroup(group);
+  std::optional<sync_pb::SharedTabGroupAccountDataSpecifics> specifics =
+      GetSpecificsForStorageKey(client_tag);
+  bool has_changed = false;
+  if (specifics.has_value()) {
+    std::optional<size_t> specifics_pinned_position;
+    if (specifics->has_shared_tab_group_details()) {
+      if (specifics->shared_tab_group_details().has_pinned_position()) {
+        specifics_pinned_position =
+            specifics->shared_tab_group_details().pinned_position();
+      }
+    }
+    if (group.position() != specifics_pinned_position) {
+      has_changed = true;
+    }
+  } else {
+    has_changed = true;
+  }
+
+  if (has_changed) {
+    WriteEntityToSync(CreateEntityDataFromSharedTabGroup(*model_, group));
+  }
 }
 
 }  // namespace tab_groups

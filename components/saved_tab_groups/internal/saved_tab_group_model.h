@@ -207,6 +207,11 @@ class SavedTabGroupModel {
                              base::Time time,
                              TriggerSource source);
 
+  // Update the position for a share group from sync. If the position is
+  // nullopt, the group will be moved to the end of the list.
+  void UpdatePositionForSharedGroupFromSync(const base::Uuid& group_id,
+                                            std::optional<size_t> position);
+
   // Update the last updater cache guid for a give group and optionally a tab.
   void UpdateLastUpdaterCacheGuidForGroup(
       const std::optional<std::string>& cache_guid,

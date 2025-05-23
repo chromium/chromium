@@ -429,10 +429,15 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
     base::Time update_time) {
   SetTitle(title);
   SetColor(color);
-  if (position.has_value()) {
-    SetPosition(position.value());
-  } else {
-    SetPinned(false);
+
+  // Do not merge position for shared tab group since the position is saved from
+  // elsewhere.
+  if (!is_shared_tab_group()) {
+    if (position.has_value()) {
+      SetPosition(position.value());
+    } else {
+      SetPinned(false);
+    }
   }
 
   SetCreatorCacheGuid(creator_cache_guid);
