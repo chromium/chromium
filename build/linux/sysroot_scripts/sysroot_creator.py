@@ -21,7 +21,22 @@ import requests
 import reversion_glibc
 
 DISTRO = "debian"
-RELEASE = "bullseye"
+RELEASES = {
+    "amd64": "bullseye",
+    "i386": "bullseye",
+    "armhf": "bullseye",
+    "arm64": "bullseye",
+    "mipsel": "bullseye",
+    "mips64el": "bullseye",
+    "ppc64el": "bullseye",
+    "riscv64": "trixie",
+}
+
+GCC_VERSIONS = {
+    "bullseye": 10,
+    "trixie": 12,
+}
+
 
 # This number is appended to the sysroot key to cause full rebuilds.  It
 # should be incremented when removing packages or patching existing packages.
@@ -31,7 +46,6 @@ SYSROOT_RELEASE = 1
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 CHROME_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", ".."))
-BUILD_DIR = os.path.join(CHROME_DIR, "out", "sysroot-build", RELEASE)
 
 # gpg keyring file generated using generate_keyring.sh
 KEYRING_FILE = os.path.join(SCRIPT_DIR, "keyring.gpg")
@@ -49,6 +63,17 @@ APT_SOURCES_LIST = [
     ("bullseye-updates", ["main", "contrib", "non-free"]),
     ("bullseye-backports", ["main", "contrib", "non-free"]),
 ]
+APT_SOURCES_LIST_RISCV = [("trixie", ["main", "contrib"])]
+APT_SOURCES_LISTS = {
+    "amd64": APT_SOURCES_LIST,
+    "i386": APT_SOURCES_LIST,
+    "armhf": APT_SOURCES_LIST,
+    "arm64": APT_SOURCES_LIST,
+    "mipsel": APT_SOURCES_LIST,
+    "mips64el": APT_SOURCES_LIST,
+    "ppc64el": APT_SOURCES_LIST,
+    "riscv64": APT_SOURCES_LIST_RISCV,
+}
 
 TRIPLES = {
     "amd64": "x86_64-linux-gnu",
@@ -58,6 +83,12 @@ TRIPLES = {
     "mipsel": "mipsel-linux-gnu",
     "mips64el": "mips64el-linux-gnuabi64",
     "ppc64el": "powerpc64le-linux-gnu",
+    "riscv64": "riscv64-linux-gnu",
+}
+
+LIB_DIRS = {
+    "bullseye": "lib",
+    "trixie": "usr/lib",
 }
 
 REQUIRED_TOOLS = [
@@ -137,7 +168,7 @@ DEBIAN_PACKAGES = [
     "mesa-common-dev",
     "qt6-base-dev",
     "qtbase5-dev",
-    "valgrind",
+    "valgrind-if-available",
 ]
 
 
@@ -229,15 +260,15 @@ def download_file(url: str, dest: str, retries=5) -> None:
         raise Exception(f"Failed to download file after {retries} attempts")
 
 
-def sanity_check() -> None:
+def sanity_check(build_dir: str) -> None:
     """
     Performs sanity checks to ensure the environment is correctly set up.
     """
     banner("Sanity Checks")
 
     # Determine the Chrome build directory
-    os.makedirs(BUILD_DIR, exist_ok=True)
-    print(f"Using build directory: {BUILD_DIR}")
+    os.makedirs(build_dir, exist_ok=True)
+    print(f"Using build directory: {build_dir}")
 
     # Check for required tools
     missing = [tool for tool in REQUIRED_TOOLS if not shutil.which(tool)]
@@ -251,9 +282,9 @@ def clear_install_dir(install_root: str) -> None:
     os.makedirs(install_root)
 
 
-def create_tarball(install_root: str, arch: str) -> None:
-    tarball_path = os.path.join(BUILD_DIR,
-                                f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
+def create_tarball(install_root: str, arch: str, build_dir: str) -> None:
+    tarball_path = os.path.join(
+        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz")
     banner("Creating tarball " + tarball_path)
     command = [
         "tar",
@@ -273,16 +304,16 @@ def create_tarball(install_root: str, arch: str) -> None:
     subprocess.run(command, check=True)
 
 
-def generate_package_list_dist_repo(arch: str, dist: str,
-                                    repo_name: str) -> list[dict[str, str]]:
+def generate_package_list_dist_repo(arch: str, dist: str, repo_name: str,
+                                    build_dir: str) -> list[dict[str, str]]:
     repo_basedir = f"{ARCHIVE_URL}/dists/{dist}"
-    package_list = f"{BUILD_DIR}/Packages.{dist}_{repo_name}_{arch}"
+    package_list = f"{build_dir}/Packages.{dist}_{repo_name}_{arch}"
     package_list = f"{package_list}.{PACKAGES_EXT}"
     package_file_arch = f"{repo_name}/binary-{arch}/Packages.{PACKAGES_EXT}"
     package_list_arch = f"{repo_basedir}/{package_file_arch}"
 
     download_or_copy_non_unique_filename(package_list_arch, package_list)
-    verify_package_listing(package_file_arch, package_list, dist)
+    verify_package_listing(package_file_arch, package_list, dist, build_dir)
 
     with lzma.open(package_list, "rt") as src:
         return [
@@ -293,21 +324,26 @@ def generate_package_list_dist_repo(arch: str, dist: str,
         ]
 
 
-def generate_package_list(arch: str) -> dict[str, str]:
+def generate_package_list(arch: str, build_dir: str) -> dict[str, str]:
     # Workaround for some misconfigured package dependencies.
     BROKEN_DEPS = {
         "libgcc1",
         "qt6-base-abi",
+        "libc-dev",  # pulls in a newer libc6-dev
     }
 
     package_meta = {}
-    for dist, repos in APT_SOURCES_LIST:
+    sources = APT_SOURCES_LISTS[arch]
+    for dist, repos in sources:
         for repo_name in repos:
-            for meta in generate_package_list_dist_repo(arch, dist, repo_name):
+            for meta in generate_package_list_dist_repo(
+                    arch, dist, repo_name, build_dir):
                 package_meta[meta["Package"]] = meta
                 if "Provides" not in meta:
                     continue
                 for provides in meta["Provides"].split(", "):
+                    # Strip version requirements
+                    provides = provides.split()[0]
                     if provides in package_meta:
                         continue
                     package_meta[provides] = meta
@@ -327,9 +363,10 @@ def generate_package_list(arch: str) -> dict[str, str]:
     # Read the input file and create a dictionary mapping package names to URLs
     # and checksums.
     missing = set(DEBIAN_PACKAGES)
+    # Add corresponding libstdc++-dev package (needed for trixie)
+    missing.add(f"libstdc++-{GCC_VERSIONS[RELEASES[arch]]}-dev")
     package_dict: dict[str, str] = {}
-    for meta in package_meta.values():
-        package = meta["Package"]
+    for package in package_meta:
         if package in missing:
             missing.remove(package)
             add_package_dependencies(package)
@@ -338,7 +375,7 @@ def generate_package_list(arch: str) -> dict[str, str]:
 
     # Write the URLs and checksums of the requested packages to the output file
     output_file = os.path.join(SCRIPT_DIR, "generated_package_lists",
-                               f"{RELEASE}.{arch}")
+                               f"{RELEASES[arch]}.{arch}")
     with open(output_file, "w") as f:
         f.write("\n".join(sorted(package_dict)) + "\n")
     return package_dict
@@ -385,7 +422,7 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
         "include",
         TRIPLES[arch],
         "c++",
-        "10",
+        str(GCC_VERSIONS[RELEASES[arch]]),
         "bits",
         "c++config.h",
     )
@@ -422,6 +459,16 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
 
     # Remove a cyclic symlink: /usr/bin/X11 -> /usr/bin
     os.remove(os.path.join(install_root, "usr/bin/X11"))
+
+
+def create_extra_symlinks(install_root: str, arch: str):
+    if RELEASES[arch] != "bullseye":
+        # Recent debian releases no longer symlink lib{dl,pthread,rt}.so
+        for lib in ["libdl.so.2", "librt.so.1", "libpthread.so.0"]:
+            os.symlink(
+                lib,
+                os.path.join(install_root, "lib", TRIPLES[arch],
+                             lib.rpartition(".")[0]))
 
 
 def replace_in_file(file_path: str, search_pattern: str,
@@ -549,15 +596,17 @@ def removing_unnecessary_files(install_root, arch):
     """
     # Preserve these files.
     gcc_triple = "i686-linux-gnu" if arch == "i386" else TRIPLES[arch]
+    gcc_version = GCC_VERSIONS[RELEASES[arch]]
     ALLOWLIST = {
         "usr/bin/cups-config",
-        f"usr/lib/gcc/{gcc_triple}/10/libgcc.a",
+        f"usr/lib/gcc/{gcc_triple}/{gcc_version}/libgcc.a",
         f"usr/lib/{TRIPLES[arch]}/libc_nonshared.a",
         f"usr/lib/{TRIPLES[arch]}/libffi_pic.a",
     }
 
     for file in ALLOWLIST:
-        assert os.path.exists(os.path.join(install_root, file))
+        assert os.path.exists(os.path.join(install_root,
+                                           file)), f"{file} does not exist"
 
     # Remove all executables and static libraries, and any symlinks that
     # were pointing to them.
@@ -590,9 +639,11 @@ def strip_sections(install_root: str, arch: str):
     few files used by other Chromium-related projects.
     """
     PRESERVED_FILES = (
-        'libc-2.31.so',
-        'libm-2.31.so',
-        'ld-2.31.so',
+        # Old debian(bullseye) has ld-2.31.so,
+        # while in trixie, it is ld-linux-$ARCH.so.2
+        r'(libc\.so\.\d)|(libc-\d.\d\d\.so)',
+        r'(libm\.so\.\d)|(libm-\d.\d\d\.so)',
+        r'(ld-linux.*\.so\.\d)|(ld-\d.\d\d\.so)',
     )
 
     PRESERVED_SECTIONS = {
@@ -608,13 +659,17 @@ def strip_sections(install_root: str, arch: str):
     }
 
     preserved_files_count = 0
-    lib_arch_path = os.path.join(install_root, "lib", TRIPLES[arch])
+    lib_dir = LIB_DIRS[RELEASES[arch]]
+    lib_arch_path = os.path.join(install_root, lib_dir, TRIPLES[arch])
     for root, _, files in os.walk(install_root):
         for file in files:
             file_path = os.path.join(root, file)
-            if file_path.startswith(lib_arch_path) and file in PRESERVED_FILES:
-                preserved_files_count += 1
-                continue
+            if file_path.startswith(lib_arch_path):
+                for preserved in PRESERVED_FILES:
+                    if re.match(preserved,
+                                file) and not os.path.islink(file_path):
+                        preserved_files_count += 1
+                        continue
 
             if (os.access(file, os.X_OK) or file.endswith((".a", ".o"))
                     or os.path.islink(file_path)):
@@ -651,7 +706,9 @@ def strip_sections(install_root: str, arch: str):
                 ] + [file_path])
                 subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
     if preserved_files_count != len(PRESERVED_FILES):
-        raise Exception("Expected file to preserve missing")
+        raise Exception(
+            f"Expected file(s) to preserve missing, preserved " +
+            f"{preserved_files_count}, expected {len(PRESERVED_FILES)}")
 
 
 def record_metadata(install_root: str) -> dict[str, tuple[float, float]]:
@@ -700,23 +757,24 @@ def restore_metadata(install_root: str,
                 os.utime(file_path, restore_time, follow_symlinks=False)
 
 
-def build_sysroot(arch: str) -> None:
-    install_root = os.path.join(BUILD_DIR, f"{RELEASE}_{arch}_staging")
+def build_sysroot(arch: str, build_dir: str) -> None:
+    install_root = os.path.join(build_dir, f"{RELEASES[arch]}_{arch}_staging")
     clear_install_dir(install_root)
-    packages = generate_package_list(arch)
-    install_into_sysroot(BUILD_DIR, install_root, packages)
+    packages = generate_package_list(arch, build_dir)
+    install_into_sysroot(build_dir, install_root, packages)
     old_metadata = record_metadata(install_root)
     hacks_and_patches(install_root, SCRIPT_DIR, arch)
+    create_extra_symlinks(install_root, arch)
     cleanup_jail_symlinks(install_root)
     removing_unnecessary_files(install_root, arch)
     strip_sections(install_root, arch)
     restore_metadata(install_root, old_metadata)
-    create_tarball(install_root, arch)
+    create_tarball(install_root, arch, build_dir)
 
 
-def upload_sysroot(arch: str) -> str:
-    tarball_path = os.path.join(BUILD_DIR,
-                                f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
+def upload_sysroot(arch: str, build_dir: str) -> str:
+    tarball_path = os.path.join(
+        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz")
     command = [
         "upload_to_google_storage_first_class.py",
         "--bucket",
@@ -726,8 +784,8 @@ def upload_sysroot(arch: str) -> str:
     return subprocess.check_output(command).decode("utf-8")
 
 
-def verify_package_listing(file_path: str, output_file: str,
-                           dist: str) -> None:
+def verify_package_listing(file_path: str, output_file: str, dist: str,
+                           build_dir: str) -> None:
     """
     Verifies the downloaded Packages.xz file against its checksum and GPG keys.
     """
@@ -736,8 +794,8 @@ def verify_package_listing(file_path: str, output_file: str,
     release_list = f"{repo_basedir}/{RELEASE_FILE}"
     release_list_gpg = f"{repo_basedir}/{RELEASE_FILE_GPG}"
 
-    release_file = os.path.join(BUILD_DIR, f"{dist}-{RELEASE_FILE}")
-    release_file_gpg = os.path.join(BUILD_DIR, f"{dist}-{RELEASE_FILE_GPG}")
+    release_file = os.path.join(build_dir, f"{dist}-{RELEASE_FILE}")
+    release_file_gpg = os.path.join(build_dir, f"{dist}-{RELEASE_FILE_GPG}")
 
     if not os.path.exists(KEYRING_FILE):
         raise Exception(f"KEYRING_FILE not found: {KEYRING_FILE}")
@@ -775,13 +833,15 @@ def main():
     parser.add_argument("command", choices=["build", "upload"])
     parser.add_argument("architecture", choices=list(TRIPLES))
     args = parser.parse_args()
+    build_dir = os.path.join(CHROME_DIR, "out", "sysroot-build",
+                             RELEASES[args.architecture])
 
-    sanity_check()
+    sanity_check(build_dir)
 
     if args.command == "build":
-        build_sysroot(args.architecture)
+        build_sysroot(args.architecture, build_dir)
     elif args.command == "upload":
-        upload_sysroot(args.architecture)
+        upload_sysroot(args.architecture, build_dir)
 
 
 if __name__ == "__main__":
