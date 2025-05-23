@@ -141,6 +141,69 @@
           invokee.show();
           assert_true(invokee.open, "invokee.open");
           assert_false(invokee.matches(":modal"), "invokee :modal");
+          if (setType === "property") {
+            containedinvoker.command = command;
+          } else {
+            containedinvoker.setAttribute("command", command);
+          }
+          invokee.returnValue = "test";
+          containedinvoker.setAttribute("value", "foo");
+          containedinvoker.click();
+          assert_equals(invokee.returnValue, "foo");
+          assert_false(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
+        },
+        `invoking to close (with command ${setType} as ${command}) open dialog closes and overrides returnValue`,
+      );
+
+      test(
+        function (t) {
+          t.add_cleanup(resetState);
+          invokee.show();
+          assert_true(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
+          if (setType === "property") {
+            containedinvoker.command = command;
+          } else {
+            containedinvoker.setAttribute("command", command);
+          }
+          invokee.returnValue = "test";
+          containedinvoker.setAttribute("value", "");
+          containedinvoker.click();
+          assert_equals(invokee.returnValue, "");
+          assert_false(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
+        },
+        `invoking to close (with command ${setType} as ${command}) open dialog closes and overrides returnValue when empty string`,
+      );
+
+      test(
+        function (t) {
+          t.add_cleanup(resetState);
+          invokee.show();
+          assert_true(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
+          if (setType === "property") {
+            containedinvoker.command = command;
+          } else {
+            containedinvoker.setAttribute("command", command);
+          }
+          invokee.returnValue = "test";
+          containedinvoker.removeAttribute("value");
+          containedinvoker.click();
+          assert_equals(invokee.returnValue, "test");
+          assert_false(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
+        },
+        `invoking to close (with command ${setType} as ${command}) open dialog closes and doesn't override returnValue when missing value attribute`,
+      );
+
+      test(
+        function (t) {
+          t.add_cleanup(resetState);
+          invokee.show();
+          assert_true(invokee.open, "invokee.open");
+          assert_false(invokee.matches(":modal"), "invokee :modal");
           if (typeof command === "string") {
             if (setType === "property") {
               containedinvoker.command = command;
