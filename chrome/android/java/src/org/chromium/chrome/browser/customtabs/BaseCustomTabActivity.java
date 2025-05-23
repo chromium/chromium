@@ -779,6 +779,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             getFullscreenManager().addObserver(mFullscreenObserver);
             minimizationManager.addObserver(mMinimizationObserver);
         }
+
+        Integer androidBrowserHelperVersion = mIntentDataProvider.getAndroidBrowserHelperVersion();
+        if (androidBrowserHelperVersion != null) {
+            RecordHistogram.recordSparseHistogram(
+                    "CustomTabs.AndroidBrowserHelper.Version",
+                    androidBrowserHelperVersion.intValue());
+        }
     }
 
     @Override

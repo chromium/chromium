@@ -69,6 +69,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CustomTabs.AndroidBrowserHelper.Version" units="versioncode"
+    expires_after="2026-05-21">
+  <owner>hattorij@google.com</owner>
+  <owner>ishitatsuyuki@google.com</owner>
+  <owner>cros-virt-devices-guests@google.com</owner>
+  <summary>
+    Records the version of android_browser_helper during Custom Tabs startup.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.AuthTab.ExternalNavigationScheme"
     enum="CustomTabsAuthScheme" expires_after="2025-08-24">
   <owner>sinansahin@google.com</owner>

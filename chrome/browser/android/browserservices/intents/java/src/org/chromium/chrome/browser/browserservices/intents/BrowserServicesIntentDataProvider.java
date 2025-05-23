@@ -775,4 +775,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public @Nullable Long getTwaStartupUptimeMillis() {
         return null;
     }
+
+    /**
+     * @return the version of android_browser_helper, or null.
+     */
+    public @Nullable Integer getAndroidBrowserHelperVersion() {
+        return null;
+    }
 }
