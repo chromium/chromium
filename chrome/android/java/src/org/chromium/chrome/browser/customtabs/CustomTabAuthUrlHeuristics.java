@@ -12,6 +12,8 @@ import androidx.annotation.IntDef;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -23,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
  * Helper class to record histogram to determine whether the Custom Tab was launched with what looks
  * like an OAuth URL.
  */
+@NullMarked
 public class CustomTabAuthUrlHeuristics {
     // This should be kept in sync with the definition |CustomTabsAuthScheme| in
     // tools/metrics/histograms/metadata/custom_tabs/enums.xml.
@@ -112,7 +115,7 @@ public class CustomTabAuthUrlHeuristics {
                 CustomTabAuthUrlHeuristics.AuthScheme.COUNT);
     }
 
-    static @CustomTabAuthUrlHeuristics.AuthScheme int getAuthSchemeEnum(String scheme) {
+    static @CustomTabAuthUrlHeuristics.AuthScheme int getAuthSchemeEnum(@Nullable String scheme) {
         if (UrlConstants.HTTP_SCHEME.equalsIgnoreCase(scheme)) {
             return CustomTabAuthUrlHeuristics.AuthScheme.HTTP;
         } else if (UrlConstants.HTTPS_SCHEME.equalsIgnoreCase(scheme)) {

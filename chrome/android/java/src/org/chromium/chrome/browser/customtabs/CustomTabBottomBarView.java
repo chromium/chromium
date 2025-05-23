@@ -9,13 +9,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 
 /** A custom container view for the Custom Tab bottom bar that supports swipe gesture handling. */
+@NullMarked
 public class CustomTabBottomBarView extends BoundedLinearLayout {
     private final Context mContext;
     private @Nullable BottomBarSwipeGestureListener mSwipeGestureListener;

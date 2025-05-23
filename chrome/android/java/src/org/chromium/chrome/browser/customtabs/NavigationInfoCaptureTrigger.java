@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.LinkedList;
@@ -23,6 +24,7 @@ import java.util.concurrent.Callable;
  * If a capture has not been taken after a long amount of time or when the Tab is hidden, we also
  * capture.
  */
+@NullMarked
 public class NavigationInfoCaptureTrigger {
     private static final int ONLOAD_DELAY_MS = 1000;
     private static final int ONLOAD_LONG_DELAY_MS = 15000;

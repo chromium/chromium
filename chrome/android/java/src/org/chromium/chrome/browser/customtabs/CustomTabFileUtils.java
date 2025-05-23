@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** File utilities for Custom Tabs. */
+@NullMarked
 public class CustomTabFileUtils {
     /** Threshold where old state files should be deleted (30 days). */
     protected static final long STATE_EXPIRY_THRESHOLD = 30L * 24 * 60 * 60 * 1000;

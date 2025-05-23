@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  * The lifetime of a tab is complicated and not always associated with an Activity. Offline page
  * info could be required at any time, so we store it with the tab itself.
  */
+@NullMarked
 public class TwaOfflineDataProvider implements UserData {
     private static final Class<TwaOfflineDataProvider> USER_DATA_KEY = TwaOfflineDataProvider.class;
 
@@ -20,7 +23,7 @@ public class TwaOfflineDataProvider implements UserData {
     private final List<String> mAdditionalTwaOrigins;
     private final String mClientPackageName;
 
-    public static TwaOfflineDataProvider from(Tab tab) {
+    public static @Nullable TwaOfflineDataProvider from(Tab tab) {
         if (tab == null) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
