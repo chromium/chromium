@@ -94,6 +94,14 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   }
 }
 
+// Returns true if the user can sign in.
+bool CanSignIn(ProfileIOS* profile) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  return IsSigninEnabled(auth_service) &&
+         !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
 // Returns true if a Default Browser Promo was canceled.
 bool DefaultBrowserPromoCanceled() {
   std::optional<IOSDefaultBrowserPromoAction> action =
@@ -507,11 +515,7 @@ bool TipsNotificationClient::ShouldSendWhatsNew(ProfileIOS* profile) {
 
 bool TipsNotificationClient::ShouldSendSignin(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
-  return IsSigninEnabled(auth_service) &&
-         !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return CanSignIn(profile);
 }
 
 bool TipsNotificationClient::ShouldSendSetUpListContinuation(
@@ -662,6 +666,15 @@ void TipsNotificationClient::ShowWhatsNew(Browser* browser) {
 
 void TipsNotificationClient::ShowSignin(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The user may have signed in between when the notification was requested
+  // and when it triggered. If the user can no longer sign in, then open
+  // the account settings.
+  if (!CanSignIn(browser->GetProfile())) {
+    [HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands)
+        showAccountsSettingsFromViewController:nil
+                          skipIfUINotAvailable:NO];
+    return;
+  }
   // If there are 0 identities, kInstantSignin requires less taps.
   AuthenticationOperation operation =
       HasIdentitiesOnDevice(browser->GetProfile())

@@ -12,6 +12,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -35,6 +36,11 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -65,8 +71,12 @@ class TipsNotificationClientTest : public PlatformTest {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@"TipsNotificationTrigger"];
     SetupMockNotificationCenter();
-    profile_ =
-        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     BrowserList* list = BrowserListFactory::GetForProfile(profile_);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
@@ -253,6 +263,18 @@ class TipsNotificationClientTest : public PlatformTest {
         local_state->GetInteger(kTipsNotificationsUserType));
   }
 
+  // Signs in with `fakeIdentity1`.
+  void SigninWithFakeIdentity() {
+    FakeSystemIdentityManager* identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    identity_manager->AddIdentity([FakeSystemIdentity fakeIdentity1]);
+    authentication_service->SignIn([FakeSystemIdentity fakeIdentity1],
+                                   signin_metrics::AccessPoint::kUnknown);
+  }
+
   web::WebTaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -344,6 +366,66 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kDefaultBrowser,
                                        1);
+}
+
+// Tests that the client can request a Sign-in notification.
+TEST_F(TipsNotificationClientTest, SigninRequest) {
+  WriteFirstRunSentinel();
+  StubGetPendingRequests(nil);
+  SetSentNotifications(
+      {TipsNotificationType::kSetUpListContinuation,
+       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
+       TipsNotificationType::kOmniboxPosition,
+       TipsNotificationType::kEnhancedSafeBrowsing,
+       TipsNotificationType::kDocking, TipsNotificationType::kDefaultBrowser});
+
+  ExpectNotificationRequest(TipsNotificationType::kSignin);
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
+                                       TipsNotificationType::kSignin, 1);
+
+  // Run again, but this time simulating that the user is signed in, so no
+  // notification will be requested.
+  SigninWithFakeIdentity();
+  SetSentNotifications(
+      {TipsNotificationType::kSetUpListContinuation,
+       TipsNotificationType::kWhatsNew, TipsNotificationType::kLens,
+       TipsNotificationType::kOmniboxPosition,
+       TipsNotificationType::kEnhancedSafeBrowsing,
+       TipsNotificationType::kDocking, TipsNotificationType::kDefaultBrowser});
+  base::RunLoop run_loop_2;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop_2.QuitClosure());
+  run_loop_2.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
+                                       TipsNotificationType::kSignin, 1);
+}
+
+// Tests that the client handles a SignIn notification response.
+TEST_F(TipsNotificationClientTest, SigninHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(SigninPresenter));
+  OCMExpect([mock_handler showSignin:[OCMArg any]]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kSignin);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kSignin, 1);
+
+  SigninWithFakeIdentity();
+  mock_handler = MockHandler(@protocol(SettingsCommands));
+  OCMExpect([mock_handler showAccountsSettingsFromViewController:nil
+                                            skipIfUINotAvailable:NO]);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kSignin, 2);
 }
 
 // Tests that the client can register a Whats New notification.
