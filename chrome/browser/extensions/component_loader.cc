@@ -717,7 +717,10 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
 
   if (!Exists(extension_misc::kEspeakSpeechSynthesisExtensionId)) {
     AddComponentFromDir(
-        base::FilePath(extension_misc::kEspeakSpeechSynthesisExtensionPath),
+        base::FilePath(
+            ::features::IsAccessibilityManifestV3EnabledForEspeakNGTts()
+                ? extension_misc::kEspeakManifestV3SpeechSynthesisExtensionPath
+                : extension_misc::kEspeakSpeechSynthesisExtensionPath),
         extension_misc::kEspeakSpeechSynthesisExtensionId,
         base::BindRepeating(
             &ComponentLoader::FinishLoadSpeechSynthesisExtension,
