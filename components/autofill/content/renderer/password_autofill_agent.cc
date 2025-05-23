@@ -531,6 +531,13 @@ FieldPropertiesFlags GetFieldFlags(AutofillSuggestionTriggerSource source) {
              : FieldPropertiesFlags::kAutofilledOnUserTrigger;
 }
 
+bool IsSubmitElement(WebFormControlElement element) {
+  return element.FormControlTypeForAutofill() ==
+             blink::mojom::FormControlType::kButtonSubmit ||
+         element.FormControlTypeForAutofill() ==
+             blink::mojom::FormControlType::kInputSubmit;
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -1046,7 +1053,22 @@ void PasswordAutofillAgent::SubmitFormWithEnter(
     return;
   }
 
-  // TODO(crbug.com/407488221): Check if form can be submitted with Enter.
+  WebFormElement form = input_element.GetOwningFormForAutofill();
+  // If there is no <form> element owning the input, we can't guarantee Enter
+  // will work.
+  if (!form) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // If there is no submit element in the form, we can't guarantee Enter will
+  // work.
+  if (std::ranges::none_of(form.GetFormControlElements(),  // nocheck
+                           &IsSubmitElement)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   input_element.DispatchSimulatedEnter();
   std::move(callback).Run(true);
 }
