@@ -40,13 +40,17 @@
           const test_origin = new URL(location.href).origin;
           history.pushState({}, "", "/foo.html"); // We will observe this below.
           history.pushState({}, "", "/bar.html"); // Prep for history.back().
-          document.getElementById("soft_nav_div").addEventListener("click", () => {
+          document.getElementById("soft_nav_div").addEventListener("click", async () => {
+            // URL change triggering the soft nav. Since history.back()'s
+            // effect is potentially asynchronous, we wait for it to complete
+            // before we mutate the DOM. This way we ensure that the paints
+            // arrive only after the URL change.
+            history.back();
+            await t.step_wait(() => location.href.endsWith("/foo.html"));
             const img = new Image();
             img.src = "/images/lcp-133x106.png";
             document.getElementById("main").appendChild(img);
-            history.back(); // URL change triggering the soft nav
           });
-
           const helper = new SoftNavigationTestHelper(t);
 
           // Now, click almost_soft_nav_div, and observe that time image
