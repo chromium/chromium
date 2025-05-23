@@ -3649,12 +3649,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
     case mojom::ElementWiseUnary::Kind::kCast: {
       CHECK(data_type_limits.cast_input.Supports(input_descriptor));
       return SerializeCastOperation(
-          input_tensor_index,
-          OperandDataTypeToTFLite(
-              GetOperand(op.input_operand_id).descriptor.data_type()),
-          output_tensor_index,
-          OperandDataTypeToTFLite(
-              GetOperand(op.output_operand_id).descriptor.data_type()));
+          input_tensor_index, input_tensor_info.data_type, output_tensor_index,
+          output_tensor_info.data_type);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
       CHECK(data_type_limits.ceil_input.Supports(input_descriptor));
