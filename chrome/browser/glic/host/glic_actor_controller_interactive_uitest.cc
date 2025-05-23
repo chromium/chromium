@@ -171,13 +171,30 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         })));
   }
 
-
   // Returns a callback that builds an encoded proto for a click action on a
-  // ContentNode that matches the passed in predicate.
+  // ContentNode that matches the passed in label.
+  // Note: This currently assumes acting is occurring on the focused tab.
   ActionProtoProvider ClickActionProvider(std::string_view label) {
     return base::BindLambdaForTesting([this, label]() {
+      content::RenderFrameHost* rfh = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame();
       int32_t node_id = this->SearchAnnotatedPageContent(label);
-      return EncodeActionProto(actor::MakeClick(node_id));
+      return EncodeActionProto(actor::MakeClick(*rfh, node_id));
+    });
+  }
+
+  // Returns a callback that builds an encoded proto for a click action on a
+  // specific dom_node_id.
+  // Note: This currently assumes acting is occurring on the focused tab.
+  ActionProtoProvider ClickActionProvider(int32_t node_id) {
+    return base::BindLambdaForTesting([this, node_id]() {
+      content::RenderFrameHost* rfh = browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetPrimaryMainFrame();
+      return EncodeActionProto(actor::MakeClick(*rfh, node_id));
     });
   }
 
@@ -352,12 +369,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
       std::numeric_limits<int32_t>::max();
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
-  BrowserAction click = actor::MakeClick(kNonExistentContentNodeId);
 
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
-      ExecuteAction(click, UpdatedContextOptions(),
+      ExecuteAction(ClickActionProvider(kNonExistentContentNodeId),
+                    UpdatedContextOptions(),
                     glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
 }
 

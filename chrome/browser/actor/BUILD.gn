@@ -47,6 +47,7 @@ source_set("actor") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
   deps = [

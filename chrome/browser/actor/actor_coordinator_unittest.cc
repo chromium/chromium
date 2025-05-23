@@ -139,12 +139,13 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
-  EXPECT_TRUE(Act(GURL("http://localhost/"), MakeClick(kFakeContentNodeId)));
+  EXPECT_TRUE(Act(GURL("http://localhost/"),
+                  MakeClick(*main_rfh(), kFakeContentNodeId)));
 }
 
 TEST_F(ActorCoordinatorTest, ActFailsOnUnsupportedUrl) {
-  EXPECT_FALSE(
-      Act(GURL(chrome::kChromeUIVersionURL), MakeClick(kFakeContentNodeId)));
+  EXPECT_FALSE(Act(GURL(chrome::kChromeUIVersionURL),
+                   MakeClick(*main_rfh(), kFakeContentNodeId)));
 }
 
 TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
@@ -158,7 +159,8 @@ TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  coordinator.Act(MakeClick(kFakeContentNodeId), result.GetCallback());
+  coordinator.Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                  result.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -176,7 +178,8 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   base::test::TestFuture<mojom::ActionResultPtr> result;
   ActorCoordinator coordinator(profile());
   coordinator.StartTaskForTesting(GetTab());
-  coordinator.Act(MakeClick(kFakeContentNodeId), result.GetCallback());
+  coordinator.Act(MakeClick(*main_rfh(), kFakeContentNodeId),
+                  result.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(result.IsReady());

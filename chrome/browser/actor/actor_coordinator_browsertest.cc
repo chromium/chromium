@@ -77,7 +77,7 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
     std::optional<int> dom_node_id =
         content::GetDOMNodeId(*main_frame(), query_selector);
     ASSERT_TRUE(dom_node_id);
-    BrowserAction action = MakeClick(dom_node_id.value());
+    BrowserAction action = MakeClick(*main_frame(), dom_node_id.value());
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
     ExpectOkResult(result);
