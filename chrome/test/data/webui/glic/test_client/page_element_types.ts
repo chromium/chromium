@@ -121,6 +121,7 @@ export interface PageElementTypes {
   closedCaptioningSwitch: HTMLInputElement;
   setClosedCaptioningTrue: HTMLButtonElement;
   setClosedCaptioningFalse: HTMLButtonElement;
+  dropScrollToHighlightBtn: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

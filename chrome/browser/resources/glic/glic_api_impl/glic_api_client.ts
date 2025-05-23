@@ -234,6 +234,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableScrollTo) {
       this.scrollTo = undefined;
+      this.dropScrollToHighlight = undefined;
     }
 
     if (!state.enableActInFocusedTab) {
@@ -513,6 +514,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       };
     }
     return zeroStateResult.suggestions;
+  }
+
+  dropScrollToHighlight?(): void {
+    this.sender.requestWithResponse(
+        'glicBrowserDropScrollToHighlight', undefined);
   }
 }
 

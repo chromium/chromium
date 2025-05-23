@@ -422,12 +422,19 @@ export declare interface GlicBrowserHost {
    * @todo Not yet implemented for PDFs. https://crbug.com/395859365
    *
    * Scrolls to and (optionally) highlights content specified by an input
-   * selector. Returns a promise that resolves when the selected content is
-   * matched and a scroll is started.
+   * selector. Only one highlight is active at a time. Returns a promise that
+   * resolves when the selected content is matched and a scroll is started. Only
+   * available when `GlicScrollTo` is enabled.
    *
    * @throws {ScrollToError} on failure.
    */
   scrollTo?(params: ScrollToParams): Promise<void>;
+
+  /**
+   * Drops the content highlight from scrollTo(). No effects if no contents are
+   * highlighted. Only available when `GlicScrollTo` is enabled.
+   */
+  dropScrollToHighlight?(): void;
 
   /**
    * Enrolls the Chrome client in the synthetic experiment group specified by
@@ -1093,6 +1100,11 @@ export enum ScrollToErrorReason {
    * Tab context permission was disabled.
    */
   TAB_CONTEXT_PERMISSION_DISABLED = 7,
+
+  /**
+   * The web client requested to drop the highlight via `dropScrollToHighlight`.
+   */
+  DROPPED_BY_WEB_CLIENT = 8,
 }
 
 /**

@@ -366,6 +366,13 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
     }));
   }
 
+  auto UserSwitchesConversation() {
+    const DeepQuery kOnActiveThreadChanged{{"#dropScrollToHighlightBtn"}};
+    static constexpr char kClickFn[] = "el => el.click()";
+    return ExecuteJsAt(test::kGlicContentsElementId, kOnActiveThreadChanged,
+                       kClickFn);
+  }
+
   Selector ExactTextSelector(
       std::string text,
       std::optional<NodeIdCallback> node_id_cb = std::nullopt) {
@@ -979,6 +986,45 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       WaitForEvent(kBrowserViewElementId, kAnnotationAgentDisconnectedByRemote),
       Check([&]() { return !fake_service()->HighlightIsActive(); },
             "Annotations should be dropped"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       HighlightIsDroppedWhenActiveConversationChanged) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      SetTabContextPermission(true),
+      InsertFakeAnnotationService(),  //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      UserSwitchesConversation(),  //
+      WaitForEvent(kBrowserViewElementId, kAnnotationAgentDisconnectedByRemote),
+      Check([&]() { return !fake_service()->HighlightIsActive(); },
+            "Annotations should be dropped"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       ActiveConversationChangedDuringScrollToRequest) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      SetTabContextPermission(true),
+      InsertFakeAnnotationService(),  //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),         //
+      UserSwitchesConversation(),                                            //
+      WaitForScrollToError(mojom::ScrollToErrorReason::kDroppedByWebClient)  //
+  );
 }
 
 class GlicAnnotationManagerWithScrollToDisabledUiTest

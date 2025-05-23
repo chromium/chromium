@@ -671,6 +671,17 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     annotation_manager_->ScrollTo(std::move(params), std::move(callback));
   }
 
+  void DropScrollToHighlight() override {
+    if (!base::FeatureList::IsEnabled(features::kGlicScrollTo)) {
+      receiver_.ReportBadMessage(
+          "Client should not be able to call DropScrollToHighlight without the "
+          "GlicScrollTo feature enabled.");
+      return;
+    }
+    annotation_manager_->RemoveAnnotation(
+        mojom::ScrollToErrorReason::kDroppedByWebClient);
+  }
+
   void SetSyntheticExperimentState(const std::string& trial_name,
                                    const std::string& group_name) override {
     g_browser_process->GetFeatures()
@@ -895,7 +906,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
-  std::unique_ptr<GlicAnnotationManager> annotation_manager_;
+  const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
   std::vector<base::OnceClosure> on_get_user_profile_info_activation_callbacks_;

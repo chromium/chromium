@@ -253,6 +253,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="NoMatchingDocument"/>
   <int value="6" label="SearchRangeInvalid"/>
   <int value="7" label="TabContextPermissionDisabled"/>
+  <int value="8" label="DroppedByWebClient"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ScrollToErrorReason) -->

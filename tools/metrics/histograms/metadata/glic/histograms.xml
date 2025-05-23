@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ClosePanelAndShutdown"/>
     <variant name="CreateTab"/>
     <variant name="DetachPanel"/>
+    <variant name="DropScrollToHighlight"/>
     <variant name="EnableDragResize"/>
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetOsMicrophonePermissionStatus"/>

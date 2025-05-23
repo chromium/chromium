@@ -280,7 +280,7 @@ struct ScrollToNodeSelector {
 // Note: This must be kept in sync with the corresponding enum (same name) in
 // glic_api.ts. The enums are also recorded as histograms when they are
 // reported.
-// Next version: 7
+// Next version: 8
 // LINT.IfChange(ScrollToErrorReason)
 [Stable, Extensible]
 enum ScrollToErrorReason {
@@ -313,6 +313,9 @@ enum ScrollToErrorReason {
 
   // Page context access is disabled.
   [MinVersion=6] kTabContextPermissionDisabled,
+
+  // The web client drops the highlight.
+  [MinVersion=7] kDroppedByWebClient,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicScrollToErrorReason)
 
@@ -490,9 +493,14 @@ interface WebClientHandler {
   // Called when the user rates a response.
   OnResponseRated(bool positive);
 
-  // Scrolls to and (optionally) highlights content specified by `params`.
-  // Returns an error reason if the scroll fails, or null otherwise.
+  // Scrolls to and (optionally) highlights content specified by `params`. Only
+  // one highlight is active at a time. Returns an error reason if the scroll
+  // fails, or null otherwise.
   ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
+
+  // Drops the content highlight from ScrollTo(). No effects if no contents are
+  // highlighted.
+  DropScrollToHighlight();
 
   // Enrolls Chrome in the synthetic experiment group specified by
   // trial_name.group_name. Enrollment will start when the API is called and end
@@ -509,7 +517,6 @@ interface WebClientHandler {
   // Returns zero-state suggestions from the currently active tab.
   GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
       => (ZeroStateSuggestions? suggestions);
-
 };
 
 // Data sent from the browser to the web client with panel opening information.

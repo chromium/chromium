@@ -172,6 +172,7 @@ export declare interface HostRequestTypes {
   glicBrowserScrollTo: {
     request: {params: ScrollToParams},
   };
+  glicBrowserDropScrollToHighlight: {};
   glicBrowserSetSyntheticExperimentState: {
     request: {
       trialName: string,
@@ -316,6 +317,7 @@ type HostRequestEnumNamesType = {
     GetOsMicrophonePermissionStatus: 0,
     GetZeroStateSuggestionsForFocusedTab: 0,
     SetClosedCaptioningSetting: 0,
+    DropScrollToHighlight: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)
