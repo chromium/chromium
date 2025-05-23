@@ -265,6 +265,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
       "</body>"
       "</html>");
   EXPECT_TRUE(NavigateToURL(shell(), page));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
 
   auto* wc = shell()->web_contents();
   ASSERT_TRUE(ExecJs(wc, "focusSelectMenu();"));
@@ -465,6 +466,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
       "</html>");
 
   EXPECT_TRUE(NavigateToURL(shell(), page));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
   auto* wc = shell()->web_contents();
   Attach();
   SendCommandSync("Debugger.enable");
