@@ -21,6 +21,16 @@ using testing::ElementsAreArray;
 class InlineTextAutoSpaceTest : public RenderingTest,
                                 ScopedCSSTextAutoSpaceForTest {
  public:
+  struct AutoSpaceCallback : public InlineTextAutoSpace::Callback {
+    void DidApply(base::span<const OffsetWithSpacing> applied_offsets) final {
+      for (const OffsetWithSpacing& offset : applied_offsets) {
+        offsets.push_back(offset.offset);
+      }
+    }
+
+    Vector<wtf_size_t> offsets;
+  };
+
   explicit InlineTextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
   LayoutBlockFlow* PreparePageLayoutBlock(String html,
@@ -44,10 +54,11 @@ class InlineTextAutoSpaceTest : public RenderingTest,
     const LayoutBlockFlow* container =
         PreparePageLayoutBlock(html, container_css);
     InlineNodeData* node_data = container->GetInlineNodeData();
-    Vector<wtf_size_t> offsets;
     InlineTextAutoSpace auto_space(*node_data);
-    auto_space.ApplyIfNeeded(*node_data, &offsets);
-    return offsets;
+    AutoSpaceCallback callback;
+    auto_space.SetCallbackForTesting(&callback);
+    auto_space.ApplyIfNeeded(*node_data);
+    return callback.offsets;
   }
 };
 

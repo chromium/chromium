@@ -101,7 +101,7 @@ struct ShapeResultCharacterData {
 };
 
 // A space should be appended after `offset` with the width of `spacing`.
-struct OffsetWithSpacing {
+struct PLATFORM_EXPORT OffsetWithSpacing {
   wtf_size_t offset;
   float spacing;
 };

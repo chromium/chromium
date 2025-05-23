@@ -101,6 +101,13 @@ class SpacingApplier {
     DCHECK(shape_result);
     shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
     item->SetUnsafeToReuseShapeResult();
+    if (callback_for_testing_) [[unlikely]] {
+      callback_for_testing_->DidApply(offsets_with_spacing_);
+    }
+  }
+
+  void SetCallbackForTesting(InlineTextAutoSpace::Callback* callback) {
+    callback_for_testing_ = callback;
   }
 
  private:
@@ -108,6 +115,7 @@ class SpacingApplier {
   // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
   // the previous item.
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
+  InlineTextAutoSpace::Callback* callback_for_testing_ = nullptr;
 };
 
 }  // namespace
@@ -151,8 +159,7 @@ void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
   }
 }
 
-void InlineTextAutoSpace::Apply(InlineItemsData& data,
-                                Vector<wtf_size_t>* offsets_out) {
+void InlineTextAutoSpace::Apply(InlineItemsData& data) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), ranges_.back().end);
@@ -166,6 +173,7 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
   // whether to add spacing into the bound of two items.
   TextDirection last_direction = TextDirection::kLtr;
   SpacingApplier applier;
+  applier.SetCallbackForTesting(callback_for_testing_);
   for (const Member<InlineItem>& item_ptr : data.items) {
     const InlineItem& item = *item_ptr;
     if (item.Type() != InlineItem::kText) {
@@ -275,11 +283,7 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
       }
     } while (offset < item.EndOffset());
 
-    if (!offsets_out) {
-      applier.SetSpacing(offsets, &item, *style);
-    } else {
-      offsets_out->AppendVector(offsets);
-    }
+    applier.SetSpacing(offsets, &item, *style);
     offsets.Shrink(0);
   }
   // Apply the pending spacing for the last item if needed.
