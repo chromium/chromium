@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 
+#include <array>
 #include <string_view>
+#include <utility>
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
@@ -51,55 +48,53 @@ constexpr float kInkDropHighlightOpacity = 0.08f;
 
 // Helpers ---------------------------------------------------------------------
 
-struct ColorPalette {
-  SkColor flag_off;
-  SkColor dark;
-  SkColor light;
-};
-
 SkColor GetBackgroundColor(int index) {
   // Opacity values:
   // 0x19: 10%
   // 0x4c: 30%
-  constexpr ColorPalette kBackgroundColors[] = {
-      {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
+  constexpr std::array<std::pair<SkColor, SkColor>, 6> kBackgroundColors = {{
+      // First: Dark Mode
+      // Second: Light Mode
+      {SkColorSetA(gfx::kGoogleBlue300, 0x4c),
        SkColorSetA(gfx::kGoogleBlue600, 0x19)},
-      {gfx::kGoogleRed050, SkColorSetA(gfx::kGoogleRed300, 0x4c),
+      {SkColorSetA(gfx::kGoogleRed300, 0x4c),
        SkColorSetA(gfx::kGoogleRed600, 0x19)},
-      {gfx::kGoogleYellow050, SkColorSetA(gfx::kGoogleYellow300, 0x4c),
+      {SkColorSetA(gfx::kGoogleYellow300, 0x4c),
        SkColorSetA(gfx::kGoogleYellow600, 0x19)},
-      {gfx::kGoogleGreen050, SkColorSetA(gfx::kGoogleGreen300, 0x4c),
+      {SkColorSetA(gfx::kGoogleGreen300, 0x4c),
        SkColorSetA(gfx::kGoogleGreen600, 0x19)},
-      {SkColorSetRGB(0xF6, 0xE9, 0xF8), SkColorSetARGB(0x4c, 0xf8, 0x82, 0xff),
+      {SkColorSetARGB(0x4c, 0xf8, 0x82, 0xff),
        SkColorSetARGB(0x19, 0xc6, 0x1a, 0xd9)},
-      {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
-       SkColorSetA(gfx::kGoogleBlue600, 0x19)}};
+      {SkColorSetA(gfx::kGoogleBlue300, 0x4c),
+       SkColorSetA(gfx::kGoogleBlue600, 0x19)},
+  }};
 
   DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(std::size(kBackgroundColors)));
+  DCHECK_LT(index, static_cast<int>(kBackgroundColors.size()));
 
   return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-             ? kBackgroundColors[index].dark
-             : kBackgroundColors[index].light;
+             ? kBackgroundColors[index].first
+             : kBackgroundColors[index].second;
 }
 
 SkColor GetForegroundColor(int index) {
-  constexpr ColorPalette kForegroundColors[] = {
-      {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800},
-      {gfx::kGoogleRed800, gfx::kGoogleRed200, gfx::kGoogleRed800},
-      {SkColorSetRGB(0xBF, 0x50, 0x00), gfx::kGoogleYellow200,
-       SkColorSetRGB(0xBF, 0x50, 0x00)},
-      {gfx::kGoogleGreen800, gfx::kGoogleGreen200, gfx::kGoogleGreen800},
-      {SkColorSetRGB(0x8A, 0x0E, 0x9E), SkColorSetRGB(0xf8, 0x82, 0xff),
-       SkColorSetRGB(0xaa, 0x00, 0xb8)},
-      {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
+  constexpr std::array<std::pair<SkColor, SkColor>, 6> kForegroundColors = {{
+      // First: Dark Mode
+      // Second: Light Mode
+      {gfx::kGoogleBlue200, gfx::kGoogleBlue800},
+      {gfx::kGoogleRed200, gfx::kGoogleRed800},
+      {gfx::kGoogleYellow200, SkColorSetRGB(0xBF, 0x50, 0x00)},
+      {gfx::kGoogleGreen200, gfx::kGoogleGreen800},
+      {SkColorSetRGB(0xf8, 0x82, 0xff), SkColorSetRGB(0xaa, 0x00, 0xb8)},
+      {gfx::kGoogleBlue200, gfx::kGoogleBlue800},
+  }};
 
   DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(std::size(kForegroundColors)));
+  DCHECK_LT(index, static_cast<int>(kForegroundColors.size()));
 
   return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-             ? kForegroundColors[index].dark
-             : kForegroundColors[index].light;
+             ? kForegroundColors[index].first
+             : kForegroundColors[index].second;
 }
 
 }  // namespace

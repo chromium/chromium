@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
+
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
@@ -182,7 +178,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearBookmarkTitle() {
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetPng(
     const scoped_refptr<base::RefCountedMemory>& png) {
-  std::vector<uint8_t> data(png->data(), png->data() + png->size());
+  std::vector<uint8_t> data;
+  data.assign(png->begin(), png->end());
   return SetPng(std::move(data));
 }
 
