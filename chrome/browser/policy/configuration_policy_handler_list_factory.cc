@@ -632,10 +632,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHideWebStoreIcon,
     policy::policy_prefs::kHideWebStoreIcon,
     base::Value::Type::BOOLEAN },
+#endif // !BUILDFLAG(IS_ANDROID)
   { key::kHomepageIsNewTabPage,
     prefs::kHomePageIsNewTabPage,
     base::Value::Type::BOOLEAN },
-#endif // !BUILDFLAG(IS_ANDROID)
   { key::kImagesAllowedForUrls,
     prefs::kManagedImagesAllowedForUrls,
     base::Value::Type::LIST },

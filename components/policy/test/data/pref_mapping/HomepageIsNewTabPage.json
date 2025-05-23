@@ -2,6 +2,7 @@
   {
     "can_be_recommended": true,
     "os": [
+      "android",
       "win",
       "linux",
       "mac",
