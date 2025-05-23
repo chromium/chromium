@@ -59,8 +59,16 @@ class HelpBubbleFactoryRegistryInteractiveUitest
   }
 };
 
+// TODO(crbug.com/419801487): Fix flaky test and re-enable.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AnchorHelpBubbleToViewsMenuItem \
+  DISABLED_AnchorHelpBubbleToViewsMenuItem
+#else
+#define MAYBE_AnchorHelpBubbleToViewsMenuItem AnchorHelpBubbleToViewsMenuItem
+#endif
+
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
-                       AnchorHelpBubbleToViewsMenuItem) {
+                       MAYBE_AnchorHelpBubbleToViewsMenuItem) {
   std::unique_ptr<user_education::HelpBubble> bubble;
 
   RunTestSequence(
