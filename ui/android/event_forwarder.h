@@ -65,6 +65,8 @@ class UI_ANDROID_EXPORT EventForwarder {
       jfloat touch_major_1,
       jfloat touch_minor_0,
       jfloat touch_minor_1,
+      jfloat pressure_0,
+      jfloat pressure_1,
       jfloat orientation_0,
       jfloat orientation_1,
       jfloat tilt_0,

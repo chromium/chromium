@@ -28,11 +28,10 @@ std::unique_ptr<ui::MotionEventAndroid> CreateTouchEventAt(
     float y,
     jobject event,
     base::TimeTicks event_time = base::TimeTicks()) {
-  ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
   return std::unique_ptr<ui::MotionEventAndroid>(new ui::MotionEventAndroidJava(
       nullptr, event, 1.f, 0, 0, 0, event_time, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      false, &pointer0, &pointer1));
+      false, &pointer0, nullptr));
 }
 
 }  // namespace

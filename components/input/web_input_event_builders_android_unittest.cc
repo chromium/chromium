@@ -200,7 +200,9 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 
-  ui::MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f,
+  const float pressure = 0.4f;
+  ui::MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, pressure,
+                                     0.1f, 0.2f,
                                      ui::MotionEventAndroid::GetAndroidToolType(
                                          ui::MotionEvent::ToolType::MOUSE));
   const float raw_offset_x = 11.f;
@@ -224,6 +226,7 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
             (p0.pos_y_pixels + raw_offset_y) * kPixToDip);
   EXPECT_EQ(web_event.button, blink::WebPointerProperties::Button::kLeft);
   EXPECT_EQ(web_event.TimeStamp(), event_time);
+  EXPECT_EQ(web_event.force, pressure);
 }
 
 // TODO(crbug.com/41353469): Add more tests for WebMouseEventBuilder

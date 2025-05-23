@@ -9487,12 +9487,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   auto size = root_view->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
-  ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
   ui::MotionEventAndroidJava event(nullptr, nullptr,
                                    1.f / root_view->GetDipScale(), 0.f, 0.f,
                                    0.f, base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, false, &pointer0, &pointer1);
+                                   0, 0, 0, 0, false, &pointer0, nullptr);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9825,7 +9824,8 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     DCHECK(action >= ui::MotionEvent::Action::DOWN &&
            action < ui::MotionEvent::Action::CANCEL);
 
-    ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+    ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0,
+                                      0);
     JNIEnv* env = base::android::AttachCurrentThread();
     auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
     ui::MotionEventAndroidJava touch(

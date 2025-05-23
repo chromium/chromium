@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
 
   gfx::Point point(/*x=*/100, /*y=*/100);
   int tool_type = static_cast<int>(ui::MotionEvent::ToolType::FINGER);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0,
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0,
                                     tool_type);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();

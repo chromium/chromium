@@ -471,7 +471,7 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   auto& gesture_provider = rwhva->GetGestureProvider();
 
   gfx::Point point(/*x=*/100, /*y=*/100);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
@@ -494,7 +494,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
 
   gfx::Point point(/*x=*/100, /*y=*/100);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;
@@ -554,7 +554,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
       rir_delegate.GetPendingRemote());
 
   gfx::Point point(/*x=*/100, /*y=*/100);
-  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0, 0);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
   auto action = ui::MotionEvent::Action::DOWN;

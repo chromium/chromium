@@ -69,7 +69,7 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
 // to help simplifying test logic and use mock time source.
 class InputTransferHandlerTest : public testing::Test {
  public:
-  InputTransferHandlerTest() : finger_pointer_(0, 0, 0, 0, 0, 0, 0, 0) {}
+  InputTransferHandlerTest() : finger_pointer_(0, 0, 0, 0, 0, 0, 0, 0, 0) {}
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(input::features::kInputOnViz);
@@ -228,7 +228,8 @@ TEST_F(InputTransferHandlerTest, DoNotConsumeNonFingerEvents) {
     }
 
     base::TimeTicks event_time = base::TimeTicks::Now();
-    ui::MotionEventAndroid::Pointer non_finger_pointer(0, 0, 0, 0, 0, 0, 0, 0);
+    ui::MotionEventAndroid::Pointer non_finger_pointer(0, 0, 0, 0, 0, 0, 0, 0,
+                                                       0);
     non_finger_pointer.tool_type = tool_type;
     ui::MotionEventAndroidJava down_event =
         GetMotionEventAndroid(ui::MotionEvent::Action::DOWN, event_time,

@@ -70,6 +70,8 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jfloat touch_major_1,
                                       jfloat touch_minor_0,
                                       jfloat touch_minor_1,
+                                      jfloat pressure_0,
+                                      jfloat pressure_1,
                                       jfloat orientation_0,
                                       jfloat orientation_1,
                                       jfloat tilt_0,
@@ -116,12 +118,21 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;
 
-  ui::MotionEventAndroid::Pointer pointer0(
-      pointer_id_0, pos_x_0, pos_y_0, touch_major_0, touch_minor_0,
-      orientation_0, tilt_0, android_tool_type_0);
-  ui::MotionEventAndroid::Pointer pointer1(
-      pointer_id_1, pos_x_1, pos_y_1, touch_major_1, touch_minor_1,
-      orientation_1, tilt_1, android_tool_type_1);
+  MotionEventAndroid::Pointer pointer0(
+      /*id=*/pointer_id_0, /*pos_x_pixels=*/pos_x_0, /*pos_y_pixels=*/pos_y_0,
+      /*touch_major_pixels=*/touch_major_0,
+      /*touch_minor_pixels=*/touch_minor_0, /*pressure=*/pressure_0,
+      /*orientation_rad=*/orientation_0, /*tilt_rad=*/tilt_0,
+      /*tool_type=*/android_tool_type_0);
+  std::unique_ptr<MotionEventAndroid::Pointer> pointer1;
+  if (pointer_count > 1) {
+    pointer1 = std::make_unique<MotionEventAndroid::Pointer>(
+        /*id=*/pointer_id_1, /*pos_x_pixels=*/pos_x_1, /*pos_y_pixels=*/pos_y_1,
+        /*touch_major_pixels=*/touch_major_1,
+        /*touch_minor_pixels=*/touch_minor_1,
+        /*pressure=*/pressure_1, /*orientation_rad=*/orientation_1,
+        /*tilt_rad=*/tilt_1, /*tool_type=*/android_tool_type_1);
+  }
   // Java |MotionEvent.getDownTime| returns the value in milliseconds, use
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
   // milliseconds timestamp.
@@ -134,7 +145,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
       0 /* action_button */, android_gesture_classification,
       android_button_state, android_meta_state, 0 /* source */,
       raw_pos_x - pos_x_0, raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
-      &pointer1, is_latest_event_resampled);
+      pointer1.get(), is_latest_event_resampled);
 
   if (send_touch_moves_to_observers ||
       android_action !=
@@ -158,8 +169,8 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
                                   jfloat x,
                                   jfloat y,
                                   jint pointer_id,
-                                  jfloat orientation,
                                   jfloat pressure,
+                                  jfloat orientation,
                                   jfloat tilt,
                                   jint android_action_button,
                                   jint android_button_state,
@@ -169,8 +180,10 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
   ui::MotionEventAndroid::Pointer pointer(
-      pointer_id, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */,
-      orientation, tilt, android_tool_type);
+      /*id=*/pointer_id, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
+      /*pressure=*/pressure, /*orientation_rad=*/orientation, /*tilt_rad=*/tilt,
+      /*tool_type=*/android_tool_type);
   ui::MotionEventAndroidJava event(
       env, nullptr /* event */, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
@@ -236,7 +249,10 @@ jboolean EventForwarder::OnGenericMotionEvent(
   auto size = view_->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
-  ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
+  ui::MotionEventAndroid::Pointer pointer0(
+      /*id=*/0, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*touch_major_pixels=*/0, /*touch_minor_pixels=*/0, /*pressure=*/0,
+      /*orientation_rad=*/0, /*tilt_rad=*/0, /*tool_type=*/0);
   // Java |MotionEvent.getDownTime| returns the value in milliseconds, use
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
   // milliseconds timestamp.

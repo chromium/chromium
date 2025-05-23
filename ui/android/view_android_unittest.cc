@@ -76,12 +76,11 @@ class ViewAndroidBoundsTest : public testing::Test {
   }
 
   void GenerateTouchEventAt(float x, float y) {
-    ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
-    ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
+    ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
     ui::MotionEventAndroidJava event(nullptr, JavaParamRef<jobject>(nullptr),
                                      1.f, 0, 0, 0, base::TimeTicks(), 0, 1, 0,
                                      0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
-                                     &pointer1);
+                                     nullptr);
     root_.OnTouchEvent(event);
   }
 

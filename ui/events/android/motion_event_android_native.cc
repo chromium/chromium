@@ -111,24 +111,30 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
 
   const std::unique_ptr<ui::MotionEventAndroid::Pointer> pointer0 =
       std::make_unique<ui::MotionEventAndroid::Pointer>(
-          AMotionEvent_getPointerId(event, 0), AMotionEvent_getX(event, 0),
-          AMotionEvent_getY(event, 0) + y_offset_pix,
-          AMotionEvent_getTouchMajor(event, 0),
-          AMotionEvent_getTouchMinor(event, 0),
-          AMotionEvent_getOrientation(event, 0),
+          /*id=*/AMotionEvent_getPointerId(event, 0),
+          /*pos_x_pixels=*/AMotionEvent_getX(event, 0),
+          /*pos_y_pixels=*/AMotionEvent_getY(event, 0) + y_offset_pix,
+          /*touch_major_pixels=*/AMotionEvent_getTouchMajor(event, 0),
+          /*touch_minor_pixels=*/AMotionEvent_getTouchMinor(event, 0),
+          /*pressure=*/AMotionEvent_getPressure(event, 0),
+          /*orienation_rad=*/AMotionEvent_getOrientation(event, 0),
+          /*tilt_rad=*/
           AMotionEvent_getAxisValue(event, AMOTION_EVENT_AXIS_TILT, 0),
-          AMotionEvent_getToolType(event, 0));
+          /*tool_type=*/AMotionEvent_getToolType(event, 0));
 
   std::unique_ptr<ui::MotionEventAndroid::Pointer> pointer1 = nullptr;
   if (pointer_count > 1) {
     pointer1 = std::make_unique<ui::MotionEventAndroid::Pointer>(
-        AMotionEvent_getPointerId(event, 1), AMotionEvent_getX(event, 1),
-        AMotionEvent_getY(event, 1) + y_offset_pix,
-        AMotionEvent_getTouchMajor(event, 1),
-        AMotionEvent_getTouchMinor(event, 1),
-        AMotionEvent_getOrientation(event, 1),
+        /*id=*/AMotionEvent_getPointerId(event, 1),
+        /*pos_x_pixels=*/AMotionEvent_getX(event, 1),
+        /*pos_y_pixels=*/AMotionEvent_getY(event, 1) + y_offset_pix,
+        /*touch_major_pixels=*/AMotionEvent_getTouchMajor(event, 1),
+        /*touch_minor_pixels=*/AMotionEvent_getTouchMinor(event, 1),
+        /*pressure=*/AMotionEvent_getPressure(event, 1),
+        /*orientation_rad=*/AMotionEvent_getOrientation(event, 1),
+        /*tilt_rad=*/
         AMotionEvent_getAxisValue(event, AMOTION_EVENT_AXIS_TILT, 1),
-        AMotionEvent_getToolType(event, 1));
+        /*tool_type=*/AMotionEvent_getToolType(event, 1));
   }
 
   // TODO(crbug.com/373345667): Move this and other duplicate calculations to

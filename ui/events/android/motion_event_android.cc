@@ -134,6 +134,7 @@ MotionEventAndroid::Pointer::Pointer(jint id,
                                      jfloat pos_y_pixels,
                                      jfloat touch_major_pixels,
                                      jfloat touch_minor_pixels,
+                                     jfloat pressure,
                                      jfloat orientation_rad,
                                      jfloat tilt_rad,
                                      jint tool_type)
@@ -142,10 +143,10 @@ MotionEventAndroid::Pointer::Pointer(jint id,
       pos_y_pixels(pos_y_pixels),
       touch_major_pixels(touch_major_pixels),
       touch_minor_pixels(touch_minor_pixels),
+      pressure(pressure),
       orientation_rad(orientation_rad),
       tilt_rad(tilt_rad),
-      tool_type(tool_type) {
-}
+      tool_type(tool_type) {}
 
 MotionEventAndroid::CachedPointer::CachedPointer() = default;
 
@@ -403,6 +404,9 @@ MotionEventAndroid::CachedPointer MotionEventAndroid::FromAndroidPointer(
       gfx::PointF(ToDips(pointer.pos_x_pixels), ToDips(pointer.pos_y_pixels));
   result.touch_major = ToDips(pointer.touch_major_pixels);
   result.touch_minor = ToDips(pointer.touch_minor_pixels);
+  if (cached_action_ != Action::UP) {
+    result.pressure = pointer.pressure;
+  }
   result.orientation = ToValidFloat(pointer.orientation_rad);
   float tilt_rad = ToValidFloat(pointer.tilt_rad);
   ConvertTiltOrientationToTiltXY(tilt_rad, result.orientation, &result.tilt_x,
@@ -414,15 +418,8 @@ MotionEventAndroid::CachedPointer MotionEventAndroid::FromAndroidPointer(
 MotionEventAndroid::CachedPointer MotionEventAndroid::CreateCachedPointer(
     const CachedPointer& pointer,
     const gfx::PointF& point) const {
-  CachedPointer result;
-  result.id = pointer.id;
+  CachedPointer result = pointer;
   result.position = point;
-  result.touch_major = pointer.touch_major;
-  result.touch_minor = pointer.touch_minor;
-  result.orientation = pointer.orientation;
-  result.tilt_x = pointer.tilt_x;
-  result.tilt_y = pointer.tilt_y;
-  result.tool_type = pointer.tool_type;
   return result;
 }
 

@@ -105,7 +105,10 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   base::TimeTicks event_time = base::TimeTicks::FromJavaNanoTime(time_ns);
   ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
   ui::MotionEventAndroid::Pointer pointer(
-      0, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */, 0.0f, 0.0f, 0);
+      /*id=*/0, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*touch_major_pixels=*/0.0f,
+      /*touch_minor_pixels=*/0.0f, /*pressure=*/0.0f, /*orientation_rad=*/0.0f,
+      /*tilt_rad=*/0.0f, /*tool_type=*/0);
 
   auto* view = web_contents_->GetNativeView();
   auto* window = view->GetWindowAndroid();
@@ -129,8 +132,8 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
                                            jfloat x,
                                            jfloat y,
                                            jint pointer_id,
-                                           jfloat orientation,
                                            jfloat pressure,
+                                           jfloat orientation,
                                            jfloat tilt,
                                            jint android_action_button,
                                            jint android_button_state,
@@ -144,8 +147,11 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
   ui::MotionEventAndroid::Pointer pointer(
-      pointer_id, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */,
-      orientation, tilt, android_tool_type);
+      /*id=*/pointer_id, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*touch_major_pixels=*/0.0f,
+      /*touch_minor_pixels=*/0.0f, /*pressure=*/pressure,
+      /*orientation_rad=*/orientation,
+      /*tilt_rad=*/tilt, /*tool_type=*/android_tool_type);
   ui::MotionEventAndroidJava event(
       env, nullptr /* event */,
       1.f / web_contents_->GetNativeView()->GetDipScale(), 0.f, 0.f, 0.f,
