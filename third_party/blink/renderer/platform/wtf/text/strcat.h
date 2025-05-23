@@ -23,10 +23,8 @@ namespace WTF {
 // It's a Blink-variant of base::StrCat() and absl::StrCat().
 //
 // StrCat is generally faster than operator+ and String::Format.
-[[nodiscard]] WTF_EXPORT String StrCat(base::span<const StringView> pieces);
-[[nodiscard]] inline String StrCat(std::initializer_list<StringView> pieces) {
-  return StrCat(base::span(pieces));
-}
+[[nodiscard]] WTF_EXPORT String
+StrCat(std::initializer_list<StringView> pieces);
 
 }  // namespace WTF
 

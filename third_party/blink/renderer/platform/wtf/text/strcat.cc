@@ -6,6 +6,10 @@
 
 namespace WTF {
 
+namespace {
+
+// Caution: This function calls `Clear()` for items in `pieces` even though
+// the items are `const`, in order to pass checks in ~StringView().
 String StrCat(base::span<const StringView> pieces) {
   size_t size = 0;
   bool is_8bit = true;
@@ -29,6 +33,9 @@ String StrCat(base::span<const StringView> pieces) {
         DCHECK_LT(view[0], 0x0100);
         sub_buffer[0] = view[0];
       }
+#if DCHECK_IS_ON()
+      const_cast<StringView&>(view).Clear();
+#endif
     }
     return impl;
   }
@@ -41,8 +48,17 @@ String StrCat(base::span<const StringView> pieces) {
     } else {
       sub_buffer.copy_from(view.Span16());
     }
+#if DCHECK_IS_ON()
+    const_cast<StringView&>(view).Clear();
+#endif
   }
   return impl;
+}
+
+}  // namespace
+
+String StrCat(std::initializer_list<StringView> pieces) {
+  return StrCat(base::span(pieces));
 }
 
 }  // namespace WTF
