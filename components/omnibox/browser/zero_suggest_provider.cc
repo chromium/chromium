@@ -560,9 +560,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   }
 
   // Do not start a request if async requests are disallowed.
-  if (input.omit_asynchronous_matches() ||
-      omnibox_feature_configs::ContextualSearch::Get()
-          .IsEnabledWithPrefetch()) {
+  if (input.omit_asynchronous_matches()) {
     return;
   }
 
@@ -703,6 +701,13 @@ void ZeroSuggestProvider::OnURLLoadComplete(
 
   loader_.reset();
   done_ = true;
+
+  // The contextual search experience intentionally updates the cache with
+  // latest received results, but does not publish the matches asynchronously.
+  if (omnibox_feature_configs::ContextualSearch::Get()
+          .IsEnabledWithPrefetch()) {
+    return;
+  }
 
   // For display stability reasons, update the displayed results with the remote
   // response only if they are empty or if an empty result set is received. In
