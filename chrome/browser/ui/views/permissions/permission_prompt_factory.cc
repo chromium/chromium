@@ -179,8 +179,10 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
   DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
 
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
-    return std::make_unique<ExclusiveAccessPermissionPrompt>(
-        browser, web_contents, delegate);
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<ExclusiveAccessPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
   } else if (permissions::PermissionUtil::
                  ShouldCurrentRequestUsePermissionElementSecondaryUI(
                      delegate)) {

@@ -80,7 +80,11 @@ class ExclusiveAccessPermissionPromptInteractiveTest
     return Steps(InstrumentTab(kWebContents),
                  NavigateWebContents(kWebContents, GetURL()),
                  FocusWebContents(kWebContents),
-                 ExecuteJsAt(kWebContents,
+                 ClickOnElement(test_content_settings));
+  }
+
+  MultiStep ClickOnElement(TestContentSettings test_content_settings) {
+    return Steps(ExecuteJsAt(kWebContents,
                              DeepQuery{GetHtmlElementId(test_content_settings)},
                              "click"));
   }
@@ -170,8 +174,19 @@ class ExclusiveAccessPermissionPromptInteractiveTest
     }
   }
 
+  auto ShowTabModalUI() {
+    return Do([this]() {
+      scoped_tab_modal_ui_ = browser()->GetActiveTabInterface()->ShowModalUI();
+    });
+  }
+
+  auto HideTabModalUI() {
+    return Do([this]() { scoped_tab_modal_ui_.reset(); });
+  }
+
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -188,4 +203,16 @@ IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
                        BlockKeyboardLock) {
   TestPermissionPrompt(TestContentSettings::kKeyboardLock,
                        CONTENT_SETTING_BLOCK);
+}
+
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
+                       TestPromptInteractionWithModalUILock) {
+  RunTestSequence(
+      ShowTabModalUI(), ShowPrompt(TestContentSettings::kKeyboardLock),
+      HideTabModalUI(), ClickOnElement(TestContentSettings::kKeyboardLock),
+      PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)), Do([&]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_FALSE(manager->has_pending_requests());
+      }));
 }

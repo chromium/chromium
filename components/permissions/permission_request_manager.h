@@ -428,6 +428,10 @@ class PermissionRequestManager
   // embedded permission element.
   bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
 
+  // Returns true if there is a request in progress that is for exclusive
+  // access.
+  bool IsCurrentRequestExclusiveAccess() const;
+
   // Returns true when the current request should be finalized together with the
   // permission decision.
   bool ShouldFinalizeRequestAfterDecided(PermissionAction action) const;

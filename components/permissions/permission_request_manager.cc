@@ -116,8 +116,9 @@ bool ShouldShowQuietRequestAgainIfPreempted(
 
 bool IsMediaRequest(RequestType type) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (type == RequestType::kCameraPanTiltZoom)
+  if (type == RequestType::kCameraPanTiltZoom) {
     return true;
+  }
 #endif
   return type == RequestType::kMicStream || type == RequestType::kCameraStream;
 }
@@ -174,8 +175,9 @@ PermissionRequestManager::~PermissionRequestManager() {
   DCHECK(duplicate_requests_.empty());
   DCHECK(pending_permission_requests_.IsEmpty());
 
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPermissionRequestManagerDestructed();
+  }
 }
 
 void PermissionRequestManager::AddRequest(
@@ -438,15 +440,17 @@ void PermissionRequestManager::UpdateAnchor() {
     // recreated for the new browser. Because of that, ignore prompt callbacks
     // while doing that.
     base::AutoReset<bool> ignore(&ignore_callbacks_from_prompt_, true);
-    if (!view_->UpdateAnchor())
+    if (!view_->UpdateAnchor()) {
       RecreateView();
+    }
   }
 }
 
 void PermissionRequestManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnNavigation(navigation_handle);
+  }
 
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
@@ -539,8 +543,9 @@ void PermissionRequestManager::OnVisibilityChanged(
     content::Visibility visibility) {
   bool tab_was_hidden = tab_is_hidden_;
   tab_is_hidden_ = visibility == content::Visibility::HIDDEN;
-  if (tab_was_hidden == tab_is_hidden_)
+  if (tab_was_hidden == tab_is_hidden_) {
     return;
+  }
   NotifyTabVisibilityChanged(visibility);
   if (tab_is_hidden_) {
     if (view_) {
@@ -561,8 +566,9 @@ void PermissionRequestManager::OnVisibilityChanged(
     return;
   }
 
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
+  }
 
   if (!IsRequestInProgress()) {
     ScheduleDequeueRequestIfNeeded();
@@ -604,8 +610,9 @@ GURL PermissionRequestManager::GetEmbeddingOrigin() const {
 }
 
 void PermissionRequestManager::Accept() {
-  if (ignore_callbacks_from_prompt_)
+  if (ignore_callbacks_from_prompt_) {
     return;
+  }
   DCHECK(view_);
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<std::unique_ptr<PermissionRequest>>::iterator requests_iter;
@@ -635,8 +642,9 @@ void PermissionRequestManager::Accept() {
 }
 
 void PermissionRequestManager::AcceptThisTime() {
-  if (ignore_callbacks_from_prompt_)
+  if (ignore_callbacks_from_prompt_) {
     return;
+  }
   DCHECK(view_);
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<std::unique_ptr<PermissionRequest>>::iterator requests_iter;
@@ -655,8 +663,9 @@ void PermissionRequestManager::AcceptThisTime() {
 }
 
 void PermissionRequestManager::Deny() {
-  if (ignore_callbacks_from_prompt_)
+  if (ignore_callbacks_from_prompt_) {
     return;
+  }
   DCHECK(view_);
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
 
@@ -684,8 +693,9 @@ void PermissionRequestManager::Deny() {
 }
 
 void PermissionRequestManager::Dismiss() {
-  if (ignore_callbacks_from_prompt_)
+  if (ignore_callbacks_from_prompt_) {
     return;
+  }
   DCHECK(view_);
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<std::unique_ptr<PermissionRequest>>::iterator requests_iter;
@@ -703,8 +713,9 @@ void PermissionRequestManager::Dismiss() {
 }
 
 void PermissionRequestManager::Ignore() {
-  if (ignore_callbacks_from_prompt_)
+  if (ignore_callbacks_from_prompt_) {
     return;
+  }
   base::AutoReset<bool> block_preempt(&can_preempt_current_request_, false);
   std::vector<std::unique_ptr<PermissionRequest>>::iterator requests_iter;
 
@@ -849,7 +860,8 @@ bool PermissionRequestManager::RecreateView() {
         PermissionPromptDisposition::NONE_VISIBLE;
     if (ShouldDropCurrentRequestIfCannotShowQuietly()) {
       CurrentRequestsDecided(PermissionAction::IGNORED);
-    } else if (IsCurrentRequestEmbeddedPermissionElementInitiated()) {
+    } else if (IsCurrentRequestEmbeddedPermissionElementInitiated() ||
+               IsCurrentRequestExclusiveAccess()) {
       Ignore();
     }
     NotifyPromptRecreateFailed();
@@ -921,8 +933,9 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // Find additional requests that can be grouped with the first one.
   for (; !pending_permission_requests_.IsEmpty();) {
     auto* front = pending_permission_requests_.Peek();
-    if (!ValidateRequest(front))
+    if (!ValidateRequest(front)) {
       continue;
+    }
 
     validated_requests_.push_back(front->GetWeakPtr());
     if (!ShouldGroupRequests(requests_.front().get(), front)) {
@@ -991,8 +1004,9 @@ void PermissionRequestManager::ShowPrompt() {
   // already so double-checking that there is a request in progress.
   //
   // There is no need to show a new prompt if the previous one still exists.
-  if (!IsRequestInProgress() || view_)
+  if (!IsRequestInProgress() || view_) {
     return;
+  }
 
   DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
   DCHECK(current_request_ui_to_use_);
@@ -1086,8 +1100,9 @@ void PermissionRequestManager::DeletePrompt() {
 }
 
 void PermissionRequestManager::ResetViewStateForCurrentRequest() {
-  for (const auto& selector : permission_ui_selectors_)
+  for (const auto& selector : permission_ui_selectors_) {
     selector->Cancel();
+  }
 
   current_request_already_displayed_ = false;
   current_request_first_display_time_ = base::Time();
@@ -1105,8 +1120,9 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   hats_shown_callback_.reset();
   current_request_pepc_prompt_position_.reset();
   current_requests_initial_statuses_.clear();
-  if (view_)
+  if (view_) {
     DeletePrompt();
+  }
 }
 
 bool PermissionRequestManager::ShouldRecordUmaForCurrentPrompt() const {
@@ -1156,15 +1172,17 @@ void PermissionRequestManager::CurrentRequestsDecided(
   }
 
   std::optional<QuietUiReason> quiet_ui_reason;
-  if (ShouldCurrentRequestUseQuietUI())
+  if (ShouldCurrentRequestUseQuietUI()) {
     quiet_ui_reason = ReasonForUsingQuietUi();
+  }
 
   for (auto& request : requests_) {
     // TODO(timloh): We only support dismiss and ignore embargo for
     // permissions which use PermissionRequestImpl as the other subclasses
     // don't support GetContentSettingsType.
-    if (request->GetContentSettingsType() == ContentSettingsType::DEFAULT)
+    if (request->GetContentSettingsType() == ContentSettingsType::DEFAULT) {
       continue;
+    }
 
     auto time_since_shown =
         current_request_first_display_time_.is_null()
@@ -1355,8 +1373,9 @@ bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
 std::optional<PermissionRequestManager::QuietUiReason>
 PermissionRequestManager::ReasonForUsingQuietUi() const {
   if (!IsRequestInProgress() || !current_request_ui_to_use_ ||
-      !current_request_ui_to_use_->quiet_ui_reason)
+      !current_request_ui_to_use_->quiet_ui_reason) {
     return std::nullopt;
+  }
 
   return *(current_request_ui_to_use_->quiet_ui_reason);
 }
@@ -1375,8 +1394,9 @@ bool PermissionRequestManager::CanRestorePrompt() {
 }
 
 void PermissionRequestManager::RestorePrompt() {
-  if (CanRestorePrompt())
+  if (CanRestorePrompt()) {
     ShowPrompt();
+  }
 }
 
 bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
@@ -1407,8 +1427,9 @@ void PermissionRequestManager::NotifyTabVisibilityChanged(
 }
 
 void PermissionRequestManager::NotifyPromptAdded() {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPromptAdded();
+  }
 }
 
 void PermissionRequestManager::NotifyPromptRemoved() {
@@ -1418,19 +1439,22 @@ void PermissionRequestManager::NotifyPromptRemoved() {
 }
 
 void PermissionRequestManager::NotifyPromptRecreateFailed() {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPromptRecreateViewFailed();
+  }
 }
 
 void PermissionRequestManager::NotifyPromptCreationFailedHiddenTab() {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPromptCreationFailedHiddenTab();
+  }
 }
 
 void PermissionRequestManager::NotifyRequestDecided(
     permissions::PermissionAction permission_action) {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnRequestDecided(permission_action);
+  }
 }
 
 void PermissionRequestManager::StorePermissionActionForUMA(
@@ -1471,8 +1495,9 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
 
   // We have already made a decision because of a higher priority selector
   // therefore this selector's decision can be discarded.
-  if (current_request_ui_to_use_.has_value())
+  if (current_request_ui_to_use_.has_value()) {
     return;
+  }
 
   CHECK_LT(selector_index, selector_decisions_.size());
   selector_decisions_[selector_index] = decision;
@@ -1523,16 +1548,18 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
 
 PermissionPromptDisposition
 PermissionRequestManager::DetermineCurrentRequestUIDisposition() {
-  if (current_request_prompt_disposition_.has_value())
+  if (current_request_prompt_disposition_.has_value()) {
     return current_request_prompt_disposition_.value();
+  }
   return PermissionPromptDisposition::NONE_VISIBLE;
 }
 
 PermissionPromptDispositionReason
 PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
   auto quiet_ui_reason = ReasonForUsingQuietUi();
-  if (!quiet_ui_reason)
+  if (!quiet_ui_reason) {
     return PermissionPromptDispositionReason::DEFAULT_FALLBACK;
+  }
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
       return PermissionPromptDispositionReason::USER_PREFERENCE_IN_SETTINGS;
@@ -1581,6 +1608,15 @@ bool PermissionRequestManager::
     IsCurrentRequestEmbeddedPermissionElementInitiated() const {
   return IsRequestInProgress() &&
          requests_[0]->IsEmbeddedPermissionElementInitiated();
+}
+
+bool PermissionRequestManager::IsCurrentRequestExclusiveAccess() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return IsRequestInProgress() &&
+         IsExclusiveAccessRequest(requests_[0]->request_type());
+#else
+  return false;
+#endif
 }
 
 bool PermissionRequestManager::ShouldFinalizeRequestAfterDecided(
