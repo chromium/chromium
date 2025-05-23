@@ -2717,7 +2717,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Cellular.TimeToRedirectFound" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2900,7 +2899,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Ethernet.TimeToRedirectFound" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -3750,7 +3748,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.Ap80211kSupport" enum="WiFiAp80211kSupport"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -3760,7 +3758,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.Ap80211rSupport" enum="WiFiAp80211rSupport"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -3780,7 +3778,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.Ap80211vBSSMaxIdlePeriodSupport"
     enum="WiFiAp80211vBSSMaxIdlePeriodSupport" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -3791,7 +3789,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.Ap80211vBSSTransitionSupport"
     enum="WiFiAp80211vBSSTransitionSupport" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -3802,7 +3800,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.Ap80211vDMSSupport"
     enum="WiFiAp80211vDMSSupport" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -3823,7 +3821,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.ApChannelSwitch" enum="WiFiApChannelSwitch"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network usage metric sampled when an AP switches channels. Shows
@@ -3887,7 +3885,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.AutoConnectableServices" units="units"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of wifi services available for
@@ -3897,7 +3895,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.AvailableBSSesAtConnect" units="units"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of BSSes (endpoints) available
@@ -3929,7 +3927,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.BSSTransitionManagementSupport"
     enum="WiFiBSSTransitionManagementSupport" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording BSS Transition Management statuses. This
@@ -3950,7 +3948,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.CiscoAdaptiveFTSupport"
     enum="WiFiCiscoAdaptiveFTSupport" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
@@ -4014,7 +4012,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.EapInnerProtocol" enum="EAPInnerProtocol"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network usage metric sampled on each successful 802.1x wireless
@@ -4024,7 +4022,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.EapOuterProtocol" enum="EAPOuterProtocol"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network usage metric sampled on each successful 802.1x wireless
@@ -4125,7 +4123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.MBOSupport" enum="MBOSupport"
     expires_after="2025-12-31">
-  <owner>matthewmwang@google.com</owner>
+  <owner>norvez@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric that tracks the Multi-Band Operation (MBO) support
@@ -4352,7 +4350,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.PortalResult" enum="NetworkPortalResult"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4374,7 +4371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.RememberedNetworkCount" units="units"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network diagnostic metric sampling the number of 802.11 wireless
@@ -4387,7 +4384,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Network.Shill.WiFi.RememberedSystemNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
     units="units" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of 802.11 wireless networks
@@ -4409,7 +4406,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Network.Shill.WiFi.RememberedUserNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
     units="units" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of 802.11 wireless networks
@@ -4425,7 +4422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.RoamComplete{RoamSecurityType}"
     enum="WiFiRoamComplete" expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording roam successes or failures. This is
@@ -4436,7 +4433,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.RoamTime{RoamSecurityType}" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording roam time in milliseconds. This is
@@ -4502,7 +4499,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.SessionLength{RoamSecurityType}" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording session length in milliseconds. This is
@@ -4532,7 +4529,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.SignalAtDisconnect" units="negative dBm"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric indicating the negative of the dBm received signal
@@ -4592,7 +4589,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.TimeResumeToReadyHB" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time from the resume event
@@ -4604,7 +4601,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.TimeResumeToReadyLB" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time from the resume event
@@ -4616,7 +4613,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.WiFi.TimeResumeToReadyUHB" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
+  <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time from the resume event
@@ -4686,7 +4683,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.TimeToPortal" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4698,7 +4694,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.TimeToRedirectFound" units="ms"
     expires_after="2025-12-31">
-  <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
