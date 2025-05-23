@@ -450,7 +450,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
     auto renderer_resource = viz::TransferableResource::MakeGpu(
         renderer_buffer->shared_image,
         renderer_buffer->shared_image->GetTextureTarget(),
-        renderer_buffer->sync_token, renderer_buffer->size,
+        renderer_buffer->sync_token, renderer_buffer->shared_image->size(),
         viz::SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false,
         viz::TransferableResource::ResourceSource::kAR);
@@ -494,7 +494,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   auto camera_resource = viz::TransferableResource::MakeGpu(
       camera_buffer->shared_image,
       camera_buffer->shared_image->GetTextureTarget(),
-      camera_buffer->sync_token, camera_buffer->size,
+      camera_buffer->sync_token, camera_buffer->shared_image->size(),
       viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/false,
       viz::TransferableResource::ResourceSource::kAR);

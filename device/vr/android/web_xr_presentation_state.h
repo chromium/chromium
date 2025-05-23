@@ -92,8 +92,6 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
-  gfx::Size size = {0, 0};
-
   // This owns a single reference to an AHardwareBuffer object.
   base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
