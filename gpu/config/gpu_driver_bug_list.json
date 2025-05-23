@@ -282,7 +282,11 @@
       "description": "Disable D3D11 on older nVidia drivers",
       "cr_bugs": [349929],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x10de",
       "driver_version": {
@@ -327,7 +331,11 @@
       "description": "Disable use of Direct3D 11 on Matrox video cards",
       "cr_bugs": [395861],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x102b",
       "features": [
@@ -339,7 +347,11 @@
       "description": "Disable use of Direct3D 11 on older AMD drivers",
       "cr_bugs": [402134],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x1002",
       "driver_version": {
@@ -383,7 +395,11 @@
       "description": "Old Intel drivers cannot reliably support D3D11",
       "cr_bugs": [363721],
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22000.0"
+        }
       },
       "vendor_id": "0x8086",
       "driver_version": {
