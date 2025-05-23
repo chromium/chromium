@@ -34,7 +34,7 @@ std::string CreateRandomSalt() {
 
 MediaDeviceSaltDatabase::MediaDeviceSaltDatabase(const base::FilePath& db_path)
     : db_path_(db_path),
-      db_(sql::DatabaseOptions().set_page_size(4096).set_cache_size(16),
+      db_(sql::DatabaseOptions().set_cache_size(16),
           /*tag=*/"MediaDeviceSalts") {}
 
 std::optional<std::string> MediaDeviceSaltDatabase::GetOrInsertSalt(

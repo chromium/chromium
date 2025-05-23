@@ -394,7 +394,6 @@ void OptOutStoreSQL::LoadBlockList(
             // in their top 20 hosts. It should be closer to 32 * 100 * 20 for
             // most users, which is about 4096 * 15. The total size of the
             // database will be capped at 3200 entries.
-            .set_page_size(4096)
             .set_cache_size(250),
         // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any
         // backend code that may depend on this tag.

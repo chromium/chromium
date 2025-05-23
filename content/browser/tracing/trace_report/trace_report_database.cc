@@ -90,7 +90,7 @@ ClientTraceReport::ClientTraceReport() = default;
 ClientTraceReport::~ClientTraceReport() = default;
 
 TraceReportDatabase::TraceReportDatabase()
-    : database_(sql::DatabaseOptions().set_page_size(4096).set_cache_size(128),
+    : database_(sql::DatabaseOptions().set_cache_size(128),
                 /*tag=*/"LocalTraces") {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
