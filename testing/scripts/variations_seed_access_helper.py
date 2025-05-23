@@ -90,7 +90,7 @@ def get_test_seed_file_path(hardcoded_seed_path):
 
 
 # TODO(crbug.com/417138763): Update this function to support reading the seed
-# from the seed file with proto format.
+# and signature from the seed file with proto format.
 def get_current_seed(user_data_dir):
   """Gets the current seed.
 
