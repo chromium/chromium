@@ -37,6 +37,19 @@
 
 namespace autofill {
 
+std::unique_ptr<views::Label> GetBadgeView() {
+  return views::Builder<views::Label>()
+      .SetText(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX))
+      .SetTextStyle(views::style::TextStyle::STYLE_BODY_5)
+      .SetBorder(views::CreateRoundedRectBorder(
+          /*thickness=*/0, /*corner_radius=*/100, gfx::Insets::VH(2, 8),
+          ui::kColorSysNeutralContainer))
+      .SetBackground(views::CreateRoundedRectBackground(
+          ui::kColorSysNeutralContainer, 100))
+      .Build();
+}
+
 VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
@@ -212,9 +225,7 @@ void VirtualCardEnrollBubbleViews::Init() {
         card.NetworkAndLastFourDigits(
             /*obfuscation_length=*/2),
         views::style::CONTEXT_DIALOG_BODY_TEXT, stype));
-    network_and_4digits_view->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, stype));
+    network_and_4digits_view->AddChildView(GetBadgeView());
   } else {
     auto* card_name_4digits_view = card_identifier_view->AddChildView(
         std::make_unique<views::BoxLayoutView>());
