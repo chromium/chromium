@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
+#include "base/check_deref.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
@@ -81,9 +81,12 @@ const gfx::FontList kTitleTextFontList =
 
 // MagicBoostOptInCard --------------------------------------------------------
 
-MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
+MagicBoostOptInCard::MagicBoostOptInCard(
+    const ApplicationLocaleStorage* application_locale_storage,
+    MagicBoostCardController* controller)
     : chromeos::editor_menu::PreTargetHandlerView(
           /*card_type=*/editor_menu::CardType::kMagicBoostOptInCard),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       controller_(controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -226,6 +229,7 @@ MagicBoostOptInCard::~MagicBoostOptInCard() = default;
 
 // static
 views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
+    const ApplicationLocaleStorage* application_locale_storage,
     MagicBoostCardController* controller,
     const gfx::Rect& anchor_view_bounds) {
   views::Widget::InitParams params(
@@ -240,8 +244,9 @@ views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
-  MagicBoostOptInCard* magic_boost_opt_in_card = widget->SetContentsView(
-      std::make_unique<MagicBoostOptInCard>(controller));
+  MagicBoostOptInCard* magic_boost_opt_in_card =
+      widget->SetContentsView(std::make_unique<MagicBoostOptInCard>(
+          application_locale_storage, controller));
   magic_boost_opt_in_card->UpdateWidgetBounds(anchor_view_bounds);
 
   return widget;
@@ -254,13 +259,9 @@ const char* MagicBoostOptInCard::GetWidgetName() {
 
 void MagicBoostOptInCard::UpdateWidgetBounds(
     const gfx::Rect& anchor_view_bounds) {
-  // TODO(crbug.com/416170323): Remove g_browser_process usage.
-  const std::string& app_locale =
-      g_browser_process->GetFeatures()->application_locale_storage()->Get();
-
   // TODO(b/318733414): Move `GetEditorMenuBounds` to a common place to use.
-  GetWidget()->SetBounds(
-      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this, app_locale));
+  GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
+      anchor_view_bounds, this, application_locale_storage_->Get()));
 }
 
 void MagicBoostOptInCard::RequestFocus() {

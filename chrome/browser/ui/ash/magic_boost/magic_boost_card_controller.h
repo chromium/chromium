@@ -25,6 +25,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace chromeos {
@@ -38,7 +39,9 @@ class MagicBoostCardController
     : public ReadWriteCardController,
       public chromeos::MahiMediaAppEventsProxy::Observer {
  public:
-  MagicBoostCardController();
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  explicit MagicBoostCardController(
+      const ApplicationLocaleStorage* application_locale_storage);
   MagicBoostCardController(const MagicBoostCardController&) = delete;
   MagicBoostCardController& operator=(const MagicBoostCardController&) = delete;
   ~MagicBoostCardController() override;
@@ -81,6 +84,8 @@ class MagicBoostCardController
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   TransitionAction transition_action_ = TransitionAction::kDoNothing;
 
   views::UniqueWidgetPtr opt_in_widget_;

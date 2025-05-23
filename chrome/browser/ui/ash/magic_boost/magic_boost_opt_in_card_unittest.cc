@@ -9,10 +9,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/ash/magic_boost/test/mock_magic_boost_controller_crosapi.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -91,7 +93,9 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
   }
 
  protected:
-  MagicBoostCardController card_controller_;
+  MagicBoostCardController card_controller_{TestingBrowserProcess::GetGlobal()
+                                                ->GetFeatures()
+                                                ->application_locale_storage()};
   testing::NiceMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};

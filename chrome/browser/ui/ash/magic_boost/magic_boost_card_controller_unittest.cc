@@ -80,7 +80,9 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
   testing::NiceMock<ash::MockEditorPanelManager> mock_editor_manager_;
 
   std::unique_ptr<ash::MockMagicBoostState> magic_boost_state_;
-  MagicBoostCardController card_controller_;
+  MagicBoostCardController card_controller_{TestingBrowserProcess::GetGlobal()
+                                                ->GetFeatures()
+                                                ->application_locale_storage()};
   testing::NiceMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};

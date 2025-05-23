@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
@@ -38,7 +39,9 @@ crosapi::mojom::MagicBoostController& GetMagicBoostControllerAsh() {
 
 }  // namespace
 
-MagicBoostCardController::MagicBoostCardController() {
+MagicBoostCardController::MagicBoostCardController(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   // `MahiMediaAppEventsProxy` might not be available in tests.
   if (chromeos::MahiMediaAppEventsProxy::Get()) {
     chromeos::MahiMediaAppEventsProxy::Get()->AddObserver(this);
@@ -117,6 +120,7 @@ void MagicBoostCardController::ShowOptInUi(
   CloseDisclaimerUi();
 
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
+      &application_locale_storage_.get(),
       /*controller=*/this, anchor_view_bounds);
   opt_in_widget_->ShowInactive();
 

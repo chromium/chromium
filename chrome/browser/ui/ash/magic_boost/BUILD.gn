@@ -19,8 +19,6 @@ source_set("magic_boost") {
   deps = [
     ":magic_boost_constants",
     "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser:global_features",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/ash/editor_menu:utils",

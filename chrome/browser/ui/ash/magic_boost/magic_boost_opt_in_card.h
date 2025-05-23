@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_OPT_IN_CARD_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+class ApplicationLocaleStorage;
 
 namespace views {
 class Label;
@@ -26,14 +29,20 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
                   chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  explicit MagicBoostOptInCard(MagicBoostCardController* controller);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  MagicBoostOptInCard(
+      const ApplicationLocaleStorage* application_locale_storage,
+      MagicBoostCardController* controller);
   MagicBoostOptInCard(const MagicBoostOptInCard&) = delete;
   MagicBoostOptInCard& operator=(const MagicBoostOptInCard&) = delete;
   ~MagicBoostOptInCard() override;
 
   // Creates a widget that contains a `MagicBoostOptInCard`, configured with the
   // given `anchor_view_bounds`.
+  // `application_locale_storage` must be non-null and must outlive the returned
+  // widget.
   static views::UniqueWidgetPtr CreateWidget(
+      const ApplicationLocaleStorage* application_locale_storage,
       MagicBoostCardController* controller,
       const gfx::Rect& anchor_view_bounds);
 
@@ -53,6 +62,8 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // Button callbacks.
   void OnPrimaryButtonPressed();
   void OnSecondaryButtonPressed();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   raw_ptr<MagicBoostCardController> controller_ = nullptr;
 
