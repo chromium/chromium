@@ -42,7 +42,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     };
   }
 
-  accessor capability: VendorCapability;
+  accessor capability: VendorCapability = {id: '', type: ''};
   private accessor currentValue_: string = '';
 
   override connectedCallback() {

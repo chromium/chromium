@@ -48,7 +48,7 @@ export class PrintPreviewDestinationSelectElement extends
   }
 
   accessor dark: boolean = false;
-  accessor destination: Destination;
+  accessor destination: Destination|null = null;
   accessor disabled: boolean = false;
   accessor loaded: boolean = false;
   accessor noDestinations: boolean = false;
@@ -62,7 +62,7 @@ export class PrintPreviewDestinationSelectElement extends
 
   /** Sets the select to the current value of |destination|. */
   updateDestination() {
-    this.selectedValue = this.destination.key;
+    this.selectedValue = this.destination?.key || '';
   }
 
   /**

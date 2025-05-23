@@ -53,7 +53,7 @@ suite('DestinationDialogInteractiveTest', function() {
     const searchInput = dialog.$.searchBox.getSearchInput();
     assertTrue(!!searchInput);
     const whenFocusDone = eventToPromise('focus', searchInput);
-    dialog.destinationStore.startLoadAllDestinations();
+    dialog.destinationStore!.startLoadAllDestinations();
     dialog.show();
     return whenFocusDone;
   });
@@ -66,7 +66,7 @@ suite('DestinationDialogInteractiveTest', function() {
         const searchInput = searchBox.getSearchInput();
         assertTrue(!!searchInput);
         const whenFocusDone = eventToPromise('focus', searchInput);
-        dialog.destinationStore.startLoadAllDestinations();
+        dialog.destinationStore!.startLoadAllDestinations();
         dialog.show();
         return whenFocusDone
             .then(() => {

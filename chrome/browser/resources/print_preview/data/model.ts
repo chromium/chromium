@@ -492,7 +492,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   }
 
   accessor settingsManaged: boolean = false;
-  accessor destination: Destination;
+  accessor destination: Destination|null = null;
   accessor documentSettings: DocumentSettings = createDocumentSettings();
   accessor margins: Margins|null = null;
   accessor pageSize: Size = new Size(612, 792);
@@ -681,6 +681,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   }
 
   private updateSettingsAvailabilityFromDestination_() {
+    assert(this.destination);
     const caps = this.destination.capabilities ?
         this.destination.capabilities.printer :
         null;
@@ -710,12 +711,14 @@ export class PrintPreviewModelElement extends CrLitElement {
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
 
-    if (this.documentSettings) {
-      this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
-    }
+    this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
   }
 
   private updateSettingsAvailabilityFromDestinationAndDocumentSettings_() {
+    if (!this.documentSettings || !this.destination) {
+      return;
+    }
+
     const isSaveAsPDF = this.destination.type === PrinterType.PDF_PRINTER;
     const knownSizeToSaveAsPdf = isSaveAsPDF &&
         (!this.documentSettings.isModifiable ||
@@ -728,9 +731,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     this.setSettingPath_(
         'scalingTypePdf.available',
         scalingAvailable && !this.documentSettings.isModifiable);
-    const caps = this.destination && this.destination.capabilities ?
-        this.destination.capabilities.printer :
-        null;
+    const caps = this.destination.capabilities?.printer || null;
     this.setSettingPath_(
         'mediaSize.available',
         !!caps && !!caps.media_size && !knownSizeToSaveAsPdf);
@@ -762,9 +763,7 @@ export class PrintPreviewModelElement extends CrLitElement {
             this.settings_.headerFooter.available ||
             this.settings_.rasterize.available);
 
-    if (this.destination) {
-      this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
-    }
+    this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
   }
 
   private updateHeaderFooterAvailable_() {
@@ -857,6 +856,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   }
 
   private updateSettingsValues_() {
+    assert(this.destination);
     const caps = this.destination.capabilities ?
         this.destination.capabilities.printer :
         null;
@@ -1342,6 +1342,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       return;
     }
 
+    assert(this.destination);
     const mediaSizePolicy = this.policySettings_['mediaSize'].value;
     const matchingOption = this.destination.getMediaSize(
         mediaSizePolicy.width, mediaSizePolicy.height);

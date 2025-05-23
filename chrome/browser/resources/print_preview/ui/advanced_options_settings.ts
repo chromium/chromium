@@ -42,7 +42,7 @@ class PrintPreviewAdvancedOptionsSettingsElement extends CrLitElement {
   }
 
   accessor disabled: boolean = false;
-  accessor destination: Destination;
+  accessor destination: Destination|null = null;
   protected accessor showAdvancedDialog_: boolean = false;
 
   protected onButtonClick_() {

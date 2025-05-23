@@ -15,6 +15,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   let model: PrintPreviewModelElement;
 
   function simulateCapabilitiesChange(capabilities: Cdd) {
+    assertTrue(!!model.destination);
     model.destination.capabilities = capabilities;
     // In prod code, capabilities changes are detected by print-preview-app
     // which then calls updateSettingsFromDestination().
@@ -45,6 +46,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   // These tests verify that the model correctly updates the settings
   // availability based on the destination and document info.
   test('copies', function() {
+    assertTrue(!!model.destination);
     assertTrue(model.getSetting('copies').available);
 
     // Set max copies to 1.
@@ -75,6 +77,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('collate', function() {
+    assertTrue(!!model.destination);
     assertTrue(model.getSetting('collate').available);
 
     // Remove collate capability.
@@ -93,6 +96,8 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('layout', async function() {
+    assertTrue(!!model.destination);
+
     // Layout is available since the printer has the capability and the
     // document is set to modifiable.
     assertTrue(model.getSetting('layout').available);
@@ -102,7 +107,7 @@ suite('ModelSettingsAvailabilityTest', function() {
      {option: [{type: 'PORTRAIT', is_default: true}]},
      {option: [{type: 'LANDSCAPE', is_default: true}]},
     ].forEach(layoutCap => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
       capabilities.printer.page_orientation = layoutCap;
       // Layout section should now be hidden.
       simulateCapabilitiesChange(capabilities);
@@ -129,6 +134,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('color', function() {
+    assertTrue(!!model.destination);
     // Color is available since the printer has the capability.
     assertTrue(model.getSetting('color').available);
 
@@ -172,7 +178,7 @@ suite('ModelSettingsAvailabilityTest', function() {
        colorCap: {option: [{type: 'CUSTOM_COLOR', vendor_id: '42'}]},
        expectedValue: true,
      }].forEach(capabilityAndValue => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
       capabilities.printer.color = capabilityAndValue.colorCap;
       simulateCapabilitiesChange(capabilities);
       assertFalse(model.getSetting('color').available);
@@ -210,7 +216,7 @@ suite('ModelSettingsAvailabilityTest', function() {
        },
        expectedValue: true,
      }].forEach(capabilityAndValue => {
-      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      const capabilities = getCddTemplate(model.destination!.id).capabilities!;
       capabilities.printer.color = capabilityAndValue.colorCap;
       simulateCapabilitiesChange(capabilities);
       assertEquals(
@@ -221,12 +227,13 @@ suite('ModelSettingsAvailabilityTest', function() {
 
   function setSaveAsPdfDestination(): Promise<void> {
     const saveAsPdf = getSaveAsPdfDestination();
-    saveAsPdf.capabilities = getCddTemplate(model.destination.id).capabilities;
+    saveAsPdf.capabilities = getCddTemplate(saveAsPdf.id).capabilities;
     model.destination = saveAsPdf;
     return microtasksFinished();
   }
 
   test('media size', async function() {
+    assertTrue(!!model.destination);
     // Media size is available since the printer has the capability.
     assertTrue(model.getSetting('mediaSize').available);
 
@@ -287,6 +294,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('dpi', function() {
+    assertTrue(!!model.destination);
     // The settings are available since the printer has multiple DPI options.
     assertTrue(model.getSetting('dpi').available);
 
@@ -424,6 +432,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.getSetting('headerFooter').available);
 
     // Small paper sizes
+    assertTrue(!!model.destination);
     const capabilities = getCddTemplate(model.destination.id).capabilities!;
     capabilities.printer.media_size = {
       'option': [
@@ -478,6 +487,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   });
 
   test('duplex', function() {
+    assertTrue(!!model.destination);
     assertTrue(model.getSetting('duplex').available);
     assertTrue(model.getSetting('duplexShortEdge').available);
 

@@ -56,7 +56,7 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
     };
   }
 
-  accessor destinationStore: DestinationStore;
+  accessor destinationStore: DestinationStore|null = null;
   protected accessor loadingDestinations_: boolean = false;
   protected accessor searchQuery_: RegExp|null = null;
 
@@ -93,6 +93,7 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
 
   private onDestinationStoreSet_() {
     assert(!this.initialized_);
+    assert(this.destinationStore);
     this.tracker_.add(
         this.destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
@@ -104,7 +105,7 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
   }
 
   private updateDestinations_() {
-    if (this.destinationStore === undefined || !this.initialized_) {
+    if (!this.destinationStore || !this.initialized_) {
       return;
     }
 
@@ -132,13 +133,14 @@ export class PrintPreviewDestinationDialogElement extends CrLitElement {
   }
 
   private selectDestination_(destination: Destination) {
+    assert(this.destinationStore);
     this.destinationStore.selectDestination(destination);
     this.$.dialog.close();
   }
 
   show() {
     this.$.dialog.showModal();
-    const loading = this.destinationStore === undefined ||
+    const loading = !this.destinationStore ||
         this.destinationStore.isPrintDestinationSearchInProgress;
     if (!loading) {
       // All destinations have already loaded.

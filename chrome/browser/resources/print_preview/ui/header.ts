@@ -46,7 +46,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     };
   }
 
-  accessor destination: Destination;
+  accessor destination: Destination|null = null;
   accessor error: Error|null = null;
   accessor state: State = State.NOT_READY;
   accessor managed: boolean = false;
@@ -84,7 +84,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   private isPdf_(): boolean {
-    return this.destination &&
+    return !!this.destination &&
         this.destination.type === PrinterType.PDF_PRINTER;
   }
 

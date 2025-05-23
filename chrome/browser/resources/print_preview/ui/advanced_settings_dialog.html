@@ -1,6 +1,6 @@
 <cr-dialog id="dialog" @close="${this.onCloseOrCancel_}">
   <div slot="title">
-    ${this.i18n('advancedSettingsDialogTitle', this.destination.displayName)}
+    ${this.i18n('advancedSettingsDialogTitle', this.destination?.displayName || '')}
   </div>
   <div slot="body">
     <print-preview-search-box id="searchBox"

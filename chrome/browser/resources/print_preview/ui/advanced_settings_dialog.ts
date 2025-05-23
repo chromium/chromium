@@ -59,7 +59,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     };
   }
 
-  accessor destination: Destination;
+  accessor destination: Destination|null = null;
   protected accessor searchQuery_: RegExp|null = null;
   private accessor hasMatching_: boolean = false;
 
@@ -117,6 +117,10 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
    * @return Whether there is more than one vendor item to display.
    */
   protected hasMultipleItems_(): boolean {
+    if (!this.destination) {
+      return false;
+    }
+
     return this.destination.capabilities!.printer.vendor_capability!.length > 1;
   }
 
@@ -187,7 +191,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 
   protected getVendorCapabilities_(): VendorCapability[] {
-    return this.destination.capabilities?.printer.vendor_capability || [];
+    return this.destination?.capabilities?.printer.vendor_capability || [];
   }
 
   protected onSearchQueryChanged_(e: CustomEvent<{value: RegExp | null}>) {

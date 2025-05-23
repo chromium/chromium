@@ -84,7 +84,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
   accessor state: State = State.NOT_READY;
   protected accessor controlsManaged_: boolean = false;
-  protected accessor destination_: Destination;
+  protected accessor destination_: Destination|null = null;
   private accessor destinationsManaged_: boolean = false;
   protected accessor documentSettings_: DocumentSettings =
       createDocumentSettings();
@@ -324,7 +324,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.startPreviewWhenReady_ = true;
 
         if (this.state === State.NOT_READY &&
-            this.destination_.type !== PrinterType.PDF_PRINTER) {
+            this.destination_!.type !== PrinterType.PDF_PRINTER) {
           this.nativeLayer_!.recordBooleanHistogram(
               'PrintPreview.TransitionedToReadyState', true);
         }
@@ -333,7 +333,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         break;
       case DestinationState.ERROR:
         if (this.state === State.NOT_READY &&
-            this.destination_.type !== PrinterType.PDF_PRINTER) {
+            this.destination_!.type !== PrinterType.PDF_PRINTER) {
           this.nativeLayer_!.recordBooleanHistogram(
               'PrintPreview.TransitionedToReadyState', false);
         }
@@ -358,8 +358,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       // is synced across print-preview-app, print-preview-model and
       // print-preview-area.
       await this.updateComplete;
-      assert(this.destination_.id === this.$.previewArea.destination.id);
-      assert(this.destination_.id === this.$.model.destination.id);
+      assert(this.destination_!.id === this.$.previewArea.destination!.id);
+      assert(this.destination_!.id === this.$.model.destination!.id);
       this.$.previewArea.startPreview(false);
       this.startPreviewWhenReady_ = false;
     } else {
@@ -382,12 +382,14 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.remove();
       this.nativeLayer_!.dialogClose(this.cancelled_);
     } else if (this.state === State.PRINT_PENDING) {
+      assert(this.destination_);
       if (this.destination_.type !== PrinterType.PDF_PRINTER) {
         // Only hide the preview for local, non PDF destinations.
         this.nativeLayer_!.hidePreview();
         this.$.state.transitTo(State.HIDDEN);
       }
     } else if (this.state === State.PRINTING) {
+      assert(this.destination_);
       const whenPrintDone =
           this.nativeLayer_!.doPrint(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
