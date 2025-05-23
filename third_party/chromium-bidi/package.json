@@ -36,9 +36,13 @@
       "import": "./lib/esm/*",
       "require": "./lib/cjs/*"
     },
+    "./lib/cjs/*.js": {
+      "import": "./lib/cjs/*.js",
+      "require": "./lib/cjs/*.js"
+    },
     "./lib/cjs/*": {
-      "import": "./lib/cjs/*",
-      "require": "./lib/cjs/*"
+      "import": "./lib/cjs/*.js",
+      "require": "./lib/cjs/*.js"
     }
   },
   "wireit": {

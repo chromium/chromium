@@ -1,8 +1,12 @@
 {
   "extends": "../tsconfig.cjs.json",
-  "files": [],
+  "compilerOptions": {
+    "outDir": "../lib/cjs"
+  },
+  "files": ["index.ts"],
   "references": [
     {"path": "./bidiMapper/tsconfig.cjs.json"},
-    {"path": "./bidiTab/tsconfig.cjs.json"}
+    {"path": "./bidiTab/tsconfig.cjs.json"},
+    {"path": "./cdp/tsconfig.cjs.json"}
   ]
 }

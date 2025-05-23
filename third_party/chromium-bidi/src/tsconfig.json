@@ -1,9 +1,13 @@
 {
   "extends": "../tsconfig.base.json",
-  "files": [],
+  "compilerOptions": {
+    "outDir": "../lib/esm"
+  },
+  "files": ["index.ts"],
   "references": [
     {"path": "./bidiMapper/tsconfig.json"},
     {"path": "./bidiServer/tsconfig.json"},
-    {"path": "./bidiTab/tsconfig.json"}
+    {"path": "./bidiTab/tsconfig.json"},
+    {"path": "./cdp/tsconfig.json"}
   ]
 }
