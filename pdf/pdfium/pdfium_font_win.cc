@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -60,13 +59,6 @@ std::string GetSubstFont(const std::string& face) {
   return face;
 }
 
-// Kill switch in case this goes horribly wrong.
-// TODO(crbug.com/381126164): Remove after this lands safely in a Stable
-// release.
-BASE_FEATURE(kPdfEnumFontsWin,
-             "PdfEnumFontsWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Maps font description and charset to `FontId` as requested by PDFium, with
 // `FontId` as an opaque type that PDFium works with. Based on the `FontId`,
 // PDFium can read from the font files using GetFontData(). Properly frees the
@@ -82,10 +74,6 @@ class SkiaFontMapper {
   ~SkiaFontMapper() = delete;
 
   void EnumFonts(FPDF_SYSFONTINFO* sysfontinfo, void* mapper) {
-    if (!base::FeatureList::IsEnabled(kPdfEnumFontsWin)) {
-      return;
-    }
-
     const int count = manager_->countFamilies();
     for (int i = 0; i < count; ++i) {
       SkString family;
