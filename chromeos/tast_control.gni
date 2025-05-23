@@ -105,9 +105,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/409349162
   "inputs.PhysicalKeyboardKoreanTyping@jacuzzi",
 
-  # b/419598394
-  "dlp.DataLeakPreventionRulesListFilesUSB.ash_blocked@brya",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
