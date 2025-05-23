@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("handlers") {
   sources = [
-    "crostini_ansible_playbook_external_data_handler.cc",
-    "crostini_ansible_playbook_external_data_handler.h",
     "device_cloud_external_data_policy_handler.cc",
     "device_cloud_external_data_policy_handler.h",
     "device_print_servers_external_data_handler.cc",
@@ -34,7 +32,6 @@ static_library("handlers") {
 
   deps = [
     "//base",
-    "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/external_data",

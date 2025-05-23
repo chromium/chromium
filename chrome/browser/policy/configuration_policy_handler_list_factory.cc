@@ -3068,8 +3068,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ExternalDataPolicyHandler>(key::kExternalPrintServers));
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
       key::kDeviceExternalPrintServers));
-  handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
-      key::kCrostiniAnsiblePlaybook));
   handlers->AddHandler(
       std::make_unique<AppLaunchAutomationPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
