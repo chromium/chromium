@@ -42,16 +42,16 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void DropBookmarks(const std::string& folder_id,
                      DropBookmarksCallback callback) override;
   void ExecuteOpenInNewTabCommand(
-      const std::vector<int64_t>& node_ids,
+      const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;
   void ExecuteOpenInNewWindowCommand(
-      const std::vector<int64_t>& node_ids,
+      const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;
   void ExecuteOpenInIncognitoWindowCommand(
-      const std::vector<int64_t>& node_ids,
+      const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;
   void ExecuteOpenInNewTabGroupCommand(
-      const std::vector<int64_t>& node_ids,
+      const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;
   void ExecuteOpenInSplitViewCommand(
       const std::vector<int64_t>& node_ids,

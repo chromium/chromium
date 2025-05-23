@@ -101,22 +101,32 @@ interface BookmarksPageHandler {
   // Opens the move bookmark dialog.
   ExecuteMoveCommand(array<int64> node_ids, ActionSource source);
 
-  // Opens the bookmarks specified by node_ids in a new background tab, using
-  // the same logic as the native bookmarks context menu.
-  ExecuteOpenInNewTabCommand(array<int64> node_ids, ActionSource source);
+  // Opens the bookmarks specified by `side_panel_ids` in a new background tab,
+  // using the same logic as the native bookmarks context menu.
+  // Some of the `side_panel_ids` may be a folder or a url node, so it could
+  // also map to a merged node that has an actual string representation.
+  ExecuteOpenInNewTabCommand(array<string> side_panel_ids, ActionSource source);
 
-  // Opens the bookmarks specified by node_ids in a new window, using the same
-  // logic as the native bookmarks context menu.
-  ExecuteOpenInNewWindowCommand(array<int64> node_ids, ActionSource source);
+  // Opens the bookmarks specified by `side_panel_ids` in a new window,
+  // using the same logic as the native bookmarks context menu.
+  // Some of the `side_panel_ids` may be a folder or a url node, so it could
+  // also map to a merged node that has an actual string representation.
+  ExecuteOpenInNewWindowCommand(array<string> side_panel_ids,
+                                ActionSource source);
 
-  // Opens the bookmarks specified by node_ids in a new incognito window, using
-  // the same logic as the native bookmarks context menu.
-  ExecuteOpenInIncognitoWindowCommand(array<int64> node_ids,
+  // Opens the bookmarks specified by `side_panel_ids` in a new incognito
+  // window, using the same logic as the native bookmarks context menu.
+  // Some of the `side_panel_ids` may be a folder or a url node, so it could
+  // also map to a merged node that has an actual string representation.
+  ExecuteOpenInIncognitoWindowCommand(array<string> side_panel_ids,
                                       ActionSource source);
 
-  // Opens the bookmarks specified by node_ids in a new tab group, using
+  // Opens the bookmarks specified by `side_panel_ids` in a new tab group, using
   // the same logic as the native bookmarks context menu.
-  ExecuteOpenInNewTabGroupCommand(array<int64> node_ids, ActionSource source);
+  // Some of the `side_panel_ids` may be a folder or a url node, so it could
+  // also map to a merged node that has an actual string representation.
+  ExecuteOpenInNewTabGroupCommand(array<string> side_panel_ids,
+                                  ActionSource source);
 
   // Opens the bookmarks specified by node_ids in a new split view, using
   // the same logic as the native bookmarks context menu.

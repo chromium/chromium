@@ -138,4 +138,11 @@ class BookmarkContextMenuController
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
 };
 
+// Returns true if `selection` represents a permanent bookmark folder.
+// It can be represented by two nodes (local and account) of the same permanent
+// type.
+bool IsSelectionPermanentBookmarkFolder(
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
+
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_CONTEXT_MENU_CONTROLLER_H_

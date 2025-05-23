@@ -81,23 +81,20 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewTabCommand(ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInNewTabCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewWindowCommand(
-        ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInNewWindowCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInIncognitoWindow(
       ids: string[], source: ActionSource) {
-    this.handler.executeOpenInIncognitoWindowCommand(
-        ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInIncognitoWindowCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewTabGroupCommand(
-        ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInNewTabGroupCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInSplitView(ids: string[], source: ActionSource) {

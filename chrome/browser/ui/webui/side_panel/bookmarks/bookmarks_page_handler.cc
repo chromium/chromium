@@ -122,7 +122,8 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     }
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-    AddItem(bookmarks.size() == 1 && bookmarks.front()->is_folder()
+    AddItem((bookmarks.size() == 1 && bookmarks.front()->is_folder()) ||
+                    IsSelectionPermanentBookmarkFolder(bookmarks)
                 ? IDC_BOOKMARK_BAR_RENAME_FOLDER
                 : IDC_BOOKMARK_BAR_EDIT);
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -234,11 +235,9 @@ std::string GetFolderSidePanelID(const BookmarkParentFolder& folder) {
   return base::ToString(folder.as_non_permanent_folder()->id());
 }
 
-// Will return `std::nullopt` if `side_panel_id` does not correspond to a
-// permanent node special ID or is not an actual int64 id. Invalid inputs should
-// result in no-ops.
-std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
-    const BookmarkMergedSurfaceService& bookmark_merged_surface,
+// Returns `std::nullopt` if `side_panel_id` does not correspond to a permanent
+// node special ID.
+std::optional<BookmarkParentFolder> GetBookmarkSidePanelPermanentParentFolder(
     const std::string& side_panel_id) {
   if (side_panel_id == kSidePanelBookmarkBarID) {
     return BookmarkParentFolder::BookmarkBarFolder();
@@ -253,7 +252,72 @@ std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
     return BookmarkParentFolder::ManagedFolder();
   }
 
-  int64_t folder_id;
+  // `side_panel_id` is not a side panel special permanent ID.
+  return std::nullopt;
+}
+
+// Given a list of side panel string IDs, returns the equivalent bookmark
+// int64_t id. If one of those string IDs map to a permanent special side panel
+// ID, then the underlying ID(s) are returned, that maps to one or two permanent
+// nodes.
+// If any of the IDs do not match a permanent Side Panel IDs or can be cast to
+// an int64_t value, then the input is considered faulty and an empty vector is
+// returned.
+// The `side_panel_ids` should not be empty.
+std::vector<int64_t> GetBookmarkIDsFromSidePanelIDs(
+    const BookmarkMergedSurfaceService& bookmark_merged_surface,
+    const std::vector<std::string>& side_panel_ids) {
+  CHECK(!side_panel_ids.empty());
+  std::vector<int64_t> node_ids;
+  for (const std::string& side_panel_id : side_panel_ids) {
+    // Side Panel Permanent ID treatment:
+    std::optional<BookmarkParentFolder> side_panel_permanent_parent_folder =
+        GetBookmarkSidePanelPermanentParentFolder(side_panel_id);
+    // If one of the IDs is a permanent ID, we need to extract the underlying
+    // permanent nodes.
+    if (side_panel_permanent_parent_folder.has_value()) {
+      for (const bookmarks::BookmarkNode* permanent_node :
+           bookmark_merged_surface.GetUnderlyingNodes(
+               side_panel_permanent_parent_folder.value())) {
+        CHECK(permanent_node->is_permanent_node());
+        node_ids.push_back(permanent_node->id());
+      }
+      continue;
+    }
+
+    // Regular ID treatment:
+    int64_t converted_id = 0;
+    // Conversion check validity.
+    if (!base::StringToInt64(side_panel_id, &converted_id)) {
+      if (mojo::IsInMessageDispatch()) {
+        mojo::ReportBadMessage(
+            "Unsupported conversion: side_panel_id should either be a "
+            "permanent merged node ID or represent an int64 id value");
+      }
+      // Early return in case one of the nodes is not valid.
+      return {};
+    }
+    node_ids.push_back(converted_id);
+  }
+
+  return node_ids;
+}
+
+// Will return `std::nullopt` if `side_panel_id` does not correspond to a
+// permanent node special ID or is not an actual int64 id. Invalid inputs should
+// result in no-ops.
+std::optional<BookmarkParentFolder> GetBookmarkParentFolderFromSidePanel(
+    const BookmarkMergedSurfaceService& bookmark_merged_surface,
+    const std::string& side_panel_id) {
+  // Permanent folders have a special string ID.
+  std::optional<BookmarkParentFolder> side_panel_permanent_parent_folder =
+      GetBookmarkSidePanelPermanentParentFolder(side_panel_id);
+  if (side_panel_permanent_parent_folder.has_value()) {
+    return side_panel_permanent_parent_folder.value();
+  }
+
+  // A regular folder should have a valid int64 node ID.
+  int64_t folder_id = 0;
   // Conversion check validity.
   if (!base::StringToInt64(side_panel_id, &folder_id)) {
     if (mojo::IsInMessageDispatch()) {
@@ -444,28 +508,48 @@ void BookmarksPageHandler::DropBookmarks(const std::string& folder_id,
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabCommand(
-    const std::vector<int64_t>& node_ids,
+    const std::vector<std::string>& side_panel_ids,
     side_panel::mojom::ActionSource source) {
+  const std::vector<int64_t> node_ids =
+      GetBookmarkIDsFromSidePanelIDs(*bookmark_merged_surface_, side_panel_ids);
+  if (node_ids.empty()) {
+    return;
+  }
   ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_OPEN_ALL);
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewWindowCommand(
-    const std::vector<int64_t>& node_ids,
+    const std::vector<std::string>& side_panel_ids,
     side_panel::mojom::ActionSource source) {
+  const std::vector<int64_t> node_ids =
+      GetBookmarkIDsFromSidePanelIDs(*bookmark_merged_surface_, side_panel_ids);
+  if (node_ids.empty()) {
+    return;
+  }
   ExecuteContextMenuCommand(node_ids, source,
                             IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
 }
 
 void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
-    const std::vector<int64_t>& node_ids,
+    const std::vector<std::string>& side_panel_ids,
     side_panel::mojom::ActionSource source) {
+  const std::vector<int64_t> node_ids =
+      GetBookmarkIDsFromSidePanelIDs(*bookmark_merged_surface_, side_panel_ids);
+  if (node_ids.empty()) {
+    return;
+  }
   ExecuteContextMenuCommand(node_ids, source,
                             IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabGroupCommand(
-    const std::vector<int64_t>& node_ids,
+    const std::vector<std::string>& side_panel_ids,
     side_panel::mojom::ActionSource source) {
+  const std::vector<int64_t> node_ids =
+      GetBookmarkIDsFromSidePanelIDs(*bookmark_merged_surface_, side_panel_ids);
+  if (node_ids.empty()) {
+    return;
+  }
   ExecuteContextMenuCommand(node_ids, source,
                             IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
 }
@@ -637,7 +721,7 @@ void BookmarksPageHandler::ShowContextMenu(
     const std::string& id_string,
     const gfx::Point& point,
     side_panel::mojom::ActionSource source) {
-  int64_t id;
+  int64_t id = 0;
   if (!base::StringToInt64(id_string, &id)) {
     return;
   }
