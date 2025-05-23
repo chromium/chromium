@@ -159,17 +159,15 @@ class AutofillTest : public InProcessBrowserTest {
 
   // Navigate to the form, input values into the fields, and submit the form.
   // The function returns after the PersonalDataManager is updated.
-  void FillFormAndSubmit(const std::string& filename, const FormMap& data) {
-    FillFormAndSubmitWithHandler(filename, data, kDocumentClickHandlerSubmitJS,
-                                 true);
-  }
-
-  // Helper where the actual submit JS code can be specified, as well as whether
-  // the test should `simulate_click` on the document.
-  void FillFormAndSubmitWithHandler(const std::string& filename,
-                                    const FormMap& data,
-                                    const std::string& submit_js,
-                                    bool simulate_click) {
+  //
+  // The optional `submit_js` parameter specifies the JS code to be used for
+  // form submission, and `simulate_click` specifies whether to simulate a
+  // mouse-click on the document.
+  void FillFormAndSubmit(
+      const std::string& filename,
+      const FormMap& data,
+      const std::string& submit_js = kDocumentClickHandlerSubmitJS,
+      bool simulate_click = true) {
     GURL url = embedded_test_server()->GetURL("/autofill/" + filename);
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -185,10 +183,11 @@ class AutofillTest : public InProcessBrowserTest {
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
       // Simulate a mouse click to submit the form because form submissions not
-      // triggered by user gestures are ignored.
-      content::SimulateMouseClick(
-          browser()->tab_strip_model()->GetActiveWebContents(), 0,
-          blink::WebMouseEvent::Button::kLeft);
+      // triggered by user gestures are ignored.  Before that, an end of
+      // paint-holding is simulated to enable input event processing.
+      content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+      content::SimulateMouseClick(web_contents(), 0,
+                                  blink::WebMouseEvent::Button::kLeft);
     }
     ASSERT_TRUE(std::move(submission_waiter).Wait());
     // Form submission might have triggered an import. The imported data is only
@@ -299,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AggregatesMinValidProfileDifferentJS) {
   data["ADDRESS_HOME_ZIP"] = "94043";
 
   std::string submit("document.forms[0].submit();");
-  FillFormAndSubmitWithHandler("duplicate_profiles_test.html", data, submit,
-                               false);
+  FillFormAndSubmit("duplicate_profiles_test.html", data, submit, false);
 
   ASSERT_EQ(
       1u, personal_data_manager()->address_data_manager().GetProfiles().size());
@@ -321,8 +319,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
       "var preventFunction = function(event) { event.preventDefault(); };"
       "document.forms[0].addEventListener('submit', preventFunction);"
       "document.querySelector('input[type=submit]').click();");
-  FillFormAndSubmitWithHandler("duplicate_profiles_test.html", data, submit,
-                               false);
+  FillFormAndSubmit("duplicate_profiles_test.html", data, submit, false);
 
   // The BrowserAutofillManager will update the user's profile.
   EXPECT_EQ(
