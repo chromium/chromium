@@ -203,6 +203,9 @@
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault key for everything. [iOS only]">
         To use and save Chrome data in your Google Account, verify it's you.
       </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_MESSAGE" desc="The error message to show in the account table when there is an authentication error. [iOS only]">
+        To use and save Chrome data in your Google Account, verify it's you.
+      </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER" desc="The title of the spotlight item to set Chrome as a default browser. [Length: unlimited] [iOS only]." meaning="Spotlight item title for setting default browser.">
         Set Chrome as default browser
       </message>

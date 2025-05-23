@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -13,6 +14,19 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Gets the AccountErrorUIInfo data representing the kSignInNeedsUpdate error.
+AccountErrorUIInfo* GetUIInfoForAuthenticationError() {
+  AccountErrorUIInfo* error_info = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kSignInNeedsUpdate
+      userActionableType:AccountErrorUserActionableType::
+                             kReauthToResolveSigninError
+               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
+
+  return error_info;
+}
 
 // Gets the AccountErrorUIInfo data representing the kEnterPassphrase error.
 AccountErrorUIInfo* GetUIInfoForPassphraseError() {
@@ -90,6 +104,11 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
   switch (sync_service->GetUserActionableError()) {
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+      if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
+        return GetUIInfoForAuthenticationError();
+      }
+      break;
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return GetUIInfoForPassphraseError();
     case syncer::SyncService::UserActionableError::
@@ -105,7 +124,6 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
         kTrustedVaultRecoverabilityDegradedForEverything:
       return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
     case syncer::SyncService::UserActionableError::kNone:
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       break;
   }
 
