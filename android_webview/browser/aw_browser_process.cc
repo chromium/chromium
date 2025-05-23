@@ -16,6 +16,7 @@
 #include "base/android/path_utils.h"
 #include "base/base_paths_posix.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -61,6 +62,20 @@ const char kLastKnownAppCacheQuota[] =
 
 namespace {
 AwBrowserProcess* g_aw_browser_process = nullptr;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CacheQuotaFreshness {
+  kInMemory = 0,
+  kInPref = 1,
+  kAbsent = 2,
+  kMaxValue = kAbsent,
+};
+
+void recordCacheQuotaFreshness(CacheQuotaFreshness state) {
+  base::UmaHistogramEnumeration("Android.WebView.CacheQuotaFreshness", state);
+}
+
 }  // namespace
 
 // static
@@ -277,15 +292,18 @@ int64_t AwBrowserProcess::GetHostAppCacheQuota() {
   {
     base::AutoLock lock(lock_);
     if (app_cache_quota_ != -1) {
+      recordCacheQuotaFreshness(CacheQuotaFreshness::kInMemory);
       return app_cache_quota_;
     }
   }
-  if (AwBrowserProcess::GetInstance()->local_state()->HasPrefPath(
-          prefs::kLastKnownAppCacheQuota)) {
-    return AwBrowserProcess::GetInstance()->local_state()->GetInt64(
-        prefs::kLastKnownAppCacheQuota);
+  int64_t quota = AwBrowserProcess::GetInstance()->local_state()->GetInt64(
+      prefs::kLastKnownAppCacheQuota);
+  if (quota == -1) {
+    recordCacheQuotaFreshness(CacheQuotaFreshness::kAbsent);
+  } else {
+    recordCacheQuotaFreshness(CacheQuotaFreshness::kInPref);
   }
-  return -1;
+  return quota;
 }
 
 void AwBrowserProcess::FetchHostAppCacheQuota() {

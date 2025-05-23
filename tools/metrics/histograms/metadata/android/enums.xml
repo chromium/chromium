@@ -832,6 +832,12 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="FULLSCREEN_DISABLED"/>
 </enum>
 
+<enum name="CacheQuotaFreshness">
+  <int value="0" label="Value returned from memory"/>
+  <int value="1" label="Value returned from prefs"/>
+  <int value="2" label="Value is absent"/>
+</enum>
+
 <enum name="CaptureNativeViewResult">
   <int value="0" label="Not captured: Null WindowAndroid"/>
   <int value="1" label="Not captured: View not laid out"/>

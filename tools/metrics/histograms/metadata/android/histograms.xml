@@ -6226,6 +6226,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.CacheQuotaFreshness"
+    enum="CacheQuotaFreshness" expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how this session's cache quota was obtained in
+    `AwBrowserProcess::GetHostAppCacheQuota()`.
+
+    This is emitted once during WebView global initialization if
+    `WebViewCacheSizeLimitDerivedFromAppCacheQuota` flag is enabled.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.CacheQuotaSize" units="KiB"
     expires_after="2025-12-31">
   <owner>abhijithnair@chromium.org</owner>
@@ -6904,6 +6919,20 @@ chromium-metrics-reviews@google.com.
     time of recording historical application exit info data. Only recorded if
     the last time at recording was non-zero and there was some exit reason
     recorded. Logged when the browser process is started.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.HttpCacheSizeLimit" units="MiB"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the per-profile HTTP cache size limit that will be used throughout
+    this session.
+
+    This is emitted once during WebView global initialization.
+
+    Only emitted for AndroidWebView.
   </summary>
 </histogram>
 

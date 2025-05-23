@@ -10,6 +10,7 @@
 #include "android_webview/common/url_constants.h"
 #include "base/android/path_utils.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -28,6 +29,7 @@ int UpdateCacheControlFlags(int load_flags, int cache_control_flags) {
   return load_flags;
 }
 
+// Guaranteed to return a valid cache size
 int GetHttpCacheSizeInternal() {
   constexpr int DEFAULT_CACHE_LIMIT = 20 * 1024 * 1024;  // 20MiB
 
@@ -132,11 +134,16 @@ bool ShouldBlockURL(const GURL& url,
 
 int GetHttpCacheSize() {
   // static so that `GetHttpCacheSizeInternal()` is called only once.
-  static int cache_limit{GetHttpCacheSizeInternal()};
-  // Using WARNING instead of INFO since usage of INFO is unallowed.
-  // This is semantically not a warning and is temporary till the
-  // HTTP Cache size experiment has landed.
-  LOG(WARNING) << "HTTP Cache size is: " << cache_limit;
+  static int cache_limit = -1;
+  if (cache_limit == -1) {
+    cache_limit = GetHttpCacheSizeInternal();
+    // Using WARNING instead of INFO since usage of INFO is unallowed.
+    // This is semantically not a warning and is temporary till the
+    // HTTP Cache size experiment has landed.
+    LOG(WARNING) << "HTTP Cache size is: " << cache_limit;
+    base::UmaHistogramCounts10000("Android.WebView.HttpCacheSizeLimit",
+                                  cache_limit / (1024 * 1024));
+  };
   return cache_limit;
 }
 
