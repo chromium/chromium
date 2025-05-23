@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -178,6 +180,18 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
   screen_ai_service_factory_.reset();
   CallPendingStatusRequests(false);
 
+  if (resource_monitor_) {
+    if (resource_monitor_->get_max_resident_memory_kb()) {
+      base::UmaHistogramMemoryMB(
+          GetMetricFullName("MaxMemoryLoad"),
+          resource_monitor_->get_max_resident_memory_kb() / 1000);
+    }
+    resource_monitor_.reset();
+
+    base::UmaHistogramMediumTimes(GetMetricFullName("LifeTime"),
+                                  base::TimeTicks::Now() - service_start_time_);
+  }
+
   screen_ai_service_shutdown_handler_.reset();
   if (shutdown_handler_data_.shutdown_message_received) {
     if (shutdown_handler_data_.crash_count) {
@@ -185,7 +199,6 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
                                   shutdown_handler_data_.crash_count);
     }
     shutdown_handler_data_.crash_count = 0;
-    OnDisconnected(/*crashed=*/false);
     return;
   }
 
@@ -201,7 +214,6 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
                      weak_ptr_factory_.GetWeakPtr()),
       suspense_time);
   VLOG(0) << "Service suspended due to crash for: " << suspense_time;
-  OnDisconnected(/*crashed=*/true);
 }
 
 void ScreenAIServiceHandlerBase::CallPendingStatusRequests(bool successful) {
@@ -238,8 +250,6 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
     return;
   }
 
-  PerformPrelaunchSteps();
-
   base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
   std::vector<base::FilePath> preload_libraries = {binary_path};
@@ -249,10 +259,11 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
                          binary_path.MaybeAsASCII().c_str())};
 #endif  // BUILDFLAG(IS_WIN)
 
+  std::string process_name = base::StrCat({GetServiceName(), " Service"});
   content::ServiceProcessHost::Launch(
       screen_ai_service_factory_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
-          .WithDisplayName(GetServiceName() + " Service")
+          .WithDisplayName(process_name)
 #if BUILDFLAG(IS_WIN)
           .WithPreloadedLibraries(
               preload_libraries,
@@ -260,6 +271,9 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
           .WithExtraCommandLineSwitches(extra_switches)
 #endif  // BUILDFLAG(IS_WIN)
+          .WithProcessCallback(
+              base::BindOnce(&ScreenAIServiceHandlerBase::OnServiceLaunched,
+                             weak_ptr_factory_.GetWeakPtr(), process_name))
           .Pass());
 
   shutdown_handler_data_.shutdown_message_received = false;
@@ -269,6 +283,25 @@ void ScreenAIServiceHandlerBase::LaunchIfNotRunning() {
   screen_ai_service_factory_.set_disconnect_handler(
       base::BindOnce(&ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScreenAIServiceHandlerBase::OnServiceLaunched(
+    const std::string& process_name,
+    const base::Process& process) {
+  // Post task to ensure that `resource_monitor_` is created after the service
+  // process host is registered.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIServiceHandlerBase::CreateResourceMonitor,
+                     weak_ptr_factory_.GetWeakPtr(), process_name));
+  service_start_time_ = base::TimeTicks::Now();
+}
+
+void ScreenAIServiceHandlerBase::CreateResourceMonitor(
+    const std::string& process_name) {
+  CHECK(!resource_monitor_);
+  resource_monitor_ = ResourceMonitor::CreateForProcess(process_name);
+  CHECK(resource_monitor_);
 }
 
 void ScreenAIServiceHandlerBase::InitializeServiceIfNeeded() {

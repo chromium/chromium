@@ -46,6 +46,8 @@ source_set("screen_ai_install_state") {
 
 source_set("screen_ai_service_router_factory") {
   sources = [
+    "resource_monitor.cc",
+    "resource_monitor.h",
     "screen_ai_service_handler_base.cc",
     "screen_ai_service_handler_base.h",
     "screen_ai_service_handler_main_content_extraction.cc",
@@ -62,6 +64,7 @@ source_set("screen_ai_service_router_factory") {
     ":screen_ai_install_state",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/performance_manager:performance_manager",
     "//content/public/browser",
     "//services/screen_ai/public/cpp:utilities",
     "//services/screen_ai/public/mojom:factory",

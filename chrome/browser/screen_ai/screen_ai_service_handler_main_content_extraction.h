@@ -38,8 +38,6 @@ class ScreenAIServiceHandlerMainContentExtraction
   bool IsConnectionBound() const override;
   bool IsServiceEnabled() const override;
   void ResetConnection() override;
-  void OnDisconnected(bool crashed) override {}
-  void PerformPrelaunchSteps() override {}
 
   void InitializeService(
       base::TimeTicks request_start_time,

@@ -7,13 +7,19 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/screen_ai/resource_monitor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"
+
+namespace base {
+class Process;
+}
 
 namespace screen_ai {
 
@@ -70,6 +76,13 @@ class ScreenAIServiceHandlerBase
   // Launches the service if it's not already launched.
   void LaunchIfNotRunning();
 
+  // Called after service is launched.
+  void OnServiceLaunched(const std::string& process_name,
+                         const base::Process& process);
+
+  // Creates resource monitor to track CPU and memory load.
+  void CreateResourceMonitor(const std::string& process_name);
+
   // True if service is already initialized, false if it is disabled, and
   // nullopt if not known.
   std::optional<bool> GetServiceState();
@@ -90,17 +103,18 @@ class ScreenAIServiceHandlerBase
   virtual bool IsConnectionBound() const = 0;
   virtual bool IsServiceEnabled() const = 0;
   virtual void ResetConnection() = 0;
-  virtual void OnDisconnected(bool crashed) = 0;
-  virtual void PerformPrelaunchSteps() = 0;
 
   // Pending requests to receive service state for each service type.
   std::vector<ServiceStateCallback> pending_state_requests_;
 
+  std::unique_ptr<ResourceMonitor> resource_monitor_;
   struct ShutdownHandlerData {
     bool shutdown_message_received = false;
     bool suspended = false;
     int crash_count = 0;
   } shutdown_handler_data_;
+
+  base::TimeTicks service_start_time_;
 
   mojo::Receiver<screen_ai::mojom::ScreenAIServiceShutdownHandler>
       screen_ai_service_shutdown_handler_;

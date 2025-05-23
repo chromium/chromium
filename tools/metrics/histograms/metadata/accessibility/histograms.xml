@@ -2203,34 +2203,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Available"
-    units="MB" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Available memory before launching OCR service, when service {status}.
-  </summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
-<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Pressure"
-    enum="MemoryPressureLevel" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Memory pressure level before launching OCR service, when service {status}.
-  </summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
-<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Total"
-    units="MB" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Total memory when OCR service {status}.</summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
 <histogram name="Accessibility.OOBEStartupSoundDelay" units="ms"
     expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE accessibility status. -->
@@ -3684,6 +3656,29 @@ even if they fit the naming pattern. -->
   <summary>
     Records if {ServiceName} service was suspended due to crash. Recorded when a
     client asks for service availablity or for connection to the service.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
+<histogram name="Accessibility.{ServiceName}.Service.LifeTime" units="ms"
+    expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the duration of {ServiceName} service. The metric is stored after
+    the process shuts down or crashes.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
+<histogram name="Accessibility.{ServiceName}.Service.MaxMemoryLoad" units="MB"
+    expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the maximum memory usage of {ServiceName} service. The metric is
+    stored after the process shuts down or crashes and up to 1GB and only if the
+    process runs for more than one second.
   </summary>
   <token key="ServiceName" variants="ScreenAIServices"/>
 </histogram>

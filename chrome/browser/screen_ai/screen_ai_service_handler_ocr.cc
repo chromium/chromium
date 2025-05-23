@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -59,42 +58,12 @@ void ScreenAIServiceHandlerOCR::ResetConnection() {
   service_.reset();
 }
 
-void ScreenAIServiceHandlerOCR::OnDisconnected(bool crashed) {
-  std::string prefix = GetMetricFullName("MemoryBefore.");
-  prefix += crashed ? "Crash." : "Shutdown.";
-  if (memory_stats_before_launch_.pressure_available) {
-    base::UmaHistogramEnumeration(prefix + "Pressure",
-                                  memory_stats_before_launch_.pressure_level);
-  }
-  base::UmaHistogramCounts100000(prefix + "Total",
-                                 memory_stats_before_launch_.total_memory);
-  base::UmaHistogramCounts100000(prefix + "Available",
-                                 memory_stats_before_launch_.available_memory);
-}
-
 void ScreenAIServiceHandlerOCR::BindService(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver) {
   InitializeServiceIfNeeded();
 
   if (service_.is_bound()) {
     service_->BindAnnotator(std::move(receiver));
-  }
-}
-
-void ScreenAIServiceHandlerOCR::PerformPrelaunchSteps() {
-  // Keep memory stats for metrics after shutdown or crash.
-  memory_stats_before_launch_.total_memory =
-      base::SysInfo::AmountOfPhysicalMemoryMB();
-  memory_stats_before_launch_.available_memory = static_cast<int>(
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
-
-  const auto* const memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor) {
-    memory_stats_before_launch_.pressure_available = true;
-    memory_stats_before_launch_.pressure_level =
-        memory_monitor->GetCurrentPressureLevel();
-  } else {
-    memory_stats_before_launch_.pressure_available = false;
   }
 }
 

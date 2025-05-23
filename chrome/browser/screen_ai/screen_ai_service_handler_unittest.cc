@@ -25,8 +25,6 @@ class TestScreenAIServiceHandler : public ScreenAIServiceHandlerBase {
   bool IsConnectionBound() const override { return service_connected_; }
   bool IsServiceEnabled() const override { return true; }
   void ResetConnection() override { service_connected_ = false; }
-  void OnDisconnected(bool crashed) override { service_connected_ = false; }
-  void PerformPrelaunchSteps() override {}
 
  private:
   bool service_connected_ = false;

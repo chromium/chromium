@@ -8,7 +8,6 @@
 #include <optional>
 #include <set>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
@@ -37,19 +36,10 @@ class ScreenAIServiceHandlerOCR : public ScreenAIServiceHandlerBase {
   bool IsConnectionBound() const override;
   bool IsServiceEnabled() const override;
   void ResetConnection() override;
-  void OnDisconnected(bool crashed) override;
-  void PerformPrelaunchSteps() override;
 
   void InitializeService(base::TimeTicks request_start_time,
                          mojo::PendingReceiver<mojom::OCRService> receiver,
                          std::unique_ptr<ComponentFiles> model_files);
-
-  struct MemoryStatsBeforeLaunch {
-    int total_memory;      // in MB.
-    int available_memory;  // in MB.
-    bool pressure_available;
-    base::MemoryPressureListener::MemoryPressureLevel pressure_level;
-  } memory_stats_before_launch_;
 
   mojo::Remote<mojom::OCRService> service_;
 

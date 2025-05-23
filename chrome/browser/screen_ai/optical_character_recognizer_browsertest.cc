@@ -44,6 +44,12 @@ namespace {
 constexpr base::TimeDelta kServiceIdleCheckingDelay = base::Seconds(3);
 // LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:kIdleCheckingDelay)
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
+// LINT.IfChange(kResourceMeasurementInterval)
+constexpr base::TimeDelta kResourceMeasurementInterval = base::Seconds(1);
+// LINT.ThenChange(//chrome/browser/screen_ai/resource_monitor.cc:kSampleInterval)
+#endif
+
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -758,7 +764,10 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
 
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
                        PerformOCRMultipleClientsNoWaitBetween) {
+  base::HistogramTester histograms;
   base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Create multiple OCR clients.
   scoped_refptr<OpticalCharacterRecognizer> ocr_clients[kTestFilenamesCount];
@@ -813,6 +822,32 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
     ASSERT_TRUE(future.Wait());
     auto& results = future.Get<mojom::VisualAnnotationPtr>();
     EXPECT_TRUE(results->lines.size());
+  }
+
+  // Disconnect all clients.
+  for (auto& ocr : ocr_clients) {
+    ocr.reset();
+  }
+
+  // Wait for the service to shutdown and store metrics.
+  screen_ai::ScreenAIServiceRouter* router =
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
+  base::test::TestFuture<void> future;
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
+  ASSERT_TRUE(future.Wait());
+  ASSERT_FALSE(router->IsProcessRunningForTesting(
+      screen_ai::ScreenAIServiceRouter::Service::kOCR));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Memory use and lifetime measurements should be recorded only once since all
+  // tasks were done with the same process.
+  histograms.ExpectTotalCount("Accessibility.OCR.Service.LifeTime", 1);
+
+  // Since this metric is recorded at long intervals, ensure the test has been
+  // running long enough to record it.
+  if (base::TimeTicks::Now() - start_time > kResourceMeasurementInterval * 2) {
+    histograms.ExpectTotalCount("Accessibility.OCR.Service.MaxMemoryLoad", 1);
   }
 }
 
