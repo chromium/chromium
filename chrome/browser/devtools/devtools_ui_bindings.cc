@@ -1875,7 +1875,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
 
   base::Value::Dict flexible_layout_dict;
   flexible_layout_dict.Set(
-      "verticalalDrawerEnabled",
+      "verticalDrawerEnabled",
       base::FeatureList::IsEnabled(::features::kDevToolsVerticalDrawer));
   response_dict.Set("devToolsFlexibleLayout", std::move(flexible_layout_dict));
 
