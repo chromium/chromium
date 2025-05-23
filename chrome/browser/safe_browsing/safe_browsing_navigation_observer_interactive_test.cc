@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -103,6 +104,10 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       script_executing_frame =
           ChildFrameAt(script_executing_frame, subframe_index.value());
     }
+#if BUILDFLAG(IS_MAC)
+    content::HandleMissingKeyWindow();
+#endif
+    script_executing_frame->GetView()->Focus();
     std::string script = base::StringPrintf(
         "navigator.clipboard.writeText('%s');", urlToCopy.c_str());
     ASSERT_TRUE(content::ExecJs(script_executing_frame, script));
