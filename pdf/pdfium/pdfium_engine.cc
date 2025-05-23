@@ -3589,71 +3589,60 @@ bool PDFiumEngine::ChangeInvalidator::Invalidate(
   return invalidated;
 }
 
-PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
-    PDFiumEngine* engine)
-    : ChangeInvalidator(engine), old_selections_(GetVisibleSelections()) {}
-
-PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
+bool PDFiumEngine::ChangeInvalidator::InvalidateChangesOnDestruct() {
   // Offset the old selections if the document scrolled since we recorded them.
   gfx::Vector2d offset = previous_origin_ - engine_->GetVisibleRect().origin();
-  for (auto& old_selection : old_selections_)
-    old_selection.Offset(offset);
+  for (auto& previous_rect : previous_rects_) {
+    previous_rect.Offset(offset);
+  }
 
-  std::vector<gfx::Rect> new_selections = GetVisibleSelections();
-  for (auto& new_selection : new_selections) {
-    for (auto& old_selection : old_selections_) {
-      if (!old_selection.IsEmpty() && new_selection == old_selection) {
+  std::vector<gfx::Rect> new_rects = GetVisibleChangeRects();
+  for (auto& new_rect : new_rects) {
+    for (auto& previous_rect : previous_rects_) {
+      if (!previous_rect.IsEmpty() && new_rect == previous_rect) {
         // Rectangle was selected before and after, so no need to invalidate it.
         // Mark the rectangles by setting them to empty.
-        new_selection = old_selection = gfx::Rect();
+        new_rect = previous_rect = gfx::Rect();
         break;
       }
     }
   }
 
-  bool selection_changed = Invalidate(old_selections_);
-  selection_changed |= Invalidate(new_selections);
+  bool invalidated = Invalidate(previous_rects_);
+  invalidated |= Invalidate(new_rects);
+  return invalidated;
+}
 
-  if (selection_changed) {
+PDFiumEngine::SelectionChangeInvalidator::SelectionChangeInvalidator(
+    PDFiumEngine* engine)
+    : ChangeInvalidator(engine) {
+  previous_rects_ = GetVisibleChangeRects();
+}
+
+PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
+  if (InvalidateChangesOnDestruct()) {
     engine_->OnSelectionTextChanged();
     engine_->OnSelectionPositionChanged();
   }
 }
 
 std::vector<gfx::Rect>
-PDFiumEngine::SelectionChangeInvalidator::GetVisibleSelections() const {
+PDFiumEngine::SelectionChangeInvalidator::GetVisibleChangeRects() const {
   return GetVisibleScreenRectsFromRanges(engine_->selection_);
 }
 
 PDFiumEngine::HighlightChangeInvalidator::HighlightChangeInvalidator(
     PDFiumEngine* engine)
-    : ChangeInvalidator(engine), old_highlights_(GetVisibleHighlights()) {}
+    : ChangeInvalidator(engine) {
+  previous_rects_ = GetVisibleChangeRects();
+}
 
 PDFiumEngine::HighlightChangeInvalidator::~HighlightChangeInvalidator() {
-  // Offset the old selections if the document scrolled since we recorded them.
-  gfx::Vector2d offset = previous_origin_ - engine_->GetVisibleRect().origin();
-  for (auto& old_highlight : old_highlights_) {
-    old_highlight.Offset(offset);
-  }
-
-  std::vector<gfx::Rect> new_highlights = GetVisibleHighlights();
-  for (auto& new_highlight : new_highlights) {
-    for (auto& old_highlight : old_highlights_) {
-      if (!old_highlight.IsEmpty() && new_highlight == old_highlight) {
-        // Rectangle was selected before and after, so no need to invalidate it.
-        // Mark the rectangles by setting them to empty.
-        new_highlight = old_highlight = gfx::Rect();
-        break;
-      }
-    }
-  }
-
-  Invalidate(old_highlights_);
-  Invalidate(new_highlights);
+  InvalidateChangesOnDestruct();
 }
 
 std::vector<gfx::Rect>
-PDFiumEngine::HighlightChangeInvalidator::GetVisibleHighlights() const {
+PDFiumEngine::HighlightChangeInvalidator::GetVisibleChangeRects() const {
   return GetVisibleScreenRectsFromRanges(engine_->text_fragment_highlights_);
 }
 
