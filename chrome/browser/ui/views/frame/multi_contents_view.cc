@@ -221,7 +221,10 @@ int MultiContentsView::GetInactiveIndex() {
 
 void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
   if (IsInSplitView()) {
-    if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
+    // Check whether the widget is visible as otherwise during browser hide,
+    // inactive web contents gets focus. See crbug.com/419335827
+    if (GetInactiveContentsView()->web_contents() == web_view->web_contents() &&
+        GetWidget()->IsVisible()) {
       inactive_contents_focused_callback_.Run(web_view->web_contents());
     }
   }
