@@ -79,17 +79,29 @@ public class ExternalIntentsFeatures {
         }
 
         public boolean isEnabled(boolean isInDesktopWindowingMode) {
+            if (!isEnabled()) {
+                return false;
+            }
+
             String featureString = getFieldTrialParamByFeatureAsString(PARAM_NAME);
 
-            // Arbitrary way to enable the feature (e.g. for testing).
-            boolean isEnabled = isEnabled();
             // The feature is supposed to work for desktop windowing only.
-            boolean isValidDesktopWindowingMode =
-                    featureString.equals(DESKTOP_WM_FIELD) && isInDesktopWindowingMode;
-            // The feature is supposed to work independently of windowing mode.
-            boolean isValidAllWindowingMode = featureString.equals(ALL_WM_FIELD);
+            if (featureString.equals(DESKTOP_WM_FIELD) && isInDesktopWindowingMode) {
+                return true;
+            }
 
-            return isEnabled || isValidDesktopWindowingMode || isValidAllWindowingMode;
+            // The feature is supposed to work independently of windowing mode.
+            if (featureString.equals(ALL_WM_FIELD)) {
+                return true;
+            }
+
+            // Enabled for testing. Also corresponds to the "Enabled" option in chrome://flags.
+            if (featureString.isEmpty()) {
+                return true;
+            }
+
+            // Feature is enabled but a wrong param was specified.
+            return false;
         }
     }
 }
