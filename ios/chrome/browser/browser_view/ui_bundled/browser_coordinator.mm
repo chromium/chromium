@@ -2863,6 +2863,11 @@ enum class ToolbarKind {
   [_glicCoordinator start];
 }
 
+- (void)dismissGlicFlow {
+  [_glicCoordinator stop];
+  _glicCoordinator = nil;
+}
+
 #pragma mark - PromosManagerCommands
 
 - (void)showPromo {

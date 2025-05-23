@@ -8,8 +8,11 @@
 #import "ios/chrome/browser/intelligence/gemini/coordinator/glic_mediator.h"
 #import "ios/chrome/browser/intelligence/gemini/coordinator/glic_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/gemini/ui/glic_navigation_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/glic_commands.h"
 
 @interface GLICCoordinator () <UISheetPresentationControllerDelegate,
                                GLICMediatorDelegate>
@@ -22,6 +25,9 @@
 
   // Navigation view controller owning the promo and the consent UI.
   GLICNavigationController* _navigationController;
+
+  // Handler for sending GLIC commands.
+  id<GlicCommands> _handler;
 }
 
 #pragma mark - ChromeCoordinator
@@ -29,6 +35,9 @@
 - (void)start {
   PrefService* pref_service = self.profile->GetPrefs();
   CHECK(pref_service);
+
+  _handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), GlicCommands);
 
   _mediator =
       [[GLICMediator alloc] initWithPrefService:pref_service
@@ -57,8 +66,20 @@
                                       completion:nil];
 }
 
+#pragma mark - UISheetPresentationControllerDelegate
+
+// Handles the dismissal of the UI.
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // TODO(crbug.com/419064727): Add metric for dismissing coordinator.
+  [_handler dismissGlicFlow];
+}
+
+#pragma mark - GLICConsentMediatorDelegate
+
+// Dismisses the UI by stopping the coordinator.
 - (void)dismissGLICConsentUI {
-  [self stop];
+  [_handler dismissGlicFlow];
 }
 
 #pragma mark - Private

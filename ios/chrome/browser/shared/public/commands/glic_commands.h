@@ -11,6 +11,9 @@
 // Starts the Glic flow.
 - (void)startGlicFlow;
 
+// Dismiss the Glic flow.
+- (void)dismissGlicFlow;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_GLIC_COMMANDS_H_
