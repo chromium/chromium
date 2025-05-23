@@ -109,6 +109,8 @@ export class RegionSelectionElement extends PolymerElement {
 
   private readonly gradientRegionStrokeEnabled: boolean =
       loadTimeData.getBoolean('enableGradientRegionStroke');
+  private readonly whiteRegionStrokeEnabled: boolean =
+      loadTimeData.getBoolean('enableWhiteRegionStroke');
   // The tap region dimensions are the height and width that the region should
   // have when the user taps instead of drag.
   private readonly tapRegionHeight: number =
@@ -224,13 +226,25 @@ export class RegionSelectionElement extends PolymerElement {
 
     let gradient;
     if (this.gradientRegionStrokeEnabled) {
+      // Use AIM style GLIF color gradient.
       gradient = this.context.createConicGradient(0, centerX, centerY);
       gradient.addColorStop(0, GLIF_HEX_COLORS.blue);
       gradient.addColorStop(0.45, GLIF_HEX_COLORS.blue);
       gradient.addColorStop(0.6, GLIF_HEX_COLORS.red);
       gradient.addColorStop(0.76, GLIF_HEX_COLORS.yellow);
       gradient.addColorStop(0.92, GLIF_HEX_COLORS.green);
+    } else if (this.whiteRegionStrokeEnabled) {
+      // Use white gradient.
+      gradient = this.context.createLinearGradient(
+          left,
+          bottom,
+          right,
+          top,
+      );
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(0.92, 'rgba(255, 255, 255, 0.5)');
     } else {
+      // Use dynamic theme color gradient.
       gradient = this.context.createLinearGradient(
           left,
           bottom,

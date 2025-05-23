@@ -247,6 +247,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enableGradientRegionStroke",
       lens::features::GetVisualSelectionUpdatesEnableGradientRegionStroke());
   html_source->AddBoolean(
+      "enableWhiteRegionStroke",
+      lens::features::GetVisualSelectionUpdatesEnableWhiteRegionStroke());
+  html_source->AddBoolean(
       "enableRegionSelectedGlow",
       lens::features::GetVisualSelectionUpdatesEnableRegionSelectedGlow());
   html_source->AddBoolean("autoFocusSearchbox",

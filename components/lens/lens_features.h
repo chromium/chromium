@@ -773,6 +773,13 @@ extern bool GetVisualSelectionUpdatesEnableBorderGlow();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableGradientRegionStroke();
 
+// Whether to enable the white region stroke for the visual selection updates.
+// Note: `GetVisualSelectionUpdatesEnableGradientRegionStroke` takes precedence
+// over this flag. This flag will have no effect if the gradient region stroke
+// is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableWhiteRegionStroke();
+
 // Whether to enable the region selected glow for the visual selection updates.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableRegionSelectedGlow();
