@@ -279,6 +279,7 @@
 <translation id="2103075008456228677">history.google.com を開く</translation>
 <translation id="2104436223719117661">急上昇ワード</translation>
 <translation id="21133533946938348">タブを固定</translation>
+<translation id="2117650889962717098">シークレット モードに切り替えて、ブラウジングのプライバシーを保護します</translation>
 <translation id="2119636449201577317">アプリで開く…</translation>
 <translation id="2120553909046681540">シークレット ブラウジングは組織によって無効にされています。</translation>
 <translation id="2122754583996902531">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -563,6 +564,7 @@
 <translation id="3348387552617855658">このカードでは、荷物を追跡して配送に関する重要な最新情報を入手できます。</translation>
 <translation id="3349031117032695619">ポップアップのブロック</translation>
 <translation id="3349676726073650389">フォローするサイトや検索は Google アカウントに保存されます。フォローはいつでも設定で管理できます。</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />。このアカウントは管理対象です。</translation>
 <translation id="3365529507898144230">フォトに保存</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3377063233124932127">保存したブックマークやパスワードなどが上部に表示されます。</translation>
@@ -671,6 +673,7 @@
 <translation id="3875783148670536197">手順を見る</translation>
 <translation id="3878657761594430423">シートグラバー</translation>
 <translation id="3885587018298784481">ファミリー グループに参加する</translation>
+<translation id="3888230626190453136">シークレット モードでブラウジング</translation>
 <translation id="3888863481921783344">予定の招待者の候補を表示するために使用されます。</translation>
 <translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>

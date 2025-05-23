@@ -9993,6 +9993,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8037801708772278989">Última verificação agora mesmo</translation>
 <translation id="8038111231936746805">(predefinição)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{A copiar 1 ficheiro para o <ph name="CLOUD_PROVIDER" />}other{A copiar {NUM_OF_FILES} ficheiros para o <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Esta app do Chrome vai deixar de funcionar após a atualização da versão do ChromeOS. Guarde os dados da app que quer manter. Para saber mais sobre as opções disponíveis, contacte o programador da app ou a sua equipa de apoio técnico de TI.</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041093619605951337">Feliz</translation>
 <translation id="8041267120753677077">Faça stream das apps do telemóvel</translation>

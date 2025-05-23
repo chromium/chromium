@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6212567362666004597">タブをグループに追加</translation>
 <translation id="6220820548421939212">はい。オンにします。</translation>

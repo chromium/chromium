@@ -5612,7 +5612,7 @@
 <translation id="4892328231620815052">Посмотреть список для чтения можно в меню "Закладки и списки".</translation>
 <translation id="489258173289528622">Что делать при переходе в режим бездействия, когда устройство работает от батареи</translation>
 <translation id="4892811427319351753">Невозможно включить <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
-<translation id="4892981359753171125">Отслеживание лица</translation>
+<translation id="4892981359753171125">Управление мимикой</translation>
 <translation id="4893073099212494043">Подсказывать следующее слово</translation>
 <translation id="4893336867552636863">Все данные о работе в браузере будут удалены с устройства.</translation>
 <translation id="4893454800196085005">Хорошее – DVD</translation>
@@ -9997,6 +9997,7 @@
 <translation id="8037801708772278989">Проверено только что.</translation>
 <translation id="8038111231936746805">(по умолчанию)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Копируем 1 файл в сервис "<ph name="CLOUD_PROVIDER" />"}one{Копируем {NUM_OF_FILES} файл в сервис "<ph name="CLOUD_PROVIDER" />"}few{Копируем {NUM_OF_FILES} файла в сервис "<ph name="CLOUD_PROVIDER" />"}many{Копируем {NUM_OF_FILES} файлов в сервис "<ph name="CLOUD_PROVIDER" />"}other{Копируем {NUM_OF_FILES} файла в сервис "<ph name="CLOUD_PROVIDER" />"}}</translation>
+<translation id="8039525676147630657">После обновления ChromeOS до новой версии это приложение Chrome перестанет работать. Сохраните необходимые данные из него. Чтобы узнать о дальнейших шагах, свяжитесь с разработчиком приложения или со своей службой поддержки.</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8041093619605951337">Радостное</translation>
 <translation id="8041267120753677077">Транслировать приложения с телефона</translation>
