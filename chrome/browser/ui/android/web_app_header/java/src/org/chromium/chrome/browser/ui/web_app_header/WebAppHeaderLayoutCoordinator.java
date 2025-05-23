@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageButton;
 
@@ -291,5 +292,10 @@ public class WebAppHeaderLayoutCoordinator
             mReloadButtonCoordinator.destroy();
             mReloadButtonCoordinator = null;
         }
+    }
+
+    @VisibleForTesting
+    public @Nullable View getWebAppHeaderLayout() {
+        return mView;
     }
 }

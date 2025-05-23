@@ -45,9 +45,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -80,7 +82,9 @@ public class WebAppHeaderLayoutBrowserTest {
                     .around(mEmbeddedTestServerRule)
                     .around(mAutomotiveRule);
 
-    private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
+    private static final String ROOT_TEST_PAGE = "/chrome/test/data/android/google.html";
+    private static final String TEST_PAGE_OUT_OF_SCOPE =
+            "https://out-of-scope.com/chrome/test/data/android/theme_color_test.html";
     private static final String TEST_PAGE_WITH_CERT_ERROR =
             "https://certificateerror.com/chrome/test/data/android/theme_color_test.html";
 
@@ -99,7 +103,7 @@ public class WebAppHeaderLayoutBrowserTest {
         LibraryLoader.getInstance().ensureInitialized();
 
         mEmbeddedTestServerRule.setServerUsesHttps(true); // TWAs only work with HTTPS.
-        mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
+        mTestPage = mEmbeddedTestServerRule.getServer().getURL(ROOT_TEST_PAGE);
 
         // Map non-localhost-URLs to localhost. Navigations to non-localhost URLs will throw a
         // certificate error.
@@ -157,17 +161,45 @@ public class WebAppHeaderLayoutBrowserTest {
         verifyBrowserControlsVisibility(true);
     }
 
+    @Test
+    @MediumTest
+    public void testMinUI_BackPress_NavigateToPreviousPage() throws TimeoutException {
+        // Start TWA in desktop windowing mode.
+        Intent intent =
+                TrustedWebActivityTestUtil.createTrustedWebActivityIntentAndVerifiedSession(
+                        mTestPage, PACKAGE_NAME);
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE,
+                new TrustedWebActivityDisplayMode.MinimalUiMode().toBundle());
+        mActivityTestRule.startCustomTabActivityWithIntent(intent);
+        triggerDesktopWindowingModeChange(/* isInDesktopWindow= */ true);
+
+        // Verify that browser controls are shown for the page that's out of scope of the web app.
+        var tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(TEST_PAGE_OUT_OF_SCOPE);
+        verifyBrowserControlsVisibility(true);
+
+        // Click back and verify that previous page is shown that is in scope of the web app.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var webAppHeaderCoordinator = getWebAppHeaderLayoutCoordinator();
+                    webAppHeaderCoordinator
+                            .getWebAppHeaderLayout()
+                            .findViewById(R.id.back_button)
+                            .performClick();
+                });
+
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
+        verifyBrowserControlsVisibility(false);
+    }
+
     private @BrowserControlsState int getBrowserControlConstraints(Tab tab) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> TabBrowserControlsConstraintsHelper.getConstraints(tab));
     }
 
     private void verifyHeaderVisibility(boolean isVisible) {
-        var rootUiCoordinator =
-                (BaseCustomTabRootUiCoordinator)
-                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-        var webAppHeaderCoordinator = rootUiCoordinator.getWebAppHeaderLayoutCoordinator();
-
+        var webAppHeaderCoordinator = getWebAppHeaderLayoutCoordinator();
         assertNotNull("Web app header coordinator should be initialized", webAppHeaderCoordinator);
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -181,6 +213,13 @@ public class WebAppHeaderLayoutBrowserTest {
                 },
                 10000,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private WebAppHeaderLayoutCoordinator getWebAppHeaderLayoutCoordinator() {
+        var rootUiCoordinator =
+                (BaseCustomTabRootUiCoordinator)
+                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
+        return rootUiCoordinator.getWebAppHeaderLayoutCoordinator();
     }
 
     private void verifyBrowserControlsVisibility(boolean isVisible) {
