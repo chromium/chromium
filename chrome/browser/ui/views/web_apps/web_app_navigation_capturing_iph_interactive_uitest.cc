@@ -309,14 +309,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
               NavigationCapturingV2Enabled())));
 }
 
-// TODO(crbug.com/411232061): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IPHShownOnLinkShiftClick DISABLED_IPHShownOnLinkShiftClick
-#else
-#define MAYBE_IPHShownOnLinkShiftClick IPHShownOnLinkShiftClick
-#endif
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingIphUiTestParameterized,
-                       MAYBE_IPHShownOnLinkShiftClick) {
+                       IPHShownOnLinkShiftClick) {
   const webapps::AppId app_id_a = InstallTestWebApp(GetStartUrl());
   const webapps::AppId app_id_b = InstallTestWebApp(GetDestinationUrl());
   RunTestSequence(
