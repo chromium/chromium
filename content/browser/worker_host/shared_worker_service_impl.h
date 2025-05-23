@@ -111,6 +111,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   friend class TestSharedWorkerServiceImpl;
   friend class WorkerTest;
   friend class SharedWorkerExtendedLifetimeBrowserTest;
+  friend class SharedWorkerExtendedLifetimeBrowserOriginTrialTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkServiceRestartBrowserTest, SharedWorker);
 
   // Creates a new worker in the creator's renderer process.
