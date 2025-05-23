@@ -15179,6 +15179,36 @@
             ]
         }
     ],
+    "NtpMicrosoftFilesCard": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_NonInsights",
+                    "params": {
+                        "NtpSharepointModuleDataParam": "non-insights"
+                    },
+                    "enable_features": [
+                        "NtpSharepointModule"
+                    ]
+                },
+                {
+                    "name": "Enabled_Combination",
+                    "params": {
+                        "NtpSharepointModuleDataParam": "combined"
+                    },
+                    "enable_features": [
+                        "NtpSharepointModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "OcclusionCullingQuadSplitLimit": [
         {
             "platforms": [
