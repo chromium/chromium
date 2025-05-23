@@ -2371,21 +2371,24 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   VLOG(1) << "Launching browser...";
   TRACE_EVENT0("login", "LaunchBrowser");
   if (should_launch_browser_) {
-    if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() ||
-        floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-      // If floating workspace is enabled, it will override full restore.
-      FloatingWorkspaceService* floating_workspace_service =
-          FloatingWorkspaceServiceFactory::GetForProfile(profile);
-      if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() &&
-          floating_workspace_service) {
-        floating_workspace_service->SubscribeToForeignSessionUpdates();
+    const bool floating_workspace_handles_restore =
+        floating_workspace_util::IsFloatingWorkspaceV2Enabled();
+    if (floating_workspace_handles_restore ||
+        floating_workspace_util::IsFloatingSsoEnabled(profile)) {
+      // Calling `GetForProfile` here ensures that `FloatingWorkspaceService` is
+      // created.
+      // TODO(crbug.com/419801387): we can likely remove this call and
+      // instead override `ServiceIsCreatedWithBrowserContext` in the
+      // factory to conditionally construct the service after profile creation.
+      FloatingWorkspaceServiceFactory::GetForProfile(profile);
+    } else if (!floating_workspace_handles_restore) {
+      if (!IsFullRestoreEnabled(profile)) {
+        LaunchBrowser(profile);
+        PerformPostBrowserLaunchOOBEActions(profile);
+      } else {
+        full_restore::FullRestoreServiceFactory::GetForProfile(profile)
+            ->LaunchBrowserWhenReady();
       }
-    } else if (!IsFullRestoreEnabled(profile)) {
-      LaunchBrowser(profile);
-      PerformPostBrowserLaunchOOBEActions(profile);
-    } else {
-      full_restore::FullRestoreServiceFactory::GetForProfile(profile)
-          ->LaunchBrowserWhenReady();
     }
   }
 

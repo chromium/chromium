@@ -72,6 +72,15 @@ FloatingWorkspaceServiceFactory::BuildServiceInstanceForBrowserContext(
   } else if (floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     version = floating_workspace_util::FloatingWorkspaceVersion::
         kFloatingWorkspaceV2Enabled;
+  } else if (floating_workspace_util::IsFloatingSsoEnabled(profile)) {
+    // When Floating Workspace feature is disabled, but Floating SSO is enabled,
+    // we still want to create FloatingWorkspaceService for auto-sign-out
+    // functionality.
+    // TODO(crbug.com/419508619): improve naming to avoid confusion of having
+    // FloatingWorkspaceService running when Floating Workspace is disabled as a
+    // feature.
+    version =
+        floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly;
   }
   std::unique_ptr<FloatingWorkspaceService> service =
       std::make_unique<FloatingWorkspaceService>(profile, version);

@@ -38,6 +38,9 @@ static_library("floating_sso") {
     "//content/public/browser",
     "//net",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/floating_workspace:utils" ]
 }
 
 static_library("test_support") {

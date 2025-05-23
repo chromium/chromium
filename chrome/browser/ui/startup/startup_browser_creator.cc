@@ -795,13 +795,19 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
                                      : profile;
 #if BUILDFLAG(IS_CHROMEOS)
       if (process_startup == chrome::startup::IsProcessStartup::kYes) {
-        if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+        if (ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled() ||
+            ash::floating_workspace_util::IsFloatingSsoEnabled(
+                profile_to_open)) {
+          // Calling `GetForProfile` here ensures that
+          // `FloatingWorkspaceService` is created.
+          // TODO(crbug.com/419801387): we can likely remove this call and
+          // instead override `ServiceIsCreatedWithBrowserContext` in the
+          // factory to conditionally construct the service after profile
+          // creation.
           ash::FloatingWorkspaceServiceFactory::GetForProfile(profile_to_open);
         }
-        // If floating workspace is enabled and safe mode is off, floating
-        // workspace will handle the app restore from user's workspace copy.
-        // Otherwise if safe mode is on, floating workspace will only emit
-        // notification and then delegate the actual work to full restore.
+        // If floating workspace is responsible for restore, stop here before
+        // entering the FullRestoreService code path.
         if (ash::floating_workspace_util::ShouldHandleRestartRestore()) {
           return;
         }

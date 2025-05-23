@@ -190,8 +190,16 @@ void FloatingWorkspaceService::Init(
                       kFloatingWorkspaceV2Enabled &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     InitForV2(sync_service, desk_sync_service, device_info_sync_service);
+    return;
   }
-  LOG(WARNING) << "Floating workspace V2 init (not a warning)";
+
+  if (version_ ==
+      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
+    should_run_restore_ = false;
+    // TODO(crbug.com/419508619): fix naming (now we call `InitForV2` in the
+    // code path where the `version_` is not `kFloatingWorkspaceV2Enabled`).
+    InitForV2(sync_service, desk_sync_service, device_info_sync_service);
+  }
 }
 
 void FloatingWorkspaceService::SubscribeToForeignSessionUpdates() {
@@ -602,6 +610,10 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
   if (should_run_restore_) {
     // A safeguard in case the capture was triggered while we are waiting to
     // restore the session.
+    return;
+  }
+  if (version_ ==
+      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
     return;
   }
   GetDesksClient()->CaptureActiveDesk(
@@ -1096,8 +1108,11 @@ void FloatingWorkspaceService::OnLockStateChanged(bool locked) {
   // sleep mode. Reset initialization times and start the flow as if the user
   // has just logged in.
   if (!locked && restore_upon_wake_) {
-    should_run_restore_ = true;
-    launch_on_new_desk_ = true;
+    if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
+                        kFloatingWorkspaceV2Enabled) {
+      should_run_restore_ = true;
+      launch_on_new_desk_ = true;
+    }
     restore_upon_wake_ = false;
     initialization_time_ = base::Time::Now();
     initialization_timeticks_ = base::TimeTicks::Now();
@@ -1200,6 +1215,13 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
       device_info_sync_service_->GetDeviceInfoTracker()) {
     device_info_sync_service_->GetDeviceInfoTracker()->AddObserver(this);
   }
+  if (version_ ==
+      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
+    // No need to observe apps and scheduling the capture task when we are only
+    // interested in automatic sign-out, so we exit here.
+    return;
+  }
+
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   auto& apps_cache_wrapper = apps::AppRegistryCacheWrapper::Get();

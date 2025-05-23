@@ -418,14 +418,17 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     return syncer::GetUploadToGoogleState(test_sync_service(), data_type);
   }
 
-  void CreateFloatingWorkspaceServiceForTesting(TestingProfile* profile) {
+  void CreateFloatingWorkspaceServiceForTesting(
+      TestingProfile* profile,
+      floating_workspace_util::FloatingWorkspaceVersion version =
+          floating_workspace_util::FloatingWorkspaceVersion::
+              kFloatingWorkspaceV2Enabled) {
     FloatingWorkspaceServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
+        profile,
+        base::BindLambdaForTesting([version](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
           return std::make_unique<FloatingWorkspaceService>(
-              Profile::FromBrowserContext(context),
-              floating_workspace_util::FloatingWorkspaceVersion::
-                  kFloatingWorkspaceV2Enabled);
+              Profile::FromBrowserContext(context), version);
         }));
     task_environment_.RunUntilIdle();
   }
@@ -1871,111 +1874,6 @@ TEST_F(FloatingWorkspaceServiceV2Test,
             new_floating_workspace_template->uuid());
 }
 
-TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithDeviceInfo) {
-  PopulateAppsCache();
-  base::RunLoop loop;
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  InitFloatingWorkspaceServiceAndStartSession();
-
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::WORKSPACE_DESK},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
-      CreateFakeDeviceInfo("guid1", "device1",
-                           base::Time::Now() + base::Seconds(10)));
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::DEVICE_INFO},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
-}
-
-// Test that receiving new device info immediately after waking up doesn't
-// trigger auto-signout.
-TEST_F(FloatingWorkspaceServiceV2Test, NoAutoSignoutOnWakeUp) {
-  PopulateAppsCache();
-  base::RunLoop loop;
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  InitFloatingWorkspaceServiceAndStartSession();
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::WORKSPACE_DESK},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-
-  // Simulate sleep.
-  power_manager_client()->SendSuspendImminent(
-      power_manager::SuspendImminent_Reason_OTHER);
-
-  // Simulate another device being active while the first device is asleep.
-  constexpr base::TimeDelta new_device_timestamp_delta = base::Seconds(10);
-  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
-      CreateFakeDeviceInfo("guid1", "device1",
-                           base::Time::Now() + new_device_timestamp_delta));
-
-  // Sleep past the activity timestamp of the other device.
-  constexpr base::TimeDelta sleep_duration =
-      new_device_timestamp_delta + base::Seconds(5);
-  task_environment().FastForwardBy(sleep_duration);
-
-  // Simulate waking up.
-  power_manager_client()->SendSuspendDone();
-
-  // Receive activity timestamp of the other device.
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::DEVICE_INFO},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  // Verify that sign-out is not requested.
-  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
-}
-
-TEST_F(FloatingWorkspaceServiceV2Test,
-       AutoSignoutDontTriggerWithSameDeviceInfoGuid) {
-  PopulateAppsCache();
-  const std::string template_name = "floating_workspace_template";
-  base::RunLoop loop;
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  InitFloatingWorkspaceServiceAndStartSession();
-
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::WORKSPACE_DESK},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
-      CreateFakeDeviceInfo("guid1", "device1",
-                           base::Time::Now() + base::Seconds(10)));
-  fake_device_info_sync_service()->GetDeviceInfoTracker()->SetLocalCacheGuid(
-      "guid1");
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::DEVICE_INFO},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
-}
-
-TEST_F(FloatingWorkspaceServiceV2Test,
-       AutoSignoutDontTriggerWithOldDeviceInfo) {
-  PopulateAppsCache();
-  const std::string template_name = "floating_workspace_template";
-  base::RunLoop loop;
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  InitFloatingWorkspaceServiceAndStartSession();
-
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::WORKSPACE_DESK},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
-      CreateFakeDeviceInfo("guid1", "device1",
-                           base::Time::Now() - base::Seconds(10)));
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::DEVICE_INFO},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
-}
-
 TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithWorkspaceDesk) {
   // Upload should be executed if two captured templates are the different.
   PopulateAppsCache();
@@ -2068,6 +1966,128 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
   EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
 }
+
+class FloatingWorkspaceAutoSignoutWithDeviceInfoTest
+    : public FloatingWorkspaceServiceV2Test,
+      public testing::WithParamInterface<
+          floating_workspace_util::FloatingWorkspaceVersion> {
+ protected:
+  FloatingWorkspaceAutoSignoutWithDeviceInfoTest() = default;
+  ~FloatingWorkspaceAutoSignoutWithDeviceInfoTest() override = default;
+};
+
+TEST_P(FloatingWorkspaceAutoSignoutWithDeviceInfoTest,
+       AutoSignoutWithDeviceInfo) {
+  PopulateAppsCache();
+  CreateFloatingWorkspaceServiceForTesting(profile(), GetParam());
+  InitFloatingWorkspaceServiceAndStartSession();
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + base::Seconds(10)));
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 1);
+}
+
+// Test that receiving new device info immediately after waking up doesn't
+// trigger auto-signout.
+TEST_P(FloatingWorkspaceAutoSignoutWithDeviceInfoTest, NoAutoSignoutOnWakeUp) {
+  PopulateAppsCache();
+  base::RunLoop loop;
+  CreateFloatingWorkspaceServiceForTesting(profile(), GetParam());
+  InitFloatingWorkspaceServiceAndStartSession();
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+
+  // Simulate sleep.
+  power_manager_client()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_OTHER);
+
+  // Simulate another device being active while the first device is asleep.
+  constexpr base::TimeDelta new_device_timestamp_delta = base::Seconds(10);
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + new_device_timestamp_delta));
+
+  // Sleep past the activity timestamp of the other device.
+  constexpr base::TimeDelta sleep_duration =
+      new_device_timestamp_delta + base::Seconds(5);
+  task_environment().FastForwardBy(sleep_duration);
+
+  // Simulate waking up.
+  power_manager_client()->SendSuspendDone();
+
+  // Receive activity timestamp of the other device.
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  // Verify that sign-out is not requested.
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
+}
+
+TEST_P(FloatingWorkspaceAutoSignoutWithDeviceInfoTest,
+       AutoSignoutDontTriggerWithSameDeviceInfoGuid) {
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  CreateFloatingWorkspaceServiceForTesting(profile(), GetParam());
+  InitFloatingWorkspaceServiceAndStartSession();
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() + base::Seconds(10)));
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->SetLocalCacheGuid(
+      "guid1");
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
+}
+
+TEST_P(FloatingWorkspaceAutoSignoutWithDeviceInfoTest,
+       AutoSignoutDontTriggerWithOldDeviceInfo) {
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  CreateFloatingWorkspaceServiceForTesting(profile(), GetParam());
+  InitFloatingWorkspaceServiceAndStartSession();
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
+      CreateFakeDeviceInfo("guid1", "device1",
+                           base::Time::Now() - base::Seconds(10)));
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::DEVICE_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_EQ(GetSessionControllerClient()->request_sign_out_count(), 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FloatingWorkspaceAutoSignoutWithDeviceInfoTest,
+    ::testing::Values(
+        floating_workspace_util::FloatingWorkspaceVersion::
+            kFloatingWorkspaceV2Enabled,
+        floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly));
 
 class FloatingWorkspaceServiceMultiUserTest
     : public FloatingWorkspaceServiceV2Test {
