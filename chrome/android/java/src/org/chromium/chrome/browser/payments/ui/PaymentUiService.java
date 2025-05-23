@@ -343,7 +343,7 @@ public class PaymentUiService
      * @param context The activity context.
      */
     public void createShippingSectionIfNeeded(Context context) {
-        if (!shouldShowShippingSection()) return;
+        if (!shouldShowShippingSection() || mShippingAddressesSection != null) return;
         createShippingSectionForPaymentRequestUi(context);
     }
 
@@ -1131,6 +1131,8 @@ public class PaymentUiService
             mLayoutStateProvider = layoutStateProvider;
             mLayoutStateProvider.addObserver(this);
         }
+
+        createShippingSectionIfNeeded(activity);
 
         if (shouldShowContactSection()) {
             mContactSection =

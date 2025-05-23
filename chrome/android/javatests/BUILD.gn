@@ -1032,6 +1032,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseEmptyTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseInvalidDetailsTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseRejectTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingDelayTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseUSOnlyShippingTest.java",

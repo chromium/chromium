@@ -1272,10 +1272,11 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
         /** Updates the View to account for the new {@link SectionInformation} being passed in. */
         public void update(SectionInformation information) {
+            assert information != null : "Section information should not be null";
             mSectionInformation = information;
-            EditableOption selectedItem = information.getSelectedItem();
+            EditableOption selectedItem = mSectionInformation.getSelectedItem();
             updateSelectedItem(selectedItem);
-            updateOptionList(information, selectedItem);
+            updateOptionList(mSectionInformation, selectedItem);
             updateControlLayout();
         }
 
