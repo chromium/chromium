@@ -138,7 +138,8 @@ class AndroidHubNonZPSSection : public Section {
 //  - up to 5 trending search suggestions.
 class AndroidNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
-  explicit AndroidNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  AndroidNTPZpsSection(omnibox::GroupConfigMap& group_configs,
+                       bool mia_enabled);
 };
 
 // Section expressing the Android ZPS limits and grouping for the SRP.
@@ -172,8 +173,9 @@ class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
 //  - up to 8 trending search suggestions.
 class DesktopNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
-  explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
-                                size_t limit);
+  DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
+                       size_t limit,
+                       bool mia_enabled);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for unscoped
@@ -284,7 +286,7 @@ class DesktopNonZpsSection : public Section {
 //  - up to `max_trending_queries` trending suggestions.
 class IOSNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
-  explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs, bool mia_enabled);
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the SRP.
@@ -328,7 +330,8 @@ class IOSIpadNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   explicit IOSIpadNTPZpsSection(size_t trends_count,
                                 size_t total_count,
-                                omnibox::GroupConfigMap& group_configs);
+                                omnibox::GroupConfigMap& group_configs,
+                                bool mia_enabled);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the SRP.

@@ -70,6 +70,7 @@
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -1442,19 +1443,22 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   // suggestions shouldn't be shown.
   const bool is_lens_active =
       !autocomplete_provider_client()->AreLensEntrypointsVisible();
+  bool mia_enabled =
+      omnibox_feature_configs::MiaZPS::Get().enabled &&
+      !omnibox::IsMiaDisabledByPolicy(provider_client_->GetPrefs());
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
-    internal_result_.SortAndCull(input_, template_url_service_,
-                                 triggered_feature_service_, is_lens_active,
-                                 old_result.default_match_to_preserve);
+    internal_result_.SortAndCull(
+        input_, template_url_service_, triggered_feature_service_,
+        is_lens_active, mia_enabled, old_result.default_match_to_preserve);
     internal_result_.TransferOldMatches(input_,
                                         &old_result.matches_to_transfer);
   }
 
-  internal_result_.SortAndCull(input_, template_url_service_,
-                               triggered_feature_service_, is_lens_active,
-                               old_result.default_match_to_preserve);
+  internal_result_.SortAndCull(
+      input_, template_url_service_, triggered_feature_service_, is_lens_active,
+      mia_enabled, old_result.default_match_to_preserve);
 
   if (update_type == UpdateType::kSyncPass) {
     StartExpireTimer();

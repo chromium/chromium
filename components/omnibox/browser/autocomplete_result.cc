@@ -391,6 +391,7 @@ void AutocompleteResult::SortAndCull(
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service,
     bool is_lens_active,
+    bool mia_enabled,
     std::optional<AutocompleteMatch> default_match_to_preserve) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
@@ -446,8 +447,8 @@ void AutocompleteResult::SortAndCull(
     PSections sections;
     if constexpr (is_android) {
       if (omnibox::IsNTPPage(page_classification)) {
-        sections.push_back(
-            std::make_unique<AndroidNTPZpsSection>(suggestion_groups_map_));
+        sections.push_back(std::make_unique<AndroidNTPZpsSection>(
+            suggestion_groups_map_, mia_enabled));
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidSRPZpsSection>(suggestion_groups_map_));
@@ -490,7 +491,7 @@ void AutocompleteResult::SortAndCull(
             page_classification != OmniboxEventProto::NTP_REALBOX &&
             has_iph_match;
         sections.push_back(std::make_unique<DesktopNTPZpsSection>(
-            suggestion_groups_map_, add_iph_section ? 7u : 8u));
+            suggestion_groups_map_, add_iph_section ? 7u : 8u, mia_enabled));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         // Show unscoped extension suggestions on NTP except in the realbox.
         if (base::FeatureList::IsEnabled(
@@ -564,7 +565,8 @@ void AutocompleteResult::SortAndCull(
 
         if (omnibox::IsNTPPage(page_classification)) {
           sections.push_back(std::make_unique<IOSIpadNTPZpsSection>(
-              num_trending_queries, total_count, suggestion_groups_map_));
+              num_trending_queries, total_count, suggestion_groups_map_,
+              mia_enabled));
         } else if (omnibox::IsSearchResultsPage(page_classification)) {
           sections.push_back(std::make_unique<IOSIpadSRPZpsSection>(
               total_count, suggestion_groups_map_));
@@ -584,8 +586,8 @@ void AutocompleteResult::SortAndCull(
               NOTREACHED(base::NotFatalUntil::M200);
           }
         } else if (omnibox::IsNTPPage(page_classification)) {
-          sections.push_back(
-              std::make_unique<IOSNTPZpsSection>(suggestion_groups_map_));
+          sections.push_back(std::make_unique<IOSNTPZpsSection>(
+              suggestion_groups_map_, mia_enabled));
         } else if (omnibox::IsSearchResultsPage(page_classification)) {
           sections.push_back(
               std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));

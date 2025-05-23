@@ -1187,7 +1187,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
     // Run SortAndCull, but try to keep the first entry of last_matches on top.
     current_result.SortAndCull(
         input, &template_url_service(), triggered_feature_service(),
-        /*is_lens_active=*/false, *last_result.match_at(0));
+        /*is_lens_active=*/false, false, *last_result.match_at(0));
 
     AssertResultMatches(current_result, expected);
   };

@@ -157,7 +157,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
     sections.push_back(
-        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u));
+        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u, false));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -279,6 +279,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection) {
 // Tests the groups, limits, and rules for the Desktop NTP ZPS section.
 TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
   auto test = [](std::vector<std::pair<int, omnibox::GroupId>> input,
+                 bool mia_enabled,
                  std::vector<std::pair<int, omnibox::GroupId>> output) {
     ACMatches in_matches;
     for (const auto& [relevance, group_id] : input) {
@@ -287,7 +288,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
     sections.push_back(
-        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u));
+        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u, mia_enabled));
     auto out_matches = Section::GroupMatches(std::move(sections), in_matches);
     VerifyMatches(out_matches, output);
   };
@@ -295,10 +296,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
   {
     SCOPED_TRACE(
         "MIA above pSuggest - local history zps takes precedence over Trends.");
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::MiaZPS>
-        scoped_config;
-    scoped_config.Get().enabled = true;
     test(
         {
             // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
@@ -324,6 +321,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
             {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
+        /*mia_enabled=*/true,
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
@@ -339,10 +337,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
     SCOPED_TRACE(
         "MIA below pSuggest - Local history zps is grouped with pSuggest but "
         "doesn't take precedence over non-Trends.");
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::MiaZPS>
-        scoped_config;
-    scoped_config.Get().enabled = true;
     test(
         {
             // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
@@ -367,6 +361,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
             {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
+        /*mia_enabled=*/true,
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
@@ -382,10 +377,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
     SCOPED_TRACE(
         "MIA and no pSuggest - Local history zps doesn't take precedence over "
         "non-Trends.");
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::MiaZPS>
-        scoped_config;
-    scoped_config.Get().enabled = true;
     test(
         {
             // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
@@ -408,6 +399,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
             {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
+        /*mia_enabled=*/true,
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
@@ -423,10 +415,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
     SCOPED_TRACE(
         "MIA and no pSuggest - Local history zps added but doesn't take "
         "precedence over non-Trends.");
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::MiaZPS>
-        scoped_config;
-    scoped_config.Get().enabled = true;
     test(
         {
             // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
@@ -449,6 +437,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
             {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
+        /*mia_enabled=*/true,
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
@@ -462,10 +451,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
   }
   {
     SCOPED_TRACE("MIA is not added if feature is disabled.");
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::MiaZPS>
-        scoped_config;
-    scoped_config.Get().enabled = false;
     test(
         {
             // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
@@ -485,6 +470,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
             // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should be added.
             {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         },
+        /*mia_enabled=*/false,
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
@@ -506,7 +492,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection_WithIPH) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
     sections.push_back(
-        std::make_unique<DesktopNTPZpsSection>(group_configs, 7u));
+        std::make_unique<DesktopNTPZpsSection>(group_configs, 7u, false));
     sections.push_back(
         std::make_unique<DesktopNTPZpsIPHSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
@@ -1327,7 +1313,8 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSection_withInspireMe) {
 
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    sections.push_back(std::make_unique<AndroidNTPZpsSection>(group_configs));
+    sections.push_back(
+        std::make_unique<AndroidNTPZpsSection>(group_configs, false));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1570,7 +1557,8 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    sections.push_back(std::make_unique<IOSNTPZpsSection>(group_configs));
+    sections.push_back(
+        std::make_unique<IOSNTPZpsSection>(group_configs, false));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1753,7 +1741,7 @@ TEST(AutocompleteGrouperSectionsTest,
     group_configs[group4].set_side_type(
         omnibox::GroupConfig_SideType_SECONDARY);
     sections.push_back(
-        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u));
+        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u, false));
     sections.push_back(
         std::make_unique<DesktopSecondaryNTPZpsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);

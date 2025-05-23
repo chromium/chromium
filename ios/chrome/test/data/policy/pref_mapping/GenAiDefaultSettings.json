@@ -3,6 +3,45 @@
     "os": [
       "ios"
     ],
-    "reason_for_missing_test": "No covered GenAI policies are currently supported on iOS."
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 1
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "omnibox.ai_mode_search_suggest_settings": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
   }
 ]

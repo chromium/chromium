@@ -85,6 +85,8 @@ inline constexpr char kShownCountHistoryScopePromo[] =
 inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
     "omnibox.shown_count_history_embeddings_scope_promo";
 inline constexpr char kFocusedSrpWebCount[] = "omnibox.focused_srp_web_count";
+inline constexpr char kAIModeSearchSuggestSettings[] =
+    "omnibox.ai_mode_search_suggest_settings";
 
 // Many of the prefs defined above are registered locally where they're used.
 // New prefs should be added here and ordered the same as they're defined above.
@@ -101,6 +103,9 @@ void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,
 std::string GetUserPreferenceForZeroSuggestCachedResponse(
     PrefService* prefs,
     const std::string& page_url);
+
+// Returns true if the MIA is disabled per the policy.
+bool IsMiaDisabledByPolicy(PrefService* prefs);
 
 }  // namespace omnibox
 

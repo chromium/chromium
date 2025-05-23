@@ -23,6 +23,7 @@
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/browser/boolean_disabling_policy_handler.h"
@@ -168,6 +169,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kProvisionalNotificationsAllowed,
     prefs::kProvisionalNotificationsAllowedByPolicy,
     base::Value::Type::BOOLEAN },
+  { policy::key::kAIModeSearchSuggestSettings,
+    omnibox::kAIModeSearchSuggestSettings,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 
@@ -243,8 +247,11 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
 
   std::vector<policy::GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
       gen_ai_default_policies;
-  // No GenAI policies are currently covered by GenAiDefaultSettings on iOS.
-  // When eligible policies are added, they will be handled here.
+  gen_ai_default_policies.emplace_back(
+      policy::key::kAIModeSearchSuggestSettings,
+      omnibox::kAIModeSearchSuggestSettings,
+      policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
   handlers->AddHandler(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));

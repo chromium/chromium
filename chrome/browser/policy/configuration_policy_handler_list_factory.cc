@@ -2387,6 +2387,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kNTPFooterManagementNoticeEnabled,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  { key::kAIModeSearchSuggestSettings,
+    omnibox::kAIModeSearchSuggestSettings,
+    base::Value::Type::INTEGER },
+
 };
 // clang-format on
 
@@ -3365,6 +3369,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kGenAIInlineImageSettings,
       ash::prefs::kLobsterEnterprisePolicySettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  gen_ai_default_policies.emplace_back(
+      key::kAIModeSearchSuggestSettings, omnibox::kAIModeSearchSuggestSettings,
+      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
+          {{0, 0}, {1, 0}, {2, 1}}));
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
 

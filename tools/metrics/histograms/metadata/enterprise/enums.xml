@@ -2234,6 +2234,7 @@ chromium-metrics-reviews@google.com.
   <int value="1363" label="TLS13EarlyDataEnabled"/>
   <int value="1364" label="LocalNetworkAccessRestrictionsEnabled"/>
   <int value="1365" label="PrefetchWithServiceWorkerEnabled"/>
+  <int value="1366" label="AIModeSearchSuggestSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
