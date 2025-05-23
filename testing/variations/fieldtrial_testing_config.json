@@ -24297,6 +24297,35 @@
             ]
         }
     ],
+    "UnimportantFramePolicy": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UnimportantFrame_LowerPriority",
+                    "enable_features": [
+                        "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
+                    ]
+                },
+                {
+                    "name": "UnimportantFrame_LowerPriorityAndFrameRate",
+                    "enable_features": [
+                        "ThrottleUnimportantFrameRate",
+                        "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnlockDatabaseOnClose": [
         {
             "platforms": [
