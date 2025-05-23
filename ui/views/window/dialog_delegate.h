@@ -587,6 +587,11 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Returns the corner radius that is used for this dialog.
   int GetCornerRadius() const;
 
+  bool allow_vertical_buttons() const { return allow_vertical_buttons_; }
+  void set_allow_vertical_buttons(bool allow) {
+    allow_vertical_buttons_ = allow;
+  }
+
  protected:
   // Overridden from WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;
@@ -645,6 +650,15 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Ownership of the views::Widget created by CreateDialogWidget().
   Widget::InitParams::Ownership ownership_of_new_widget_ =
       Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
+
+  // If set, allows the dialog buttons to be arranged in a vertical
+  // layout to maintain fixed dialog width. Specifically, if an extra view has
+  // been supplied (commonly a third button), and the width of the resulting
+  // row of buttons exceeds the specified `fixed_width_`, buttons are stacked
+  // in a column instead. Conventionally, three-button dialogs are designed
+  // with a width large enough to accommodate the required horizontal width.
+  // This switch is an experiment to explore an alternate approach.
+  bool allow_vertical_buttons_ = false;
 };
 
 // A DialogDelegate implementation that is-a View. Used to override GetWidget()

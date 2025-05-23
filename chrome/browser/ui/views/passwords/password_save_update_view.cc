@@ -170,6 +170,10 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       extra_view_->SetCallback(
           base::BindOnce(button_clicked, base::Unretained(this),
                          &Controller::OnNeverForThisSiteClicked));
+
+      // The third button will usually stretch the bubble beyond its intended
+      // width. Permit the bubble to use vertical buttons if this happens.
+      set_allow_vertical_buttons(true);
     } else {
       // 2-button save dialog variant.
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),

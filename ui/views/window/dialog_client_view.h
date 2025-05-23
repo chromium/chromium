@@ -5,8 +5,10 @@
 #ifndef UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 #define UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 
+#include <array>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +28,10 @@ namespace views {
 class DialogDelegate;
 class MdTextButton;
 class Widget;
+
+namespace features {
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kDialogVerticalButtonFallback);
+}
 
 // DialogClientView provides adornments for a dialog's content view, including
 // custom-labeled [OK] and [Cancel] buttons with [Enter] and [Esc] accelerators.
@@ -159,8 +165,18 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // a View should not appear, it will be null.
   std::array<View*, kNumButtons> GetButtonRowViews();
 
+  // Returns Views in column order. This is used when the buttons don't fit in
+  // a row, and the buttons are laid out vertically instead.
+  std::vector<View*> GetButtonColumnViews() const;
+
   // Installs and configures the LayoutManager for `button_row_container_`.
   void SetupLayout();
+
+  // Horizontal and vertical variations of button layout logic. The vertical
+  // layout is utilized if the horizontal layout exceeds a maximum width
+  // criteria.
+  void SetupHorizontalLayout();
+  void SetupVerticalLayout();
 
   // Creates or deletes any buttons that are required. Updates data members.
   // After calling this, no button row Views will be in the view hierarchy.

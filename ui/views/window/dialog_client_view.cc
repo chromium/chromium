@@ -28,6 +28,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -40,6 +41,14 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+
+namespace features {
+// Gates the ability of the Dialog to use a vertical button layout, if other
+// conditions permit. This is a killswitch and is on by default.
+BASE_FEATURE(kDialogVerticalButtonFallback,
+             "DialogVerticalButtonFallback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace {
 
@@ -430,6 +439,22 @@ DialogClientView::GetButtonRowViews() {
   return {{first, second, third}};
 }
 
+std::vector<View*> DialogClientView::GetButtonColumnViews() const {
+  // Note: Unlike the horizontal layout, the Okay button is always at the
+  // bottom, independent of platform-specific style.
+  std::vector<View*> views;
+  if (ShouldShow(extra_view_)) {
+    views.push_back(extra_view_.get());
+  }
+  if (cancel_button_) {
+    views.push_back(cancel_button_);
+  }
+  if (ok_button_) {
+    views.push_back(ok_button_);
+  }
+  return views;
+}
+
 void DialogClientView::UpdateExtraViewFromDelegate() {
   // DisownExtraView() returns nullopt if the extra view was not updated.
   auto maybe_new_extra_view = GetDialogDelegate()->DisownExtraView();
@@ -468,16 +493,9 @@ void DialogClientView::SetupLayout() {
   UpdateExtraViewFromDelegate();
 
   std::array<View*, kNumButtons> views = GetButtonRowViews();
-
   if (std::ranges::count(views, nullptr) == kNumButtons) {
     return;
   }
-
-  // This will also clobber any existing layout manager and clear any settings
-  // it may already have.
-  auto* layout = button_row_container_->SetLayoutManager(
-      std::make_unique<views::TableLayout>());
-  layout->SetMinimumSize(minimum_size_);
   if (extra_view_) {
     // TableLayout will force its child views to be visible if they aren't
     // explicitly ignored, which will cause the extra view the client supplied
@@ -486,6 +504,36 @@ void DialogClientView::SetupLayout() {
     extra_view_->SetProperty(kViewIgnoredByLayoutKey,
                              !extra_view_->GetVisible());
   }
+
+  // Attempt to lay out the buttons horizontally. If the width of the resulting
+  // layout exceeds the specified fixed width of the dialog, conditionally
+  // use a vertical button layout instead, to minimize horizontal growth.
+  SetupHorizontalLayout();
+  const int fixed_width = GetDialogDelegate()->fixed_width();
+  if (GetDialogDelegate()->allow_vertical_buttons() &&
+      base::FeatureList::IsEnabled(
+          views::features::kDialogVerticalButtonFallback) &&
+      ShouldShow(extra_view_) && fixed_width &&
+      button_row_container_->GetPreferredSize({}).width() > fixed_width) {
+    SetupVerticalLayout();
+  }
+
+  // The default focus is lost when child views are added back into the
+  // dialog. This restores focus if the button is still available.
+  View* previously_focused_view = view_tracker.view();
+  if (previously_focused_view && !focus_manager->GetFocusedView() &&
+      Contains(previously_focused_view)) {
+    previously_focused_view->RequestFocus();
+  }
+}
+
+void DialogClientView::SetupHorizontalLayout() {
+  std::array<View*, kNumButtons> views = GetButtonRowViews();
+  CHECK(std::ranges::count(views, nullptr) != kNumButtons);
+
+  auto* layout = button_row_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  layout->SetMinimumSize(minimum_size_);
 
   // The |resize_percent| constants. There's only one stretchy column (padding
   // to the left of ok/cancel buttons).
@@ -547,14 +595,26 @@ void DialogClientView::SetupLayout() {
     }
     layout->LinkColumnSizes(cols);
   }
+}
 
-  // The default focus is lost when child views are added back into the dialog.
-  // This restores focus if the button is still available.
-  View* previously_focused_view = view_tracker.view();
-  if (previously_focused_view && !focus_manager->GetFocusedView() &&
-      Contains(previously_focused_view)) {
-    previously_focused_view->RequestFocus();
+void DialogClientView::SetupVerticalLayout() {
+  auto views = GetButtonColumnViews();
+  CHECK_GT(views.size(), 0u);
+
+  for (size_t i = 0; i < views.size(); ++i) {
+    button_row_container_->ReorderChildView(views[i], i);
   }
+
+  button_row_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetInteriorMargin(button_row_insets_)
+      .SetCollapseMargins(true)
+      .SetDefault(kMarginsKey,
+                  gfx::Insets::VH(LayoutProvider::Get()->GetDistanceMetric(
+                                      DISTANCE_RELATED_CONTROL_VERTICAL),
+                                  0));
 }
 
 void DialogClientView::UpdateButtonsFromModel() {
