@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/widget/glic_modal_manager.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -223,8 +222,6 @@ class GlicWindowController : public Host::Delegate {
   virtual Profile* profile() = 0;
 
   virtual bool IsDragging() = 0;
-
-  virtual void ShowGlicModal(std::u16string label) = 0;
 
   virtual gfx::Rect GetInitialBounds(Browser* browser) = 0;
 

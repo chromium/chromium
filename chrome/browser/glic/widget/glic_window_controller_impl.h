@@ -20,7 +20,6 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
-#include "chrome/browser/glic/widget/glic_modal_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/glic/widget/glic_window_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
@@ -45,7 +44,6 @@ namespace glic {
 class GlicEnabling;
 class ScopedGlicButtonIndicator;
 class GlicButton;
-class GlicModalManager;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -124,7 +122,6 @@ class GlicWindowControllerImpl
   GlicWindowAnimator* window_animator() override;
   Profile* profile() override;
   bool IsDragging() override;
-  void ShowGlicModal(std::u16string label) override;
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
@@ -340,8 +337,6 @@ class GlicWindowControllerImpl
   std::unique_ptr<GlicFreController> fre_controller_;
 
   std::unique_ptr<WindowFinder> window_finder_;
-
-  std::unique_ptr<GlicModalManager> glic_modal_manager_;
 
   std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
   std::unique_ptr<LocalHotkeyManager> glic_window_hotkey_manager_;

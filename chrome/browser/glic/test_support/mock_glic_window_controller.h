@@ -75,7 +75,6 @@ class MockGlicWindowController
   MOCK_METHOD(GlicWindowAnimator*, window_animator, (), (override));
   MOCK_METHOD(Profile*, profile, (), (override));
   MOCK_METHOD(bool, IsDragging, (), (override));
-  MOCK_METHOD(void, ShowGlicModal, (std::u16string), (override));
   MOCK_METHOD(gfx::Rect, GetInitialBounds, (Browser*), (override));
   MOCK_METHOD(void, ShowDetachedForTesting, (), (override));
   MOCK_METHOD(void, SetPreviousPositionForTesting, (gfx::Point), (override));

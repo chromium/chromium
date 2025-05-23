@@ -24,8 +24,6 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/glic/widget/glic_modal_manager.h"
-#include "chrome/browser/glic/widget/glic_modal_view.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
@@ -292,7 +290,6 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
-      glic_modal_manager_(std::make_unique<GlicModalManager>()),
       glic_service_(glic_service),
       enabling_(enabling) {
   previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
@@ -629,10 +626,6 @@ void GlicWindowControllerImpl::Show(Browser* browser,
     SetDraggingAreasAndWatchForMouseEvents();
   }
   glic_service_->metrics()->OnGlicWindowShown();
-}
-
-void GlicWindowControllerImpl::ShowGlicModal(std::u16string label) {
-  glic_modal_manager_->ShowModal(std::move(label), glic_widget_.get());
 }
 
 void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
