@@ -168,5 +168,35 @@ TEST_F(CaptionBubbleSettingsImplTest,
   EXPECT_FALSE(caption_bubble_settings.ShouldAdjustPositionOnExpand());
 }
 
+TEST_F(CaptionBubbleSettingsImplTest, ToggleTranslateAllowed) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(
+      &pref_service_, kEnglishLanguage, base::DoNothing());
+  caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
+
+  EXPECT_CALL(observer_, OnLiveTranslateEnabledChanged).Times(1);
+  caption_bubble_settings.SetTranslateAllowed(false);
+  EXPECT_FALSE(caption_bubble_settings.GetTranslateAllowed());
+
+  EXPECT_CALL(observer_, OnLiveTranslateEnabledChanged).Times(1);
+  caption_bubble_settings.SetTranslateAllowed(true);
+  EXPECT_TRUE(caption_bubble_settings.GetTranslateAllowed());
+}
+
+TEST_F(CaptionBubbleSettingsImplTest, GetLiveTranslateEnabled) {
+  CaptionBubbleSettingsImpl caption_bubble_settings(
+      &pref_service_, kEnglishLanguage, base::DoNothing());
+  EXPECT_FALSE(caption_bubble_settings.GetLiveTranslateEnabled());
+
+  // CanEnableTranslate() is initially true.
+  caption_bubble_settings.SetLiveTranslateEnabled(true);
+  EXPECT_TRUE(caption_bubble_settings.GetLiveTranslateEnabled());
+
+  caption_bubble_settings.SetTranslateAllowed(false);
+  EXPECT_FALSE(caption_bubble_settings.GetLiveTranslateEnabled());
+
+  caption_bubble_settings.SetLiveTranslateEnabled(false);
+  EXPECT_FALSE(caption_bubble_settings.GetLiveTranslateEnabled());
+}
+
 }  // namespace
 }  // namespace ash::babelorca
