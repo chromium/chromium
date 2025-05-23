@@ -5040,9 +5040,6 @@ crbug.com/40854799 virtual/prefetch-sw/http/tests/inspector-protocol/prefetch/re
 crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
 
-crbug.com/419222084 virtual/prefetch/external/wpt/speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=race-fetch-handler-modify-url [ Failure Pass ]
-crbug.com/419222084 virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/tentative/service-worker/basic.sub.https.html?origin=same-site&sw=race-fetch-handler-modify-url [ Failure Pass ]
-
 # Sheriff 2018-03-22
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
 
