@@ -920,8 +920,20 @@ IN_PROC_BROWSER_TEST_P(CookieFileBrowserTest, SetAndGetCookie) {
   EXPECT_TRUE(NavigateToURL(shell(), file_url_));
   RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
 
-  // File cookies always appear to be writable.
+  // File cookies always appear to be writable. On non-Android platforms a
+  // warning is printed when this occurs.
+#if !BUILDFLAG(IS_ANDROID)
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "While navigator.cookieEnabled does return true for this file:// "
+      "URL, this is done for web compatability reasons. Cookies will not "
+      "actually be stored for file:// URLs. If you want this to change "
+      "please leave feedback on crbug.com/378604901.");
+#endif
   EXPECT_TRUE(EvalJs(frame, "navigator.cookieEnabled").ExtractBool());
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(console_observer.Wait());
+#endif
 
   // File cookies can only be set if they are enabled.
   bool can_set_cookies;
