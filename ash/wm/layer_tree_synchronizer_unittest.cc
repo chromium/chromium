@@ -340,7 +340,7 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
                                gfx::RoundedCornersF(10));
   window_tree_synchronizer->SynchronizeRoundedCorners(
       transient_parent.get(), /*root_window=*/root.get(), reference_bounds,
-      base::NullCallback());
+      /*consider_curvature=*/true, base::NullCallback());
 
   // All the windows rooted at `transient_parent`(including transient windows)
   // should be synchronized again `reference_bounds`.
@@ -357,7 +357,8 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
                                        gfx::RoundedCornersF(15));
   window_tree_synchronizer->SynchronizeRoundedCorners(
       transient_parent.get(), /*root_window=*/root.get(),
-      updated_reference_bounds, base::NullCallback());
+      updated_reference_bounds, /*consider_curvature=*/true,
+      base::NullCallback());
 
   // All the windows rooted at `transient_parent` should now have new rounded
   // corners based on `updated_reference_bounds`.
