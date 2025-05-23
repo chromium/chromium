@@ -2132,6 +2132,17 @@ TEST_F(BrowserAutofillManagerTestValuables,
   FormsSeen({form_data});
   OnAskForValuesToFill(form_data, form_data.fields()[0]);
 
+#if BUILDFLAG(IS_ANDROID)
+  external_delegate()->CheckSuggestions(
+      form_data.fields()[0].global_id(),
+      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       CreateSeparator(), CreateManageAddressesSuggestion(),
+       Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kLoyaltyCardEntry)});
+#else
   Suggestion loyalty_cards_submenu = Suggestion(
       l10n_util::GetStringUTF8(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE), "",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2159,6 +2170,7 @@ TEST_F(BrowserAutofillManagerTestValuables,
                   SuggestionType::kAddressEntry),
        CreateSeparator(), loyalty_cards_submenu, CreateSeparator(),
        CreateManageAddressesSuggestion()});
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Tests that when only loyalty card suggestions are available, they are shown

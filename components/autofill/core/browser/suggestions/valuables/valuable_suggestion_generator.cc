@@ -158,6 +158,21 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   if (loyalty_cards.empty()) {
     return;
   }
+  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
+                                             loyalty_cards.end());
+  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
+#if BUILDFLAG(IS_ANDROID)
+  // No submenu on Android. Loyalty card suggestions are listed right after
+  // email suggestions.
+  std::vector<Suggestion> loyalty_card_suggestions =
+      CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+  email_suggestions.insert(
+
+      email_suggestions.end(),
+      std::make_move_iterator(loyalty_card_suggestions.begin()),
+      std::make_move_iterator(loyalty_card_suggestions.end()));
+  return;
+#else
   Suggestion submenu_suggestion = Suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE),
       SuggestionType::kLoyaltyCardEntry);
@@ -165,9 +180,6 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
-  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
-                                             loyalty_cards.end());
-  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
   std::ranges::stable_partition(all_loyalty_cards,
                                 [&](const LoyaltyCard& card) {
                                   return LoyaltyCardMatchesDomain(card, url);
@@ -182,6 +194,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   email_suggestions.insert(email_suggestions.end() - 1, submenu_suggestion);
   email_suggestions.insert(email_suggestions.end() - 1,
                            Suggestion(SuggestionType::kSeparator));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill

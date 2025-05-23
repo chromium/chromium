@@ -309,6 +309,28 @@ TEST_F(ValuableSuggestionGeneratorTest,
       email_suggestions, valuables_data_manager(),
       GURL("https://common-matching-domain.example/test"));
 
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(email_suggestions,
+              testing::ElementsAre(
+                  EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   u"test-email1@domain1.example"),
+                  EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   u"test-email2@domain2.example"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(
+                      SuggestionType::kManageAddress,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES)),
+                  EqualsSuggestion(
+                      SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
+                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+                      {{Suggestion::Text(u"CVS Pharmacy")}},
+                      Suggestion::Guid("loyalty_card_id_1")),
+                  EqualsSuggestion(
+                      SuggestionType::kLoyaltyCardEntry, u"37262999281",
+                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+                      {{Suggestion::Text(u"Ticket Maester")}},
+                      Suggestion::Guid("loyalty_card_id_2"))));
+#else
   EXPECT_THAT(
       email_suggestions,
       testing::ElementsAre(
@@ -350,6 +372,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
   EXPECT_THAT(lc_submenu_suggestion.children.back(),
               HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
 #endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 TEST_F(ValuableSuggestionGeneratorTest,
        ExtendEmailSuggestionsWithLoyaltyCardSuggestions_NoLoyaltyCards) {
