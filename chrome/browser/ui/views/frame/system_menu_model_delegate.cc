@@ -55,6 +55,12 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
         browser_->window()->GetNativeWindow());
   }
 #endif
+#if BUILDFLAG(ENABLE_GLIC)
+  // Disable the glic toggle pin if it is showing and glic is not enabled.
+  if (command_id == IDC_GLIC_TOGGLE_PIN) {
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
+  }
+#endif
   return chrome::IsCommandEnabled(browser_, command_id);
 }
 
