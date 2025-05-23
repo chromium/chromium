@@ -340,6 +340,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="MediaFoundationGetCdmFactoryFailed"/>
   <int value="9" label="CreateDummyMediaFoundationCdmFailed"/>
   <int value="10" label="UnexpectedEmptyCapability"/>
+  <int value="11" label="NoMediaDrmSupport"/>
+  <int value="12" label="MediaFoundationGetExtendedDRMTypeSupportFailed"/>
 </enum>
 
 <enum name="CdmHostVerificationStatus">

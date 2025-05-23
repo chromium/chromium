@@ -552,9 +552,12 @@ void MediaFoundationService::IsKeySystemSupported(
                   << hr;
       std::move(callback).Run(
           false, KeySystemCapability(
-                     // TODO(crbug.com/384962301): need better error codes here.
-                     base::unexpected(CdmCapabilityQueryStatus::kUnknown),
-                     base::unexpected(CdmCapabilityQueryStatus::kUnknown)));
+                     base::unexpected(
+                         CdmCapabilityQueryStatus::
+                             kMediaFoundationGetExtendedDRMTypeSupportFailed),
+                     base::unexpected(
+                         CdmCapabilityQueryStatus::
+                             kMediaFoundationGetExtendedDRMTypeSupportFailed)));
       return;
     }
 

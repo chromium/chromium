@@ -90,6 +90,9 @@ std::string CdmCapabilityQueryStatusToString(
     case CdmCapabilityQueryStatus::kNoMediaDrmSupport:
       return "MediaDrm not available for the key system and robustness "
              "specified.";
+    case CdmCapabilityQueryStatus::
+        kMediaFoundationGetExtendedDRMTypeSupportFailed:
+      return "kMediaFoundationGetExtendedDRMTypeSupportFailed";
   }
 
   NOTREACHED();
