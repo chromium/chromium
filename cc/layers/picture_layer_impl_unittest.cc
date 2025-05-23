@@ -6293,7 +6293,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   }
 }
 
-TEST_F(LegacySWPictureLayerImplTest,
+TEST_F(NoLowResPictureLayerImplTest,
        ChangeRasterTranslationNukeActiveLayerTiles) {
   gfx::Size layer_bounds(200, 200);
   gfx::Size tile_size(256, 256);
@@ -6310,7 +6310,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   active_layer()->draw_properties().target_space_transform =
       active_layer()->draw_properties().screen_space_transform;
   active_layer()->UpdateTiles();
-  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling =
         active_layer()->tilings()->FindTilingWithScaleKey(2.25f);
@@ -6343,7 +6343,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   // Now push to the active layer.
   // Verifies the active tiles get evicted due to slot conflict.
   host_impl()->ActivateSyncTree();
-  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
   {
     PictureLayerTiling* tiling =
         active_layer()->tilings()->FindTilingWithScaleKey(2.25f);
