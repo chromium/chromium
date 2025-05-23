@@ -19,9 +19,7 @@
 #import "ios/web/public/web_state.h"
 
 LensBrowserAgent::LensBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
-  browser->AddObserver(this);
-}
+    : BrowserUserData(browser) {}
 
 LensBrowserAgent::~LensBrowserAgent() = default;
 
@@ -32,8 +30,6 @@ bool LensBrowserAgent::CanGoBackToLensViewFinder() const {
 }
 
 void LensBrowserAgent::GoBackToLensViewFinder() const {
-  DCHECK(browser_);
-
   std::optional<LensEntrypoint> lens_entrypoint = CurrentResultsEntrypoint();
   if (!lens_entrypoint) {
     return;
@@ -53,8 +49,6 @@ void LensBrowserAgent::GoBackToLensViewFinder() const {
 
 std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
     const {
-  DCHECK(browser_);
-
   if (!ios::provider::IsLensSupported()) {
     return std::nullopt;
   }
@@ -101,11 +95,4 @@ std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
     default:
       return std::nullopt;
   }
-}
-
-#pragma mark - BrowserObserver
-
-void LensBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser->RemoveObserver(this);
-  browser_ = nullptr;
 }
