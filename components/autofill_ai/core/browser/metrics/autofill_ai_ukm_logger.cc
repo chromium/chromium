@@ -143,7 +143,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
     }
   }
 
-  if (CanLogUkm(ukm_source_id)) {
+  if (!CanLogUkm(ukm_source_id)) {
     return;
   }
 
