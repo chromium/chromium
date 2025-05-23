@@ -31,6 +31,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/accessibility/ax_bitset.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -194,6 +195,48 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& old_pairs,
       }
       new_i++;
     }
+  }
+}
+
+template <typename EnumType, typename CallbackType>
+void CallIfAttributeValuesChanged(const ui::AXBitset<EnumType>& old_attributes,
+                                  const ui::AXBitset<EnumType>& new_attributes,
+                                  bool value_if_unset,
+                                  CallbackType callback) {
+  // `old_values` and `new_values` will contain:
+  //   - The actual T/F value for explicitly set attributes.
+  //   - '0' for attributes that were not set.
+  uint64_t old_values =
+      old_attributes.GetValues() & old_attributes.GetSetBits();
+  uint64_t new_values =
+      new_attributes.GetValues() & new_attributes.GetSetBits();
+
+  // If `value_if_unset` is true, it means any attribute *not* in `set_bits_`
+  // should be treated as having the value 'true'.
+  if (value_if_unset) {
+    old_values |= ~old_attributes.GetSetBits();
+    new_values |= ~new_attributes.GetSetBits();
+  }
+
+  // `changes` will have a '1' at each bit position where the old and new values
+  // differ.
+  uint64_t changes = old_values ^ new_values;
+  while (changes) {
+    // Get the index of the least significant '1' bit in `changes`.
+    // This is an attribute that has changed its effective value.
+    uint64_t index = std::countr_zero(changes);
+    uint64_t mask = 1ULL << index;
+
+    // Extract the effective old and new value for this specific attribute.
+    bool effective_old_value = static_cast<bool>(old_values & mask);
+    bool effective_new_value = static_cast<bool>(new_values & mask);
+
+    DCHECK_NE(effective_old_value, effective_new_value);
+    EnumType attr = static_cast<EnumType>(index);
+    callback(attr, effective_old_value, effective_new_value);
+
+    // Clear the processed differing bit from `changes` to find the next one.
+    changes &= changes - 1;
   }
 }
 

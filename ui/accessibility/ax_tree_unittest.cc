@@ -1429,6 +1429,85 @@ TEST(AXTreeTest, AttributeChangeCallbacks) {
   EXPECT_EQ("scrollXMax changed from 0 to 10", change_log2[10]);
 }
 
+TEST(AXTreeTest, BoolAttributeChangeCallbacks) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy,
+                                          false);
+  initial_state.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kModal,
+                                          true);
+  AXTree tree(initial_state);
+
+  // Scenario 1: Unset -> Explicitly False (should NOT trigger callback).
+  TestAXTreeObserver test_observer(&tree);
+  AXTreeUpdate update1;
+  update1.nodes.resize(1);
+  update1.nodes[0].id = 1;
+  // kLiveAtomic was unset, now set to false.
+  update1.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
+                                    false);
+  // Keep others same for now.
+  update1.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, false);
+  update1.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+  EXPECT_TRUE(tree.Unserialize(update1));
+
+  // kLiveAtomic: Unset (effective F) -> Explicit F. No change in effective
+  // value. Expect no change log entries.
+  EXPECT_EQ(0U, test_observer.attribute_change_log().size());
+
+  // Scenario 2: Explicitly False -> Unset (should NOT trigger callback).
+  // Current state: kLiveAtomic=F, kBusy=F, kModal=T.
+  TestAXTreeObserver test_observer2(&tree);
+  AXTreeUpdate update2;
+  update2.nodes.resize(1);
+  update2.nodes[0].id = 1;
+  // kBusy was F, now remove it (becomes unset, effective F).
+  // kLiveAtomic remains F, kModal remains T.
+  update2.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
+                                    false);
+  update2.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+  EXPECT_TRUE(tree.Unserialize(update2));
+
+  // kBusy: Explicit F -> Unset (effective F). No change in effective value.
+  // Expect no change log entries.
+  EXPECT_EQ(0U, test_observer2.attribute_change_log().size());
+
+  // Scenario 3: Unset -> Explicitly True (SHOULD trigger callback).
+  // Current state: kLiveAtomic=F, kBusy=Unset (effective F), kModal=T.
+  TestAXTreeObserver test_observer3(&tree);
+  AXTreeUpdate update3;
+  update3.nodes.resize(1);
+  update3.nodes[0].id = 1;
+  // kBusy was Unset (effective F), now set to True.
+  update3.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
+                                    false);
+  update3.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
+  update3.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+  EXPECT_TRUE(tree.Unserialize(update3));
+
+  // kBusy: Unset (effective F) -> True. Change expected.
+  EXPECT_EQ(1U, test_observer3.attribute_change_log().size());
+  EXPECT_EQ("busy changed to true", test_observer3.attribute_change_log()[0]);
+
+  // Scenario 4: Explicitly True -> Unset (SHOULD trigger callback).
+  // Current state: kLiveAtomic=F, kBusy=T, kModal=T.
+  TestAXTreeObserver test_observer4(&tree);
+  AXTreeUpdate update4;
+  update4.nodes.resize(1);
+  update4.nodes[0].id = 1;
+  // kModal was True, now remove it (becomes Unset, effective F).
+  update4.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic,
+                                    false);
+  update4.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
+  EXPECT_TRUE(tree.Unserialize(update4));
+
+  // kModal: True -> Unset (effective F). Change expected.
+  EXPECT_EQ(1U, test_observer4.attribute_change_log().size());
+  EXPECT_EQ("modal changed to false", test_observer4.attribute_change_log()[0]);
+}
+
 TEST(AXTreeTest, IntListChangeCallbacks) {
   std::vector<int32_t> one;
   one.push_back(1);
