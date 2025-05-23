@@ -10681,7 +10681,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8528962588711550376">Connexion en cours</translation>
 <translation id="8531367864749403520">Sélectionnez "Masquer le groupe" pour supprimer le groupe de votre barre d'onglets</translation>
 <translation id="8531701051932785007">La navigation sécurisée avec protection renforcée est désactivée</translation>
-<translation id="8533670235862049797">Navigation sécurisée activée</translation>
+<translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="EMAIL" />}one{Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="EMAIL" />}other{Les onglets resteront ouverts sur cet appareil, mais les groupes seront supprimés de tous les appareils connectés à <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536810348276651776">Tu seras déconnecté de la plupart des sites, mais tu resteras connecté à ton compte Google afin que tes paramètres Family Link pour Chrome s'appliquent.</translation>
