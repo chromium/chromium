@@ -84,6 +84,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Widevine" summary="Widevine key system"/>
 </variants>
 
+<variants name="KeySystemForHardwareSecureOnly">
+  <variant name="PlayReady" summary="PlayReady key system"/>
+  <variant name="Widevine" summary="Widevine key system"/>
+</variants>
+
 <variants name="KeySystemWithRobustness">
   <variant name="ClearKey" summary="Clear Key key system"/>
   <variant name="PlayReady.HardwareSecure"
@@ -3153,17 +3158,7 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library MediaFoundation CDM.</summary>
 </histogram>
 
-<histogram
-    name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.FirstInitialize"
-    enum="Hresult" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    HRESULT of the first (and only the first) MediaFoundationCdm initialization
-    in a MeidaFoundationService process when using Widevine in hardware secure
-    mode. Reported on both successes and failures.
-  </summary>
-</histogram>
+<!-- Widevine in hardware secure mode only -->
 
 <histogram
     name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.Initialize"
@@ -3176,14 +3171,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.MediaFoundationCdm.Widevine.HardwareSecure.{EmeApi}"
+<histogram
+    name="Media.EME.MediaFoundationCdm.{KeySystem}.HardwareSecure.FirstInitialize"
+    enum="Hresult" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT of the first (and only the first) MediaFoundationCdm initialization
+    in a MeidaFoundationService process when using {KeySystem} in hardware
+    secure mode. Reported on both successes and failures.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationCdm.{KeySystem}.HardwareSecure.{EmeApi}"
     enum="Hresult" expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     HRESULT of MediaFoundationCdm and MediaFoundationCdmSession operations when
-    using Widevine in hardware secure mode.
+    using {KeySystem} in hardware secure mode.
   </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
@@ -3250,7 +3260,7 @@ chromium-metrics-reviews@google.com.
     The time spent to get CdmCapability for {KeySystem}. The value will be
     reported once per CDM instance for hw security in MediaFoundationService.
   </summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
 
 <histogram
@@ -3265,7 +3275,7 @@ chromium-metrics-reviews@google.com.
     browser session lifetime). IsKeySystemSupported() calls IsTypeSupported()
     multiple times, for different audio/video codecs and encryption schemes.
   </summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
 
 <histogram name="Media.EME.MojoCdm.ConnectionError"
@@ -3351,61 +3361,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.EME.Widevine.CdmCapabilityQueryStatus.CreateDummyMediaFoundationCdmHresult"
-    enum="Hresult" expires_after="2026-01-15">
-  <owner>sangbaekpark@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    HRESULT code if CreateDummyMediaFoundationCdm call fails when querying
-    Widevine CDM capability.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.EME.Widevine.CdmCapabilityQueryStatus.MediaFoundationGetCdmFactoryHresult"
-    enum="Hresult" expires_after="2026-01-15">
-  <owner>sangbaekpark@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    HRESULT code if MediaFoundationCdmModule::GetCdmFactory call fails when
-    querying Widevine CDM capability.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.Widevine.HardwareSecure.AllowedForSite"
-    enum="BooleanEnabled" expires_after="2026-01-15">
-  <owner>feras@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether Media Foundation Widevine CDM is enabled or disabled based on
-    previous disabled timestamps in a &quot;User Profile&quot; pref. This is
-    reported once per browsing session when user requests hardware secure
-    playback if Media Foundation Widevine CDM is enabled and available.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.Widevine.HardwareSecure.CdmCapabilityQueryStatus"
-    enum="CdmCapabilityQueryStatus" expires_after="2026-01-15">
-  <owner>sangbaekpark@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The status of the CDM capability query. This can be used to inspect the
-    reason when no capability reported. Reported at most once per browser
-    session per key system when EME query is triggered by a website.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.Widevine.HardwareSecure.CdmInfoStatus"
-    enum="CdmInfoStatus" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    The CdmInfo::Status of Widevine hardware secure CDM capability. Reported at
-    most once per browser session when EME query is triggered by a website.
-  </summary>
-</histogram>
-
-<histogram
     name="Media.EME.Widevine.HardwareSecure.ClearLeadSupport.{VideoCodec}"
     enum="BooleanSupported" expires_after="2026-01-15">
   <owner>vpasupathy@chromium.org</owner>
@@ -3419,6 +3374,8 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
+<!-- Widevine in hardware secure mode only -->
+
 <histogram name="Media.EME.Widevine.HardwareSecure.Pref" enum="BooleanEnabled"
     expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>
@@ -3429,31 +3386,6 @@ chromium-metrics-reviews@google.com.
     reported once per browsing session around browser startup time if Media
     Foundation Widevine CDM is enabled and available.
   </summary>
-</histogram>
-
-<histogram name="Media.EME.Widevine.HardwareSecure.Support"
-    enum="BooleanSupported" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When hardware secure decryption is enabled, whether Widevine hardware secure
-    decryption is actually supported by the platform (device). Reported at most
-    once per browser session when EME query is triggered by a website, and when
-    Widevine hardware secure CDM was registered.
-  </summary>
-</histogram>
-
-<histogram name="Media.EME.Widevine.HardwareSecure.Support.{VideoCodec}"
-    enum="BooleanSupported" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    When hardware secure decryption is enabled and supported by Widevine,
-    whether {VideoCodec} video codec is supported by the platform (device).
-    Reported at most once per browser session when EME query is triggered by a
-    website, and when Widevine hardware secure CDM was registered.
-  </summary>
-  <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
 <histogram name="Media.EME.Widevine.SoftwareSecure.SystemCode"
@@ -3475,6 +3407,30 @@ chromium-metrics-reviews@google.com.
     configuration passed into requestMediaKeySystemAccess() is empty. This is
     specific to the Widevine key system.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.{KeySystem}.CdmCapabilityQueryStatus.CreateDummyMediaFoundationCdmHresult"
+    enum="Hresult" expires_after="2026-01-15">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT code if CreateDummyMediaFoundationCdm call fails when querying
+    hardware secure CDM capability.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram
+    name="Media.EME.{KeySystem}.CdmCapabilityQueryStatus.MediaFoundationGetCdmFactoryHresult"
+    enum="Hresult" expires_after="2026-01-15">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    HRESULT code if MediaFoundationCdmModule::GetCdmFactory call fails when
+    querying Widevine CDM capability.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdm" enum="BooleanSuccess"
@@ -3525,6 +3481,69 @@ chromium-metrics-reviews@google.com.
     The timeout status of MojoCdm::CreateSessionAndGenerateRequest() call.
   </summary>
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.HardwareSecure.AllowedForSite"
+    enum="BooleanEnabled" expires_after="2026-01-15">
+  <owner>feras@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether Media Foundation based CDM is enabled or disabled based on previous
+    disabled timestamps in a &quot;User Profile&quot; pref. This is reported
+    once per browsing session when user requests hardware secure playback if
+    Media Foundation based CDM is enabled and available.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.HardwareSecure.CdmCapabilityQueryStatus"
+    enum="CdmCapabilityQueryStatus" expires_after="2026-01-15">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The status of the CDM capability query. This can be used to inspect the
+    reason when no capability reported. Reported at most once per browser
+    session per key system when EME query is triggered by a website.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.HardwareSecure.CdmInfoStatus"
+    enum="CdmInfoStatus" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The CdmInfo::Status of {KeySystem} hardware secure CDM capability. Reported
+    at most once per browser session when EME query is triggered by a website.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.HardwareSecure.Support"
+    enum="BooleanSupported" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    When hardware secure decryption is enabled, whether Widevine hardware secure
+    decryption is actually supported by the platform (device). Reported at most
+    once per browser session when EME query is triggered by a website, and when
+    Widevine hardware secure CDM was registered.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.HardwareSecure.Support.{VideoCodec}"
+    enum="BooleanSupported" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    When hardware secure decryption is enabled and supported by Widevine,
+    whether {VideoCodec} video codec is supported by the platform (device).
+    Reported at most once per browser session when EME query is triggered by a
+    website, and when Widevine hardware secure CDM was registered.
+  </summary>
+  <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
+  <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.InitialKeyStatusMix"

@@ -79,20 +79,12 @@ std::string CdmCapabilityQueryStatusToString(
       return "kDisconnectionError";
     case CdmCapabilityQueryStatus::kMediaFoundationGetCdmFactoryFailed:
       return "kMediaFoundationGetCdmFactoryFailed. For the actual error code, "
-             "please check out "
-             "about://histograms/"
-             "#Media.EME.{KeySystem}.CdmCapabilityQueryStatus." +
-             std::string(kMediaFoundationGetCdmFactoryHresultUmaPostfix) +
-             " where KeySystem is a key "
-             "system.";
+             "please check out about://histograms/#" +
+             std::string(kMediaFoundationGetCdmFactoryHresultUmaPostfix);
     case CdmCapabilityQueryStatus::kCreateDummyMediaFoundationCdmFailed:
       return "kCreateDummyMediaFoundationCdmFailed. For the actual error code, "
-             "please check out "
-             "about://histograms/"
-             "#Media.EME.{KeySystem}.CdmCapabilityQueryStatus." +
-             std::string(kCreateDummyMediaFoundationCdmHresultUmaPostfix) +
-             " where KeySystem is a key "
-             "system.";
+             "please check out about://histograms/#" +
+             std::string(kCreateDummyMediaFoundationCdmHresultUmaPostfix);
     case CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
       return "kUnexpectedEmptyCapability";
     case CdmCapabilityQueryStatus::kNoMediaDrmSupport:

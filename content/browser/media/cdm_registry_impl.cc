@@ -106,16 +106,6 @@ void ReportHardwareSecureCapabilityStatusUMA(
         base::UmaHistogramBoolean(
             uma_prefix + ".Support." + media::GetCodecNameForUMA(video_codec),
             is_supported);
-
-        // When the codec is supported for hardware security, report whether
-        // clear lead is supported or not.
-        if (is_supported) {
-          bool is_clear_lead_supported =
-              video_codecs.at(video_codec).supports_clear_lead;
-          base::UmaHistogramBoolean(uma_prefix + ".ClearLeadSupport." +
-                                        media::GetCodecNameForUMA(video_codec),
-                                    is_clear_lead_supported);
-        }
       }
     }
   }
