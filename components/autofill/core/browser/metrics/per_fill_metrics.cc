@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/metrics/refill_metrics.h"
+#include "components/autofill/core/browser/metrics/per_fill_metrics.h"
 
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notreached.h"
@@ -26,6 +27,22 @@ std::string RefillTriggerReasonToString(
   NOTREACHED();
 }
 }  // namespace
+
+void LogNumberOfFieldsModifiedByAutofill(
+    base::span<const FormFieldData*> safe_filled_fields,
+    const FillingPayload& filling_payload) {
+  constexpr const char prefix[] = "Autofill.NumberOfFieldsPerAutofill";
+  std::string_view suffix = std::visit(
+      base::Overloaded{
+          [&](const AutofillProfile*) { return "AutofillProfile"; },
+          [&](const CreditCard* credit_card) { return "CreditCard"; },
+          [&](const EntityInstance* entity) { return "EntityInstance"; },
+          [&](const VerifiedProfile*) { return "VerifiedProfile"; }},
+      filling_payload);
+  base::UmaHistogramCounts1000(prefix, safe_filled_fields.size());
+  base::UmaHistogramCounts1000(base::StrCat({prefix, ".", suffix}),
+                               safe_filled_fields.size());
+}
 
 void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason) {
   base::UmaHistogramEnumeration("Autofill.RefillTriggerReason",

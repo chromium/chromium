@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/metrics/refill_metrics.h"
+#include "components/autofill/core/browser/metrics/per_fill_metrics.h"
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -44,7 +45,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
-class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
+class PerFillMetricsTest : public AutofillMetricsBaseTest,
+                           public testing::Test {
  public:
   void SetUp() override {
     SetUpHelper();
@@ -79,16 +81,13 @@ class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
   FormData FillFormAndGetFilledVersion(FormData form,
                                        FillingPayload filling_payload) {
     std::vector<FormFieldData> filled_fields;
-    std::vector<FieldGlobalId> global_ids;
-    for (const FormFieldData& field : form.fields()) {
-      global_ids.push_back(field.global_id());
-    }
     // After the call, `filled_fields` will only contain the fields that were
     // autofilled in this call of FillOrPreviewForm (% fields not filled due
     // to the iframe security policy).
     EXPECT_CALL(*mock_driver(), ApplyFormAction)
-        .WillOnce(
-            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
+        .WillOnce(DoAll(
+            SaveArgElementsTo<2>(&filled_fields),
+            Return(base::ToVector(form.fields(), &FormFieldData::global_id))));
     FillForm(form, filling_payload);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
@@ -102,9 +101,34 @@ class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
   }
 };
 
+// Tests that for a form fill, Autofill.NumberOfFieldsPerAutofill is emitted for
+// the actually filled fields.
+TEST_F(PerFillMetricsTest, FillForm) {
+  base::HistogramTester histogram_tester;
+  AutofillProfile autofill_profile = test::GetFullProfile();
+
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                                {.role = NAME_LAST},
+                                                {.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_ZIP},
+                                                {.role = CREDIT_CARD_NUMBER}}});
+  SeeForm({form});
+
+  // Only the first three fields are actually filled.
+  EXPECT_CALL(*mock_driver(), ApplyFormAction)
+      .WillOnce(Return(base::ToVector(base::span(form.fields()).first(3u),
+                                      &FormFieldData::global_id)));
+  FillForm(form, &autofill_profile);
+
+  histogram_tester.ExpectUniqueSample("Autofill.NumberOfFieldsPerAutofill", 3,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.NumberOfFieldsPerAutofill.AutofillProfile", 3, 1);
+}
+
 // Test that for a form that changed its structure after being seen, second
 // FormsSeen call triggers a refill, RefillTriggerReason metric gets reported.
-TEST_F(RefillMetricsTest, RefillTriggerReason_FormChanged) {
+TEST_F(PerFillMetricsTest, RefillTriggerReason_FormChanged) {
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL},
                                     {.role = CREDIT_CARD_NUMBER},
@@ -125,7 +149,7 @@ TEST_F(RefillMetricsTest, RefillTriggerReason_FormChanged) {
 
 // Test that for a form that was seen and filled, OnSelectFieldOptionsDidChange
 // triggers a refill, RefillTriggerReason metric gets reported.
-TEST_F(RefillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
+TEST_F(PerFillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL},
                                     {.role = CREDIT_CARD_NUMBER},
@@ -146,7 +170,7 @@ TEST_F(RefillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
 
 // Test that in case an expiration date refill is triggered,
 // RefillTriggerReason metric gets reported.
-TEST_F(RefillMetricsTest,
+TEST_F(PerFillMetricsTest,
        RefillTriggerReason_OnJavaScriptChangedAutofilledValue) {
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL},
@@ -174,7 +198,7 @@ TEST_F(RefillMetricsTest,
 }
 
 // Test that we correctly log the number of modified fields during a refill.
-TEST_F(RefillMetricsTest, ModifiedFieldsCount) {
+TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FIRST},
                                     {.role = CREDIT_CARD_NUMBER}}});

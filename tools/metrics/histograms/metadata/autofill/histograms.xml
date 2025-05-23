@@ -2937,6 +2937,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     corresponding histograms. However, the combined histograms that are prefixed
     with Total are not mutually exclusive and a single field can contribute to
     multiple of those.
+
+    For an alternative to Autofill.FieldFillingStats.*.TotalFilled that is
+    recorded per autofill operation, see Autofill.NumberOfFieldsPerAutofill.
   </summary>
   <token key="AutofillFormType" variants="AutofillFormType"/>
   <token key="FillingStatus" variants="AutofillFieldFillingStats"/>
@@ -4153,6 +4156,43 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.NumberOfFieldsPerAutofill" units="count"
+    expires_after="2026-05-20">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of autofilled fields per autofill operation. Only filling
+    operations that may affect multiple fields are logged (that is, no preview,
+    no undo, no autocomplete, no IBANs, for example, but email-only forms
+    because they are treated as address forms even if they contain a single
+    field). Recorded in Chrome on all platforms.
+
+    For an alternative metric that is recorded on submission time and aggregates
+    potentially multiple autofill operations, see
+    Autofill.FieldFillingStats.*.TotalFilled.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.NumberOfFieldsPerAutofill.{FillTypeData}"
+    units="count" expires_after="2026-05-20">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of autofilled fields per {FillTypeData} autofill
+    operation. Only filling operations are logged (that is, no preview, no
+    undo). Recorded in Chrome on all platforms.
+
+    For an alternative metric that is recorded on submission time and aggregates
+    potentially multiple autofill operations, see
+    Autofill.FieldFillingStats.*.TotalFilled.
+  </summary>
+  <token key="FillTypeData">
+    <variant name="AutofillProfile" summary="AutofillProfile (address)"/>
+    <variant name="CreditCard" summary="CreditCard"/>
+    <variant name="EntityInstance" summary="EntityInstance (Autofill AI)"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.NumberOfFramesPerFormForest" units="count"
     expires_after="2025-10-12">
   <owner>schwering@google.com</owner>
@@ -4840,7 +4880,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormType">
     <variant name="Addresses" summary="Form contains address information."/>
     <variant name="CreditCards"
-        summary="Forms contains credit card information."/>
+        summary="Form contains credit card information."/>
   </token>
 </histogram>
 
