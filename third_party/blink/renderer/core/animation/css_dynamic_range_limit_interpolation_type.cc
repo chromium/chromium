@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/interpolable_dynamic_range_limit.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -61,12 +62,15 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  // TODO(crbug.com/40946458): Relative units should not be resolved here, but
-  // that requires InterpolableDynamicRangeLimit to store calc-expressions.
   // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
-  // and sibling-count() if necessary.
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    CSSPrimitiveValue::LengthTypeFlags types;
+    primitive_value->AccumulateLengthUnitTypes(types);
+    if (InterpolationType::ConversionChecker* length_units_checker =
+            LengthUnitsChecker::MaybeCreate(types, state)) {
+      conversion_checkers.push_back(length_units_checker);
+    }
+  }
   return ConvertDynamicRangeLimit(
       StyleBuilderConverter::ConvertDynamicRangeLimit(state, value));
 }
