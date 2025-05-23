@@ -46,6 +46,15 @@ using blink::mojom::TranslatorLanguageCode;
 using blink::mojom::TranslatorLanguageCodePtr;
 using content::BrowserContext;
 
+// TODO(crbug.com/419848973): This is a workaround until the "he" language code
+// is fully supported.
+std::string SwitchLanguageCodeToIwIfHe(std::string language_code) {
+  if (language_code == "he") {
+    return "iw";
+  }
+  return language_code;
+}
+
 }  // namespace
 
 TranslationManagerImpl* TranslationManagerImpl::translation_manager_for_test_ =
@@ -160,8 +169,10 @@ void TranslationManagerImpl::CanCreateTranslator(
     TranslatorLanguageCodePtr source_lang,
     TranslatorLanguageCodePtr target_lang,
     CanCreateTranslatorCallback callback) {
-  const std::string source_language = source_lang->code;
-  const std::string target_language = target_lang->code;
+  const std::string source_language =
+      SwitchLanguageCodeToIwIfHe(source_lang->code);
+  const std::string target_language =
+      SwitchLanguageCodeToIwIfHe(target_lang->code);
 
   RecordTranslationAPICallForLanguagePair("CanTranslate", source_language,
                                           target_language);
@@ -246,8 +257,10 @@ void TranslationManagerImpl::CreateTranslatorImpl(
 void TranslationManagerImpl::CreateTranslator(
     mojo::PendingRemote<TranslationManagerCreateTranslatorClient> client,
     blink::mojom::TranslatorCreateOptionsPtr options) {
-  const std::string source_language = options->source_lang->code;
-  const std::string target_language = options->target_lang->code;
+  const std::string source_language =
+      SwitchLanguageCodeToIwIfHe(options->source_lang->code);
+  const std::string target_language =
+      SwitchLanguageCodeToIwIfHe(options->target_lang->code);
 
   RecordTranslationAPICallForLanguagePair("Create", source_language,
                                           target_language);
@@ -330,8 +343,10 @@ void TranslationManagerImpl::TranslationAvailable(
     TranslatorLanguageCodePtr source_lang,
     TranslatorLanguageCodePtr target_lang,
     TranslationAvailableCallback callback) {
-  const std::string source_language = std::move(source_lang->code);
-  const std::string target_language = std::move(target_lang->code);
+  const std::string source_language =
+      SwitchLanguageCodeToIwIfHe(std::move(source_lang->code));
+  const std::string target_language =
+      SwitchLanguageCodeToIwIfHe(std::move(target_lang->code));
 
   RecordTranslationAPICallForLanguagePair("Availability", source_language,
                                           target_language);

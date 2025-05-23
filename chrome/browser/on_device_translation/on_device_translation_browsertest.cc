@@ -1311,7 +1311,7 @@ class OnDeviceTranslationCrashingLangBrowserTest
  public:
   OnDeviceTranslationCrashingLangBrowserTest() {
     // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
-    // language code `cause_crash` to trigger a crash.
+    // language code `crash` to trigger a crash.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kTranslationAPI,
           {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
@@ -1322,10 +1322,10 @@ class OnDeviceTranslationCrashingLangBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OnDeviceTranslationBrowserTest::SetUpCommandLine(command_line);
     // Need to set the language pack path to the command line to accept the
-    // fake language code `cause_crash`.
+    // fake language code `crash`.
     command_line->AppendSwitchASCII(
         "translate-kit-packages",
-        base::StrCat({"cause_crash,ja,", GetTempDir().AsUTF8Unsafe()}));
+        base::StrCat({"crash,ja,", GetTempDir().AsUTF8Unsafe()}));
   }
 
  private:
@@ -1342,12 +1342,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   auto console_observer =
       CreateConsoleObserver("The translation service crashed.");
 
-  // Tries to create a translator for the fake language code `cause_crash`. This
+  // Tries to create a translator for the fake language code `crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   EXPECT_EQ(EvalJsCatchingError(R"(
             const translator = await Translator.create({
-              sourceLanguage: 'cause_crash',
+              sourceLanguage: 'crash',
               targetLanguage: 'ja',
             });
       )"),
@@ -1367,10 +1367,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
-  // Tries to call availability() for the fake language code `cause_crash`. This
+  // Tries to call availability() for the fake language code `crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
-  TestCanTranslateResult("cause_crash", "ja",
+  TestCanTranslateResult("crash", "ja",
                          CanCreateTranslatorResult::kNoServiceCrashed);
 }
 
