@@ -566,22 +566,6 @@
             ]
         }
     ],
-    "AndroidBrowserControlsInViz": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240718",
-                    "enable_features": [
-                        "AndroidBcivBottomControls",
-                        "AndroidBrowserControlsInViz"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDumpOnScrollWithoutResource": [
         {
             "platforms": [
