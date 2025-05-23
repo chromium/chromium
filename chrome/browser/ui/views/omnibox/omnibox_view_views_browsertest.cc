@@ -156,11 +156,14 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   void Click(ui_controls::MouseButton button,
              const gfx::Point& press_location,
              const gfx::Point& release_location) {
-    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(press_location));
+    auto browser_window = browser()->window()->GetNativeWindow();
+    ASSERT_TRUE(
+        ui_test_utils::SendMouseMoveSync(press_location, browser_window));
     ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(button, ui_controls::DOWN));
 
     if (press_location != release_location) {
-      ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(release_location));
+      ASSERT_TRUE(
+          ui_test_utils::SendMouseMoveSync(release_location, browser_window));
     }
     ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(button, ui_controls::UP));
   }
