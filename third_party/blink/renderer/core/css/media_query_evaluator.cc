@@ -1772,42 +1772,6 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   return result ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
-namespace {
-
-unsigned ConversionFlagsToUnitFlags(
-    CSSToLengthConversionData::Flags conversion_flags) {
-  unsigned unit_flags = 0;
-
-  using Flags = CSSToLengthConversionData::Flags;
-  using Flag = CSSToLengthConversionData::Flag;
-  using UnitFlags = MediaQueryExpValue::UnitFlags;
-
-  if (conversion_flags & (static_cast<Flags>(Flag::kEm) |
-                          static_cast<Flags>(Flag::kGlyphRelative))) {
-    unit_flags |= UnitFlags::kFontRelative;
-  }
-  if (conversion_flags & (static_cast<Flags>(Flag::kRootFontRelative))) {
-    unit_flags |= UnitFlags::kRootFontRelative;
-  }
-  if (conversion_flags & static_cast<Flags>(Flag::kDynamicViewport)) {
-    unit_flags |= UnitFlags::kDynamicViewport;
-  }
-  if (conversion_flags & (static_cast<Flags>(Flag::kViewport) |
-                          static_cast<Flags>(Flag::kSmallLargeViewport))) {
-    unit_flags |= UnitFlags::kStaticViewport;
-  }
-  if (conversion_flags & static_cast<Flags>(Flag::kContainerRelative)) {
-    unit_flags |= UnitFlags::kContainer;
-  }
-  if (conversion_flags & static_cast<Flags>(Flag::kSiblingRelative)) {
-    unit_flags |= UnitFlags::kTreeCounting;
-  }
-
-  return unit_flags;
-}
-
-}  // namespace
-
 KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     MediaQueryResultFlags* result_flags) const {
@@ -1859,8 +1823,12 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     return KleeneValue::kFalse;
   }
 
-  if (result_flags && conversion_flags != 0) {
-    result_flags->unit_flags |= ConversionFlagsToUnitFlags(conversion_flags);
+  if (result_flags) {
+    if (conversion_flags &
+        static_cast<CSSToLengthConversionData::Flags>(
+            CSSToLengthConversionData::Flag::kSiblingRelative)) {
+      result_flags->unit_flags |= MediaQueryExpValue::UnitFlags::kTreeCounting;
+    }
   }
 
   const CSSValue* computed_value =
