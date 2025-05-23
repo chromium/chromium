@@ -165,6 +165,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.InstallerDownloader.DownloadSucceed" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Outcome of the download that runs after the user accepts: true for a fully
+    completed download, false for any failure or interruption. Logged once per
+    download attempt.
+  </summary>
+</histogram>
+
+<histogram name="Windows.InstallerDownloader.InfobarShown" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logged once per browser session when the Installer Downloader infobar is
+    displayed for the first time. Always true, since the metric records how
+    often the prompt surfaces.
+  </summary>
+</histogram>
+
+<histogram name="Windows.InstallerDownloader.RequestAccepted" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the user’s response to the infobar. Logged exactly once per prompt:
+    - true: user accepted the prompt. - false: user dismissed the prompt.
+  </summary>
+</histogram>
+
 <histogram name="Windows.InstallerPinUnpinned" enum="IsPinnedToTaskbarResult"
     expires_after="2023-11-12">
   <owner>davidbienvenu@chromium.org</owner>

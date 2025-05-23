@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -116,6 +117,50 @@ IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
                   ShowInfobarInNewWindow(),
                   PressButton(ConfirmInfoBar::kDismissButtonElementId),
                   VerifyNoInfobarInAnyContext());
+}
+
+IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
+                       MetricsAcceptPath) {
+  base::HistogramTester histograms;
+
+  TriggerInfobar();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  PressButton(ConfirmInfoBar::kOkButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
+                                /*sample=*/1, /*expected_count=*/1);
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
+                                /*sample=*/1, /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
+                       MetricsDismissPath) {
+  base::HistogramTester histograms;
+
+  TriggerInfobar();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  PressButton(ConfirmInfoBar::kDismissButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
+                                /*sample=*/1, /*expected_count=*/1);
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
+                                /*sample=*/0, /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallerDownloaderInteractiveUiTest,
+                       Metrics_InfobarShownOnceAcrossTabsAndWindows) {
+  base::HistogramTester histograms;
+
+  TriggerInfobar();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  ShowInfobarOnNewTab(), ShowInfobarInNewWindow(),
+                  PressButton(ConfirmInfoBar::kDismissButtonElementId),
+                  VerifyNoInfobarInAnyContext());
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
+                                /*sample=*/1, /*expected_count=*/1);
 }
 
 }  // namespace

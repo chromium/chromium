@@ -10,9 +10,11 @@
 
 #include "base/base_paths.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
@@ -197,9 +199,20 @@ void InstallerDownloaderController::OnEligibilityReady(
     return;
   }
 
-  infobar_manager->AddObserver(this);
-  model_->IncrementShowCount();
+  if (infobar_manager) {
+    infobar_manager->AddObserver(this);
+  } else {
+    CHECK_IS_TEST();
+  }
+
   visible_infobars_web_contents_[contents] = infobar;
+
+  // This is the first show in this browser session.
+  if (visible_infobars_web_contents_.size() == 1u) {
+    model_->IncrementShowCount();
+    base::UmaHistogramBoolean("Windows.InstallerDownloader.InfobarShown",
+                              /*shown=*/true);
+  }
 }
 
 void InstallerDownloaderController::OnInfoBarRemoved(infobars::InfoBar* infobar,
@@ -231,6 +244,9 @@ void InstallerDownloaderController::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
 void InstallerDownloaderController::OnDownloadRequestAccepted(
     const base::FilePath& destination) {
+  base::UmaHistogramBoolean("Windows.InstallerDownloader.RequestAccepted",
+                            true);
+
   user_initiated_info_bar_close_pending_ = true;
   // User have explicitly gave download consent. Therefore, a background
   // download should be issued.
@@ -262,8 +278,8 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
 void InstallerDownloaderController::OnDownloadCompleted(
     std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
     bool success) {
-  // Update local state to indicated that downloaded have been successfully
-  // completed.
+  base::UmaHistogramBoolean("Windows.InstallerDownloader.DownloadSucceed",
+                            success);
 }
 
 void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(
@@ -272,6 +288,8 @@ void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(
 }
 
 void InstallerDownloaderController::OnInfoBarDismissed() {
+  base::UmaHistogramBoolean("Windows.InstallerDownloader.RequestAccepted",
+                            false);
   user_initiated_info_bar_close_pending_ = true;
 }
 

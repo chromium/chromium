@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -131,7 +132,8 @@ TEST_F(InstallerDownloaderControllerTest, ShowsInfobarWhenEligible) {
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
           std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
-  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _))
+      .WillOnce(Return(reinterpret_cast<infobars::InfoBar*>(0x1)));
   EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
 
   controller_->MaybeShowInfoBar();
@@ -249,12 +251,14 @@ TEST_F(InstallerDownloaderControllerTest,
   EXPECT_CALL(*mock_model_, IsMaxShowCountReached()).WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
       .WillOnce(Return(true));
+  EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
   // Eligibility returns std::nullopt → controller must rely on the bypass path.
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(RunOnceCallback<0>(std::nullopt));
 
   // When bypass is enabled we still expect the infobar to be shown.
-  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _))
+      .WillOnce(Return(reinterpret_cast<infobars::InfoBar*>(0x1)));
 
   controller_->MaybeShowInfoBar();
 }
@@ -266,9 +270,79 @@ TEST_F(InstallerDownloaderControllerTest, IncrementOnlyOncePerShow) {
           std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
   EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
 
-  EXPECT_CALL(show_infobar_callback_, Run(_, _, _)).Times(1);
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _))
+      .WillOnce(Return(reinterpret_cast<infobars::InfoBar*>(0x1)));
 
   controller_->MaybeShowInfoBar();
+}
+
+TEST_F(InstallerDownloaderControllerTest, InfobarShownLoggedOncePerSession) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*mock_model_, IsMaxShowCountReached())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+          std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
+  EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
+
+  // Stub Show() so the controller thinks the infobar has been created.
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _))
+      .Times(1)
+      .WillOnce(Return(reinterpret_cast<infobars::InfoBar*>(0x1)));
+
+  // First display: should log.
+  controller_->MaybeShowInfoBar();
+  // Second display in the same session: should NOT log again.
+  controller_->MaybeShowInfoBar();
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
+                                /*true=*/1, /*expected_count=*/1);
+}
+
+TEST_F(InstallerDownloaderControllerTest, RequestAcceptedTrueMetric) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_model_, StartDownload(_, _, _, _)).Times(1);
+
+  controller_->OnDownloadRequestAccepted(
+      base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\installer.exe")));
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
+                                /*true=*/1, /*expected_count=*/1);
+}
+
+TEST_F(InstallerDownloaderControllerTest, RequestAcceptedFalseMetric) {
+  base::HistogramTester histograms;
+
+  controller_->OnInfoBarDismissed();
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
+                                /*false=*/0, /*expected_count=*/1);
+}
+
+TEST_F(InstallerDownloaderControllerTest, LogsDownloadResultMetric) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+
+  CompletionCallback download_completion_callback;
+
+  EXPECT_CALL(*mock_model_, StartDownload(_, _, _, _))
+      .WillOnce([&](const GURL&, const base::FilePath&,
+                    content::DownloadManager&, CompletionCallback callback) {
+        download_completion_callback = std::move(callback);
+      });
+
+  controller_->OnDownloadRequestAccepted(
+      base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\installer.exe")));
+
+  ASSERT_TRUE(download_completion_callback);
+  std::move(download_completion_callback).Run(/*success=*/true);
+
+  histograms.ExpectUniqueSample("Windows.InstallerDownloader.DownloadSucceed",
+                                /*success=*/1, /*expected_count=*/1);
 }
 
 }  // namespace
