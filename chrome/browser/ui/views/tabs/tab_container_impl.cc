@@ -822,10 +822,6 @@ TabContainerImpl::get_group_views_for_testing() const {
   return group_views_;
 }
 
-int TabContainerImpl::GetActiveTabWidth() const {
-  return layout_helper_->active_tab_width();
-}
-
 gfx::Rect TabContainerImpl::GetIdealBounds(int model_index) const {
   return tabs_view_model_.ideal_bounds(model_index);
 }

@@ -96,7 +96,6 @@ class CompoundTabContainer : public TabContainer,
   TabGroupViews* GetGroupViews(tab_groups::TabGroupId group_id) const override;
   const std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
   get_group_views_for_testing() const override;
-  int GetActiveTabWidth() const override;
   gfx::Rect GetIdealBounds(int model_index) const override;
   gfx::Rect GetIdealBounds(tab_groups::TabGroupId group) const override;
 

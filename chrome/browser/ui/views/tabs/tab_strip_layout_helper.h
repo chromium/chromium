@@ -49,7 +49,6 @@ class TabStripLayoutHelper {
   // GetTabs() and all tab group headers.
   std::vector<TabSlotView*> GetTabSlotViews() const;
 
-  int active_tab_width() { return active_tab_width_; }
   LayoutDomain layout_domain() { return tab_strip_layout_domain_; }
 
   // Returns the number of pinned tabs in the tabstrip.
@@ -102,8 +101,7 @@ class TabStripLayoutHelper {
   int CalculatePreferredWidth();
 
   // Generates and sets the ideal bounds for the views in `tabs` and
-  // `group_headers`. Updates the cached width in `active_tab_width_`. Returns
-  // the total width occupied by the new ideal bounds.
+  // `group_headers`. Returns the total width occupied by the new ideal bounds.
   int UpdateIdealBounds(int available_width);
 
  private:
@@ -147,9 +145,6 @@ class TabStripLayoutHelper {
   // tab. Otherwise returns `std::nullopt`.
   std::optional<int> GetAdjacentSplitTab(int index) const;
 
-  // Updates the value of either `active_tab_width_`.
-  void UpdateCachedTabWidth(int tab_index, int tab_width, bool active);
-
   // True iff the slot at index `i` is a tab that is in a collapsed group.
   bool SlotIsCollapsedTab(int i) const;
 
@@ -165,10 +160,6 @@ class TabStripLayoutHelper {
 
   // Contains the ideal bounds of tab group headers.
   std::map<tab_groups::TabGroupId, gfx::Rect> group_header_ideal_bounds_;
-
-  // The current widths of tabs. If the space for tabs is not evenly divisible
-  // into these widths, the initial tabs in the strip will be 1 px larger.
-  int active_tab_width_;
 
   LayoutDomain tab_strip_layout_domain_;
 };

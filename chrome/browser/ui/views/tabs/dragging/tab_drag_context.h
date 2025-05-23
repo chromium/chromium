@@ -96,9 +96,6 @@ class TabDragContext : public TabDragContextBase {
   // Returns true if a tab is being dragged into this tab strip.
   virtual bool IsActiveDropTarget() const = 0;
 
-  // Returns the width of the active tab.
-  virtual int GetActiveTabWidth() const = 0;
-
   // Returns where the drag region begins and ends; tabs dragged beyond these
   // points should detach.
   virtual int TabDragAreaEndX() const = 0;

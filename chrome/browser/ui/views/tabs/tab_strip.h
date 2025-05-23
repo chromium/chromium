@@ -402,9 +402,6 @@ class TabStrip : public views::View,
   // Returns whether the window background behind the tabstrip is transparent.
   bool TitlebarBackgroundIsTransparent() const;
 
-  // Returns the current width of the active tab.
-  int GetActiveTabWidth() const;
-
   // Returns the last tab in the strip that's actually visible.  This will be
   // the actual last tab unless the strip is in the overflow node_data.
   const Tab* GetLastVisibleTab() const;

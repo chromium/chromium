@@ -478,10 +478,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return false;
   }
 
-  int GetActiveTabWidth() const override {
-    return tab_strip_->GetActiveTabWidth();
-  }
-
   int GetTabDragAreaWidth() const override {
     // There are two cases here (with tab scrolling enabled):
     // 1) If the tab strip is not wider than the tab strip region (and thus
@@ -2239,10 +2235,6 @@ bool TabStrip::TitlebarBackgroundIsTransparent() const {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-int TabStrip::GetActiveTabWidth() const {
-  return tab_container_->GetActiveTabWidth();
-}
-
 const Tab* TabStrip::GetLastVisibleTab() const {
   for (int i = GetTabCount() - 1; i >= 0; --i) {
     const Tab* tab = tab_at(i);
@@ -2556,5 +2548,4 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                TabSeparatorColor,
                                ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(float, HoverOpacityForRadialHighlight)
-ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
 END_METADATA

@@ -184,9 +184,6 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
                          std::unique_ptr<TabGroupViews>>&
   get_group_views_for_testing() const = 0;
 
-  // Returns the current width of the active tab.
-  virtual int GetActiveTabWidth() const = 0;
-
   // Returns ideal bounds for the tab at `model_index` in this TabContainer's
   // coordinate space.
   virtual gfx::Rect GetIdealBounds(int model_index) const = 0;

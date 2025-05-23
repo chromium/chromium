@@ -671,11 +671,6 @@ CompoundTabContainer::get_group_views_for_testing() const {
   return unpinned_tab_container_->get_group_views_for_testing();  // IN-TEST
 }
 
-int CompoundTabContainer::GetActiveTabWidth() const {
-  // Only the unpinned container has variable-width tabs.
-  return unpinned_tab_container_->GetActiveTabWidth();
-}
-
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
   // Ideal bounds for pinned tabs are fine as-is.
   if (model_index < NumPinnedTabs()) {

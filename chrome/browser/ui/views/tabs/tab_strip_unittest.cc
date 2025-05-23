@@ -185,8 +185,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
     views::test::RunScheduledLayout(tab_strip_parent_.get());
   }
 
-  int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }
-
   // End any outstanding drag and animate tabs back to their ideal bounds.
   void StopDragging() { tab_strip_->GetDragContext()->StoppedDragging(); }
 
@@ -462,30 +460,6 @@ TEST_P(TabStripTest, CloseButtonHiddenWhenLockedForOnTask) {
   EXPECT_FALSE(tab1->showing_close_button_);
 }
 #endif
-
-// The cached widths are private, but if they give incorrect results it can
-// cause subtle errors in other tests. Therefore it's prudent to test them.
-TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
-  controller_->AddTab(0, TabActive::kInactive);
-  controller_->AddTab(1, TabActive::kActive);
-  controller_->AddTab(2, TabActive::kInactive);
-
-  const int standard_width =
-      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
-
-  SetMaxTabStripWidth(1000);
-
-  EXPECT_EQ(standard_width, GetActiveTabWidth());
-
-  SetMaxTabStripWidth(240);
-
-  EXPECT_LT(GetActiveTabWidth(), standard_width);
-
-  SetMaxTabStripWidth(50);
-
-  EXPECT_EQ(TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false),
-            GetActiveTabWidth());
-}
 
 // The active tab should always be at least as wide as its minimum width.
 // http://crbug.com/587688
