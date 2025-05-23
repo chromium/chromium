@@ -1391,10 +1391,13 @@ class SpareProcessRejectBrowserClient : public ContentBrowserClient {
     refuse_reason_ = reason;
   }
 
-  std::optional<SpareProcessRefusedByEmbedderReason>
-  ShouldUseSpareRenderProcessHost(BrowserContext* browser_context,
-                                  const GURL& site_url) override {
-    return refuse_reason_;
+  bool ShouldUseSpareRenderProcessHost(
+      BrowserContext* browser_context,
+      const GURL& site_url,
+      std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason)
+      override {
+    refused_reason = refuse_reason_;
+    return false;
   }
 
  private:

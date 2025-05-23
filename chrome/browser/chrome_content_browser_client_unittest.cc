@@ -1639,27 +1639,31 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
       content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason;
   ChromeContentBrowserClient browser_client;
 
+  std::optional<SpareProcessRefusedByEmbedderReason> refused_reason;
   // Standard web URL
-  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
-      &profile_, GURL("https://www.example.com")));
+  EXPECT_TRUE(browser_client.ShouldUseSpareRenderProcessHost(
+      &profile_, GURL("https://www.example.com"), refused_reason));
+  EXPECT_FALSE(refused_reason.has_value());
 
   // No profile
-  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile,
-            browser_client.ShouldUseSpareRenderProcessHost(
-                nullptr, GURL("https://www.example.com")));
+  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+      nullptr, GURL("https://www.example.com"), refused_reason));
+  EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile, refused_reason);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Chrome-search URL
+  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+      &profile_, GURL("chrome-search://test"), refused_reason));
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage,
-            browser_client.ShouldUseSpareRenderProcessHost(
-                &profile_, GURL("chrome-search://test")));
+            refused_reason);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extension URL
+  EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+      &profile_, GURL("chrome-extension://test-extension/"), refused_reason));
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
-            browser_client.ShouldUseSpareRenderProcessHost(
-                &profile_, GURL("chrome-extension://test-extension/")));
+            refused_reason);
 #endif
 }
 

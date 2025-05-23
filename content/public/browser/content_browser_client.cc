@@ -192,11 +192,12 @@ bool ContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
   return true;
 }
 
-std::optional<ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
-ContentBrowserClient::ShouldUseSpareRenderProcessHost(
+bool ContentBrowserClient::ShouldUseSpareRenderProcessHost(
     BrowserContext* browser_context,
-    const GURL& site_url) {
-  return std::nullopt;
+    const GURL& site_url,
+    std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason) {
+  refused_reason = std::nullopt;
+  return true;
 }
 
 bool ContentBrowserClient::DoesSiteRequireDedicatedProcess(

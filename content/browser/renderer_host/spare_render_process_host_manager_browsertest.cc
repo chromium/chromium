@@ -536,10 +536,13 @@ class NonSpareRendererContentBrowserClient
     return true;
   }
 
-  std::optional<SpareProcessRefusedByEmbedderReason>
-  ShouldUseSpareRenderProcessHost(BrowserContext* browser_context,
-                                  const GURL& site_url) override {
-    return SpareProcessRefusedByEmbedderReason::DefaultDisabled;
+  bool ShouldUseSpareRenderProcessHost(
+      BrowserContext* browser_context,
+      const GURL& site_url,
+      std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason)
+      override {
+    refused_reason = std::nullopt;
+    return false;
   }
 };
 

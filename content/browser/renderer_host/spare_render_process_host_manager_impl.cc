@@ -659,10 +659,11 @@ SpareRenderProcessHostManagerImpl::DoesEmbedderAllowSpareUsage(
   // ShouldUseSpareRenderProcessHost starts covering non-process-per-site
   // scenarios).
   std::optional<ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
-      refuse_reason =
-          GetContentClient()->browser()->ShouldUseSpareRenderProcessHost(
-              browser_context, site_instance->GetSiteInfo().site_url());
-  if (refuse_reason.has_value()) {
+      refuse_reason;
+  if (!GetContentClient()->browser()->ShouldUseSpareRenderProcessHost(
+          browser_context, site_instance->GetSiteInfo().site_url(),
+          refuse_reason)) {
+    CHECK(refuse_reason.has_value());
     return refuse_reason;
   }
 

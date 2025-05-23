@@ -1980,14 +1980,15 @@ bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
   return true;
 }
 
-std::optional<
-    content::ContentBrowserClient::SpareProcessRefusedByEmbedderReason>
-ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
+bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
     content::BrowserContext* browser_context,
-    const GURL& site_url) {
+    const GURL& site_url,
+    std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason) {
+  refused_reason = std::nullopt;
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
-    return SpareProcessRefusedByEmbedderReason::NoProfile;
+    refused_reason = SpareProcessRefusedByEmbedderReason::NoProfile;
+    return false;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1999,17 +2000,20 @@ ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
     // The NTP page chrome://new-tab-page and chrome://new-tab-page-third-party
     // are using WebUI and will not use instant renderer.
     // The only usecase is chrome-search:// URLs.
-    return SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage;
+    refused_reason =
+        SpareProcessRefusedByEmbedderReason::InstantRendererForNewTabPage;
+    return false;
   }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!ChromeContentBrowserClientExtensionsPart::
           ShouldUseSpareRenderProcessHost(profile, site_url)) {
-    return SpareProcessRefusedByEmbedderReason::ExtensionProcess;
+    refused_reason = SpareProcessRefusedByEmbedderReason::ExtensionProcess;
+    return false;
   }
 #endif
-  return std::nullopt;
+  return true;
 }
 
 bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
