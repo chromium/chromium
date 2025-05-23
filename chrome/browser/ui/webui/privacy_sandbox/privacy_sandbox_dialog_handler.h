@@ -19,7 +19,7 @@ enum class PrivacySandboxDialogCallbackState {
   kCallbackUnknownBeforeShown = 2,
   kMaxValue = kCallbackUnknownBeforeShown,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxDialogCallbackState)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxDialogCallbackState)
 class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
  public:
   PrivacySandboxDialogHandler(

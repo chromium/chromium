@@ -21,7 +21,7 @@ enum PrivacySandboxNoticeEvent {
   // Notice shown.
   kShown = 5,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeEvent)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxNoticeEvent)
 
 // An identifier for the different notices.
 enum PrivacySandboxNotice {

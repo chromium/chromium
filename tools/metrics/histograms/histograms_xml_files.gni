@@ -205,6 +205,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/preloading/histograms.xml",
   "//tools/metrics/histograms/metadata/printing/enums.xml",
   "//tools/metrics/histograms/metadata/printing/histograms.xml",
+  "//tools/metrics/histograms/metadata/privacy/enums.xml",
   "//tools/metrics/histograms/metadata/privacy/histograms.xml",
   "//tools/metrics/histograms/metadata/privacy_budget/enums.xml",
   "//tools/metrics/histograms/metadata/privacy_budget/histograms.xml",

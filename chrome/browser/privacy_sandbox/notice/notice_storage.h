@@ -51,7 +51,7 @@ enum class NoticeActionTaken {
   kTimedOut = 9,
   kMaxValue = kTimedOut,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeAction)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxNoticeAction)
 
 // Different notice action outcomes. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
@@ -65,7 +65,7 @@ enum class NoticeActionBehavior {
   kDuplicateActionTaken = 2,
   kMaxValue = kDuplicateActionTaken,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeActionBehavior)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxNoticeActionBehavior)
 
 struct NoticeEventTimestampPair {
   bool operator==(const NoticeEventTimestampPair& other) const = default;

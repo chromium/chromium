@@ -72,7 +72,7 @@ class PrivacySandboxService : public KeyedService {
     kSignedInCapabilityUnknown = 4,
     kMaxValue = kSignedInCapabilityUnknown,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
 
   // Suppression reason for a generic prompt.
   // LINT.IfChange(FakeNoticePromptSuppressionReason)
@@ -90,7 +90,7 @@ class PrivacySandboxService : public KeyedService {
     kNoticeShownBefore = 1 << 3,
     kMaxValue = kNoticeShownBefore,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPromptSuppressionReason)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPromptSuppressionReason)
 
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.

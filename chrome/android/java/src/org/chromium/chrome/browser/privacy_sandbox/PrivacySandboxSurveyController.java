@@ -78,7 +78,7 @@ public class PrivacySandboxSurveyController {
         int MAX_VALUE = 7;
     }
 
-    // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxSurveyTypesEnums)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxSurveyTypesEnums)
 
     // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
     /** Represents the possible failures when attempting to surface a CCT ads notice survey. */
@@ -115,7 +115,7 @@ public class PrivacySandboxSurveyController {
         int MAX_VALUE = INVALID_ROW_CONTROL_SURVEY_CONFIG;
     }
 
-    // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxCctAdsNoticeSurveyFailures)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxCctAdsNoticeSurveyFailures)
 
     // Maps {@link PrivacySandboxSurveyType} to their survey triggerid.
     private static final Map<Integer, String> sSurveyTriggers =

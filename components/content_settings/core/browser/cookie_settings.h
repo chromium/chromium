@@ -52,7 +52,7 @@ enum class CookieControlsMode {
   kLimited = 3,
   kMaxValue = kLimited,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:CookieControlsMode, /chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
 
 // Default value for |extension_scheme|.
 const char kDummyExtensionScheme[] = ":no-extension-scheme:";

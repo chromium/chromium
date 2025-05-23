@@ -22,7 +22,7 @@ class PrivacySandboxSurveyService{
     kInvalidSurveyConfig = 4,  // Failed to initialize survey config.
     kMaxValue = kInvalidSurveyConfig,
   };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/privacy/enums.xml)
 };
 
 }  // namespace privacy_sandbox

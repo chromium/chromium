@@ -126,7 +126,7 @@ enum class DeleteBrowsingDataDialogAction {
   kKeyboardEntryPointSelected = 31,
   kMaxValue = kKeyboardEntryPointSelected,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeleteBrowsingDataDialogAction)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:DeleteBrowsingDataDialogAction)
 
 // Calculate the begin time for the deletion range specified by |time_period|.
 base::Time CalculateBeginDeleteTime(TimePeriod time_period);

@@ -103,7 +103,7 @@ class ContentSettingsPattern {
                                               // *:443 etc.
     kMaxValue = kCustomScope
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContentSettingPatternScope)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:ContentSettingPatternScope)
 
   struct PatternParts {
     PatternParts();

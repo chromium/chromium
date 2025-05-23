@@ -95,7 +95,7 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions {
     kTruncationNotDueToUnconditionalContributions = 2,
     kMaxValue = kTruncationNotDueToUnconditionalContributions,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPrivateAggregationTruncationResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxPrivateAggregationTruncationResult)
 
   // The elements of `histogram_suffixes` must outlive this object.
   PrivateAggregationPendingContributions(

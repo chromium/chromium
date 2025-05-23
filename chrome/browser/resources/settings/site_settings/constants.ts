@@ -113,7 +113,7 @@ export enum CookieControlsMode {
   INCOGNITO_ONLY = 2,
   LIMITED = 3,
 }
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:CookieControlsMode, /components/content_settings/core/browser/cookie_settings.h:CookieControlsMode)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //components/content_settings/core/browser/cookie_settings.h:CookieControlsMode)
 
 /**
  * Contains the possible sources of a ContentSetting.
