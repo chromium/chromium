@@ -231,7 +231,7 @@ public abstract class ConditionalState {
     }
 
     /** Declare as an element a View that matches |viewMatcher|. */
-    protected <ViewT extends View> ViewElement<ViewT> declareView(ViewSpec<ViewT> viewSpec) {
+    public <ViewT extends View> ViewElement<ViewT> declareView(ViewSpec<ViewT> viewSpec) {
         return mElements.declareView(viewSpec);
     }
 
@@ -253,7 +253,7 @@ public abstract class ConditionalState {
     }
 
     /** Declare as an element a View that matches |viewSpec| with extra Options. */
-    protected <ViewT extends View> ViewElement<ViewT> declareView(
+    public <ViewT extends View> ViewElement<ViewT> declareView(
             ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
         return mElements.declareView(viewSpec, options);
     }
@@ -264,12 +264,12 @@ public abstract class ConditionalState {
     }
 
     /** Declare as a Condition that a View is not displayed. */
-    protected void declareNoView(ViewSpec<?> viewSpec) {
+    public void declareNoView(ViewSpec<?> viewSpec) {
         mElements.declareNoView(viewSpec);
     }
 
     /** Declare as a Condition that a View is not displayed. */
-    protected void declareNoView(Matcher<View> viewMatcher) {
+    public void declareNoView(Matcher<View> viewMatcher) {
         mElements.declareNoView(viewMatcher);
     }
 
@@ -283,7 +283,7 @@ public abstract class ConditionalState {
      * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
      * scoped {@link LogicalElement} in this case.
      */
-    protected final void declareEnterCondition(Condition condition) {
+    public final void declareEnterCondition(Condition condition) {
         mElements.declareEnterCondition(condition);
     }
 
@@ -297,7 +297,7 @@ public abstract class ConditionalState {
      * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
      * scoped {@link LogicalElement} in this case.
      */
-    protected <ProductT, T extends ConditionWithResult<ProductT>>
+    public <ProductT, T extends ConditionWithResult<ProductT>>
             Element<ProductT> declareEnterConditionAsElement(T condition) {
         return mElements.declareEnterConditionAsElement(condition);
     }
@@ -309,7 +309,7 @@ public abstract class ConditionalState {
      * <p>No promises are made that the Condition is false as long as the ConditionalState is
      * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
      */
-    protected final void declareExitCondition(Condition condition) {
+    public final void declareExitCondition(Condition condition) {
         mElements.declareExitCondition(condition);
     }
 
@@ -319,13 +319,13 @@ public abstract class ConditionalState {
      * <p>When the {@link Element}'s enter Condition becomes fulfilled, |delayedDeclarations| will
      * be run to declare new Elements.
      */
-    protected void declareElementFactory(
+    public void declareElementFactory(
             Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
         mElements.declareElementFactory(element, delayedDeclarations);
     }
 
     /** Declare a custom Element. */
-    protected <T extends Element<?>> T declareElement(T element) {
+    public <T extends Element<?>> T declareElement(T element) {
         return mElements.declareElement(element);
     }
 }

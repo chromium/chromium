@@ -145,14 +145,27 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
                 moreOptionsElement.getClickTrigger());
     }
 
-    public SearchHistoryDisambiguiationFacility expectSearchHistoryDisambiguation(boolean shown) {
-        return mHostStation.enterFacilitySync(
-                new SearchHistoryDisambiguiationFacility(shown), /* trigger= */ null);
+    public void expectSearchHistoryDisambiguation(boolean shown) {
+        var facility = new Facility<>("SearchHistoryDisambiguation" + (shown ? "Shown" : "Hidden"));
+        ViewSpec<View> spec = dialogElement.descendant(withId(R.id.search_history_disambiguation));
+        if (shown) {
+            facility.declareView(spec);
+        } else {
+            facility.declareNoView(spec);
+        }
+        mHostStation.enterFacilitySync(facility, /* trigger= */ null);
     }
 
-    public SitesSubtitleFacility expectMoreOnSyncedDevices(boolean shown) {
-        return mHostStation.enterFacilitySync(
-                new SitesSubtitleFacility(shown), /* trigger= */ null);
+    public void expectMoreOnSyncedDevices(boolean shown) {
+        var facility = new Facility<>("MoreOnSyncedDevices" + (shown ? "Shown" : "Hidden"));
+        ViewSpec<View> spec =
+                dialogElement.descendant(withId(R.id.quick_delete_history_row_subtitle));
+        if (shown) {
+            facility.declareView(spec);
+        } else {
+            facility.declareNoView(spec);
+        }
+        mHostStation.enterFacilitySync(facility, /* trigger= */ null);
     }
 
     private class TimePeriodSelectedCondition extends UiThreadCondition {
@@ -175,31 +188,6 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
         @Override
         public String buildDescription() {
             return "Spinner selected TimePeriod " + mTimePeriod;
-        }
-    }
-
-    public class SearchHistoryDisambiguiationFacility
-            extends Facility<Station<ChromeTabbedActivity>> {
-        public SearchHistoryDisambiguiationFacility(boolean expectPresent) {
-            ViewSpec<View> spec =
-                    dialogElement.descendant(withId(R.id.search_history_disambiguation));
-            if (expectPresent) {
-                declareView(spec);
-            } else {
-                declareNoView(spec);
-            }
-        }
-    }
-
-    public class SitesSubtitleFacility extends Facility<Station<ChromeTabbedActivity>> {
-        public SitesSubtitleFacility(boolean expectPresent) {
-            ViewSpec<View> spec =
-                    dialogElement.descendant(withId(R.id.quick_delete_history_row_subtitle));
-            if (expectPresent) {
-                declareView(spec);
-            } else {
-                declareNoView(spec);
-            }
         }
     }
 }

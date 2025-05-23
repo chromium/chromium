@@ -39,20 +39,13 @@ public class HistoryPaneStation extends HubBaseStation {
     }
 
     /** Expect no history to be displayed in the history pane. */
-    public EmptyHistoryFacility expectEmptyState() {
-        return enterFacilitySync(new EmptyHistoryFacility(), /* trigger= */ null);
-    }
-
-    /** Empty state of the history pane. */
-    public static class EmptyHistoryFacility extends Facility<HistoryPaneStation> {
-        public EmptyHistoryFacility() {
-            declareView(withText("You’ll find your history here"));
-            declareView(
-                    withText(
-                            "You can see the pages you’ve visited or delete them from your"
-                                    + " history"));
-            declareNoView(withId(R.id.history_page_recycler_view));
-        }
+    public void expectEmptyState() {
+        var emptyHistory = new Facility<>("EmptyState");
+        emptyHistory.declareView(withText("You’ll find your history here"));
+        emptyHistory.declareView(
+                withText("You can see the pages you’ve visited or delete them from your history"));
+        emptyHistory.declareNoView(withId(R.id.history_page_recycler_view));
+        enterFacilitySync(emptyHistory, /* trigger= */ null);
     }
 
     /** Non-empty state of the history pane. */

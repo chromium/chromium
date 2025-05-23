@@ -20,7 +20,7 @@ public class CarryOn extends ConditionalState {
     private final String mName;
     private static int sLastCarryOnId = 2000;
 
-    protected CarryOn() {
+    public CarryOn() {
         mId = ++sLastCarryOnId;
         String className = getClass().getSimpleName();
         mName =
