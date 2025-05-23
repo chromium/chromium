@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.ViewStub;
 import android.widget.LinearLayout;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -34,10 +33,9 @@ public class ExtensionActionListCoordinator implements Destroyable {
 
     public ExtensionActionListCoordinator(
             Context context,
-            ViewStub containerStub,
+            LinearLayout container,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier) {
-        LinearLayout container = (LinearLayout) containerStub.inflate();
         ModelList models = new ModelList();
         mMediator = new ExtensionActionListMediator(models, profileSupplier, currentTabSupplier);
         mAdapter =

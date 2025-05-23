@@ -240,6 +240,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
     ]
   }
 }
@@ -314,6 +315,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/incognito_simple.png",
     "java/res/drawable-xxxhdpi/incognito_small.png",
     "java/res/drawable-xxxhdpi/popup_bg_bottom.9.png",
+    "java/res/drawable/chrome_extension.xml",
     "java/res/drawable/home_surface_search_box_background.xml",
     "java/res/drawable/ic_close_all_tabs.xml",
     "java/res/drawable/ic_switch_out_of_incognito.xml",

@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 
 /** Provides extension-related buttons for {@link ToolbarManager}. */
 @NullMarked
@@ -23,7 +24,8 @@ public interface ExtensionToolbarManager extends Destroyable {
             Context context,
             ViewStub extensionToolbarStub,
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier);
+            ObservableSupplier<Tab> currentTabSupplier,
+            ThemeColorProvider themeColorProvider);
 
     /** Instantiates the implementation of {@link ExtensionToolbarManager} if it is available. */
     @Nullable
@@ -31,13 +33,19 @@ public interface ExtensionToolbarManager extends Destroyable {
             Context context,
             ViewStub extensionToolbarStub,
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier) {
+            ObservableSupplier<Tab> currentTabSupplier,
+            ThemeColorProvider themeColorProvider) {
         ExtensionToolbarManager manager =
                 ServiceLoaderUtil.maybeCreate(ExtensionToolbarManager.class);
         if (manager == null) {
             return null;
         }
-        manager.initialize(context, extensionToolbarStub, profileSupplier, currentTabSupplier);
+        manager.initialize(
+                context,
+                extensionToolbarStub,
+                profileSupplier,
+                currentTabSupplier,
+                themeColorProvider);
         return manager;
     }
 }

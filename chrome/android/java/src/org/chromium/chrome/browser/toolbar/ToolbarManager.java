@@ -1623,7 +1623,11 @@ public class ToolbarManager
         if (extensionToolbarStub != null) {
             mExtensionToolbarManager =
                     ExtensionToolbarManager.maybeCreate(
-                            mActivity, extensionToolbarStub, profileSupplier, tabProvider);
+                            mActivity,
+                            extensionToolbarStub,
+                            profileSupplier,
+                            tabProvider,
+                            browsingModeThemeColorProvider);
         }
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
