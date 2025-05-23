@@ -777,6 +777,7 @@
         android:exported="false">
       <intent-filter>  # DIFF-ANCHOR: 772631d2
         <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED"/>
+        <action android:name="android.app.action.NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED"/>
       </intent-filter>  # DIFF-ANCHOR: 772631d2
     </receiver>  # DIFF-ANCHOR: 64dc49ab
     <receiver  # DIFF-ANCHOR: 0cefd906

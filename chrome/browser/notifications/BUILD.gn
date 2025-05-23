@@ -82,6 +82,7 @@ if (is_android) {
       "//components/content_settings/android:content_settings_enums_java",
       "//components/url_formatter/android:url_formatter_java",
       "//content/public/android:content_full_java",
+      "//content/public/android:content_main_dex_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",

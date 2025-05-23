@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.BrowserStartupController;
 
 /** Interface for native code to interact with Android notification channels. */
 @NullMarked
@@ -103,8 +104,19 @@ public class NotificationSettingsBridge {
         }
     }
 
+    public static void onNotificationChannelStateChanged(String channelId, boolean blocked) {
+        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
+            return;
+        }
+        NotificationSettingsBridgeJni.get()
+                .onChannelStateChanged(
+                        channelId, SiteChannelsManager.toSiteOrigin(channelId), blocked);
+    }
+
     @NativeMethods
     interface Natives {
         void onGetSiteChannelsDone(long callbackId, SiteChannel[] channels);
+
+        void onChannelStateChanged(String channelId, String origin, boolean blocked);
     }
 }

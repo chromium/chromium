@@ -49,6 +49,15 @@ using base::android::ScopedJavaLocalRef;
 namespace {
 constexpr char kPendingChannelId[] = "pending";
 
+// Returns the callback to run when notification channel state changes.
+base::RepeatingCallback<void(const NotificationChannel& channel)>&
+GetChannelStateChangedCallback() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(const NotificationChannel& channel)>>
+      channel_state_changed_callback;
+  return *channel_state_changed_callback;
+}
+
 NotificationChannel CreatePendingChannel(const std::string& origin_string,
                                          ContentSetting content_setting,
                                          base::Time timestamp) {
@@ -78,8 +87,23 @@ std::string GetOriginStringFromPattern(const ContentSettingsPattern& pattern) {
 class NotificationChannelsBridgeImpl
     : public NotificationChannelsProviderAndroid::NotificationChannelsBridge {
  public:
-  NotificationChannelsBridgeImpl() = default;
-  ~NotificationChannelsBridgeImpl() override = default;
+  NotificationChannelsBridgeImpl(NotificationChannelsProviderAndroid*
+                                     notification_channel_provider_android)
+      : notification_channel_provider_android_(
+            notification_channel_provider_android) {
+    if (GetChannelStateChangedCallback().is_null()) {
+      GetChannelStateChangedCallback() = base::BindRepeating(
+          &NotificationChannelsBridgeImpl::OnChannelStateChanged,
+          weak_factory_.GetWeakPtr());
+    } else {
+      LOG(WARNING) << "Notification channels are used by two profiles. Changes"
+                      "will only affect the first profile.";
+    }
+  }
+
+  ~NotificationChannelsBridgeImpl() override {
+    GetChannelStateChangedCallback().Reset();
+  }
 
   NotificationChannel CreateChannel(const std::string& origin,
                                     const base::Time& timestamp,
@@ -121,6 +145,13 @@ class NotificationChannelsBridgeImpl
       const std::vector<NotificationChannel>& channels) {
     std::move(callback).Run(channels);
   }
+
+  void OnChannelStateChanged(const NotificationChannel& channel) {
+    notification_channel_provider_android_->OnChannelStateChanged(channel);
+  }
+
+  raw_ptr<NotificationChannelsProviderAndroid>
+      notification_channel_provider_android_;
 
   base::WeakPtrFactory<NotificationChannelsBridgeImpl> weak_factory_{this};
 };
@@ -193,6 +224,25 @@ static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
   std::move(*cb).Run(std::move(channels));
 }
 
+static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_channel_id,
+    const JavaParamRef<jstring>& j_origin,
+    jboolean blocked) {
+  if (GetChannelStateChangedCallback().is_null()) {
+    return;
+  }
+
+  NotificationChannelStatus status = blocked
+                                         ? NotificationChannelStatus::BLOCKED
+                                         : NotificationChannelStatus::ENABLED;
+
+  GetChannelStateChangedCallback().Run(NotificationChannel(
+      base::android::ConvertJavaStringToUTF8(env, j_channel_id),
+      base::android::ConvertJavaStringToUTF8(env, j_origin), base::Time::Now(),
+      status));
+}
+
 // static
 void NotificationChannelsProviderAndroid::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -212,7 +262,7 @@ NotificationChannelsProviderAndroid::NotificationChannelsProviderAndroid(
     PrefService* pref_service)
     : NotificationChannelsProviderAndroid(
           pref_service,
-          std::make_unique<NotificationChannelsBridgeImpl>()) {}
+          std::make_unique<NotificationChannelsBridgeImpl>(this)) {}
 
 NotificationChannelsProviderAndroid::NotificationChannelsProviderAndroid(
     PrefService* pref_service,
@@ -327,6 +377,31 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessaryImpl(
     pref_service_->SetBoolean(prefs::kClearedBlockedSiteNotificationChannels,
                               true);
   }
+}
+
+void NotificationChannelsProviderAndroid::OnChannelStateChanged(
+    const NotificationChannel& channel) {
+  if (!cached_channels_) {
+    cached_channels_ = std::map<std::string, NotificationChannel>();
+  }
+  auto iter = cached_channels_->find(channel.origin);
+
+  if (iter != cached_channels_->end()) {
+    if (iter->second == channel) {
+      return;
+    }
+    iter->second.status = channel.status;
+  } else {
+    cached_channels_->emplace(channel.origin, channel);
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NotificationChannelsProviderAndroid::NotifyObservers,
+                     weak_factory_.GetWeakPtr(),
+                     ContentSettingsPattern::Wildcard(),
+                     ContentSettingsPattern::Wildcard(),
+                     ContentSettingsType::NOTIFICATIONS,
+                     /*partition_key=*/nullptr));
 }
 
 std::unique_ptr<content_settings::RuleIterator>

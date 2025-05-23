@@ -1018,6 +1018,7 @@ by a child template that "extends" this file.
                   android:exported="false">
           <intent-filter>
             <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED"/>
+            <action android:name="android.app.action.NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED" />
           </intent-filter>
         </receiver>
 

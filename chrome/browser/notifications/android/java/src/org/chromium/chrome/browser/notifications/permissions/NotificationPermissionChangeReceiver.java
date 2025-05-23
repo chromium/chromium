@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
@@ -25,13 +26,33 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
 
         if (action == null) return;
 
-        if (action.equals(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED)
-                && intent.hasExtra(NotificationManager.EXTRA_BLOCKED_STATE)) {
-            boolean blockedState =
-                    intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
-            NotificationProxyUtils.setNotificationEnabled(!blockedState);
-            NotificationUmaTracker.getInstance()
-                    .onNotificationPermissionSettingChange(blockedState);
+        if (action.equals(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED)) {
+            onAppNotificationStateChanged(intent);
+        } else if (action.equals(
+                NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED)) {
+            onNotificationChannelStateChanged(intent);
         }
+    }
+
+    private void onAppNotificationStateChanged(Intent intent) {
+        if (!intent.hasExtra(NotificationManager.EXTRA_BLOCKED_STATE)) return;
+        boolean blockedState =
+                intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+        NotificationProxyUtils.setNotificationEnabled(!blockedState);
+        NotificationUmaTracker.getInstance().onNotificationPermissionSettingChange(blockedState);
+    }
+
+    private void onNotificationChannelStateChanged(Intent intent) {
+        if (!intent.hasExtra(NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID)
+                || !intent.hasExtra(NotificationManager.EXTRA_BLOCKED_STATE)) {
+            return;
+        }
+
+        String channelId = intent.getStringExtra(NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID);
+        if (channelId == null) {
+            return;
+        }
+        NotificationSettingsBridge.onNotificationChannelStateChanged(
+                channelId, intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false));
     }
 }
