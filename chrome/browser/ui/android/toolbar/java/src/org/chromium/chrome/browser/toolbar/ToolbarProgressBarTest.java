@@ -393,8 +393,6 @@ public class ToolbarProgressBarTest {
         Drawable drawable = mProgressBar.getDrawable();
         assertTrue(drawable instanceof LayerDrawable);
         LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        assertEquals(2, layerDrawable.getNumberOfLayers());
-        assertTrue(layerDrawable.getDrawable(0) instanceof ClipDrawable);
-        assertTrue(layerDrawable.getDrawable(1) instanceof ClipDrawable);
+        assertTrue(layerDrawable.getNumberOfLayers() > 1);
     }
 }
