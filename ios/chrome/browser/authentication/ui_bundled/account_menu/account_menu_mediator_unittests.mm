@@ -488,6 +488,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
+  OCMExpect([delegate_mock_ signinFinished]);
   // Simulate AuthenticationFlow failure.
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
@@ -533,6 +534,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // Expect that the consumer unlocks the UI.
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
+  OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
           SigninCoordinatorResult::SigninCoordinatorResultInterrupted];
@@ -579,6 +581,7 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
                       withResult:SigninCoordinatorResultSuccess
                   signedIdentity:kSecondaryIdentity
                  userTappedClose:NO]);
+  OCMExpect([delegate_mock_ signinFinished]);
   [authentication_flow_request_helper
       authenticationFlowDidSignInInSameProfileWithResult:
           SigninCoordinatorResultSuccess];

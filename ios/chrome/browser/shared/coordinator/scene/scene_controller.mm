@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -622,6 +623,14 @@ void OnListFamilyMembersResponse(
                         profileInitStage:profileState.initStage];
 }
 
+- (void)signinDidEnd:(SceneState*)sceneState {
+  if (IsSigninForcedByPolicy()) {
+    // Handle intents after sign-in is done when the forced sign-in policy
+    // is enabled.
+    [self handleExternalIntents];
+  }
+}
+
 - (void)handleExternalIntents {
   if (![self canHandleIntents]) {
     return;
@@ -965,8 +974,11 @@ void OnListFamilyMembersResponse(
 // Stops the signin coordinator.
 // TODO(crbug.com/381444097): always use the animated.
 - (void)stopSigninCoordinatorAnimated:(BOOL)animated {
-  [self.signinCoordinator stopAnimated:animated];
+  // This ensure that when the SceneController receives the `signinFinished`
+  // command, it does not detect the SigninCoordinator as still presented.
+  SigninCoordinator* signinCoordinator = self.signinCoordinator;
   self.signinCoordinator = nil;
+  [signinCoordinator stopAnimated:animated];
 }
 
 // Creates, if needed, and presents saved passwords settings. Assumes all modal
@@ -1617,9 +1629,9 @@ void OnListFamilyMembersResponse(
   }
 
   if (IsSigninForcedByPolicy()) {
-    if (self.signinCoordinator) {
-      // Return NO because intents cannot be handled when using
-      // `self.signinCoordinator` for the forced sign-in prompt.
+    if (self.sceneState.signinInProgress) {
+      // Return NO because intents cannot be handled when a sign-in is in
+      // progress.
       return NO;
     }
     if (![self isSignedIn]) {
@@ -3882,16 +3894,12 @@ using UserFeedbackDataCallback =
     self.signinCoordinator = nil;
     return;
   }
-  self.sceneState.signinInProgress = YES;
 
-  __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
-      std::make_unique<ScopedUIBlocker>(self.sceneState);
   __weak __typeof(self) weakSelf = self;
   self.signinCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
         [weakSelf signinCompletedWithResult:result
                                    identity:identity
-                                  uiBlocker:std::move(uiBlocker)
                                  completion:completion];
       };
 
@@ -3901,22 +3909,12 @@ using UserFeedbackDataCallback =
 // Completion block for Signin coordinators.
 - (void)signinCompletedWithResult:(SigninCoordinatorResult)result
                          identity:(id<SystemIdentity>)identity
-                        uiBlocker:(std::unique_ptr<ScopedUIBlocker>)uiBlocker
                        completion:
                            (SigninCoordinatorCompletionCallback)completion {
   [self stopSigninCoordinatorAnimated:YES];
-  uiBlocker.reset();
 
   if (completion) {
     completion(result, identity);
-  }
-
-  self.sceneState.signinInProgress = NO;
-
-  if (IsSigninForcedByPolicy()) {
-    // Handle intents after sign-in is done when the forced sign-in policy
-    // is enabled.
-    [self handleExternalIntents];
   }
 }
 

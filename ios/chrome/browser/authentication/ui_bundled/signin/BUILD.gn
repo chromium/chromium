@@ -45,6 +45,7 @@ source_set("signin_impl") {
   public_deps = [ ":constants" ]
   deps = [
     ":signin_headers",
+    ":signin_in_progress",
     ":signin_protected",
     ":signin_screen_provider",
     "//components/feature_engagement/public",
@@ -146,6 +147,14 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
+}
+
+source_set("signin_in_progress") {
+  sources = [
+    "signin_in_progress.h",
+    "signin_in_progress.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/public/commands" ]
 }
 
 source_set("constants") {

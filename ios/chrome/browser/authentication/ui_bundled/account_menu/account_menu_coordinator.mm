@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
@@ -127,6 +128,9 @@ void maybeShowSettingsIPH(Browser* browser) {
   GURL _url;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
+  // While this value is set, the scene state considers the sign-in to be in
+  // progress.
+  std::unique_ptr<SigninInProgress> _signinInProgress;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -354,6 +358,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (AuthenticationFlow*)authenticationFlow:(id<SystemIdentity>)identity
                                anchorRect:(CGRect)anchorRect {
+  _signinInProgress = [self.sceneState createSigninInProgress];
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
@@ -365,6 +370,11 @@ void maybeShowSettingsIPH(Browser* browser) {
                     anchorView:_viewController.view
                     anchorRect:anchorRect];
   return authenticationFlow;
+}
+
+- (void)signinFinished {
+  CHECK(_signinInProgress, base::NotFatalUntil::M147);
+  _signinInProgress.reset();
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

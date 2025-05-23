@@ -37,6 +37,7 @@ source_set("account_menu") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",

@@ -18,14 +18,18 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -33,7 +37,9 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-@implementation SigninCoordinator
+@implementation SigninCoordinator {
+  std::unique_ptr<SigninInProgress> _signinInProgress;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -45,6 +51,7 @@ using signin_metrics::PromoAction;
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();
+    _signinInProgress = [self.sceneState createSigninInProgress];
   }
   return self;
 }
@@ -393,6 +400,13 @@ using signin_metrics::PromoAction;
   // `signinCompletion` needs to be set by the owner to know when the sign-in
   // is finished.
   DCHECK(self.signinCompletion);
+}
+
+#pragma mark - AnimatedCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
+  _signinInProgress.reset();
+  [super stopAnimated:animated];
 }
 
 #pragma mark - Protected

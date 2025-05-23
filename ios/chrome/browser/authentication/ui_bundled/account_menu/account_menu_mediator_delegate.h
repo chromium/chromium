@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
 #import <string_view>
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -15,6 +16,7 @@
 
 @class AccountMenuMediator;
 @class AuthenticationFlow;
+class SigninInProgress;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <NSObject>
@@ -49,6 +51,8 @@
 // The user tapped to open Settings page.
 - (void)didTapSettingsButton;
 
+// The signin is finished.
+- (void)signinFinished;
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_DELEGATE_H_

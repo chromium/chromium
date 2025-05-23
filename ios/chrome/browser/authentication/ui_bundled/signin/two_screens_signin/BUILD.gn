@@ -37,13 +37,17 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sync:test_support",
     "//components/sync/base:features",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:ui",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
@@ -53,6 +57,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//third_party/ocmock",
   ]
 }
 

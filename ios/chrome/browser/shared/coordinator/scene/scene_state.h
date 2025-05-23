@@ -19,6 +19,7 @@
 @class ProfileState;
 @class SceneController;
 @class SceneState;
+class SigninInProgress;
 
 // During profile switching, it is possible that an animation is displayed
 // over the SceneState until the transition is complete. In that case the
@@ -118,7 +119,7 @@
 
 // YES if sign-in is in progress which covers the authentication flow and the
 // sign-in prompt UI.
-@property(nonatomic, assign) BOOL signinInProgress;
+@property(nonatomic, readonly) BOOL signinInProgress;
 
 // Accessibility identifier of the window.
 @property(nonatomic, copy, readonly) NSString* windowAccessibilityIdentifier;
@@ -159,6 +160,10 @@
 // Sets the User Interface Style of the window.
 - (void)setWindowUserInterfaceStyle:
     (UIUserInterfaceStyle)windowUserInterfaceStyle;
+
+// Records that an extra sign-in process started. When the returned value is
+// destructed, the sign-in ended.
+- (std::unique_ptr<SigninInProgress>)createSigninInProgress;
 
 @end
 

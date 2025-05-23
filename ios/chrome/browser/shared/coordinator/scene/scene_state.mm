@@ -13,6 +13,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 
@@ -46,7 +47,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 #pragma mark - SceneState
 
-@interface SceneState ()
+@interface SceneState () <SignInInProgressAudience>
 
 @end
 
@@ -68,6 +69,19 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
   // The current value of -activationLevel.
   SceneActivationLevel _activationLevel;
+
+  // A UIBlocker that blocks other scenes if and only if a sign in is in
+  // progress.
+  std::unique_ptr<ScopedUIBlocker> _signinUIBlocker;
+
+  // The number of sign-in in progress. This include both the authentication
+  // flow and the sign-in prompt UI.
+  // In normal usage, this number can be greater than one because a signin
+  // coordinator may open another signin coordinator. It also occurs that two
+  // signin coordinator are started simultaneously from different screen, for
+  // example due to simultaneous tap on a IPH signin promo and on the NTP’s
+  // identity disc.
+  NSInteger _numberOfSigninInProgress;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState {
@@ -122,6 +136,10 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 - (void)setWindowUserInterfaceStyle:
     (UIUserInterfaceStyle)windowUserInterfaceStyle {
   self.window.overrideUserInterfaceStyle = windowUserInterfaceStyle;
+}
+
+- (std::unique_ptr<SigninInProgress>)createSigninInProgress {
+  return std::make_unique<SigninInProgress>(self);
 }
 
 #pragma mark - Setters & Getters.
@@ -258,15 +276,8 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   [_observers sceneState:self receivedUserActivity:pendingUserActivity];
 }
 
-- (void)setSigninInProgress:(BOOL)signinInProgress {
-  DCHECK(_signinInProgress != signinInProgress);
-
-  _signinInProgress = signinInProgress;
-  if (signinInProgress) {
-    [_observers signinDidStart:self];
-  } else {
-    [_observers signinDidEnd:self];
-  }
+- (BOOL)signinInProgress {
+  return _numberOfSigninInProgress > 0;
 }
 
 - (void)setProfileState:(ProfileState*)profileState {
@@ -398,6 +409,32 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:object forKey:key];
   [userDefaults synchronize];
+}
+
+#pragma mark - SignInInProgressAudience
+
+- (void)signInStarted {
+  if (_numberOfSigninInProgress == 0) {
+    [_observers signinDidStart:self];
+    CHECK(!_signinUIBlocker, base::NotFatalUntil::M146);
+    _signinUIBlocker = std::make_unique<ScopedUIBlocker>(self);
+  } else {
+    CHECK(_signinUIBlocker, base::NotFatalUntil::M146);
+  }
+  _numberOfSigninInProgress++;
+}
+
+- (void)signinFinished {
+  _numberOfSigninInProgress--;
+  CHECK_GE(_numberOfSigninInProgress, 0, base::NotFatalUntil::M146);
+  if (_numberOfSigninInProgress < 0) {
+    _numberOfSigninInProgress = 0;
+  }
+  if (_numberOfSigninInProgress > 0) {
+    return;
+  }
+  _signinUIBlocker.reset();
+  [_observers signinDidEnd:self];
 }
 
 @end

@@ -415,6 +415,7 @@
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
+  [_delegate signinFinished];
   if (_accessPoint == AccountMenuAccessPoint::kWeb &&
       result == SigninCoordinatorResultSuccess) {
     GetApplicationContext()->GetLocalState()->SetBoolean(
@@ -454,6 +455,7 @@
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow = nil;
+  [_delegate signinFinished];
   switch (_accessPoint) {
     case AccountMenuAccessPoint::kNewTabPage:
       return CreateChangeProfileOpensNTPContinuation();
