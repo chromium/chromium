@@ -155,18 +155,20 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     this.notificationManager_.addListener(this);
 
     const menu = this.$.voiceSelectionMenu.get();
-    openMenu(menu, targetElement, {
-      minX: this.spBodyPadding_,
-      maxX: document.body.clientWidth - this.spBodyPadding_,
-    });
+    openMenu(
+        menu, targetElement, {
+          minX: this.spBodyPadding_,
+          maxX: document.body.clientWidth - this.spBodyPadding_,
+        },
+        this.onMenuShown.bind(this));
+  }
 
-    // Scroll to the selected voice.
-    requestAnimationFrame(() => {
-      this.fire(ToolbarEvent.VOICE_MENU_OPEN);
-      const selectedItem =
-          menu.querySelector<HTMLElement>('.item-hidden-false.check-mark');
-      selectedItem?.scrollIntoViewIfNeeded();
-    });
+  private onMenuShown() {
+    this.fire(ToolbarEvent.VOICE_MENU_OPEN);
+    const selectedItem =
+        this.$.voiceSelectionMenu.get().querySelector<HTMLElement>(
+            '.item-hidden-false.check-mark');
+    selectedItem?.scrollIntoViewIfNeeded();
   }
 
   protected voiceItemTabIndex_(groupIndex: number, voiceIndex: number) {

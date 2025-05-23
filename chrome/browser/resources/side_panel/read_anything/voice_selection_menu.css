@@ -92,6 +92,7 @@ cr-action-menu::part(dialog) {
   overflow: hidden;
   padding-inline-end: 16px;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item-hidden-true {

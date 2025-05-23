@@ -64,7 +64,7 @@ export function emitEvent(
 
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,
-    showAtConfig?: {minX: number, maxX: number}) {
+    showAtConfig?: {minX: number, maxX: number}, onShow?: () => void) {
   // The button should stay active while the menu is open and deactivate when
   // the menu closes.
   menuToOpen.addEventListener('close', () => {
@@ -90,6 +90,9 @@ export function openMenu(
                 noOffset: true,
               },
               showAtConfig));
+      if (onShow) {
+        onShow();
+      }
     });
   });
 }
