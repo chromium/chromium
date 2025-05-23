@@ -789,8 +789,7 @@ IN_PROC_BROWSER_TEST_P(
   // RelatedActiveContents metrics because the related active contents
   // count is > 1.
   if (ShouldCreateNewHostForAllFrames() ||
-      (!NavigateSameSite() &&
-       SiteIsolationPolicy::UseDedicatedProcessesForAllSites())) {
+      (!NavigateSameSite() && AreStrictSiteInstancesEnabled())) {
     ExpectNotRestored(
         {NotRestoredReason::kRelatedActiveContentsExist,
          NotRestoredReason::kBlocklistedFeatures,

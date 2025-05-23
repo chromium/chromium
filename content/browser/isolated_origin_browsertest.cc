@@ -3815,7 +3815,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   const SiteInstanceImpl* const newshell_site_instance_impl =
       static_cast<SiteInstanceImpl*>(
           new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     // At this point, the popup and the opener should still be in separate
     // SiteInstances.
     EXPECT_NE(newshell_site_instance_impl, root_site_instance_impl);
@@ -4976,9 +4976,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
 }
 
 namespace {
-bool HasDefaultSiteInstance(RenderFrameHost* rfh) {
-  return static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance())
-      ->IsDefaultSiteInstance();
+bool HasDefaultSiteInstanceOrGroup(RenderFrameHost* rfh) {
+  SiteInstanceImpl* site_instance =
+      static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    return site_instance->group() ==
+           site_instance->DefaultSiteInstanceGroupForBrowsingInstance();
+  } else {
+    return site_instance->IsDefaultSiteInstance();
+  }
 }
 }  // namespace
 
@@ -5052,9 +5058,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
     EXPECT_EQ(a->GetSiteInstance(), d->GetSiteInstance());
     EXPECT_NE(b->GetSiteInstance(), c->GetSiteInstance());
 
-    EXPECT_FALSE(HasDefaultSiteInstance(a));
-    EXPECT_FALSE(HasDefaultSiteInstance(b));
-    EXPECT_FALSE(HasDefaultSiteInstance(c));
+    EXPECT_FALSE(HasDefaultSiteInstanceOrGroup(a));
+    EXPECT_FALSE(HasDefaultSiteInstanceOrGroup(b));
+    EXPECT_FALSE(HasDefaultSiteInstanceOrGroup(c));
   } else {
     // All sites that are not isolated should be in the same default
     // SiteInstance process.
@@ -5064,12 +5070,18 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
               c->GetProcess()->GetDeprecatedID());
 
     EXPECT_NE(a->GetSiteInstance(), b->GetSiteInstance());
-    EXPECT_EQ(a->GetSiteInstance(), c->GetSiteInstance());
+    if (ShouldUseDefaultSiteInstanceGroup()) {
+      EXPECT_NE(a->GetSiteInstance(), c->GetSiteInstance());
+      EXPECT_EQ(a->GetSiteInstance()->GetSiteInstanceGroupId(),
+                c->GetSiteInstance()->GetSiteInstanceGroupId());
+    } else {
+      EXPECT_EQ(a->GetSiteInstance(), c->GetSiteInstance());
+    }
     EXPECT_EQ(a->GetSiteInstance(), d->GetSiteInstance());
     EXPECT_NE(b->GetSiteInstance(), c->GetSiteInstance());
 
-    EXPECT_TRUE(HasDefaultSiteInstance(a));
-    EXPECT_FALSE(HasDefaultSiteInstance(b));
+    EXPECT_TRUE(HasDefaultSiteInstanceOrGroup(a));
+    EXPECT_FALSE(HasDefaultSiteInstanceOrGroup(b));
   }
 }
 
@@ -6133,18 +6145,36 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(first_instance->GetProcess()->GetProcessLock().allows_any_site());
 }
 
-// TODO(crbug.com/390571607, yangsharon): Enable these tests once default
-// SiteInstanceGroups has been implemented.
-class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
+class IsolatedOriginTestWithDefaultSiteInstanceGroups
+    : public IsolatedOriginTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
     command_line->RemoveSwitch(switches::kSitePerProcess);
+
+    if (IsDefaultSiteInstanceGroupEnabled()) {
+      feature_list_.InitAndEnableFeature(features::kDefaultSiteInstanceGroups);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
+    }
   }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "UseDefaultSiteInstanceGroups"
+                      : "UseDefaultSiteInstances";
+  }
+
+ private:
+  bool IsDefaultSiteInstanceGroupEnabled() const { return GetParam(); }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       DISABLED_NonIsolatedFramesCanShareDefaultProcess) {
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
+                       NonIsolatedFramesCanShareDefaultProcess) {
   GURL top_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(top_url)));
@@ -6172,22 +6202,42 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
     observer.Wait();
   }
 
-  // All 3 frames are from different sites, so each should have its own
-  // SiteInstance.
-  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
-            child1->current_frame_host()->GetSiteInstance());
-  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
-            child2->current_frame_host()->GetSiteInstance());
-  EXPECT_NE(child1->current_frame_host()->GetSiteInstance(),
-            child2->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   |--Site B ------- proxies for A C\n"
-      "   +--Site C ------- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(*root));
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    // All 3 frames are different sites, so each should have its own
+    // SiteInstance.
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child1->current_frame_host()->GetSiteInstance());
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child2->current_frame_host()->GetSiteInstance());
+    EXPECT_NE(child1->current_frame_host()->GetSiteInstance(),
+              child2->current_frame_host()->GetSiteInstance());
+
+    // All 3 sites should share the default SiteInstanceGroup and be in the same
+    // process, so no proxies are needed.
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site B\n"
+        "   +--Site C\n"
+        "Where A = http://127.0.0.1/\n"
+        "      B = http://bar.com/\n"
+        "      C = http://baz.com/",
+        DepictFrameTree(*root));
+  } else {
+    // All 3 frames are in the default SiteInstance.
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child1->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child2->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child1->current_frame_host()->GetSiteInstance(),
+              child2->current_frame_host()->GetSiteInstance());
+
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site A\n"
+        "   +--Site A\n"
+        "Where A = http://unisolated.invalid/",
+        DepictFrameTree(*root));
+  }
 
   // But none are isolated, so all should share the default process for their
   // BrowsingInstance.
@@ -6199,11 +6249,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 
 // Creates a non-isolated main frame with an isolated child and non-isolated
 // grandchild. With strict site isolation disabled and
-// kProcessSharingWithStrictSiteInstances enabled, the main frame and the
-// grandchild should be in the same process even though they have different
-// SiteInstances.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       DISABLED_IsolatedChildWithNonIsolatedGrandchild) {
+// default SiteInstanceGroups enabled, the main frame and the grandchild should
+// be in the default SiteInstanceGroup with different SiteInstances.
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
+                       IsolatedChildWithNonIsolatedGrandchild) {
   GURL top_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(top_url)));
@@ -6243,76 +6292,112 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
   observer.Wait();
   EXPECT_EQ(non_isolated_url, grandchild->current_url());
 
-  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
-            grandchild->current_frame_host()->GetSiteInstance());
   EXPECT_NE(child->current_frame_host()->GetSiteInstance(),
             grandchild->current_frame_host()->GetSiteInstance());
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             grandchild->current_frame_host()->GetProcess());
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        +--Site C -- proxies for A B\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://isolated.foo.com/\n"
-      "      C = http://bar.com/",
-      DepictFrameTree(*root));
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              grandchild->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for {A,C}\n"
+        "        +--Site C -- proxies for B\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://isolated.foo.com/\n"
+        "      C = http://bar.com/",
+        DepictFrameTree(*root));
+  } else {
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              grandchild->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "        +--Site A -- proxies for B\n"
+        "Where A = http://unisolated.invalid/\n"
+        "      B = http://isolated.foo.com/",
+        DepictFrameTree(*root));
+  }
 }
 
 // Navigate a frame into and out of an isolated origin. This should not
-// confuse BrowsingInstance into holding onto a stale default_process_.
-IN_PROC_BROWSER_TEST_F(
-    IsolatedOriginTestWithStrictSiteInstances,
-    DISABLED_SubframeNavigatesOutofIsolationThenToIsolation) {
+// confuse BrowsingInstance into holding onto a stale default SiteInstance or
+// default SiteInstanceGroup
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
+                       SubframeNavigatesOutOfIsolationThenToIsolation) {
+  // Navigate to an isolated site, with a same-site subframe.
   GURL isolated_url(embedded_test_server()->GetURL("isolated.foo.com",
                                                    "/page_with_iframe.html"));
   ASSERT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
   EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  SiteInstanceImpl* root_instance =
+      root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* child = root->child_at(0);
-  EXPECT_EQ(web_contents()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(web_contents()->GetSiteInstance(), child_instance);
+  EXPECT_EQ(root_instance->group(), child_instance->group());
   EXPECT_FALSE(child->current_frame_host()->IsCrossProcessSubframe());
+  EXPECT_FALSE(HasDefaultSiteInstanceOrGroup(child->current_frame_host()));
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(child_instance->group(),
+              child_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_FALSE(child_instance->IsDefaultSiteInstance());
+  }
 
+  // Navigate the child to a non-isolated page.
   GURL non_isolated_url(
-      embedded_test_server()->GetURL("www.foo.com", "/title3.html"));
+      embedded_test_server()->GetURL("www.bar.com", "/title3.html"));
   ASSERT_FALSE(IsIsolatedOrigin(url::Origin::Create(non_isolated_url)));
   NavigateIframeToURL(web_contents(), "test_iframe", non_isolated_url);
+  child_instance = child->current_frame_host()->GetSiteInstance();
+
   EXPECT_EQ(child->current_url(), non_isolated_url);
+  EXPECT_TRUE(HasDefaultSiteInstanceOrGroup(child->current_frame_host()));
+  EXPECT_NE(root_instance->group(), child_instance->group());
+  // Keep this value for comparing later.
+  SiteInstanceGroup* first_default_group = child_instance->group();
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(child_instance->group(),
+              child_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(child_instance->IsDefaultSiteInstance());
+  }
 
-  // Verify that the child frame is an OOPIF with a different SiteInstance.
-  EXPECT_NE(web_contents()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_NE(root->current_frame_host()->GetProcess(),
-            child->current_frame_host()->GetProcess());
+  // Navigate to an isolated page without an iframe. This should cause the
+  // default SiteInstance/Group to be deleted.
+  GURL isolated_url2(
+      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
+  ASSERT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url2)));
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_url2));
+  EXPECT_FALSE(
+      HasDefaultSiteInstanceOrGroup(web_contents()->GetPrimaryMainFrame()));
 
-  // Navigating the child to the isolated origin again.
-  NavigateIframeToURL(web_contents(), "test_iframe", isolated_url);
-  EXPECT_EQ(child->current_url(), isolated_url);
-  EXPECT_EQ(web_contents()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-
-  // And navigate out of the isolated origin one last time.
-  NavigateIframeToURL(web_contents(), "test_iframe", non_isolated_url);
-  EXPECT_EQ(child->current_url(), non_isolated_url);
-  EXPECT_NE(web_contents()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_NE(root->current_frame_host()->GetProcess(),
-            child->current_frame_host()->GetProcess());
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://isolated.foo.com/\n"
-      "      B = http://foo.com/",
-      DepictFrameTree(*root));
+  // Navigate the main frame to bar.com. We expect bar's SiteInstance to be in
+  // the default SiteInstance/Group, but a different one from the subframe
+  // navigation, since that should have been destroyed when we navigated away,
+  // as it was the last and only SiteInstance in the default SiteInstance/Group.
+  EXPECT_TRUE(NavigateToURL(shell(), non_isolated_url));
+  FrameTreeNode* bar = web_contents()->GetPrimaryFrameTree().root();
+  SiteInstanceImpl* bar_instance = bar->current_frame_host()->GetSiteInstance();
+  // The SiteInstanceGroup and process from the first time we navigated to
+  // bar.com should not be reused.
+  EXPECT_NE(bar_instance->group(), first_default_group);
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(bar_instance->group(),
+              bar_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(bar_instance->IsDefaultSiteInstance());
+  }
 }
 
 // Ensure a popup and its opener can go in the same process, even though
-// they have different SiteInstances with kProcessSharingWithStrictSiteInstances
-// enabled.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
-                       DISABLED_NonIsolatedPopup) {
+// they have different SiteInstances with default SiteInstanceGroups enabled.
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
+                       NonIsolatedPopup) {
   GURL foo_url(
       embedded_test_server()->GetURL("www.foo.com", "/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
@@ -6333,32 +6418,53 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
     ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
-  // The popup and the opener should not share a SiteInstance, but should
-  // end up in the same process.
-  EXPECT_NE(new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
-            root->current_frame_host()->GetSiteInstance());
+  // The popup and the opener should not share a SiteInstance in default
+  // SiteInstanceGroup mode, but should end up in the same process in either
+  // mode.
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site A ------- proxies for B\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/",
-      DepictFrameTree(*root));
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "Where A = http://bar.com/\n"
-      "      B = http://foo.com/",
-      DepictFrameTree(*static_cast<WebContentsImpl*>(new_shell->web_contents())
-                           ->GetPrimaryFrameTree()
-                           .root()));
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(
+        new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+        root->current_frame_host()->GetSiteInstance());
+    // There should be no proxies between the popup and opener since they share
+    // a SiteInstanceGroup.
+    EXPECT_EQ(
+        " Site A\n"
+        "   +--Site A\n"
+        "Where A = http://foo.com/",
+        DepictFrameTree(*root));
+    EXPECT_EQ(
+        " Site A\n"
+        "Where A = http://bar.com/",
+        DepictFrameTree(
+            *static_cast<WebContentsImpl*>(new_shell->web_contents())
+                 ->GetPrimaryFrameTree()
+                 .root()));
+  } else {
+    EXPECT_EQ(
+        new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+        root->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(
+        " Site A\n"
+        "   +--Site A\n"
+        "Where A = http://unisolated.invalid/",
+        DepictFrameTree(*root));
+    EXPECT_EQ(
+        " Site A\n"
+        "Where A = http://unisolated.invalid/",
+        DepictFrameTree(
+            *static_cast<WebContentsImpl*>(new_shell->web_contents())
+                 ->GetPrimaryFrameTree()
+                 .root()));
+  }
 }
 
 // Check that when a cross-site, non-isolated-origin iframe opens a popup,
 // navigates it to an isolated origin, and then the popup navigates back to its
 // opener iframe's site, the popup and the opener iframe end up in the same
 // process and can script each other.  See https://crbug.com/796912.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
                        PopupNavigatesToIsolatedOriginAndBack) {
   // Start on a page with same-site iframe.
   GURL foo_url(
@@ -6413,6 +6519,64 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 
   // Check that the opener iframe can script the popup.
   EXPECT_EQ(bar_url2.spec(), EvalJs(child, "window.w.location.href;"));
+}
+
+// Make sure a navigation from about:blank in the default SiteInstanceGroup to
+// an isolated site correctly gets a different process. Also makes sure opening
+// a popup is same-SiteInstanceGroup.
+IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
+                       InitialEmptyDocumentToIsolatedSite) {
+  GURL foo_url(embedded_test_server()->GetURL("www.bar.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
+
+  ShellAddedObserver new_shell1_observer;
+  EXPECT_TRUE(ExecJs(shell(), "window.w = window.open();"));
+  Shell* new_shell1 = new_shell1_observer.GetShell();
+
+  ShellAddedObserver new_shell2_observer;
+  EXPECT_TRUE(ExecJs(shell(), "window.w = window.open();"));
+  Shell* new_shell2 = new_shell2_observer.GetShell();
+
+  // Everything should be in the same default SiteInstanceGroup, and thus same
+  // process, so far.
+  SiteInstanceImpl* root_site_instance =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+  SiteInstanceImpl* popup1_site_instance = static_cast<SiteInstanceImpl*>(
+      new_shell1->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  SiteInstanceImpl* popup2_site_instance = static_cast<SiteInstanceImpl*>(
+      new_shell2->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  EXPECT_EQ(root_site_instance->group(), popup1_site_instance->group());
+  EXPECT_EQ(popup2_site_instance->group(), popup1_site_instance->group());
+
+  // Navigate popup1 to an isolated site.
+  GURL isolated_url(
+      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
+  EXPECT_TRUE(IsIsolatedOrigin(isolated_url));
+  {
+    TestNavigationManager manager(new_shell1->web_contents(), isolated_url);
+    EXPECT_TRUE(
+        ExecJs(new_shell1, "location.href = '" + isolated_url.spec() + "';"));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+  }
+
+  SiteInstanceImpl* isolated_site_instance = static_cast<SiteInstanceImpl*>(
+      new_shell1->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  EXPECT_NE(isolated_site_instance->group(), popup2_site_instance->group());
+  EXPECT_NE(isolated_site_instance->group(), root_site_instance->group());
+  EXPECT_NE(isolated_site_instance->group(), popup2_site_instance->group());
+  EXPECT_EQ(popup2_site_instance->group(), root_site_instance->group());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(
+        popup2_site_instance->group(),
+        popup2_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_NE(
+        isolated_site_instance->group(),
+        isolated_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(popup2_site_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(root_site_instance->IsDefaultSiteInstance());
+    EXPECT_FALSE(isolated_site_instance->IsDefaultSiteInstance());
+  }
 }
 
 class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
@@ -7679,4 +7843,9 @@ IN_PROC_BROWSER_TEST_F(JITIsolationTest, SubFrameProcessReuse) {
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedOriginTestWithDefaultSiteInstanceGroups,
+    ::testing::Bool(),
+    &IsolatedOriginTestWithDefaultSiteInstanceGroups::DescribeParams);
 }  // namespace content

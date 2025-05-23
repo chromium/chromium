@@ -42,6 +42,10 @@ base::SafeRef<SiteInstanceGroup> SiteInstanceGroup::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
+base::WeakPtr<SiteInstanceGroup> SiteInstanceGroup::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 base::WeakPtr<SiteInstanceGroup>
 SiteInstanceGroup::GetWeakPtrToAllowDangling() {
   return weak_ptr_factory_.GetWeakPtr();

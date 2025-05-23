@@ -138,8 +138,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
 
   // Check to see if we can use the default SiteInstance for sites that don't
   // need to be isolated in their own process.
-  if (allow_default_instance &&
-      SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
+  if (!ShouldUseDefaultSiteInstanceGroup() && allow_default_instance &&
+      SiteInstanceImpl::CanBePlacedInDefaultSiteInstanceOrGroup(
           isolation_context_, url_info.url, site_info)) {
     scoped_refptr<SiteInstanceImpl> site_instance =
         default_site_instance_.get();
@@ -183,6 +183,7 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   // Explicitly prevent the default SiteInstance from being added since
   // the map is only supposed to contain instances that map to a single site.
   if (site_instance->IsDefaultSiteInstance()) {
+    DCHECK(!ShouldUseDefaultSiteInstanceGroup());
     CHECK(!default_site_instance_);
     default_site_instance_ = site_instance;
     return;

@@ -3602,7 +3602,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // does not yet support OOPIFs (https://crbug.com/1101214).
   // TODO(crbug.com/40704573): Remove this block when default
   // SiteInstances support file: URLs.
-  if (!frame_tree_node_->IsMainFrame()) {
+  // TODO(crbug.com/419595581): Make sure default SiteInstanceGroup is safe for
+  // Android WebView before enabling experiments on that platform.
+  if (!frame_tree_node_->IsMainFrame() &&
+      !ShouldUseDefaultSiteInstanceGroup()) {
     RenderFrameHostImpl* parent = frame_tree_node_->parent();
     auto& parent_isolation_context =
         parent->GetSiteInstance()->GetIsolationContext();

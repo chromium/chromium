@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -396,6 +397,7 @@ bool SiteInstanceImpl::IsDefaultSiteInstance() const {
 }
 
 void SiteInstanceImpl::AddSiteInfoToDefault(const SiteInfo& site_info) {
+  DCHECK(!ShouldUseDefaultSiteInstanceGroup());
   DCHECK(IsDefaultSiteInstance());
   default_site_instance_state_->AddSiteInfo(site_info);
 }
@@ -469,8 +471,17 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
       allocation_context.navigation_context->requires_new_process_for_coop =
           coop_reuse_process_failed_;
     }
-    SetProcessInternal(RenderProcessHostImpl::GetProcessHostForSiteInstance(
-        this, allocation_context));
+
+    // See if `this` can be placed in the default SiteInstanceGroup, otherwise
+    // create a process and associated SiteInstanceGroup.
+    if (CanPutSiteInstanceInDefaultGroup() &&
+        browsing_instance_->has_default_site_instance_group()) {
+      browsing_instance_->default_site_instance_group()->AddSiteInstance(this);
+      SetSiteInstanceGroup(browsing_instance_->default_site_instance_group());
+    } else {
+      SetProcessInternal(RenderProcessHostImpl::GetProcessHostForSiteInstance(
+          this, allocation_context));
+    }
   }
   DCHECK(site_instance_group_);
 
@@ -513,6 +524,13 @@ void SiteInstanceImpl::ReuseExistingProcessIfPossible(
     return;
   }
 
+  // If `this` can go in the default SiteInstanceGroup and one exists, prefer
+  // that SiteInstanceGroup and process.
+  if (CanPutSiteInstanceInDefaultGroup() &&
+      browsing_instance()->has_default_site_instance_group()) {
+    return;
+  }
+
   // TODO(crbug.com/40676483): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).
   SetProcessInternal(existing_process);
@@ -523,6 +541,14 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
     site_instance_group_ = base::WrapRefCounted(
         new SiteInstanceGroup(browsing_instance(), process));
     site_instance_group_->AddSiteInstance(this);
+  }
+
+  // Check if the process created should become the default SiteInstanceGroup's
+  // process. If so, set `site_instance_group_` to be the default
+  // SiteInstanceGroup. We should only get here if a process needs to be created
+  // for the default SiteInstanceGroup.
+  if (CanPutSiteInstanceInDefaultGroup()) {
+    MaybeSetDefaultSiteInstanceGroup();
   }
 
   LockProcessIfNeeded();
@@ -684,11 +710,12 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
   DCHECK(!has_site_);
 
-  if (!browsing_instance_->has_default_site_instance()) {
+  if (!ShouldUseDefaultSiteInstanceGroup() &&
+      !browsing_instance_->has_default_site_instance()) {
     // We want to set a SiteInfo in this SiteInstance, from information in a
-    // UrlInfo. The WebExposedIsolationInfo must be compatible for this function
-    // to not violate WebExposedIsolationInfo isolation invariant within a
-    // BrowsingInstance.
+    // UrlInfo. The WebExposedIsolationInfo must be compatible for this
+    // function to not violate WebExposedIsolationInfo isolation invariant
+    // within a BrowsingInstance.
     DCHECK(WebExposedIsolationInfo::AreCompatible(
         url_info.web_exposed_isolation_info, GetWebExposedIsolationInfo()));
 
@@ -700,8 +727,8 @@ void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
 
     const SiteInfo site_info =
         SiteInfo::Create(GetIsolationContext(), updated_url_info);
-    if (CanBePlacedInDefaultSiteInstance(GetIsolationContext(),
-                                         updated_url_info.url, site_info)) {
+    if (CanBePlacedInDefaultSiteInstanceOrGroup(
+            GetIsolationContext(), updated_url_info.url, site_info)) {
       SetSiteInfoToDefault(site_info.storage_partition_config());
       AddSiteInfoToDefault(site_info);
 
@@ -711,6 +738,31 @@ void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
   }
 
   SetSite(url_info);
+
+  // If `this` should go in the default SiteInstanceGroup, it needs to be a
+  // regular SiteInstance with a site (unlike the default SiteInstance), so
+  // SetSite needs to be called first.
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    MaybeSetDefaultSiteInstanceGroup();
+  }
+}
+
+void SiteInstanceImpl::MaybeSetDefaultSiteInstanceGroup() {
+  CHECK(ShouldUseDefaultSiteInstanceGroup());
+  if (!browsing_instance_->has_default_site_instance_group() &&
+      CanBePlacedInDefaultSiteInstanceOrGroup(GetIsolationContext(),
+                                              GetSiteURL(), site_info_)) {
+    CHECK(HasProcess());
+    CHECK(has_group());
+    browsing_instance_->set_default_site_instance_group(
+        site_instance_group_->GetWeakPtr());
+  }
+}
+
+bool SiteInstanceImpl::CanPutSiteInstanceInDefaultGroup() {
+  return ShouldUseDefaultSiteInstanceGroup() &&
+         CanBePlacedInDefaultSiteInstanceOrGroup(GetIsolationContext(),
+                                                 GetSiteURL(), site_info_);
 }
 
 SiteInstanceProcessAssignment
@@ -1045,8 +1097,8 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
     updated_url_info.web_exposed_isolation_info = GetWebExposedIsolationInfo();
 
     auto site_info = SiteInfo::Create(GetIsolationContext(), updated_url_info);
-    return CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url,
-                                            site_info) &&
+    return CanBePlacedInDefaultSiteInstanceOrGroup(GetIsolationContext(), url,
+                                                   site_info) &&
            !browsing_instance_->HasSiteInstance(site_info);
   }
 
@@ -1370,9 +1422,10 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
       site_info_.web_exposed_isolation_info();
 
   auto site_info = SiteInfo::Create(GetIsolationContext(), updated_url_info);
-  if (kCreateForURLAllowsDefaultSiteInstance &&
-      CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url_info.url,
-                                       site_info)) {
+  if (!ShouldUseDefaultSiteInstanceGroup() &&
+      kCreateForURLAllowsDefaultSiteInstance &&
+      CanBePlacedInDefaultSiteInstanceOrGroup(GetIsolationContext(),
+                                              url_info.url, site_info)) {
     site_info = SiteInfo::CreateForDefaultSiteInstance(
         GetIsolationContext(), site_info.storage_partition_config(),
         GetWebExposedIsolationInfo());
@@ -1390,23 +1443,31 @@ void SiteInstanceImpl::RegisterAsDefaultOriginIsolation(
 }
 
 // static
-bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
+bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstanceOrGroup(
     const IsolationContext& isolation_context,
     const GURL& url,
     const SiteInfo& site_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Empty URLs, like the initial empty document, should not be placed in the
+  // default SiteInstance or group. The initial empty document's SiteInstance
+  // can be reused, including for navigations to isolated sites. Avoid the case
+  // where a SiteInstance or group set as the default can then become isolated.
+  if (url.is_empty()) {
+    return false;
+  }
+
   // Exclude "file://" URLs from the default SiteInstance to prevent the
-  // default SiteInstance process from accumulating file access grants that
-  // could be exploited by other non-isolated sites.
+  // default SiteInstance/Group process from accumulating file access grants
+  // that could be exploited by other non-isolated sites.
   if (url.SchemeIs(url::kFileScheme))
     return false;
 
-  // Don't use the default SiteInstance when SiteInstance doesn't assign a
+  // Don't use the default SiteInstance/Group when SiteInstance doesn't assign a
   // site URL for |url|, since in that case the SiteInstance should remain
   // unused, and a subsequent navigation should always be able to reuse it,
   // whether or not it's to a site requiring a dedicated process or to a site
-  // that will use the default SiteInstance.
+  // that will use the default SiteInstance/Group.
   if (!ShouldAssignSiteForURL(url))
     return false;
 
@@ -1634,12 +1695,18 @@ SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(
 }
 
 RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
-  if (SiteInstanceImpl* default_instance =
-          browsing_instance_->default_site_instance()) {
-    return default_instance->HasProcess() ? default_instance->GetProcess()
-                                          : nullptr;
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    return browsing_instance_->has_default_site_instance_group()
+               ? browsing_instance_->default_site_instance_group()->process()
+               : nullptr;
+  } else {
+    if (SiteInstanceImpl* default_instance =
+            browsing_instance_->default_site_instance()) {
+      return default_instance->HasProcess() ? default_instance->GetProcess()
+                                            : nullptr;
+    }
+    return nullptr;
   }
-  return nullptr;
 }
 
 void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {

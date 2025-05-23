@@ -490,6 +490,167 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
   EXPECT_EQ(a_instance->group(), data_instance->group());
 }
 
+// Tests for the default SiteInstanceGroup behaviour. This is parameterized to
+// also run in the legacy mode which puts unisolated sites in the default
+// SiteInstance.
+class DefaultSiteInstanceGroupTest
+    : public ContentBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This feature only takes effect when there is no full site isolation.
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+
+    if (IsDefaultSiteInstanceGroupEnabled()) {
+      feature_list_.InitAndEnableFeature(features::kDefaultSiteInstanceGroups);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
+    }
+  }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "UseDefaultSiteInstanceGroups"
+                      : "UseDefaultSiteInstances";
+  }
+
+ protected:
+  bool IsDefaultSiteInstanceGroupEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Basic use case, where multiple unisolated sites are put in the default
+// SiteInstanceGroup, but have their own SiteInstances.
+IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
+                       DefaultSiteInstanceGroupProperties) {
+  // Navigate to a non-isolated site.
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+
+  scoped_refptr<SiteInstanceImpl> c_instance =
+      main_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(c_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(c_instance->GetProcess()->GetProcessLock().allows_any_site());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(c_instance->group(),
+              c_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(c_instance->IsDefaultSiteInstance());
+  }
+
+  // Navigate to a site with a cross-site iframe, both of which are not
+  // isolated.
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  scoped_refptr<SiteInstanceImpl> a_instance =
+      main_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> b_instance = main_frame()
+                                                   ->child_at(0)
+                                                   ->render_manager()
+                                                   ->current_frame_host()
+                                                   ->GetSiteInstance();
+  EXPECT_TRUE(a_instance->GetProcess()->GetProcessLock().allows_any_site());
+  EXPECT_FALSE(a_instance->RequiresDedicatedProcess());
+  EXPECT_FALSE(b_instance->RequiresDedicatedProcess());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    // A, B and C should all have their own SiteInstances, but all share the
+    // default SiteInstanceGroup.
+    EXPECT_NE(a_instance, b_instance);
+    EXPECT_NE(a_instance, c_instance);
+    EXPECT_NE(b_instance, c_instance);
+    EXPECT_EQ(a_instance->group(),
+              a_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(a_instance->group(), b_instance->group());
+  } else {
+    EXPECT_TRUE(a_instance->IsDefaultSiteInstance());
+    EXPECT_EQ(a_instance, b_instance);
+  }
+
+  // Navigate to an isolated site that does not use the default
+  // SiteInstance/Group.
+  IsolateOriginsForTesting(embedded_test_server(), web_contents(), {"d.com"});
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_d));
+
+  scoped_refptr<SiteInstanceImpl> d_instance =
+      main_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(d_instance->RequiresDedicatedProcess());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(d_instance->group(),
+              d_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_FALSE(d_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_FALSE(d_instance->IsDefaultSiteInstance());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
+                       ProcessHasAllowsAnySiteLock) {
+  // Test starts with a tab that has an unassigned SiteInstance. The associated
+  // SiteInstance should not yet have a site set. The process is locked with an
+  // allow-any-site lock.
+  scoped_refptr<SiteInstanceImpl> start_instance =
+      main_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(start_instance->HasSite());
+  EXPECT_TRUE(start_instance->HasProcess());
+  RenderProcessHost* start_process = start_instance->GetProcess();
+  EXPECT_FALSE(start_process->GetProcessLock().is_locked_to_site());
+  EXPECT_FALSE(start_process->GetProcessLock().is_invalid());
+  EXPECT_EQ(start_process->GetProcessLock().lock_url(), GURL());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(start_instance->group(),
+              start_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_FALSE(start_instance->IsDefaultSiteInstance());
+  }
+
+  // Do a browser-initiated navigation to about:blank. Because it's an
+  // about:blank navigation without an initiator, it should stay in the previous
+  // SiteInstance which hasn't had a site set yet, and not 'use up' a
+  // SiteInstance.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  scoped_refptr<SiteInstanceImpl> blank_instance =
+      main_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(start_instance->HasSite());
+  RenderProcessHost* blank_process = blank_instance->GetProcess();
+  EXPECT_EQ(start_process, blank_process);
+  EXPECT_EQ(start_instance, blank_instance);
+  EXPECT_FALSE(blank_process->GetProcessLock().is_locked_to_site());
+  EXPECT_FALSE(blank_process->GetProcessLock().is_invalid());
+  EXPECT_EQ(blank_process->GetProcessLock().lock_url().spec(), "");
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_NE(start_instance->group(),
+              start_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_FALSE(start_instance->IsDefaultSiteInstance());
+  }
+
+  // Now navigate to a 'real' site. Since the previous SiteInstance still did
+  // not have a site set, that will now be set as foo.com. With default
+  // SiteInstance/Group, all navigations should remain in the same process.
+  GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), foo_url));
+  scoped_refptr<SiteInstanceImpl> foo_instance =
+      main_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(foo_instance->HasSite());
+  RenderProcessHost* foo_process = foo_instance->GetProcess();
+  EXPECT_TRUE(foo_process->GetProcessLock().allows_any_site());
+  EXPECT_FALSE(blank_process->GetProcessLock().is_invalid());
+  EXPECT_EQ(foo_process->GetProcessLock().lock_url().spec(), "");
+  EXPECT_EQ(foo_instance, start_instance);
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(foo_instance->group(),
+              foo_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(foo_instance->IsDefaultSiteInstance());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DataURLSiteInstanceGroupTest,
                          ::testing::Bool(),
@@ -498,4 +659,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          DataURLSiteInstanceGroupTestWithoutSiteIsolation,
                          ::testing::Bool(),
                          &DataURLSiteInstanceGroupTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         DefaultSiteInstanceGroupTest,
+                         ::testing::Bool(),
+                         &DefaultSiteInstanceGroupTest::DescribeParams);
 }  // namespace content

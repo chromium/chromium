@@ -285,14 +285,20 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
 // Android to limit the number of processes. Testing these particularities of
 // the process model and their interaction with cross-origin isolation requires
 // to disable SiteIsolation.
+// TODO(crbug.com/390571607): Remove this version of the test in favour of the
+// SiteInstanceGroup version below once default SiteInstanceGroups are
+// enabled by default.
 class NoSiteIsolationCrossOriginIsolationBrowserTest
     : public CrossOriginOpenerPolicyBrowserTest {
  public:
   NoSiteIsolationCrossOriginIsolationBrowserTest() {
     // Disable the heuristic to isolate COOP pages from the default
-    // SiteInstance. This is otherwise on by default on Android.
+    // SiteInstance. This is otherwise on by default on Android. Disable default
+    // SiteInstanceGroups, as that's covered in the SiteInstanceGroup version of
+    // this test.
     feature_list_.InitWithFeatures(
-        {}, {features::kSiteIsolationForCrossOriginOpenerPolicy});
+        {}, {features::kSiteIsolationForCrossOriginOpenerPolicy,
+             features::kDefaultSiteInstanceGroups});
   }
 
   void SetUpOnMainThread() override {
@@ -330,6 +336,20 @@ class NoSiteIsolationCrossOriginIsolationBrowserTest
  private:
   std::unique_ptr<NoSiteIsolationContentBrowserClient> browser_client_;
 
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test is the same as NoSiteIsolationCrossOriginIsolationBrowserTest,
+// except it enables and uses default SiteInstanceGroup instead of default
+// SiteInstance.
+class DefaultSiteInstanceGroupCrossOriginIsolationBrowserTest
+    : public NoSiteIsolationCrossOriginIsolationBrowserTest {
+ public:
+  DefaultSiteInstanceGroupCrossOriginIsolationBrowserTest() {
+    feature_list_.InitWithFeatures({features::kDefaultSiteInstanceGroups}, {});
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -4326,6 +4346,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NoSiteIsolationCrossOriginIsolationBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DefaultSiteInstanceGroupCrossOriginIsolationBrowserTest,
+    kTestParams,
+    CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          ProcessReuseOnPrerenderCOOPSwapBrowserTest,
                          kTestParams,
@@ -5216,6 +5241,64 @@ IN_PROC_BROWSER_TEST_P(NoSiteIsolationCrossOriginIsolationBrowserTest,
         popup->GetPrimaryMainFrame()->GetSiteInstance();
     EXPECT_FALSE(popup_si->IsCrossOriginIsolated());
     EXPECT_TRUE(popup_si->IsDefaultSiteInstance());
+    EXPECT_NE(popup_si, main_frame_si);
+
+    popup->Close();
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupCrossOriginIsolationBrowserTest,
+                       COICanLiveInDefaultSiteInstanceGroup) {
+  GURL isolated_page(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: same-origin"
+                             "&cross-origin-embedder-policy: require-corp"));
+  GURL non_isolated_page(https_server()->GetURL("a.test", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_frame_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_frame_si->IsCrossOriginIsolated());
+  EXPECT_EQ(main_frame_si->group(),
+            main_frame_si->DefaultSiteInstanceGroupForBrowsingInstance());
+
+  {
+    // Open a popup to a page with similar isolation. Pages that have compatible
+    // cross origin isolation should be put in the same default
+    // SiteInstanceGroup.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1);", isolated_page)));
+    WebContentsImpl* popup = static_cast<WebContentsImpl*>(
+        shell_observer.GetShell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(popup));
+
+    SiteInstanceImpl* popup_si =
+        popup->GetPrimaryMainFrame()->GetSiteInstance();
+    EXPECT_TRUE(popup_si->IsCrossOriginIsolated());
+    EXPECT_EQ(popup_si->group(),
+              popup_si->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(popup_si, main_frame_si);
+
+    popup->Close();
+  }
+
+  {
+    // Open a popup to a same origin non-isolated page. This page should live in
+    // a different BrowsingInstance in the default non-isolated
+    // SiteInstanceGroup.
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1);", non_isolated_page)));
+    WebContentsImpl* popup = static_cast<WebContentsImpl*>(
+        shell_observer.GetShell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(popup));
+
+    SiteInstanceImpl* popup_si =
+        popup->GetPrimaryMainFrame()->GetSiteInstance();
+    EXPECT_FALSE(popup_si->IsCrossOriginIsolated());
+    EXPECT_EQ(popup_si->group(),
+              popup_si->DefaultSiteInstanceGroupForBrowsingInstance());
     EXPECT_NE(popup_si, main_frame_si);
 
     popup->Close();

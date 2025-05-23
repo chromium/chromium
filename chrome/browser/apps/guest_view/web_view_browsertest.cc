@@ -7206,11 +7206,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SubframeProcessReuse) {
 
 // Helper class to turn off strict site isolation while still using site
 // isolation paths for <webview>.  This forces <webview> to use the default
-// SiteInstance paths. The helper also defines one isolated origin at
-// isolated.com, which takes precedence over the command-line switch to disable
-// site isolation and can be used to test a combination of SiteInstances that
-// require and don't require dedicated processes.
-class WebViewWithDefaultSiteInstanceTest : public SitePerProcessWebViewTest {
+// SiteInstance or default SiteInstanceGroup paths. The helper also defines one
+// isolated origin at isolated.com, which takes precedence over the command-line
+// switch to disable site isolation and can be used to test a combination of
+// SiteInstances that require and don't require dedicated processes.
+// This test is parameterized to run in MPArch or InnerWebContents mode, and
+// DefaultSiteInstance or DefaultSiteInstanceGroup mode, totaling 4
+// configurations.
+class WebViewWithDefaultSiteInstanceTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   WebViewWithDefaultSiteInstanceTest() = default;
   ~WebViewWithDefaultSiteInstanceTest() override = default;
@@ -7223,28 +7228,42 @@ class WebViewWithDefaultSiteInstanceTest : public SitePerProcessWebViewTest {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
     command_line->AppendSwitchASCII(switches::kIsolateOrigins,
                                     "http://isolated.com");
-    SitePerProcessWebViewTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeatureStates(
+        {{features::kGuestViewMPArch, testing::get<0>(GetParam())},
+         {features::kDefaultSiteInstanceGroups, testing::get<1>(GetParam())}});
+
+    WebViewTestBase::SetUpCommandLine(command_line);
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [mparch, site_instance_group] = info.param;
+    return base::StringPrintf("%s_%s", mparch ? "MPArch" : "InnerWebContents",
+                              site_instance_group ? "DefaultSiteInstanceGroups"
+                                                  : "DefaultSiteInstances");
+  }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewWithDefaultSiteInstanceTest,
-                         testing::Bool(),
+                         testing::Combine(testing::Bool(), testing::Bool()),
                          WebViewWithDefaultSiteInstanceTest::DescribeParams);
 
-// Check that when strict site isolation is turned off (via a command-line flag
-// or from chrome://flags), the <webview> site isolation paths still work. In
-// particular, <webview> navigations should use a default SiteInstance which
-// should still be considered a guest SiteInstance in the guest's
-// StoragePartition.  Cross-site navigations in the guest should stay in the
-// same SiteInstance, and the guest process shouldn't be locked.
+// Check that when strict site isolation is turned off (via a command-line
+// flag or from chrome://flags), the <webview> site isolation paths still
+// work. In particular, <webview> navigations should use a default
+// SiteInstance or default SiteInstanceGroup which should still be considered
+// a guest SiteInstance in the guest's StoragePartition. Cross-site
+// navigations in the guest should stay in the same SiteInstance or
+// SiteInstanceGroup, and the guest process shouldn't be locked.
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -7276,27 +7295,40 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
     load_observer.Wait();
   }
 
-  // Expect that we stayed in the same (default) SiteInstance.
+  // Expect that we stayed in the same (default) SiteInstance or
+  // SiteInstanceGroup.
   main_frame = GetGuestRenderFrameHost();
   ASSERT_TRUE(main_frame);
-  if (!main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
-    // The RenderFrameHost will stay the same when we don't change
-    // RenderFrameHosts on same-SiteInstance navigations.
-    EXPECT_EQ(main_frame->GetGlobalId(), original_id);
+  if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
+    EXPECT_NE(starting_instance, main_frame->GetSiteInstance());
+    EXPECT_EQ(starting_instance->GetSiteInstanceGroupId(),
+              main_frame->GetSiteInstance()->GetSiteInstanceGroupId());
+  } else {
+    EXPECT_EQ(starting_instance, main_frame->GetSiteInstance());
+    if (!main_frame->ShouldChangeRenderFrameHostOnSameSiteNavigation()) {
+      // The RenderFrameHost will stay the same when we don't change
+      // RenderFrameHosts on same-SiteInstance navigations.
+      EXPECT_EQ(main_frame->GetGlobalId(), original_id);
+    }
   }
-  EXPECT_EQ(starting_instance, main_frame->GetSiteInstance());
   EXPECT_FALSE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
   EXPECT_FALSE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Navigate <webview> subframe cross-site.  Check that it stays in the same
-  // SiteInstance and process.
+  // process, and SiteInstance/Group.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(subframe);
   EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
   subframe = content::ChildFrameAt(main_frame, 0);
-  EXPECT_EQ(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+  if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
+    EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+    EXPECT_EQ(main_frame->GetSiteInstance()->GetSiteInstanceGroupId(),
+              subframe->GetSiteInstance()->GetSiteInstanceGroupId());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
+  }
   EXPECT_EQ(main_frame->GetProcess(), subframe->GetProcess());
   EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
   EXPECT_FALSE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
@@ -7304,10 +7336,11 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
 }
 
 // Similar to the test above, but also exercises navigations to an isolated
-// origin, which takes precedence over switches::kDisableSiteIsolation. In this
-// setup, navigations to the isolated origin should use a normal SiteInstance
-// that requires a dedicated process, while all other navigations should use
-// the default SiteInstance and an unlocked process.
+// origin, which takes precedence over switches::kDisableSiteIsolation. In
+// this setup, navigations to the isolated origin should use a normal
+// SiteInstance that requires a dedicated process, while all other navigations
+// should use the default SiteInstance or default SiteInstanceGroup and an
+// unlocked process.
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

@@ -8604,7 +8604,9 @@ IN_PROC_BROWSER_TEST_F(
                                         ->RequiresDedicatedProcess();
 
   // `shell()` and `second_shell` opened different sites.
-  if (requires_dedicated_process) {
+  // TODO(crbug.com/419469455): Make sure metrics are updated correctly with the
+  // introduction of default SiteInstanceGroup.
+  if (requires_dedicated_process || ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_THAT(histogram.GetAllSamples(
                     "SiteIsolation."
                     "NewProcessUsedForNavigationWhenSameSiteProcessExists"),
@@ -8618,7 +8620,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(NavigateToURL(second_shell, url));
   // Now `shell()` and `second_shell` opened the same site.
-  if (requires_dedicated_process) {
+  if (requires_dedicated_process || ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_THAT(
         histogram.GetAllSamples(
             "SiteIsolation."

@@ -563,6 +563,8 @@ bool EffectiveURLContentBrowserClientHelper::DoesSiteRequireDedicatedProcess(
     // for the default SiteInstance). It is important not to call
     // SiteInfo::CreateForTesting here to avoid an infinite recursive call when
     // computing values for the SiteInfo.
+    // TODO(crbug.com/390571607): Make sure this test works as intended in
+    // default SiteInstanceGroup mode.
     GURL maybe_modified_url =
         SiteInfo::GetSiteForURLForTest(IsolationContext(browser_context),
                                        UrlInfo::CreateForTesting(pair.first),

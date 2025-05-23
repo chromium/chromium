@@ -350,6 +350,16 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // logic is run.
   void ConvertToDefaultOrSetSite(const UrlInfo& url_info);
 
+  // If `browsing_instance_` does not have a default SiteInstanceGroup set and
+  // if `site_instance_group_` is eligible to become the default
+  // SiteInstanceGroup, this function makes `site_instance_group_` the new
+  // default SiteInstanceGroup. Otherwise, this is a no-op.
+  void MaybeSetDefaultSiteInstanceGroup();
+
+  // Checks if the default SiteInstanceGroup feature is enabled, and if the
+  // SiteInstance can be placed in the default SiteInstanceGroup.
+  bool CanPutSiteInstanceInDefaultGroup();
+
   // Returns whether SetSite() has been called.
   //
   // In some cases, the "site" is not set at SiteInstance creation time, and
@@ -545,6 +555,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // where it is safe. It is not generally safe to change the process of a
   // SiteInstance, unless the RenderProcessHost itself is entirely destroyed and
   // a new one later replaces it.
+  // Before creating a process and calling this method, check if `this` can be
+  // placed in the default SiteInstanceGroup.
   void SetProcessInternal(RenderProcessHost* process);
 
   // Returns true if |original_url()| is the same site as
@@ -576,14 +588,14 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
                          bool should_compare_effective_urls);
 
   // Returns true if |url| and its |site_url| can be placed inside a default
-  // SiteInstance.
+  // SiteInstance or default SiteInstanceGroup.
   //
   // Note: |url| and |site_info| must be consistent with each other. In contexts
   // where the caller only has |url| it can use
   // SiteInfo::Create() to generate |site_info|. This call is
   // intentionally not set as a default value to encourage the caller to reuse
   // a SiteInfo computation if they already have one.
-  static bool CanBePlacedInDefaultSiteInstance(
+  static bool CanBePlacedInDefaultSiteInstanceOrGroup(
       const IsolationContext& isolation_context,
       const GURL& url,
       const SiteInfo& site_info);

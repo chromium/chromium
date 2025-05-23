@@ -1201,6 +1201,12 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 // Regression test for https://crbug.com/368289857.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        NavigateWhileHidden_NotCaptured) {
+  // TODO(crbug.com/390571607): Update this test to support default
+  // SiteInstanceGroup in all parameterization modes.
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    GTEST_SKIP();
+  }
+
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 10 * page_size;
   auto* manager = GetManagerForTab(web_contents());

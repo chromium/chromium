@@ -96,6 +96,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   SiteInstanceGroupId GetId() const;
 
   base::SafeRef<SiteInstanceGroup> GetSafeRef();
+  base::WeakPtr<SiteInstanceGroup> GetWeakPtr();
   // TODO(crbug.com/40258727): Remove this. Please don't use it.
   base::WeakPtr<SiteInstanceGroup> GetWeakPtrToAllowDangling();
 

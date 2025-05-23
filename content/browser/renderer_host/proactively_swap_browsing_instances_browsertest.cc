@@ -274,14 +274,20 @@ IN_PROC_BROWSER_TEST_P(
           web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Check that A and B are in different BrowsingInstances and renderer
-  // process. Without full site isolation, A and B are both default
-  // SiteInstances of different BrowsingInstances.
+  // processes. Without full site isolation, A and B are either both default
+  // SiteInstances or in the default SiteInstanceGroup of different
+  // BrowsingInstances.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
   EXPECT_NE(a_site_instance->GetProcess(), b_site_instance->GetProcess());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            a_site_instance->IsDefaultSiteInstance());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            b_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(a_site_instance->group(),
+              a_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(b_site_instance->group(),
+              b_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  }
 }
 
 // Different from renderer-initiated cross-site navigations, browser-initiated
@@ -311,14 +317,20 @@ IN_PROC_BROWSER_TEST_P(
           web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Check that A and B are in different BrowsingInstances and renderer
-  // processes. Without full site isolation, A and B are both default
-  // SiteInstances of different BrowsingInstances.
+  // processes. Without full site isolation, A and B are either both default
+  // SiteInstances or in the default SiteInstanceGroup of different
+  // BrowsingInstances.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
   EXPECT_NE(a_site_instance->GetProcess(), b_site_instance->GetProcess());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            a_site_instance->IsDefaultSiteInstance());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            b_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(a_site_instance->group(),
+              a_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(b_site_instance->group(),
+              b_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  }
 }
 
 // A test ContentBrowserClient implementation that enforce process-per-site mode
@@ -380,10 +392,15 @@ IN_PROC_BROWSER_TEST_P(
   // processes.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
   EXPECT_NE(b_site_instance->GetProcess(), original_process);
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            a_site_instance->IsDefaultSiteInstance());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            b_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(a_site_instance->group(),
+              a_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(b_site_instance->group(),
+              b_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  }
 
   // Make sure we will use process-per-site for C.
   // Note this is enforcing process-per-site for all sites, which is why we turn
@@ -400,8 +417,12 @@ IN_PROC_BROWSER_TEST_P(
   // Check that B and C are in different BrowsingInstances and renderer
   // processes.
   EXPECT_FALSE(b_site_instance->IsRelatedSiteInstance(c_site_instance.get()));
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            c_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(c_site_instance->group(),
+              c_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(c_site_instance->IsDefaultSiteInstance());
+  }
   EXPECT_NE(c_site_instance->GetProcess(), original_process);
   // C is using the process for C's site.
   EXPECT_EQ(c_site_instance->GetProcess(),
@@ -419,8 +440,12 @@ IN_PROC_BROWSER_TEST_P(
           web_contents->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_FALSE(b2_site_instance->IsRelatedSiteInstance(c_site_instance.get()));
   EXPECT_FALSE(b2_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            b2_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(b2_site_instance->group(),
+              b2_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(b2_site_instance->IsDefaultSiteInstance());
+  }
   EXPECT_NE(b2_site_instance->GetProcess(), original_process);
   // Check that B and C are in different renderer processes.
   EXPECT_NE(b2_site_instance->GetProcess(), c_site_instance->GetProcess());
@@ -473,10 +498,15 @@ IN_PROC_BROWSER_TEST_P(
   // Check that A and B are in different BrowsingInstances but B should use the
   // sole process assigned to site B.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            a_site_instance->IsDefaultSiteInstance());
-  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
-            b_site_instance->IsDefaultSiteInstance());
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(a_site_instance->group(),
+              a_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+    EXPECT_EQ(b_site_instance->group(),
+              b_site_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  }
   EXPECT_NE(b_site_instance->GetProcess(), original_process);
   EXPECT_EQ(b_site_instance->GetProcess(), process_for_b);
   EXPECT_EQ(b_site_instance->GetProcess(),
@@ -1302,7 +1332,7 @@ IN_PROC_BROWSER_TEST_P(
   // same renderer process.
   // If site isolation is turned off, it will hit the case at crbug.com/1094147.
   EXPECT_FALSE(site_instance_2->IsRelatedSiteInstance(site_instance_3.get()));
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(site_instance_2->GetProcess(), site_instance_3->GetProcess());
   } else {
     EXPECT_NE(site_instance_2->GetProcess(), site_instance_3->GetProcess());
