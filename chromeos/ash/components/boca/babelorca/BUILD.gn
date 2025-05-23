@@ -61,6 +61,8 @@ static_library("babelorca") {
     "transcript_sender_impl.h",
     "transcript_sender_rate_limiter.cc",
     "transcript_sender_rate_limiter.h",
+    "translation_view_wrapper_impl.cc",
+    "translation_view_wrapper_impl.h",
   ]
 
   deps = [
@@ -72,6 +74,7 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
+    "//chromeos/strings:strings_grit",
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/live_caption:live_translate",
@@ -88,7 +91,9 @@ static_library("babelorca") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
+    "//ui/base",
     "//ui/native_theme",
+    "//ui/views",
   ]
 }
 
@@ -190,6 +195,7 @@ source_set("unit_tests") {
     "transcript_receiver_unittest.cc",
     "transcript_sender_impl_unittest.cc",
     "transcript_sender_rate_limiter_unittest.cc",
+    "translation_view_wrapper_impl_unittest.cc",
   ]
 
   deps = [
@@ -206,6 +212,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/services/boca/babelorca/mojom",
+    "//chromeos/strings:strings_grit",
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/prefs",
@@ -223,6 +230,9 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
     "//ui/native_theme",
+    "//ui/views",
   ]
 }

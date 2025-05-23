@@ -9,4 +9,5 @@ include_rules = [
   "+media/mojo/mojom/speech_recognition.mojom.h",
   "+media/mojo/mojom/speech_recognition_result.h",
   "+ui/native_theme",
+  "+ui/views",
 ]

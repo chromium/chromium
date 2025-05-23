@@ -7254,6 +7254,14 @@
       <message name="IDS_BOCA_SPOTLIGHT_PERSISTENT_NOTIFICATION_MESSAGE" desc="Message of the notiification telling users their screen is currently being viewed.">
        <ph name="TEACHER_NAME">$1<ex>John Doe</ex></ph> is viewing your screen
       </message>
+
+      <!-- Strings for Class Tools caption bubble -->
+      <message name="IDS_BOCA_CAPTIONS_TRANSLATION_AVAILABLE_BUTTON_TEXT" desc="Text for the button to start captions translation.">
+        Translation available
+      </message>
+      <message name="IDS_BOCA_CAPTIONS_STOP_TRANSLATING_BUTTON_TEXT" desc="Text for the button to stop captions translation.">
+        Stop translating
+      </message>
     </messages>
   </release>
 </grit>
