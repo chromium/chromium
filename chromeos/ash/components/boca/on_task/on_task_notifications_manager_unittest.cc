@@ -61,9 +61,7 @@ class FakeOnTaskNotificationsManagerDelegate
     ++notification_count_;
   }
   void ClearNotification(const std::string& id) override {
-    if (GetNotificationCount() > 0u) {
-      --notification_count_;
-    }
+    notification_count_ = 0;
   }
 
   size_t GetToastCount() { return toast_count_.load(); }
@@ -226,14 +224,14 @@ TEST_F(OnTaskNotificationsManagerTest,
 
 TEST_F(OnTaskNotificationsManagerTest,
        TriggerCompletionCallbackOnNotificationCountdownEnd) {
-  bool callback_triggered = false;
+  int callback_counter = 0;
   OnTaskNotificationsManager::NotificationCreateParams create_params(
       /*id=*/kTestNotificationId,
       /*title=*/std::u16string{kTestNotificationTitle},
       /*message_id=*/kTestCountdownNotificationMessageId,
       /*notifier_id=*/NotifierId(),
       /*completion_callback=*/base::BindLambdaForTesting([&]() {
-        callback_triggered = true;
+        ++callback_counter;
       }),
       /*countdown_period=*/kNotificationCountdownPeriod,
       /*is_counting_down=*/true);
@@ -242,16 +240,21 @@ TEST_F(OnTaskNotificationsManagerTest,
   // Verify notification is shown after a 1 second delay.
   task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetNotificationCount(), 1u);
-  ASSERT_FALSE(callback_triggered);
+  EXPECT_EQ(callback_counter, 0);
 
   // Notifications remain visible before count down.
   task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
   ASSERT_EQ(fake_delegate_ptr_->GetNotificationCount(), 2u);
-  ASSERT_FALSE(callback_triggered);
+  EXPECT_EQ(callback_counter, 0);
 
   // Verify callback is triggered after the countdown period.
   task_environment_.FastForwardBy(kNotificationCountdownPeriod);
-  EXPECT_TRUE(callback_triggered);
+  EXPECT_EQ(callback_counter, 1);
+  EXPECT_EQ(fake_delegate_ptr_->GetNotificationCount(), 0u);
+
+  // Verify notification stops processing after the callback is triggered.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  EXPECT_EQ(callback_counter, 1);
 }
 
 TEST_F(OnTaskNotificationsManagerTest,

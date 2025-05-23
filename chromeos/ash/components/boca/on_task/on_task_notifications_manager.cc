@@ -226,9 +226,8 @@ void OnTaskNotificationsManager::CreateNotificationInternal(
       // When the countdown finishes, immediately clear the last countdown
       // notification.
       ClearNotification(params.id);
-    } else {
-      StopProcessingNotification(params.id);
     }
+    StopProcessingNotification(params.id);
     return;
   }
 
