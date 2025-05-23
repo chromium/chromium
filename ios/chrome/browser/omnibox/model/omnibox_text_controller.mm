@@ -280,11 +280,21 @@
   if (_omniboxEditModel) {
     _omniboxEditModel->OnSetFocus();
 
-    if (_inLensOverlay && textField.userText.length) {
-      _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
-      _omniboxEditModel->StartAutocomplete(
-          /*has_selected_text=*/false,
-          /*prevent_inline_autocomplete=*/true);
+    if (_inLensOverlay) {
+      if (textField.userText.length) {
+        _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
+        _omniboxEditModel->StartAutocomplete(
+            /*has_selected_text=*/false,
+            /*prevent_inline_autocomplete=*/true);
+      } else if (OmniboxClient* client = self.client;
+                 client &&
+                 client->GetPageClassification(/*is_prefetch=*/false) ==
+                     metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
+        // Zero suggest is only available with LENS_SIDE_PANEL_SEARCHBOX. The
+        // lens omnibox should not be in a state where the text is empty and the
+        // lens result no thumbnail. (crbug.com/419482108)
+        _omniboxEditModel->StartZeroSuggestRequest();
+      }
     } else {
       _omniboxEditModel->StartZeroSuggestRequest();
     }
