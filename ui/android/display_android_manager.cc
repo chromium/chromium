@@ -106,7 +106,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             float hdr_max_luminance_ratio) {
   display->set_label(label);
   display->set_bounds(bounds);
-  if (base::FeatureList::IsEnabled(kUsingCorrectWorkArea)) {
+  if (base::FeatureList::IsEnabled(kAndroidUseCorrectDisplayWorkArea)) {
     display->set_work_area(work_area);
   } else {
     display->set_work_area(bounds);

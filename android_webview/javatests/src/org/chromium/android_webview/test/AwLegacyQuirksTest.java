@@ -195,7 +195,8 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
 
         Rect workArea = displayAndroid.getBounds();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.USING_CORRECT_WORK_AREA)) {
+                && UiAndroidFeatureMap.isEnabled(
+                        UiAndroidFeatures.ANDROID_USE_CORRECT_DISPLAY_WORK_AREA)) {
             workArea.inset(displayAndroid.getInsets());
         }
 
