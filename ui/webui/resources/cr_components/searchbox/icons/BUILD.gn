@@ -85,6 +85,7 @@ if (is_chrome_branded) {
     input_files = [
       "camera.svg",
       "google_g.svg",
+      "google_g_gradient.svg",
       "google_g_cr23.svg",
       "google_logo.svg",
       "mic.svg",

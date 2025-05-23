@@ -172,7 +172,9 @@ export class SearchboxIconElement extends PolymerElement {
     }
 
     if (this.defaultIcon ===
-        '//resources/cr_components/searchbox/icons/google_g.svg') {
+            '//resources/cr_components/searchbox/icons/google_g.svg' ||
+        this.defaultIcon ===
+            '//resources/cr_components/searchbox/icons/google_g_gradient.svg') {
       // The google_g.svg is a fully colored icon, so it needs to be displayed
       // as a background image as mask images will mask the colors.
       return `url(${this.defaultIcon})`;
@@ -230,6 +232,7 @@ export class SearchboxIconElement extends PolymerElement {
       'drive_slides',
       'drive_video',
       'google_g',
+      'google_g_gradient',
       'note',
       'sites',
     ];

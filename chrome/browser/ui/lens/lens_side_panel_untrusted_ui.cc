@@ -135,8 +135,11 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
                                          Profile::FromWebUI(web_ui));
   html_source->AddString(
       "searchboxDefaultIcon",
-      dark_mode ? "//resources/cr_components/searchbox/icons/google_g_cr23.svg"
-                : "//resources/cr_components/searchbox/icons/google_g.svg");
+      lens::features::GetVisualSelectionUpdatesEnableGradientSuperG()
+          ? "//resources/cr_components/searchbox/icons/google_g_gradient.svg"
+      : dark_mode
+          ? "//resources/cr_components/searchbox/icons/google_g_cr23.svg"
+          : "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
   html_source->AddLocalizedString("searchBoxHint",
                                   IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT);

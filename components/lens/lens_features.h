@@ -777,6 +777,10 @@ extern bool GetVisualSelectionUpdatesEnableGradientRegionStroke();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableRegionSelectedGlow();
 
+// Whether to enable the gradient super G in the Lens searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableGradientSuperG();
+
 // Whether to enable the thumbnail in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
