@@ -180,7 +180,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
       blink::LocalFrameToken initiator_frame_token,
-      int initiator_process_id);
+      int initiator_process_id,
+      base::TimeTicks actual_navigation_start);
 
   // Reloads the |frame_tree_node| and returns true. In some rare cases, there
   // is no history related to the frame, nothing happens and this returns false.
@@ -191,10 +192,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |initiator_rfh| is the frame that requested the navigation.
   // |soft_navigation_heuristics_task_id| is the task in the renderer that
   // initiated this call (if any).
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   void GoToOffsetFromRenderer(int offset,
                               RenderFrameHostImpl* initiator_rfh,
                               std::optional<blink::scheduler::TaskAttributionId>
-                                  soft_navigation_heuristics_task_id);
+                                  soft_navigation_heuristics_task_id,
+                              base::TimeTicks actual_navigation_start);
 
   // A variation of `NavigationController::GoToIndex()`, that also returns all
   // the created `NavigationRequest`s. If no navigation request is created, the
@@ -265,11 +268,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // other history navigation.
   // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   void NavigateToNavigationApiKey(
       RenderFrameHostImpl* initiator_rfh,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
-      const std::string& key);
+      const std::string& key,
+      base::TimeTicks actual_navigation_start);
 
   // Whether this is the initial navigation in an unmodified new tab.  In this
   // case, we know there is no content displayed in the page.
@@ -652,12 +657,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // If this navigation originated from the navigation API, |navigation_api_key|
   // will be set and indicate the navigation api key that |initiator_rfh|
   // asked to be navigated to.
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   std::vector<base::WeakPtr<NavigationRequest>> GoToIndex(
       int index,
       RenderFrameHostImpl* initiator_rfh,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
-      const std::string* navigation_api_key);
+      const std::string* navigation_api_key,
+      base::TimeTicks actual_navigation_start);
 
   // Starts a navigation to an already existing pending NavigationEntry. Returns
   // all the created `NavigationRequest`s. If no request was created, the
@@ -668,12 +675,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // asked to be navigated to.
   // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   std::vector<base::WeakPtr<NavigationRequest>> NavigateToExistingPendingEntry(
       ReloadType reload_type,
       RenderFrameHostImpl* initiator_rfh,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
-      const std::string* navigation_api_key);
+      const std::string* navigation_api_key,
+      base::TimeTicks actual_navigation_start);
 
   // Helper function used by FindFramesToNavigate to determine the appropriate
   // action to take for a particular frame while navigating to
@@ -686,6 +695,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // to |pending_entry_|, starting at |frame| and exploring its children.
   // |same_document_loads| and |different_document_loads| will be filled with
   // the NavigationRequests needed to navigate to |pending_entry_|.
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   void FindFramesToNavigate(
@@ -695,14 +705,17 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       int initiator_process_id,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
+      base::TimeTicks actual_navigation_start,
       std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
       std::vector<std::unique_ptr<NavigationRequest>>*
           different_document_loads);
 
   // Starts a new navigation based on |load_params|, that doesn't correspond to
   // an existing NavigationEntry.
+  // |actual_navigation_start| is the time the navigation began, for metrics.
   base::WeakPtr<NavigationHandle> NavigateWithoutEntry(
-      const LoadURLParams& load_params);
+      const LoadURLParams& load_params,
+      base::TimeTicks actual_navigation_start);
 
   // Handles a navigation to a renderer-debug URL.
   void HandleRendererDebugURL(FrameTreeNode* frame_tree_node, const GURL& url);
@@ -764,6 +777,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_history_navigation_in_new_child_frame,
       const std::optional<blink::LocalFrameToken>& initiator_frame_token,
       int initiator_process_id,
+      base::TimeTicks actual_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id = std::nullopt);
 
