@@ -233,13 +233,17 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
     }
 
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        resource.shared_image, resource.sync_token, size, format,
-        viz::TransferableResource::ResourceSource::kImageLayerBridge);
-    out_resource->origin = kTopLeft_GrSurfaceOrigin;
-    out_resource->color_space = sk_image->colorSpace()
+    auto resource_color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())
                                     : gfx::ColorSpace::CreateSRGB();
+
+    viz::TransferableResource::MetadataOverride overrides = {
+        .color_space = resource_color_space,
+    };
+    *out_resource = viz::TransferableResource::Make(
+        resource.shared_image,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge,
+        resource.sync_token, overrides);
     auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedSoftware,
                               WrapWeakPersistent(this), std::move(resource));
     *out_release_callback = std::move(func);
