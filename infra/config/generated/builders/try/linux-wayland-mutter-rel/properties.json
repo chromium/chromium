@@ -63,8 +63,7 @@
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
                 "project": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]

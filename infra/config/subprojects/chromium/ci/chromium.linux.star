@@ -757,7 +757,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    # TODO(crbug.com/401284929): Put common config with "Linux Tests (Wayland)" in shared bundle.
     name = "linux-wayland-mutter-rel-tests",
     # TODO(crbug.com/401284929): Uncomment when enabling gardener_rotations and tree_closing.
     # branch_selector = branches.selector.LINUX_BRANCHES,
@@ -787,8 +786,6 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
-        # TODO(crbug.com/401284929): Remove this when noble pool is increased
-        run_tests_serially = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -819,9 +816,6 @@ ci.thin_tester(
                 # crbug.com/1473501
                 retry_only_failed_tests = True,
                 swarming = targets.swarming(
-                    # TODO(crbug.com/401284929) Bump this up to 20 shards and
-                    # possibly revisit the expiration and timeout when more
-                    # noble bots are available.
                     expiration_sec = 18000,
                     hard_timeout_sec = 14400,
                     shards = 10,
@@ -833,9 +827,6 @@ ci.thin_tester(
                 # crbug.com/1473501
                 retry_only_failed_tests = True,
                 swarming = targets.swarming(
-                    # TODO(crbug.com/401284929) Bump this up to 20 shards and
-                    # possibly revisit the expiration and timeout when more
-                    # noble bots are available.
                     expiration_sec = 18000,
                     hard_timeout_sec = 14400,
                     shards = 10,
@@ -847,6 +838,8 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter",
                 ],
                 swarming = targets.swarming(
+                    expiration_sec = 18000,
+                    hard_timeout_sec = 14400,
                     shards = 5,
                 ),
             ),
@@ -867,8 +860,6 @@ ci.thin_tester(
     ############################################################################
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
-    # TODO(crbug.com/401284929): Remove this when noble pool is increased.
-    execution_timeout = 7 * time.hour,
 )
 
 # For documentation, see //services/network/README.md.
