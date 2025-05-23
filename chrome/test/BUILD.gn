@@ -3631,6 +3631,10 @@ if (!is_android) {
       "//chrome/test/supervised_user:live_tests",
     ]
 
+    if (use_aura) {
+      sources += [ "../browser/extensions/extension_install_prompt_show_params_browsertest.cc" ]
+    }
+
     if (enable_glic) {
       sources += [
         "../browser/contextual_cueing/zero_state_suggestions_page_data_browsertest.cc",
@@ -9278,10 +9282,6 @@ test("unit_tests") {
       "../renderer/extensions/custom_types_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
-
-    if (use_aura) {
-      sources += [ "../browser/extensions/extension_install_prompt_show_params_unittest.cc" ]
-    }
 
     if (enterprise_data_controls) {
       sources += [
