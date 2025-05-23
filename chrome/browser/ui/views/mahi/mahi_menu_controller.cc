@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/i18n/break_iterator.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
@@ -80,8 +82,10 @@ bool ShouldShowMahiCondensedMenuView(const std::u16string& selected_text) {
 }  // namespace
 
 MahiMenuController::MahiMenuController(
+    const ApplicationLocaleStorage* application_locale_storage,
     ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : read_write_cards_ui_controller_(read_write_cards_ui_controller) {
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      read_write_cards_ui_controller_(read_write_cards_ui_controller) {
 #if BUILDFLAG(IS_CHROMEOS)
   // MahiMediaAppEventsProxy is initialized only in ash chrome.
   CHECK(chromeos::MahiMediaAppEventsProxy::Get());
@@ -129,7 +133,7 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
     }
 
     menu_widget_ = MahiMenuView::CreateWidget(
-        anchor_bounds,
+        &application_locale_storage_.get(), anchor_bounds,
         {.summary_of_selection_eligibility =
              SelectedTextStateForSummary(selected_text_u16),
          .elucidation_eligiblity =
@@ -145,7 +149,7 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
   if (selected_text.empty()) {
     // Sets elucidation_eligibility = kUnknown to hide the elucidation button.
     menu_widget_ = MahiMenuView::CreateWidget(
-        anchor_bounds,
+        &application_locale_storage_.get(), anchor_bounds,
         {.summary_of_selection_eligibility = SelectedTextState::kEmpty,
          .elucidation_eligiblity = SelectedTextState::kUnknown});
     menu_widget_->ShowInactive();
@@ -199,7 +203,7 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
   }
 
   menu_widget_ = MahiMenuView::CreateWidget(
-      anchor,
+      &application_locale_storage_.get(), anchor,
       {.summary_of_selection_eligibility = summary_of_selection_eligibility,
        .elucidation_eligiblity = elucidation_eligiblity},
       MahiMenuView::Surface::kMediaApp);

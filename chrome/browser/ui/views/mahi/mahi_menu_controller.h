@@ -15,6 +15,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace chromeos {
@@ -27,7 +28,9 @@ namespace mahi {
 class MahiMenuController : public chromeos::ReadWriteCardController,
                            public chromeos::MahiMediaAppEventsProxy::Observer {
  public:
-  explicit MahiMenuController(
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  MahiMenuController(
+      const ApplicationLocaleStorage* application_locale_storage,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
   MahiMenuController(const MahiMenuController&) = delete;
   MahiMenuController& operator=(const MahiMenuController&) = delete;
@@ -59,6 +62,8 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   }
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   const raw_ref<ReadWriteCardsUiController> read_write_cards_ui_controller_;
   views::UniqueWidgetPtr menu_widget_;
 

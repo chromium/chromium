@@ -20,12 +20,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/416170122): Remove browser_process dependency.
-  "mahi_menu_view\\.cc": [
-    "+chrome/browser/browser_process.h",
-    "+chrome/browser/global_features.h",
-  ],
-
   ".*unittest\\.cc": [
     "+chrome/browser/global_features.h",
   ],

@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler_view.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
@@ -202,9 +202,13 @@ class MahiMenuView::MenuTextfieldController
   base::WeakPtr<MahiMenuView> menu_view_;
 };
 
-MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
+MahiMenuView::MahiMenuView(
+    const ApplicationLocaleStorage* application_locale_storage,
+    ButtonStatus button_status,
+    Surface surface)
     : chromeos::editor_menu::PreTargetHandlerView(
           chromeos::editor_menu::CardType::kMahiDefaultMenu),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       surface_(surface) {
   SetBackground(views::CreateRoundedRectBackground(
       ui::kColorPrimaryBackground,
@@ -341,6 +345,7 @@ MahiMenuView::~MahiMenuView() {
 
 // static
 views::UniqueWidgetPtr MahiMenuView::CreateWidget(
+    const ApplicationLocaleStorage* application_locale_storage,
     const gfx::Rect& anchor_view_bounds,
     const ButtonStatus& button_status,
     Surface surface) {
@@ -358,8 +363,9 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<MahiMenuWidget>(std::move(params));
-  MahiMenuView* mahi_menu_view = widget->SetContentsView(
-      std::make_unique<MahiMenuView>(button_status, surface));
+  MahiMenuView* mahi_menu_view =
+      widget->SetContentsView(std::make_unique<MahiMenuView>(
+          application_locale_storage, button_status, surface));
   mahi_menu_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -378,14 +384,10 @@ void MahiMenuView::RequestFocus() {
 }
 
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  // TODO(crbug.com/416170122): Remove g_browser_process usage.
-  const std::string& app_locale =
-      g_browser_process->GetFeatures()->application_locale_storage()->Get();
-
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
   GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
-      anchor_view_bounds, this, app_locale,
+      anchor_view_bounds, this, application_locale_storage_->Get(),
       editor_menu::CardType::kMahiDefaultMenu));
 }
 

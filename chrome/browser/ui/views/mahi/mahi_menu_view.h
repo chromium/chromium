@@ -13,6 +13,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
+class ApplicationLocaleStorage;
+
 namespace views {
 class FlexLayoutView;
 class ImageButton;
@@ -40,15 +42,20 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
     SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
   };
 
-  explicit MahiMenuView(ButtonStatus button_status,
-                        Surface surface = Surface::kBrowser);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  MahiMenuView(const ApplicationLocaleStorage* application_locale_storage,
+               ButtonStatus button_status,
+               Surface surface = Surface::kBrowser);
   MahiMenuView(const MahiMenuView&) = delete;
   MahiMenuView& operator=(const MahiMenuView&) = delete;
   ~MahiMenuView() override;
 
   // Creates a menu widget that contains a `MahiMenuView`, configured with the
   // given `anchor_view_bounds`.
+  // `application_locale_storage` must be non-null and must outlive the returned
+  // widget.
   static views::UniqueWidgetPtr CreateWidget(
+      const ApplicationLocaleStorage* application_locale_storage,
       const gfx::Rect& anchor_view_bounds,
       const ButtonStatus& button_status,
       const Surface surface = Surface::kBrowser);
@@ -75,6 +82,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   void OnQuestionSubmitted();
 
   std::unique_ptr<views::FlexLayoutView> CreateInputContainer();
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Controller for `textfield_`. Enables the
   // `submit_question_button` only when the `textfield_` contains some input.

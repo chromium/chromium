@@ -54,7 +54,10 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
  public:
   MahiMenuControllerTest() {
     menu_controller_ =
-        std::make_unique<MahiMenuController>(read_write_cards_ui_controller_);
+        std::make_unique<MahiMenuController>(TestingBrowserProcess::GetGlobal()
+                                                 ->GetFeatures()
+                                                 ->application_locale_storage(),
+                                             read_write_cards_ui_controller_);
 
     scoped_mahi_web_contents_manager_ =
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
