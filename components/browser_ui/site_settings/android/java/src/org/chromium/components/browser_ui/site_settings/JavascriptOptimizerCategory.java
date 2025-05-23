@@ -5,9 +5,13 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -35,5 +39,16 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
     protected @Nullable String getMessageWhyToggleIsDisabled(Context context) {
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         return (provider == null) ? null : provider.getJavascriptOptimizerMessage(context);
+    }
+
+    @Override
+    Drawable getDisabledInAndroidIcon(Context context) {
+        Drawable icon =
+                ApiCompatibilityUtils.getDrawable(
+                        context.getResources(), R.drawable.secured_by_brand_shield_24);
+        icon.mutate();
+        int disabledColor = SemanticColorUtils.getDefaultControlColorActive(context);
+        icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
+        return icon;
     }
 }
