@@ -92,15 +92,16 @@
   <template is="dom-repeat" items="[[dict.entries]]" as="entry">
     <os-japanese-dictionary-entry-row
       dict-id="[[dict.id]]" index="[[index]]"
-      entry="[[entry]]" locally-added="[[locallyAdded_(index)]]">
+      entry="[[entry]]" locally-added="[[locallyAdded_(index)]]"
+      is-last-entry="[[isLastEntry_(index)]]">
     </os-japanese-dictionary-entry-row>
   </template>
-  <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-button class="indented" on-click="addEntry_" aria-describedby="dict-name">
-      <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
-        $i18n{japaneseDictionaryNewEntry}
-    </cr-button>
-  </template>
+  <cr-button id="newEntryButton" class="indented"
+    hidden$="[[!shouldShowAddButton_(dict.entries.length)]]"
+    on-click="addEntry_" aria-describedby="dict-name">
+      <iron-icon slot="prefix-icon" icon="cr:add" ></iron-icon>
+      $i18n{japaneseDictionaryNewEntry}
+  </cr-button>
 </iron-collapse>
 
 <template is="dom-if" if="[[showingDeleteDialog_]]" restamp>

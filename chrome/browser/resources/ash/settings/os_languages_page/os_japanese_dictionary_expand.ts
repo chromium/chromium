@@ -18,6 +18,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import type {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 import {JpPosType} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 
+import type {EntryDeletedCustomEvent} from './os_japanese_dictionary_entry_row.js';
 import {getTemplate} from './os_japanese_dictionary_expand.html.js';
 import {UserDataServiceProvider} from './user_data_service_provider.js';
 
@@ -74,10 +75,23 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
   // Used for chromevox announcements.
   private statusMessage_ = '';
 
-  private onEntryDelete_(): void {
+  private onEntryDelete_(event: EntryDeletedCustomEvent): void {
     this.statusMessage_ = '';
     afterNextRender(this, () => {
       this.statusMessage_ = this.i18n('japaneseDictionaryEntryDeleted');
+      if (event.detail.isLastEntry) {
+        const newEntryButton =
+            this.shadowRoot!.querySelector<HTMLElement>('#newEntryButton');
+
+        if (newEntryButton) {
+          // TODO(crbug.com/419677565): Find a way to queue this focus only
+          // after the hidden value has changed by itself. This is a hacky way
+          // to resolve a race condition where the hidden value has not changed
+          // yet before the focus is moved.
+          newEntryButton.removeAttribute('hidden');
+          newEntryButton.focus();
+        }
+      }
     });
   }
 
@@ -178,6 +192,11 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
     // This entry falls outside of the range of entries that were initially
     // synced, hence it must be added locally.
     return entryIndex > this.syncedEntriesCount;
+  }
+
+  // Returns true if this entry is the last one.
+  private isLastEntry_(entryIndex: number): boolean {
+    return entryIndex === this.dict.entries.length - 1;
   }
 
   // If there is currently an unsynced entry then hide the add button.

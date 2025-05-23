@@ -29,6 +29,8 @@ interface OsJapaneseDictionaryEntryRowElement {
   };
 }
 
+export type EntryDeletedCustomEvent = CustomEvent<{isLastEntry: boolean}>;
+
 class OsJapaneseDictionaryEntryRowElement extends I18nMixin
 (PolymerElement) {
   // LINT.IfChange(JpPosType)
@@ -104,11 +106,17 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
       locallyAdded: {
         type: Boolean,
       },
+      isLastEntry: {
+        type: Boolean,
+      },
     };
   }
 
   // Whether the entry needs to be added to the storage.
   locallyAdded = false;
+
+  // Whether this entry is the last entry in the dictionary.
+  isLastEntry = false;
 
   // The ID of the Japanese User Dictionary that the entry is part of.
   dictId: bigint;
@@ -206,8 +214,11 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
   }
 
   private dispatchEntryDeletedEvent_(): void {
-    this.dispatchEvent(new CustomEvent(
-        'dictionary-entry-deleted', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent('dictionary-entry-deleted', {
+      bubbles: true,
+      composed: true,
+      detail: {isLastEntry: this.isLastEntry},
+    }));
   }
 
 
@@ -231,5 +242,6 @@ declare global {
 declare global {
   interface HTMLElementEventMap {
     ['dictionary-saved']: CustomEvent;
+    ['dictionary-entry-deleted']: EntryDeletedCustomEvent;
   }
 }
