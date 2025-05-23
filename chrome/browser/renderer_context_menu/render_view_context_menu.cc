@@ -4544,6 +4544,7 @@ void RenderViewContextMenu::ExecControls() {
 
 void RenderViewContextMenu::ExecSaveVideoFrameAs() {
   base::RecordAction(UserMetricsAction("MediaContextMenu_SaveVideoFrameAs"));
+  RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
   MediaPlayerAction(blink::mojom::MediaPlayerAction(
       blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs,
       /*enable=*/true));
