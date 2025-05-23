@@ -12,10 +12,12 @@
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -143,6 +145,7 @@ class AccountProfileMapper::Assigner
   Assigner(
       SystemIdentityManager* system_identity_manager,
       ProfileManagerIOS* profile_manager,
+      PrefService* local_pref_service,
       IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
       MappingUpdatedCallback mapping_updated_cb,
       IdentityUpdatedCallback identity_updated_cb,
@@ -236,6 +239,8 @@ class AccountProfileMapper::Assigner
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
 
+  raw_ptr<PrefService> local_pref_service_;
+
   // The ChangeProfileCommands handler. If nil, the code assumes that there
   // is not UI loaded yet and that it is safe to delete profiles directly
   // using the ProfileManagerIOS.
@@ -286,6 +291,7 @@ class AccountProfileMapper::Assigner
 AccountProfileMapper::Assigner::Assigner(
     SystemIdentityManager* system_identity_manager,
     ProfileManagerIOS* profile_manager,
+    PrefService* local_pref_service,
     IdentitiesOnDeviceChangedCallback identitites_on_device_changed_cb,
     MappingUpdatedCallback mapping_updated_cb,
     IdentityUpdatedCallback identity_updated_cb,
@@ -294,6 +300,7 @@ AccountProfileMapper::Assigner::Assigner(
         identity_access_token_refresh_failed_cb)
     : system_identity_manager_(system_identity_manager),
       profile_manager_(profile_manager),
+      local_pref_service_(local_pref_service),
       identitites_on_device_changed_cb_(identitites_on_device_changed_cb),
       mapping_updated_cb_(mapping_updated_cb),
       identity_updated_cb_(identity_updated_cb),
@@ -776,7 +783,18 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
       CHECK_IS_TEST();
     }
     if (is_primary_account) {
-      // It's the primary account - leave the current assignment in place.
+      if (is_personal_profile && is_managed_account) {
+        // Record force migration pref for managed accounts.
+        if (local_pref_service_->GetTime(
+                prefs::kWaitingForMultiProfileForcedMigrationTimestamp) ==
+            base::Time()) {
+          local_pref_service_->SetTime(
+              prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
+              base::Time::Now());
+        }
+      }
+      // TODO(crbug.com/408131474): Trigger forced-migration.
+      //  It's the primary account - leave the current assignment in place.
       return;
     }
     // It's not the primary account, so allow re-assignment.
@@ -821,7 +839,8 @@ void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {
 
 AccountProfileMapper::AccountProfileMapper(
     SystemIdentityManager* system_identity_manager,
-    ProfileManagerIOS* profile_manager)
+    ProfileManagerIOS* profile_manager,
+    PrefService* local_pref_service)
     : system_identity_manager_(system_identity_manager),
       profile_manager_(profile_manager) {
   CHECK(system_identity_manager);
@@ -834,7 +853,7 @@ AccountProfileMapper::AccountProfileMapper(
       std::make_unique<SystemAccountUpdater>(system_identity_manager_);
 
   assigner_ = std::make_unique<Assigner>(
-      system_identity_manager_, profile_manager_,
+      system_identity_manager_, profile_manager_, local_pref_service,
       base::BindRepeating(&AccountProfileMapper::IdentitiesOnDeviceChanged,
                           base::Unretained(this)),
       base::BindRepeating(&AccountProfileMapper::MappingUpdated,

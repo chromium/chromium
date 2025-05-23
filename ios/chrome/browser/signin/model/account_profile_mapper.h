@@ -19,6 +19,7 @@
 
 @protocol ChangeProfileCommands;
 class GaiaId;
+class PrefService;
 class ProfileManagerIOS;
 @protocol SystemIdentity;
 
@@ -69,7 +70,8 @@ class AccountProfileMapper {
       base::RepeatingCallback<IteratorResult(id<SystemIdentity>)>;
 
   AccountProfileMapper(SystemIdentityManager* system_identity_manager,
-                       ProfileManagerIOS* profile_manager);
+                       ProfileManagerIOS* profile_manager,
+                       PrefService* local_pref_service);
 
   AccountProfileMapper(const AccountProfileMapper&) = delete;
   AccountProfileMapper& operator=(const AccountProfileMapper&) = delete;

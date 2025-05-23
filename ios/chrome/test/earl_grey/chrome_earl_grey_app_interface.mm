@@ -1274,6 +1274,12 @@ NSString* SerializedValue(const base::Value* value) {
   return SerializedPref(pref);
 }
 
++ (base::Time)localStateTimePref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  return prefService->GetTime(path);
+}
+
 + (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   PrefService* prefService = GetApplicationContext()->GetLocalState();

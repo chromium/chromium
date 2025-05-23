@@ -762,6 +762,12 @@ inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
 // A boolean specifying whether the glic consent form has been accepted.
 inline constexpr char kIOSGLICConsent[] = "ios.glic.consent";
 
+// A time object storing the first browser startup with a managed primary
+// identity in the personal profile after multi-profile becomes supported. Used
+// to trigger forced migration after some grace period.
+inline constexpr char kWaitingForMultiProfileForcedMigrationTimestamp[] =
+    "ios.waiting_for_multi_profile_forced_migration_timestamp";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

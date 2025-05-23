@@ -61,7 +61,8 @@ TestWithProfile::TestWithProfile(
       application_context->GetLocalState(), application_context->GetNetLog());
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      application_context->GetSystemIdentityManager(), &profile_manager_);
+      application_context->GetSystemIdentityManager(), &profile_manager_,
+      application_context->GetLocalState());
 
   // Register the objects with the TestingApplicationContext.
   application_context->SetIOSChromeIOThread(chrome_io_.get());

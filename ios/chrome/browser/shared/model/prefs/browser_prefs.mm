@@ -610,6 +610,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kHasSwitchedAccountsViaWebFlow, false);
 
+  // Prefs used to force multi-profile migration.
+  registry->RegisterTimePref(
+      prefs::kWaitingForMultiProfileForcedMigrationTimestamp, base::Time());
+
   // Deprecated 07/2024 (migrated to profile prefs).
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,

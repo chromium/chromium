@@ -1522,6 +1522,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return success ? value->GetString() : "";
 }
 
+- (base::Time)localStateTimePref:(const std::string&)prefName {
+  // Note: `localStatePrefValue` cannot be used here because base::Value doesn't
+  // support base::Time.
+  return [ChromeEarlGreyAppInterface
+      localStateTimePref:base::SysUTF8ToNSString(prefName)];
+}
+
 - (void)setIntegerValue:(int)value
       forLocalStatePref:(const std::string&)prefName {
   [ChromeEarlGreyAppInterface

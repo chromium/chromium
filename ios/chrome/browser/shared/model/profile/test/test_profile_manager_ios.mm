@@ -24,7 +24,8 @@ TestProfileManagerIOS::TestProfileManagerIOS()
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      app_context->GetSystemIdentityManager(), this);
+      app_context->GetSystemIdentityManager(), this,
+      GetApplicationContext()->GetLocalState());
   app_context->SetProfileManagerAndAccountProfileMapper(
       this, account_profile_mapper_.get());
 }

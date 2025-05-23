@@ -390,7 +390,8 @@ class AccountProfileMapperAccountsInSingleProfileTest
 // identities.
 TEST_F(AccountProfileMapperAccountsInSingleProfileTest, NoIdentity) {
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer;
   account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
@@ -414,7 +415,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
     return;
   }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer;
   account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
@@ -444,7 +446,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_TRUE(profile_initialized.Wait());
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   testing::StrictMock<MockObserver> mock_personal_observer;
   account_profile_mapper_->AddObserver(&mock_personal_observer,
@@ -487,7 +490,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_TRUE(profile_initialized.Wait());
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_personal_observer;
   account_profile_mapper_->AddObserver(&mock_personal_observer,
                                        kPersonalProfileName);
@@ -515,7 +519,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
        RefreshTokenNotification) {
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_personal_observer;
   account_profile_mapper_->AddObserver(&mock_personal_observer,
                                        kPersonalProfileName);
@@ -543,7 +548,8 @@ TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
   ASSERT_TRUE(profile_initialized.Wait());
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kPersonalProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
@@ -607,7 +613,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer;
   account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
 
@@ -638,7 +645,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
@@ -708,7 +716,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
     return;
   }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
@@ -786,7 +795,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
     return;
   }
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   testing::StrictMock<MockObserver> mock_observer_personal;
   account_profile_mapper_->AddObserver(&mock_observer_personal,
                                        kPersonalProfileName);
@@ -881,7 +891,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   system_identity_manager_->AddIdentity(gmail_identity1);
 
@@ -912,7 +923,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(google_identity);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // A new enterprise profile should've been registered.
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
@@ -954,7 +966,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       }));
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // The identity should have been attached to the personal profile (even though
   // it's a managed identity), and no additional profile should've been
@@ -998,7 +1011,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // Both identities should still be attached to the personal profile.
   EXPECT_THAT(profile_attributes_storage()
@@ -1038,7 +1052,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // Both identities are attached to the personal profile.
   ASSERT_THAT(profile_attributes_storage()
@@ -1106,7 +1121,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // The managed identity should have been reassigned to a new dedicated
   // profile.
@@ -1138,7 +1154,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   // A personal and a managed account get added.
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -1221,7 +1238,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
       initWithProfileManager:profile_manager_.get()];
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
   account_profile_mapper_->SetChangeProfileCommandsHandler(handler);
   ASSERT_FALSE(handler.deleteProfileCalled);
 
@@ -1307,7 +1325,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->SetInstantlyFillHostedDomainCache(false);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   testing::StrictMock<MockObserver> mock_personal_observer;
   account_profile_mapper_->AddObserver(&mock_personal_observer,
@@ -1363,7 +1382,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->SetGetHostedDomainError(error);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   system_identity_manager_->AddIdentity(google_identity);
   // A new enterprise profile should *not* have been registered yet, since the
@@ -1410,7 +1430,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->SetGetHostedDomainError(error);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get());
+      system_identity_manager_, profile_manager_.get(),
+      GetApplicationContext()->GetLocalState());
 
   system_identity_manager_->AddIdentity(google_identity);
   // A new enterprise profile should *not* have been registered yet, since the

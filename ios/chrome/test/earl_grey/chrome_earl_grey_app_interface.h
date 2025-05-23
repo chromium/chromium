@@ -598,6 +598,10 @@ enum class TipsNotificationType;
 // returns a Value of type NONE.
 + (NSString*)localStatePrefValue:(NSString*)prefName;
 
+// Gets the time value for the local state pref with `prefName`. Local State
+// contains the preferences that are shared between all profiles.
++ (base::Time)localStateTimePref:(NSString*)prefName;
+
 // Sets the integer value for the local state pref with `prefName`. `value`
 // can be either a casted enum or any other numerical value. Local State
 // contains the preferences that are shared between all profiles.
