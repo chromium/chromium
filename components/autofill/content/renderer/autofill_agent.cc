@@ -539,7 +539,13 @@ AutofillAgent::AutofillAgent(
                                ->GetRendererPreferences()
                                .uses_platform_autofill)),
       password_autofill_agent_(std::move(password_autofill_agent)),
-      password_generation_agent_(std::move(password_generation_agent)) {
+      password_generation_agent_(std::move(password_generation_agent)),
+      optimize_form_extraction_(base::FeatureList::IsEnabled(
+          features::kAutofillOptimizeFormExtraction)),
+      replace_form_element_observer_(base::FeatureList::IsEnabled(
+          features::kAutofillReplaceFormElementObserver)),
+      detect_removed_form_controls_(base::FeatureList::IsEnabled(
+          features::kAutofillDetectRemovedFormControls)) {
   form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
@@ -1798,9 +1804,13 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
       // need to run this function as this would be redundant.
       return false;
     }
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillOptimizeFormExtraction)) {
+    if (!optimize_form_extraction_) {
       return true;
+    }
+    // Early bailout for node removal.
+    if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
+        !replace_form_element_observer_ && !detect_removed_form_controls_) {
+      return false;
     }
     auto maybe_control_element = element.DynamicTo<WebFormControlElement>();
     const bool is_autofillable_element =
@@ -1840,8 +1850,7 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
       break;
     case blink::WebFormRelatedChangeType::kRemove:
       form_tracker_->ElementDisappeared(element);
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillDetectRemovedFormControls)) {
+      if (detect_removed_form_controls_) {
         ExtractFormsAndNotifyPasswordAutofillAgent(
             process_forms_after_dynamic_change_timer_, element);
       }
@@ -2108,8 +2117,7 @@ void AutofillAgent::OnProvisionallySaveForm(
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&] {
     if (form_element) {
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillOptimizeFormExtraction)) {
+      if (!optimize_form_extraction_) {
         UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
       }
       return;
@@ -2123,8 +2131,7 @@ void AutofillAgent::OnProvisionallySaveForm(
         });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillOptimizeFormExtraction)) {
+    if (!optimize_form_extraction_) {
       UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
     }
   };
@@ -2242,8 +2249,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   // - Never try to extract and unconditionally look at the provisionally saved
   //   form. The reason is that some form extraction could happen during style
   //   recalc, meaning that querying field focusability would crash.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillReplaceFormElementObserver)) {
+  if (replace_form_element_observer_) {
     LogSubmittedFormMetric(source, cached_form ? SubmittedFormType::kCached
                                                : SubmittedFormType::kNull);
     return cached_form;

@@ -308,11 +308,25 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
   }
 }
 
+class DetectRemovedFormControls {
+ public:
+  DetectRemovedFormControls()
+      : feature_(features::kAutofillDetectRemovedFormControls) {}
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+// Inherit from DetectRemovedFormControls to initialize the feature before
+// Autofill agent.
+class AutofillAgentTestWithFeaturesAndRemovedControlsDetection
+    : private DetectRemovedFormControls,
+      public AutofillAgentTestWithFeatures {};
+
 // Tests that when AutofillDetectRemovedFormControls is enabled, Autofill is
 // directly notified of removed form elements.
-TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedInput) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillDetectRemovedFormControls};
+TEST_F(AutofillAgentTestWithFeaturesAndRemovedControlsDetection,
+       FormsSeen_RemovedInput) {
   {
     EXPECT_CALL(autofill_driver(), FormsSeen(SizeIs(1), SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");
