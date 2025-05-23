@@ -39,6 +39,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
@@ -238,9 +239,29 @@ String WorkerGlobalScope::origin() const {
   return GetSecurityOrigin()->ToString();
 }
 
-void WorkerGlobalScope::importScripts(const Vector<String>& urls,
-                                      ExceptionState& exception_state) {
-  ImportScriptsInternal(urls, exception_state);
+void WorkerGlobalScope::importScripts(
+    const HeapVector<Member<V8UnionTrustedScriptURLOrUSVString>>& urls,
+    ExceptionState& exception_state) {
+  // Implementation of "importScripts(...urls)" algorithm:
+  // https://html.spec.whatwg.org/C#importing-scripts-and-libraries
+
+  // Step 1: Let urlStrings be «».
+  Vector<String> url_strings;
+
+  // Step 2: For each url of urls:
+  // Step 2.1: Append the result of [...] Get Trusted Type compliant string
+  // [...]
+  for (const auto& url : urls) {
+    url_strings.push_back(TrustedTypesCheckForScriptURL(
+        url, GetExecutionContext(), "WorkerGlobalScope", "importScripts",
+        exception_state));
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+
+  // Step 3: Import scripts into worker global scope given this and urlStrings.
+  ImportScriptsInternal(url_strings, exception_state);
 }
 
 namespace {

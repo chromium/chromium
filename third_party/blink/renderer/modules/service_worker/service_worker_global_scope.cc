@@ -836,9 +836,20 @@ bool ServiceWorkerGlobalScope::IsIsolatedContext() const {
   return Agent::IsIsolatedContext();
 }
 
-void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls,
-                                             ExceptionState& exception_state) {
-  for (const String& string_url : urls) {
+void ServiceWorkerGlobalScope::importScripts(
+    const HeapVector<Member<V8UnionTrustedScriptURLOrUSVString>>& urls,
+    ExceptionState& exception_state) {
+  Vector<String> url_strings;
+  for (const auto& url : urls) {
+    url_strings.push_back(TrustedTypesCheckForScriptURL(
+        url, GetExecutionContext(), "WorkerGlobalScope", "importScripts",
+        exception_state));
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+
+  for (const String& string_url : url_strings) {
     KURL completed_url = CompleteURL(string_url);
     if (installed_scripts_manager_ &&
         !installed_scripts_manager_->IsScriptInstalled(completed_url)) {
@@ -851,7 +862,7 @@ void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls,
       return;
     }
   }
-  WorkerGlobalScope::ImportScriptsInternal(urls, exception_state);
+  WorkerGlobalScope::ImportScriptsInternal(url_strings, exception_state);
 }
 
 CachedMetadataHandler*

@@ -73,6 +73,7 @@ class InstalledScriptsManager;
 class OffscreenFontSelector;
 class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
+class V8UnionTrustedScriptURLOrUSVString;
 class WorkerLocation;
 class WorkerNavigator;
 class WorkerThread;
@@ -127,7 +128,9 @@ class CORE_EXPORT WorkerGlobalScope
   DEFINE_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unhandledrejection, kUnhandledrejection)
 
-  virtual void importScripts(const Vector<String>& urls, ExceptionState&);
+  virtual void importScripts(
+      const HeapVector<Member<V8UnionTrustedScriptURLOrUSVString>>& urls,
+      ExceptionState&);
 
   // ExecutionContext
   const KURL& Url() const final;

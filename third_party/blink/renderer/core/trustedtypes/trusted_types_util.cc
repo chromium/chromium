@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedhtml_trustedscript_trustedscripturl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -563,6 +564,26 @@ String TrustedTypesCheckForScript(
       return value->GetAsTrustedScript()->toString();
   }
 
+  NOTREACHED();
+}
+
+String TrustedTypesCheckForScriptURL(
+    const V8UnionTrustedScriptURLOrUSVString* value,
+    const ExecutionContext* execution_context,
+    const char* interface_name,
+    const char* property_name,
+    ExceptionState& exception_state) {
+  if (!value) {
+    return g_empty_string;
+  }
+  switch (value->GetContentType()) {
+    case V8UnionTrustedScriptURLOrUSVString::ContentType::kUSVString:
+      return TrustedTypesCheckForScriptURL(value->GetAsUSVString(),
+                                           execution_context, interface_name,
+                                           property_name, exception_state);
+    case V8UnionTrustedScriptURLOrUSVString::ContentType::kTrustedScriptURL:
+      return value->GetAsTrustedScriptURL()->toString();
+  }
   NOTREACHED();
 }
 

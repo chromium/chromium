@@ -19,6 +19,7 @@ class ScriptValue;
 class ScriptState;
 class V8UnionStringOrTrustedScript;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
+class V8UnionTrustedScriptURLOrUSVString;
 
 enum class SpecificTrustedType {
   kNone,
@@ -48,6 +49,12 @@ TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
     const char* interface_name,
     const char* property_name,
     ExceptionState& exception_state);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForScriptURL(const V8UnionTrustedScriptURLOrUSVString* value,
+                              const ExecutionContext* execution_context,
+                              const char* interface_name,
+                              const char* property_name,
+                              ExceptionState& exception_state);
 
 // Perform Trusted Type checks, for a dynamically or statically determined
 // type.
