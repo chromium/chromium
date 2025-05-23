@@ -962,6 +962,26 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram name="OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult"
+    enum="LoadPlatformModelStatus" expires_after="2025-10-12">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of loading the base model, whether it succeeded or failed
+    with various reasons.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadVersion"
+    enum="OnDeviceBaseModelVersion" expires_after="2025-10-12">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the hash code of base model version that is loaded. Recorded on
+    every load of the base model.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceContextFinishedProcessing.{ModelExecutionFeature}"
     enum="Boolean" expires_after="2025-06-27">

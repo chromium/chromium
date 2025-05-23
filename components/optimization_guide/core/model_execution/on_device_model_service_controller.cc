@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
@@ -123,6 +124,12 @@ void LogEligibilityReason(ModelBasedCapabilityKey feature,
           {"OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.",
            GetStringNameForModelExecutionFeature(feature)}),
       reason);
+}
+
+void RecordOnDeviceLoadModelResult(
+    on_device_model::mojom::LoadModelResult result) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult", result);
 }
 
 }  // namespace
@@ -513,6 +520,9 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
   remote_.reset_on_idle_timeout(has_direct_use_
                                     ? features::GetOnDeviceModelIdleTimeout()
                                     : base::TimeDelta());
+  base::UmaHistogramSparse(
+      "OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadVersion",
+      base::HashMetricName(model_metadata_->version()));
   return remote_;
 }
 
@@ -547,7 +557,7 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   }
   controller_->service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
-      base::DoNothingAs<void(on_device_model::mojom::LoadModelResult)>());
+      base::BindOnce(&RecordOnDeviceLoadModelResult));
   controller_->service_client_.RemovePendingUsage();
 }
 
