@@ -5226,7 +5226,7 @@ targets.bundle(
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
             ],
             swarming = targets.swarming(
-                shards = 5,
+                shards = 10,
             ),
         ),
         "content_unittests": targets.mixin(
