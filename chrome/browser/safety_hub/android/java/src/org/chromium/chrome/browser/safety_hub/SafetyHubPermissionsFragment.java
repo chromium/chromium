@@ -172,4 +172,9 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     protected @StringRes int getPermissionsListTextId() {
         return R.string.page_info_permissions_title;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

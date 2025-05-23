@@ -185,4 +185,9 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 snackbarController,
                 origin);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

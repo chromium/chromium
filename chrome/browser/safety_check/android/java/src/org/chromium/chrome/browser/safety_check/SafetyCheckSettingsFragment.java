@@ -157,4 +157,9 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
         super.onPause();
         mRunSafetyCheckImmediately = false;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

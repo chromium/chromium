@@ -283,8 +283,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updateAllModules();
 
         for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
@@ -388,5 +388,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
         assert safetyHubHatsHelper != null && activity != null;
         safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

@@ -79,8 +79,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updatePreferenceList();
     }
 
