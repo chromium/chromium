@@ -1195,6 +1195,12 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasWillChangeBackdropFilterHint() const {
     return WillChangeProperties().Contains(CSSPropertyID::kBackdropFilter);
   }
+  bool HasWillChangeClipPathHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kClipPath);
+  }
+  bool HasWillChangeMixBlendModeHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kMixBlendMode);
+  }
 
   // Hyphen utility functions.
   Hyphenation* GetHyphenation() const;

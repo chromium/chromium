@@ -86,6 +86,12 @@ CompositingReasons CompositingReasonsForWillChange(const ComputedStyle& style) {
     reasons |= CompositingReason::kWillChangeFilter;
   if (style.HasWillChangeBackdropFilterHint())
     reasons |= CompositingReason::kWillChangeBackdropFilter;
+  if (style.HasWillChangeClipPathHint()) {
+    reasons |= CompositingReason::kWillChangeClipPath;
+  }
+  if (style.HasWillChangeMixBlendModeHint()) {
+    reasons |= CompositingReason::kWillChangeMixBlendMode;
+  }
 
   // kWillChangeOther is needed only when none of the explicit kWillChange*
   // reasons are set.
