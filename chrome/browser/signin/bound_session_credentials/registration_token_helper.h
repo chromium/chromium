@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -66,6 +67,21 @@ class RegistrationTokenHelper {
     ~Result();
   };
 
+  // Public for testing.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(Error)
+  enum class Error {
+    kNone = 0,
+    kLoadReusedKeyFailure = 1,
+    kGenerateNewKeyFailure = 2,
+    kCreateAssertionFailure = 3,
+    kSignAssertionFailure = 4,
+    kAppendSignatureFailure = 5,
+    kMaxValue = kAppendSignatureFailure
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundSessionCredentialsRegistrationTokenResult)
+
   // `unexportable_key_service` must outlive `this`.
   RegistrationTokenHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
@@ -100,14 +116,18 @@ class RegistrationTokenHelper {
   void CreateKeyLoaderIfNeeded();
   void SignHeaderAndPayload(
       HeaderAndPayloadGenerator header_and_payload_generator,
-      base::OnceCallback<void(std::optional<Result>)> callback,
+      base::OnceCallback<void(base::expected<Result, Error>)> callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           binding_key);
   void CreateRegistrationToken(
       std::string_view header_and_payload,
       unexportable_keys::UnexportableKeyId binding_key,
-      base::OnceCallback<void(std::optional<Result>)> callback,
+      base::OnceCallback<void(base::expected<Result, Error>)> callback,
       unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature);
+  static void RecordResultAndInvokeCallback(
+      std::string_view result_histogram_name,
+      base::OnceCallback<void(std::optional<Result>)> callback,
+      base::expected<Result, Error> result_or_error);
 
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;

@@ -12,7 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
@@ -20,6 +23,12 @@
 #include "crypto/signature_verifier.h"
 
 namespace {
+
+constexpr std::string_view kTokenBindingResultHistogram =
+    "Signin.TokenBinding.GenerateRegistrationTokenResult";
+constexpr std::string_view kSessionBindingResultHistogram =
+    "Signin.BoundSessionCredentials."
+    "SessionRegistrationGenerateRegistrationTokenResult";
 
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -60,7 +69,8 @@ void RegistrationTokenHelper::GenerateForSessionBinding(
   key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
       &RegistrationTokenHelper::SignHeaderAndPayload,
       weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
-      std::move(callback)));
+      base::BindOnce(&RegistrationTokenHelper::RecordResultAndInvokeCallback,
+                     kSessionBindingResultHistogram, std::move(callback))));
 }
 void RegistrationTokenHelper::GenerateForTokenBinding(
     std::string_view client_id,
@@ -74,7 +84,8 @@ void RegistrationTokenHelper::GenerateForTokenBinding(
   key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
       &RegistrationTokenHelper::SignHeaderAndPayload,
       weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
-      std::move(callback)));
+      base::BindOnce(&RegistrationTokenHelper::RecordResultAndInvokeCallback,
+                     kTokenBindingResultHistogram, std::move(callback))));
 }
 
 void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
@@ -102,12 +113,20 @@ void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
 
 void RegistrationTokenHelper::SignHeaderAndPayload(
     HeaderAndPayloadGenerator header_and_payload_generator,
-    base::OnceCallback<void(std::optional<Result>)> callback,
+    base::OnceCallback<void(base::expected<Result, Error>)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         binding_key) {
   if (!binding_key.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback).Run(std::nullopt);
+    Error error = std::visit(
+        base::Overloaded{[](const std::vector<uint8_t>&) {
+                           return Error::kLoadReusedKeyFailure;
+                         },
+                         [](const std::vector<
+                             crypto::SignatureVerifier::SignatureAlgorithm>&) {
+                           return Error::kGenerateNewKeyFailure;
+                         }},
+        key_init_param_);
+    std::move(callback).Run(base::unexpected(error));
     return;
   }
 
@@ -120,8 +139,7 @@ void RegistrationTokenHelper::SignHeaderAndPayload(
           base::Time::Now());
 
   if (!header_and_payload.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(Error::kCreateAssertionFailure));
     return;
   }
 
@@ -137,11 +155,10 @@ void RegistrationTokenHelper::SignHeaderAndPayload(
 void RegistrationTokenHelper::CreateRegistrationToken(
     std::string_view header_and_payload,
     unexportable_keys::UnexportableKeyId binding_key,
-    base::OnceCallback<void(std::optional<Result>)> callback,
+    base::OnceCallback<void(base::expected<Result, Error>)> callback,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   if (!signature.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(Error::kSignAssertionFailure));
     return;
   }
 
@@ -151,8 +168,7 @@ void RegistrationTokenHelper::CreateRegistrationToken(
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
                                                 *signature);
   if (!registration_token.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(Error::kAppendSignatureFailure));
     return;
   }
 
@@ -160,4 +176,20 @@ void RegistrationTokenHelper::CreateRegistrationToken(
       *unexportable_key_service_->GetWrappedKey(binding_key);
   std::move(callback).Run(Result(binding_key, std::move(wrapped_key),
                                  std::move(registration_token).value()));
+}
+
+void RegistrationTokenHelper::RecordResultAndInvokeCallback(
+    std::string_view result_histogram_name,
+    base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
+        callback,
+    base::expected<RegistrationTokenHelper::Result,
+                   RegistrationTokenHelper::Error> result_or_error) {
+  base::UmaHistogramEnumeration(result_histogram_name,
+                                result_or_error.error_or(Error::kNone));
+
+  if (result_or_error.has_value()) {
+    std::move(callback).Run(std::move(result_or_error).value());
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }

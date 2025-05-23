@@ -969,7 +969,7 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.BoundSessionCredentials.SessionRegistrationGenerateRegistrationTokenDuration"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -979,6 +979,22 @@ prefs when the profile is loaded.  -->
     register a bound session after an invitation from the server via an HTTP
     header. This will not be recorded if Chrome couldn't parse the server
     invitation or just decided to ignore it.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.BoundSessionCredentials.SessionRegistrationGenerateRegistrationTokenResult"
+    enum="BoundSessionCredentialsRegistrationTokenResult"
+    expires_after="2025-10-12">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of generating a registration token for a bound session
+    registration. Recorded every time Chrome attempts to register a bound
+    session after an invitation from the server via an HTTP header. This will
+    not be recorded if Chrome couldn't parse the server invitation or just
+    decided to ignore it.
   </summary>
 </histogram>
 
@@ -3215,6 +3231,19 @@ kept as long as profile signout is possible -->
     Records the result of the assertion generation for a bound token exchange
     request. Recorded at the assertion generation completion, whenever a bound
     refresh token is exchanged for an access token or authentication cookies.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.GenerateRegistrationTokenResult"
+    enum="BoundSessionCredentialsRegistrationTokenResult"
+    expires_after="2025-10-12">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of generating a registration token for obtaining a bound
+    refresh token. Recorded every time Chrome attempts to request a bound
+    refresh token during Dice signin. This will not be recorded if token binding
+    is not supported by either Chrome or GAIA.
   </summary>
 </histogram>
 
