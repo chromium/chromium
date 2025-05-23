@@ -38,21 +38,8 @@ const std::vector<LabInfo>& GetData() {
     return GetTestData().value();
   }
 
-  static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
-    std::vector<LabInfo> lab_info;
-
-    // Thumbnail Tab Strip for Windows.
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_WIN)
-    lab_info.emplace_back(
-        flag_descriptions::kWebUITabStripFlagId,
-        l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(
-            IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-thumbnail-tab-strip", version_info::Channel::BETA);
-#endif
-
-    return lab_info;
-  }());
+  static const base::NoDestructor<std::vector<LabInfo>> lab_info_(
+      []() { return std::vector<LabInfo>(); }());
 
   return *lab_info_;
 }
