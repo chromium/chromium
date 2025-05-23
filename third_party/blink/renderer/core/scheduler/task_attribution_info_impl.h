@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
-class ExecutionContext;
 class SchedulerTaskContext;
 class SoftNavigationContext;
 
@@ -26,8 +25,7 @@ class CORE_EXPORT TaskAttributionInfoImpl final
 
   // `WrappableTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
-  SchedulerTaskContext* GetSchedulerTaskContextFor(
-      const ExecutionContext&) override;
+  SchedulerTaskContext* GetSchedulerTaskContext() override;
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;

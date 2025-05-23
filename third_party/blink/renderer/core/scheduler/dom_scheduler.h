@@ -32,6 +32,7 @@ class AbortSignal;
 class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
+class SchedulerTaskContext;
 class DOMSchedulerTest;
 class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
@@ -159,6 +160,11 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   // Gets the task queue used to schedule tasks or continuations with the given
   // signal and type, creating it if needed.
   DOMTaskQueue* GetTaskQueue(DOMTaskSignal*, WebSchedulingQueueType);
+
+  // Returns the `SchedulerTaskContext` to use for scheduler.yield(). Records
+  // UseCounters for non-trivial inheritance, both for the case where the
+  // context is used, and the cross-frame case where it's ignored.
+  SchedulerTaskContext* GetSchedulerTaskContextForYield();
 
   // `fixed_priority_task_queues_` is initialized with one entry per priority,
   // indexed by priority. This will be empty when the window is detached.

@@ -15,7 +15,6 @@ class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
-class ExecutionContext;
 class SchedulerTaskContext;
 
 class CORE_EXPORT WebSchedulingTaskState final : public WrappableTaskState {
@@ -25,8 +24,7 @@ class CORE_EXPORT WebSchedulingTaskState final : public WrappableTaskState {
 
   // `WrappableTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
-  SchedulerTaskContext* GetSchedulerTaskContextFor(
-      const ExecutionContext&) override;
+  SchedulerTaskContext* GetSchedulerTaskContext() override;
   void Trace(Visitor*) const override;
 
  private:

@@ -6218,6 +6218,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5587" label="ClipboardChangeEventFired"/>
   <int value="5588" label="ClipboardChangeEventFiredAfterFocusGain"/>
   <int value="5589" label="ClipboardChangeEventTypesAttribute"/>
+  <int value="5590" label="SchedulerYieldNonTrivialInherit"/>
+  <int value="5591" label="SchedulerYieldNonTrivialInheritCrossFrameIgnored"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -28,10 +28,7 @@ class TestWrappableTaskState final : public WrappableTaskState {
     return nullptr;
   }
 
-  SchedulerTaskContext* GetSchedulerTaskContextFor(
-      const ExecutionContext&) override {
-    return nullptr;
-  }
+  SchedulerTaskContext* GetSchedulerTaskContext() override { return nullptr; }
 };
 
 }  // namespace

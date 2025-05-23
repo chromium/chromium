@@ -21,7 +21,6 @@ class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
-class ExecutionContext;
 class ScriptState;
 class SchedulerTaskContext;
 
@@ -54,8 +53,7 @@ class CORE_EXPORT WrappableTaskState
       public ScriptWrappableTaskStateBase {
  public:
   virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
-  virtual SchedulerTaskContext* GetSchedulerTaskContextFor(
-      const ExecutionContext&) = 0;
+  virtual SchedulerTaskContext* GetSchedulerTaskContext() = 0;
 
   virtual void Trace(Visitor*) const {}
 

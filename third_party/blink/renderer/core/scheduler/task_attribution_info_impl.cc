@@ -19,8 +19,7 @@ void TaskAttributionInfoImpl::Trace(Visitor* visitor) const {
   visitor->Trace(soft_navigation_context_);
 }
 
-SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContextFor(
-    const ExecutionContext&) {
+SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContext() {
   return nullptr;
 }
 

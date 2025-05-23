@@ -166,17 +166,11 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
                                   fixed_priority_continuation_queues_);
   }
 
-  AbortSignal* abort_source = nullptr;
-  DOMTaskSignal* priority_source = nullptr;
-  if (auto* inherited_state =
-          ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate())) {
-    if (SchedulerTaskContext* task_context =
-            inherited_state->WrappedState()->GetSchedulerTaskContextFor(
-                *GetExecutionContext())) {
-      abort_source = task_context->AbortSource();
-      priority_source = task_context->PrioritySource();
-    }
-  }
+  SchedulerTaskContext* task_context = GetSchedulerTaskContextForYield();
+  AbortSignal* abort_source =
+      task_context ? task_context->AbortSource() : nullptr;
+  DOMTaskSignal* priority_source =
+      task_context ? task_context->PrioritySource() : nullptr;
 
   if (abort_source && abort_source->aborted()) {
     return ScriptPromise<IDLUndefined>::Reject(
@@ -196,6 +190,40 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
   MakeGarbageCollected<DOMTaskContinuation>(resolver, abort_source, task_queue,
                                             NextIdForTracing());
   return resolver->Promise();
+}
+
+SchedulerTaskContext* DOMScheduler::GetSchedulerTaskContextForYield() {
+  auto* inherited_state =
+      ScriptWrappableTaskState::GetCurrent(GetExecutionContext()->GetIsolate());
+  if (!inherited_state) {
+    return nullptr;
+  }
+
+  SchedulerTaskContext* task_context =
+      inherited_state->WrappedState()->GetSchedulerTaskContext();
+  if (!task_context) {
+    return nullptr;
+  }
+
+  bool can_use_context = task_context->CanPropagateTo(*GetExecutionContext());
+  // Record use counters for non-trival inheritance, i.e. cases where the
+  // inheritance can change the scheduling in a meaningful way.
+  if (RuntimeEnabledFeatures::
+          SchedulerYieldDisallowCrossFrameInheritanceEnabled()) {
+    AbortSignal* abort_source = task_context->AbortSource();
+    DOMTaskSignal* priority_source = task_context->PrioritySource();
+    if ((abort_source && abort_source->CanAbort()) ||
+        (priority_source && (!priority_source->HasFixedPriority() ||
+                             priority_source->priority().AsEnum() !=
+                                 V8TaskPriority::Enum::kUserVisible))) {
+      UseCounter::Count(
+          GetExecutionContext(),
+          can_use_context
+              ? WebFeature::kSchedulerYieldNonTrivialInherit
+              : WebFeature::kSchedulerYieldNonTrivialInheritCrossFrameIgnored);
+    }
+  }
+  return can_use_context ? task_context : nullptr;
 }
 
 scheduler::TaskAttributionIdType DOMScheduler::taskId(

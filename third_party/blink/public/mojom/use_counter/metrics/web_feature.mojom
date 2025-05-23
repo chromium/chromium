@@ -4896,6 +4896,8 @@ enum WebFeature {
   kClipboardChangeEventFired = 5587,
   kClipboardChangeEventFiredAfterFocusGain = 5588,
   kClipboardChangeEventTypesAttribute = 5589,
+  kSchedulerYieldNonTrivialInherit = 5590,
+  kSchedulerYieldNonTrivialInheritCrossFrameIgnored = 5591,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
