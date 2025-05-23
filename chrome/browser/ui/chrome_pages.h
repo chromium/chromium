@@ -143,6 +143,9 @@ void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name);
 
+// Shows all recent shared tab group activities.
+void ShowSharedTabGroupActivity(Profile* profile);
+
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
 

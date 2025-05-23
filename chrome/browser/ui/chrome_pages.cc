@@ -53,6 +53,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
@@ -629,6 +630,12 @@ void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
   // user to the Chrome browser about page, which is part of browser settings.
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIManagementURL));
+}
+
+void ShowSharedTabGroupActivity(Profile* profile) {
+  Browser* browser = GetOrCreateBrowserForProfile(profile);
+  ShowSingletonTab(browser,
+                   GURL(data_sharing::features::kActivityLogsURL.Get()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
