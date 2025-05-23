@@ -2193,8 +2193,14 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
           Set Chrome as your default browser
         </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_AND_PINNING_TITLE" desc="Title for the page that prompts user to set Chromium as their default browser and pin to taskbar in the first run experience.">
+          Use Chrome by default and get it pinned
+        </message>
         <message name="IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW" desc="Subtitle for the page that prompts user to set Chrome as their default browser in the first run experience.">
           Use Chrome anytime you click links in messages, documents, and other apps
+        </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_AND_PINNING_SUBTITLE" desc="Subtitle for the page that prompts user to set Chrome as their default browser in the first run experience.">
+          Open links in Chrome from any app. Plus for easy access, it gets pinned to your taskbar.
         </message>
         <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chrome as their default browser.">
           Chrome logo inside a computer screen.

@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -166,10 +167,12 @@ class PolicyStoreObserver : public policy::CloudPolicyStore::Observer {
 IntroHandler::IntroHandler(
     base::RepeatingCallback<void(IntroChoice)> intro_callback,
     base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback,
-    bool is_device_managed)
+    bool is_device_managed,
+    std::string_view source_name)
     : intro_callback_(std::move(intro_callback)),
       default_browser_callback_(std::move(default_browser_callback)),
-      is_device_managed_(is_device_managed) {
+      is_device_managed_(is_device_managed),
+      source_name_(source_name) {
   DCHECK(intro_callback_);
   DCHECK(default_browser_callback_);
 }
@@ -246,6 +249,20 @@ void IntroHandler::HandleSkipDefaultBrowser(const base::Value::List& args) {
 void IntroHandler::ResetDefaultBrowserButtons() {
   if (IsJavascriptAllowed()) {
     FireWebUIListener("reset-default-browser-buttons");
+  }
+}
+
+void IntroHandler::SetCanPinToTaskbar(bool can_pin) {
+  if (can_pin) {
+    base::Value::Dict update;
+    update.Set(
+        "defaultBrowserTitle",
+        l10n_util::GetStringUTF16(IDS_FRE_DEFAULT_BROWSER_AND_PINNING_TITLE));
+    update.Set("defaultBrowserSubtitle",
+               l10n_util::GetStringUTF16(
+                   IDS_FRE_DEFAULT_BROWSER_AND_PINNING_SUBTITLE));
+    content::WebUIDataSource::Update(Profile::FromWebUI(web_ui()), source_name_,
+                                     std::move(update));
   }
 }
 

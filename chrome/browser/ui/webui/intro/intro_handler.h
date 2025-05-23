@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_HANDLER_H_
 
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -23,7 +25,8 @@ class IntroHandler : public content::WebUIMessageHandler {
   explicit IntroHandler(
       base::RepeatingCallback<void(IntroChoice)> intro_callback,
       base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback,
-      bool is_device_managed);
+      bool is_device_managed,
+      std::string_view source_name);
 
   IntroHandler(const IntroHandler&) = delete;
   IntroHandler& operator=(const IntroHandler&) = delete;
@@ -35,6 +38,10 @@ class IntroHandler : public content::WebUIMessageHandler {
   void OnJavascriptAllowed() override;
   void ResetIntroButtons();
   void ResetDefaultBrowserButtons();
+
+  // This updates the strings displayed in the set as default page of the first
+  // run experience to indicate that it will also pin Chrome to the taskbar.
+  void SetCanPinToTaskbar(bool can_pin);
 
  private:
   // Handles "continueWithAccount" message from the page. No arguments.
@@ -68,6 +75,9 @@ class IntroHandler : public content::WebUIMessageHandler {
   base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback_;
   const bool is_device_managed_ = false;
   std::unique_ptr<policy::CloudPolicyStore::Observer> policy_store_observer_;
+
+  // Name of the WebUIDataSource to update.
+  std::string source_name_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_HANDLER_H_

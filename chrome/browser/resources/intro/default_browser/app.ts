@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
@@ -55,6 +57,13 @@ export class AppElement extends AppElementBase {
 
   private resetButtons_() {
     this.anyButtonClicked_ = false;
+  }
+
+  protected getTitle() {
+    return loadTimeData.getString('defaultBrowserTitle');
+  }
+  protected getSubtitle() {
+    return loadTimeData.getString('defaultBrowserSubtitle');
   }
 
   /**

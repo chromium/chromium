@@ -72,6 +72,7 @@ class IntroUI : public content::WebUIController {
 
   void SetSigninChoiceCallback(IntroSigninChoiceCallback callback);
   void SetDefaultBrowserCallback(DefaultBrowserCallback callback);
+  void SetCanPinToTaskbar(bool can_pin);
 
  private:
   void HandleSigninChoice(IntroChoice choice);

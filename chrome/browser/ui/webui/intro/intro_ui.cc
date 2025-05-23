@@ -95,7 +95,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       base::BindRepeating(&IntroUI::HandleSigninChoice, base::Unretained(this)),
       base::BindOnce(&IntroUI::HandleDefaultBrowserChoice,
                      base::Unretained(this)),
-      is_device_managed);
+      is_device_managed, chrome::kChromeUIIntroHost);
   intro_handler_ = intro_handler.get();
   web_ui->AddMessageHandler(std::move(intro_handler));
 }
@@ -137,6 +137,10 @@ void IntroUI::HandleDefaultBrowserChoice(DefaultBrowserChoice choice) {
   } else {
     std::move(default_browser_callback_.value()).Run(choice);
   }
+}
+
+void IntroUI::SetCanPinToTaskbar(bool can_pin) {
+  intro_handler_->SetCanPinToTaskbar(can_pin);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IntroUI)

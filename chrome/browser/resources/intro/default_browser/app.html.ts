@@ -18,8 +18,8 @@ export function getHtml(this: AppElement) {
       <img id="default-browser-frame" alt="">
       <img id="product-logo" src="images/product-logo.svg" alt="">
     </div>
-    <h1 class="title">$i18n{defaultBrowserTitle}</h1>
-    <p class="subtitle">$i18n{defaultBrowserSubtitle}</p>
+    <h1 class="title">${this.getTitle()}</h1>
+    <p class="subtitle">${this.getSubtitle()}</p>
   </div>
 </div>
 
