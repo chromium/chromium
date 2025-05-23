@@ -2842,7 +2842,7 @@ public class StripLayoutHelper
         bringViewToVisibleArea(
                 view,
                 LayoutManagerImpl.time(),
-                /* animate= */ !AccessibilityState.isAccessibilityToolPresent());
+                /* animate= */ !AccessibilityState.prefersReducedMotion());
         mUpdateHost.requestUpdate();
     }
 

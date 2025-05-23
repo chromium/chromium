@@ -1744,6 +1744,11 @@ public class CompositorViewHolder extends FrameLayout
             // If a11y is set up, mAccessibilityView needs to hold keyboard focus.
             // mNodeProvider.requestKeyboardFocusForVirtualView will fail otherwise.
             if (!mAccessibilityView.hasFocus()) mAccessibilityView.requestFocus();
+            // We must manually change the accessibility focus to keep it aligned with the
+            // input/keyboard focus. We do this before moving the keyboard focus because otherwise
+            // TalkBack does not honor the request for unknown reasons.
+            mNodeProvider.sendEventForVirtualView(
+                    mKeyboardFocusIndex, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
             mNodeProvider.requestKeyboardFocusForVirtualView(mKeyboardFocusIndex);
         } else {
             // If a11y is not set up, CompositorViewHolder needs to hold the keyboard focus so that
