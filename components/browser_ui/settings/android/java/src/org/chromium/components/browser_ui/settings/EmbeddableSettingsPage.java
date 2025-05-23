@@ -30,11 +30,4 @@ public interface EmbeddableSettingsPage extends SettingsFragment {
      * <p>The activity will observe changes to this value and update the UI as necessary.
      */
     ObservableSupplier<String> getPageTitle();
-
-    @Override
-    default @AnimationType int getAnimationType() {
-        // TODO(crbug.com/404074032): Each leaf subclass should override this method to use
-        // PROPERTY animation with auditing.
-        return AnimationType.TWEEN;
-    }
 }

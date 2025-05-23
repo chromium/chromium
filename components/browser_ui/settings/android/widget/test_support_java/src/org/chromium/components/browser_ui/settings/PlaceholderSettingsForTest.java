@@ -30,4 +30,11 @@ public class PlaceholderSettingsForTest extends PreferenceFragmentCompat
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        // TODO(crbug.com/404074032): Each leaf subclass should override this method to use
+        // PROPERTY animation with auditing.
+        return AnimationType.TWEEN;
+    }
 }
