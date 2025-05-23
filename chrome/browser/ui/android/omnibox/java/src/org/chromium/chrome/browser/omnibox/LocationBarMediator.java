@@ -358,11 +358,12 @@ class LocationBarMediator
         mNativeInitialized = true;
         mOmniboxPrerender = new OmniboxPrerender();
         mTemplateUrlServiceSupplier.onAvailable(
-                (templateUrlService) -> {
-                    templateUrlService.addObserver(this);
-                    GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                            mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
-                });
+                mCallbackController.makeCancelable(
+                        (templateUrlService) -> {
+                            templateUrlService.addObserver(this);
+                            GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                        }));
 
         mLocationBarLayout.onFinishNativeInitialization();
         if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
@@ -1376,8 +1377,10 @@ class LocationBarMediator
     @Override
     public void onTemplateURLServiceChanged() {
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
-        mUrlCoordinator.setUrlBarHintText(
-                SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
+        if (mProfileSupplier.hasValue()) {
+            mUrlCoordinator.setUrlBarHintText(
+                    SearchEngineUtils.getForProfile(mProfileSupplier.get()).getSearchBoxHintText());
+        }
     }
 
     // OmniboxStub implementation.
