@@ -4,6 +4,10 @@
 
 import("//build/config/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
 
 source_set("core") {
   sources = [
@@ -144,4 +148,16 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+if (is_android) {
+  android_library("connectors_java_enums") {
+    srcjar_deps = [ ":connectors_java_enums_srcjar" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("connectors_java_enums_srcjar") {
+    sources = [ "common.h" ]
+  }
 }

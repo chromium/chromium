@@ -810,8 +810,7 @@ public class DOMUtils {
         TestInputMethodManagerWrapper inputMethodManagerWrapper =
                 TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(inputMethodManagerWrapper);
-        // Click the text field node, so that it would get focus.
-        DOMUtils.clickNode(webContents, nodeId);
+        DOMUtils.focusNode(webContents, nodeId);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {

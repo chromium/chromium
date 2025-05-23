@@ -297,6 +297,7 @@ android_library("chrome_test_java_helper") {
     "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/enterprise/connectors/core:connectors_java_enums",
     "//components/external_intents/android:java",
     "//components/external_intents/android:test_support_java",
     "//components/externalauth/android:java",
@@ -955,6 +956,7 @@ android_library(
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "src/org/chromium/chrome/browser/password_manager/EnterpriseReportingIntegrationTest.java",
     "src/org/chromium/chrome/browser/password_manager/PasswordCheckupIntegrationTest.java",
     "src/org/chromium/chrome/browser/password_manager/PasswordManagerDialogTest.java",
     "src/org/chromium/chrome/browser/password_manager/PasswordSavingIntegrationTest.java",

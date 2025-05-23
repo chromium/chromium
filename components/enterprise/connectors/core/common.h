@@ -89,6 +89,7 @@ inline constexpr base::FilePath::CharType RC_BASE_DIR[] =
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep this enum in sync with
 // EnterpriseReportingEventType in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.enterprise.connectors
 enum class EnterpriseReportingEventType {
   kUnknownEvent = 0,
   kPasswordReuseEvent = 1,
