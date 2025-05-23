@@ -441,6 +441,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:InitStatus) -->
 
+<!-- LINT.IfChange(ConversionTriggerDataMatching) -->
+
+<enum name="ConversionTriggerDataMatching">
+  <int value="0" label="modulus"/>
+  <int value="1" label="exact"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/trigger_data_matching.mojom:TriggerDataMatching) -->
+
 <!-- LINT.IfChange(ConversionTriggerRegistrationError) -->
 
 <enum name="ConversionTriggerRegistrationError">

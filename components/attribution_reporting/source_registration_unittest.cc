@@ -389,6 +389,9 @@ TEST(SourceRegistrationTest, Parse) {
 
     if (source.has_value()) {
       histograms.ExpectTotalCount(kSourceRegistrationErrorMetric, 0);
+      histograms.ExpectUniqueSample(
+          "Conversions.TriggerDataMatchingRegistration",
+          static_cast<int>(source->trigger_data_matching), 1);
     } else {
       histograms.ExpectUniqueSample(kSourceRegistrationErrorMetric,
                                     source.error(), 1);
