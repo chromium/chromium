@@ -16,6 +16,7 @@
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }
 
 // Android specific implementation of `DigitalIdentityProvider`. It
@@ -38,7 +39,8 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
                  std::string result,
                  jint j_status_for_metrics);
 
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  bool IsLowRiskOrigin(
+      content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,

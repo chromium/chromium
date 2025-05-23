@@ -57,6 +57,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/digital_credentials/digital_credentials_keyed_service.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -838,6 +839,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
   BtmBrowserSigninDetectorFactory::GetInstance();
+  digital_credentials::DigitalCredentialsKeyedServiceFactory::GetInstance();
   DocumentSuggestionsServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();

@@ -321,6 +321,11 @@ chromium-metrics-reviews@google.com.
       summary="Returns suitability of this page for compose."/>
   <variant name="CompressPublicImages" summary="Compresses public images"/>
   <variant name="DeferAllScript" summary="Defers execution of script"/>
+  <variant name="DigitalCredentialsLowFriction"
+      summary="This optimization provides information about whether a URL is
+               a known low risk origin for which the digital credential
+               interstitial should not be shown regardless of the credential
+               being requested."/>
   <variant name="EwalletMerchantAllowlist"
       summary="This optimization provides information about merchant origins
                for which eWallet push payments payments should be triggered."/>

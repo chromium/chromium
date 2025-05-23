@@ -21,6 +21,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/test/test_render_frame_host.h"
+#include "content/test/test_render_view_host.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +65,7 @@ class TestDigitalIdentityProviderWithCustomRisk
       : are_origins_low_risk_(are_origins_low_risk) {}
   ~TestDigitalIdentityProviderWithCustomRisk() override = default;
 
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override {
+  bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) const override {
     return are_origins_low_risk_;
   }
 
@@ -246,25 +247,27 @@ bool SetFieldNameValue(base::Value& to_modify,
   return true;
 }
 
-std::optional<InterstitialType> ComputeInterstitialType(
-    const std::string& protocol,
-    base::Value request_data,
-    bool are_origins_low_risk = false) {
-  auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
-      are_origins_low_risk);
-  std::vector<ProtocolAndParsedRequest> requests;
-  requests.emplace_back(protocol, std::move(request_data));
-  return DigitalIdentityRequestImpl::ComputeInterstitialType(
-      url::Origin(), provider.get(), std::move(requests));
-}
-
 }  // anonymous namespace
 
-class DigitalIdentityRequestImplInterstitialTest : public testing::Test {
+class DigitalIdentityRequestImplInterstitialTest
+    : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kWebIdentityDigitalCredentials, {{"dialog", ""}});
+  }
+
+  std::optional<InterstitialType> ComputeInterstitialType(
+      const std::string& protocol,
+      base::Value request_data,
+      bool are_origins_low_risk = false) {
+    auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
+        are_origins_low_risk);
+    std::vector<ProtocolAndParsedRequest> requests;
+    requests.emplace_back(protocol, std::move(request_data));
+    return DigitalIdentityRequestImpl::ComputeInterstitialType(
+        *main_rfh(), provider.get(), std::move(requests));
   }
 
  private:
@@ -615,7 +618,7 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/false);
   EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
-                url::Origin(), provider.get(), std::move(requests)),
+                *main_rfh(), provider.get(), std::move(requests)),
             std::nullopt);
 }
 
@@ -632,7 +635,7 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/false);
   EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
-                url::Origin(), provider.get(), std::move(requests)),
+                *main_rfh(), provider.get(), std::move(requests)),
             InterstitialType::kLowRisk);
 }
 

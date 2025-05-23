@@ -5,11 +5,18 @@
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/digital_credentials/digital_credentials_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace digital_credentials {
 namespace {
+
+using content::RenderFrameHost;
 
 /*
  * Temporary list of origins considered lower-risk to facilitate an experimental
@@ -55,9 +62,25 @@ bool IsLowRiskOriginMatcher(const url::Origin& to_check,
   return false;
 }
 
+bool IsLowFrictionUrl(RenderFrameHost& render_frame_host) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  DigitalCredentialsKeyedService* service =
+      DigitalCredentialsKeyedServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return false;
+  }
+
+  return service->IsLowFrictionUrl(render_frame_host.GetLastCommittedURL());
+}
+
 }  // anonymous namespace
 
-bool IsLowRiskOrigin(const url::Origin& to_check) {
+bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) {
   // Convert the array of C strings to a vector of strings. This is fine since
   // the list is expected to be small and the strings are all compile-time
   // constants.
@@ -65,7 +88,9 @@ bool IsLowRiskOrigin(const url::Origin& to_check) {
   for (const char* origin_str : kKnownLowRiskOrigins) {
     origins_vector.emplace_back(origin_str);
   }
-  return IsLowRiskOriginMatcher(to_check, origins_vector);
+  return IsLowRiskOriginMatcher(render_frame_host.GetLastCommittedOrigin(),
+                                origins_vector) ||
+         IsLowFrictionUrl(render_frame_host);
 }
 
 bool IsLowRiskOriginMatcherForTesting(

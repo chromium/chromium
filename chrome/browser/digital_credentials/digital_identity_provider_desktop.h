@@ -15,6 +15,7 @@
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 }
 
 namespace device::cablev2 {
@@ -29,7 +30,8 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   ~DigitalIdentityProviderDesktop() override;
 
   // content::DigitalIdentityProvider:
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  bool IsLowRiskOrigin(
+      content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,
       const url::Origin& origin,

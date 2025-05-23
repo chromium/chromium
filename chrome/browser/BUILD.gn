@@ -395,6 +395,8 @@ static_library("browser") {
     "data_sharing/data_sharing_service_factory.h",
     "defaults.cc",
     "defaults.h",
+    "digital_credentials/digital_credentials_keyed_service.cc",
+    "digital_credentials/digital_credentials_keyed_service.h",
     "digital_credentials/digital_identity_interstitial_closed_reason.h",
     "digital_credentials/digital_identity_low_risk_origins.cc",
     "digital_credentials/digital_identity_low_risk_origins.h",

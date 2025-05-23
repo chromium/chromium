@@ -298,7 +298,7 @@ DigitalIdentityRequestImpl::CreateInstance(
 // static
 std::optional<InterstitialType>
 DigitalIdentityRequestImpl::ComputeInterstitialType(
-    const url::Origin& rp_origin,
+    RenderFrameHost& render_frame_host,
     const DigitalIdentityProvider* provider,
     const std::vector<ProtocolAndParsedRequest>& parsed_requests) {
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
@@ -315,7 +315,7 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
     return InterstitialType::kLowRisk;
   }
 
-  if (provider->IsLowRiskOrigin(rp_origin)) {
+  if (provider->IsLowRiskOrigin(render_frame_host)) {
     return std::nullopt;
   }
   return std::ranges::all_of(
@@ -652,8 +652,7 @@ void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
   }
 
   std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
-      render_frame_host().GetMainFrame()->GetLastCommittedOrigin(),
-      provider_.get(), parsed_requests);
+      render_frame_host(), provider_.get(), parsed_requests);
 
   if (!interstitial_type) {
     OnInterstitialDone(std::move(protocol), std::move(request_to_send),

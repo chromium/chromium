@@ -754,6 +754,7 @@ chromium-metrics-reviews@google.com.
   <int value="92" label="GLIC_ACTION_PAGE_BLOCK"/>
   <int value="93" label="FEDCM_CLICKTHROUGH_RATE"/>
   <int value="96" label="GLIC_PAGE_CONTEXT_ELIGIBILITY"/>
+  <int value="97" label="DIGITAL_CREDENTIALS_LOW_FRICTION"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

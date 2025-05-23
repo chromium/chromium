@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "url/origin.h"
 
 namespace content {
@@ -59,10 +60,10 @@ class CONTENT_EXPORT DigitalIdentityProvider {
   DigitalIdentityProvider(const DigitalIdentityProvider&) = delete;
   DigitalIdentityProvider& operator=(const DigitalIdentityProvider&) = delete;
 
-  // Returns whether the origin is a known low risk origin for which the
-  // digital credential interstitial should not be shown regardless of the
-  // credential being requested.
-  virtual bool IsLowRiskOrigin(const url::Origin& to_check) const = 0;
+  // Returns whether the last committed origin of `render_frame_host` is a known
+  // low risk origin for which the digital credential interstitial should not be
+  // shown regardless of the credential being requested.
+  virtual bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) const = 0;
 
   // Show interstitial to prompt user whether they want to share their identity
   // with the web page. Runs callback after the user dismisses the interstitial.

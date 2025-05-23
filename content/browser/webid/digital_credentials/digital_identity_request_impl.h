@@ -42,9 +42,10 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
-  // Returns the type of interstitial to show based on the request contents.
+  // Returns the type of interstitial to show based on the request contents and
+  // the origin of the request.
   static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
-      const url::Origin& rp_origin,
+      RenderFrameHost& render_frame_host,
       const DigitalIdentityProvider* provider,
       const std::vector<ProtocolAndParsedRequest>& parsed_requests);
 

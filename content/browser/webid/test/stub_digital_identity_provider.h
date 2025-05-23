@@ -18,7 +18,7 @@ class StubDigitalIdentityProvider : public DigitalIdentityProvider {
   StubDigitalIdentityProvider& operator=(const StubDigitalIdentityProvider&) =
       delete;
 
-  bool IsLowRiskOrigin(const url::Origin& to_check) const override;
+  bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       WebContents& web_contents,
       const url::Origin& origin,

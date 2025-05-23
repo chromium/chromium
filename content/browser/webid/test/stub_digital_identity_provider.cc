@@ -15,7 +15,7 @@ StubDigitalIdentityProvider::StubDigitalIdentityProvider() = default;
 StubDigitalIdentityProvider::~StubDigitalIdentityProvider() = default;
 
 bool StubDigitalIdentityProvider::IsLowRiskOrigin(
-    const url::Origin& to_check) const {
+    RenderFrameHost& render_frame_host) const {
   return false;
 }
 
