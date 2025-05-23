@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.3.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.3.0...chromium-bidi-v5.3.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* generated entrypoints were incorrect ([#3436](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3436)) ([a62ec95](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a62ec9500716856d408cfe81a5689b57dbc7f8ec))
+
 ## [5.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.2.0...chromium-bidi-v5.3.0) (2025-05-22)
 
 
