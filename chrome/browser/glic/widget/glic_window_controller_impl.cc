@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -365,6 +366,9 @@ void GlicWindowControllerImpl::OnWidgetBoundsChanged(
     // attach indicator.
     HandleGlicButtonIndicator();
   }
+
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
 }
 
 void GlicWindowControllerImpl::OnWidgetUserResizeStarted() {
@@ -669,6 +673,14 @@ void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
+
+  // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
+  // enterprise users) via constrained_window APIs.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      host().webui_contents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      host().webui_contents())
+      ->SetDelegate(this);
 }
 
 void GlicWindowControllerImpl::SetupGlicWidgetAccessibilityText() {
@@ -1018,6 +1030,12 @@ void GlicWindowControllerImpl::Close() {
   user_resizing_ = false;
   NotifyIfPanelStateChanged();
   window_activation_callback_list_.Notify(false);
+
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      host().webui_contents())
+      ->SetDelegate(nullptr);
 
   host().PanelWasClosed();
   if (base::FeatureList::IsEnabled(features::kGlicUnloadOnClose)) {
@@ -1414,4 +1432,43 @@ GlicFreController* GlicWindowControllerImpl::fre_controller() {
 Browser* GlicWindowControllerImpl::attached_browser() {
   return attached_browser_;
 }
+
+web_modal::WebContentsModalDialogHost*
+GlicWindowControllerImpl::GetWebContentsModalDialogHost() {
+  return this;
+}
+
+gfx::Size GlicWindowControllerImpl::GetMaximumDialogSize() {
+  if (!glic_widget_) {
+    return gfx::Size();
+  }
+  return glic_widget_->GetClientAreaBoundsInScreen().size();
+}
+
+gfx::NativeView GlicWindowControllerImpl::GetHostView() const {
+  if (!glic_widget_) {
+    return gfx::NativeView();
+  }
+  return glic_widget_->GetNativeView();
+}
+
+gfx::Point GlicWindowControllerImpl::GetDialogPosition(
+    const gfx::Size& dialog_size) {
+  if (!glic_widget_) {
+    return gfx::Point();
+  }
+  gfx::Rect client_area_bounds = glic_widget_->GetClientAreaBoundsInScreen();
+  return gfx::Point((client_area_bounds.width() - dialog_size.width()) / 2, 0);
+}
+
+void GlicWindowControllerImpl::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.AddObserver(observer);
+}
+
+void GlicWindowControllerImpl::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.RemoveObserver(observer);
+}
+
 }  // namespace glic

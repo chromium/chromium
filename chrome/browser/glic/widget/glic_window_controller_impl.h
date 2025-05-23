@@ -26,6 +26,8 @@
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -51,9 +53,12 @@ class GlicModalManager;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowControllerImpl : public GlicWindowController,
-                                 public views::WidgetObserver,
-                                 public Host::Observer {
+class GlicWindowControllerImpl
+    : public GlicWindowController,
+      public views::WidgetObserver,
+      public Host::Observer,
+      public web_modal::WebContentsModalDialogManagerDelegate,
+      public web_modal::WebContentsModalDialogHost {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
   GlicWindowControllerImpl& operator=(const GlicWindowControllerImpl&) = delete;
@@ -249,6 +254,17 @@ class GlicWindowControllerImpl : public GlicWindowController,
   // Returns true of the window is showing and the content is loaded.
   bool IsWindowOpenAndReady();
 
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::Size GetMaximumDialogSize() override;
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
@@ -298,6 +314,11 @@ class GlicWindowControllerImpl : public GlicWindowController,
   raw_ptr<Browser> attached_browser_ = nullptr;
 
   base::ObserverList<StateObserver> state_observers_;
+
+  // Used by web modals to listens for glic window events, e.g. size change or
+  // window close.
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observers_;
 
   // The announcement should happen the first time focus is lost after the FRE.
   bool do_focus_loss_announcement_ = false;
