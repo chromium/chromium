@@ -150,7 +150,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
     content::BrowserContext* browser_context,
     SearchPrefetchURLLoader::RequestHandler prefetched_loader_handler) {
   network::URLLoaderFactoryBuilder factory_builder;
-
+  TRACE_EVENT("loading",
+              "SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);

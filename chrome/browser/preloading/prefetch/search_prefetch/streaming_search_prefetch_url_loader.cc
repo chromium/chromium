@@ -322,6 +322,9 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
 }
 
 StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader() {
+  TRACE_EVENT0(
+      "loading",
+      "StreamingSearchPrefetchURLLoader::~StreamingSearchPrefetchURLLoader");
   network_url_loader_.reset();
   url_loader_receiver_.reset();
 
@@ -372,6 +375,9 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
+  TRACE_EVENT0(
+      "loading",
+      "StreamingSearchPrefetchURLLoader::SetUpForwardingClient");
   CHECK(!streaming_prefetch_request_);
   CHECK(should_be_serving_to_activation_navigation_);
   // Bind to the content/ navigation code.
@@ -465,7 +471,8 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   bool can_be_served = CanServePrefetchRequest(head->headers.get(), body);
-
+  TRACE_EVENT1("loading", "StreamingSearchPrefetchURLLoader::OnReceiveResponse",
+               "can_be_served", can_be_served);
   if (is_activated_) {
     std::string histogram_name =
         "Omnibox.SearchPrefetch.ReceivedServableResponse2.";
@@ -548,6 +555,9 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
 void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
+  bool is_serving = bool(streaming_prefetch_request_);
+  TRACE_EVENT1("loading", "StreamingSearchPrefetchURLLoader::OnReceiveRedirect",
+               "is_serving", is_serving);
   if (is_in_fallback_) {
     DCHECK(forwarding_client_);
     forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
@@ -852,6 +862,7 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
+  TRACE_EVENT0("loading", "StreamingSearchPrefetchURLLoader::Fallback");
   is_scheduled_to_fallback_ = false;
 
   CHECK(!is_in_fallback_);
