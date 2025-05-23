@@ -36,6 +36,19 @@ TEST(MapUtilTest, FindOrNull) {
 
   EXPECT_THAT(FindOrNull(mapping, kKey), Pointee(Eq(kValue)));
   EXPECT_EQ(FindOrNull(mapping, kMissingKey), nullptr);
+
+  // The following should be able to infer the type of the key from the map's
+  // type.
+  base::flat_map<std::pair<int, std::string>, std::string> pair_mapping;
+  EXPECT_EQ(FindOrNull(pair_mapping, {3, "foo"}), nullptr);
+
+  // Homogeneous keys are supported.
+  std::pair<int, std::string> homogeneous_key(3, "bar");
+  EXPECT_EQ(FindOrNull(pair_mapping, homogeneous_key), nullptr);
+
+  // Heterogenous keys are supported.
+  std::pair<int, const char*> heterogenous_key(3, "bar");
+  EXPECT_EQ(FindOrNull(pair_mapping, heterogenous_key), nullptr);
 }
 
 TEST(MapUtilTest, FindPtrOrNullForPointers) {
@@ -46,6 +59,19 @@ TEST(MapUtilTest, FindPtrOrNullForPointers) {
   EXPECT_THAT(FindPtrOrNull(mapping, kKey),
               AllOf(Eq(val.get()), Pointee(Eq(kValue))));
   EXPECT_EQ(FindPtrOrNull(mapping, kMissingKey), nullptr);
+
+  // The following should be able to infer the type of the key from the map's
+  // type.
+  base::flat_map<std::pair<int, std::string>, std::string*> pair_mapping;
+  EXPECT_EQ(FindPtrOrNull(pair_mapping, {3, "foo"}), nullptr);
+
+  // Homogeneous keys are supported.
+  std::pair<int, std::string> homogeneous_key(3, "bar");
+  EXPECT_EQ(FindPtrOrNull(pair_mapping, homogeneous_key), nullptr);
+
+  // Heterogenous keys are supported.
+  std::pair<int, const char*> heterogenous_key(3, "bar");
+  EXPECT_EQ(FindPtrOrNull(pair_mapping, heterogenous_key), nullptr);
 }
 
 TEST(MapUtilTest, FindPtrOrNullForPointerLikeValues) {
