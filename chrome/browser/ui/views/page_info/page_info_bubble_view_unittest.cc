@@ -54,6 +54,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
@@ -231,6 +232,13 @@ class PageInfoBubbleViewTestApi {
     return static_cast<views::Label*>(title_label)->GetText();
   }
 
+  std::u16string_view GetPrivacyAndSiteDataSubpageTitle() {
+    navigation_handler()->OpenPrivacyAndSiteDataPage();
+    auto* title_label = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
+    return static_cast<views::Label*>(title_label)->GetText();
+  }
+
   // Returns the text shown on the view.
   std::u16string GetTextOnView(views::View* view) {
     EXPECT_TRUE(view);
@@ -268,6 +276,13 @@ class PageInfoBubbleViewTestApi {
   std::u16string_view GetCookiesButtonTitleText() {
     auto* button = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    return static_cast<RichHoverButton*>(button)->GetTitleText();
+  }
+
+  std::u16string_view GetPrivacyAndSiteDataButtonTitleText() {
+    auto* button = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::
+            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE);
     return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
@@ -1265,3 +1280,36 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
                                      CookieBlocking3pcdStatus::kAll),
                      /*is_otr*/ testing::Bool()));
+
+class PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest
+    : public PageInfoBubbleViewTest,
+      public testing::WithParamInterface<CookieControlsState> {
+ public:
+  PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest() {
+    feature_list_.InitWithFeatures(
+        {privacy_sandbox::kActUserBypassUx,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
+       DisplaysPrivacyAndSiteDataTitle) {
+  PageInfoUI::CookiesNewInfo cookie_info;
+  cookie_info.controls_state = GetParam();
+  api_->SetCookieInfo(cookie_info);
+
+  EXPECT_EQ(api_->GetPrivacyAndSiteDataButtonTitleText(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER));
+  EXPECT_EQ(api_->GetPrivacyAndSiteDataSubpageTitle(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
+                         testing::Values(CookieControlsState::kActiveTp,
+                                         CookieControlsState::kPausedTp));

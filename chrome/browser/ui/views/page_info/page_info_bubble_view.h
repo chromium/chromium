@@ -52,6 +52,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OpenPermissionPage(ContentSettingsType type) override;
   void OpenAdPersonalizationPage() override;
   void OpenCookiesPage() override;
+  void OpenPrivacyAndSiteDataPage() override;
   void OpenMerchantTrustPage(
       page_info::MerchantBubbleOpenReferrer referrer) override;
   void CloseBubble() override;

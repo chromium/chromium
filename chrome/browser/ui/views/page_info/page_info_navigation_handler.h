@@ -20,6 +20,7 @@ class PageInfoNavigationHandler {
   virtual void OpenPermissionPage(ContentSettingsType type) = 0;
   virtual void OpenAdPersonalizationPage() = 0;
   virtual void OpenCookiesPage() = 0;
+  virtual void OpenPrivacyAndSiteDataPage() = 0;
   virtual void OpenMerchantTrustPage(
       page_info::MerchantBubbleOpenReferrer referrer) = 0;
   virtual void CloseBubble() = 0;

@@ -27,12 +27,14 @@
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -176,6 +178,17 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          presenter_->GetSubjectNameForDisplay()),
+      std::make_unique<PageInfoCookiesContentView>(presenter_));
+}
+
+std::unique_ptr<views::View>
+PageInfoViewFactory::CreatePrivacyAndSiteDataPageView() {
+  // Reuse `PageInfoCookiesContentView` for the "Privacy and site data" page
+  // as it has a similar UI to "Cookies and site data".
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER),
           presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoCookiesContentView>(presenter_));
 }

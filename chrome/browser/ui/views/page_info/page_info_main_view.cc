@@ -37,8 +37,10 @@
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,6 +58,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -63,6 +66,8 @@
 #endif
 
 namespace {
+
+using privacy_sandbox::IsTrackingProtectionsUi;
 
 constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
@@ -76,6 +81,8 @@ int GetSeparatorPadding() {
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
+                                      kPrivacyAndSiteDataButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kMainLayoutElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kPermissionsElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView,
@@ -193,22 +200,41 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
     return;
   }
 
-  // Create a cookie button that opens a cookies subpage.
-  cookie_button_ =
-      site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
-          base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
-                              base::Unretained(navigation_handler_)),
-          PageInfoViewFactory::GetImageModel(
-              vector_icons::kCookieChromeRefreshIcon),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          /*subtitle_text=*/std::u16string(),
-          PageInfoViewFactory::GetOpenSubpageIcon()));
-  cookie_button_->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
-  cookie_button_->SetProperty(views::kElementIdentifierKey,
-                              kCookieButtonElementId);
-  cookie_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP));
+  // If the TP UI is being shown then use the "Privacy and site data" treatment.
+  if (IsTrackingProtectionsUi(cookie_info.controls_state)) {
+    cookie_button_ =
+        site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
+            base::BindRepeating(
+                &PageInfoNavigationHandler::OpenPrivacyAndSiteDataPage,
+                base::Unretained(navigation_handler_)),
+            PageInfoViewFactory::GetImageModel(views::kEyeCrossedRefreshIcon),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER),
+            /*subtitle_text=*/std::u16string(),
+            PageInfoViewFactory::GetOpenSubpageIcon()));
+    cookie_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP));
+    cookie_button_->SetID(
+        PageInfoViewFactory::
+            VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE);
+    cookie_button_->SetProperty(views::kElementIdentifierKey,
+                                kPrivacyAndSiteDataButtonElementId);
+  } else {
+    cookie_button_ =
+        site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
+            base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
+                                base::Unretained(navigation_handler_)),
+            PageInfoViewFactory::GetImageModel(
+                vector_icons::kCookieChromeRefreshIcon),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+            /*subtitle_text=*/std::u16string(),
+            PageInfoViewFactory::GetOpenSubpageIcon()));
+    cookie_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP));
+    cookie_button_->SetID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+    cookie_button_->SetProperty(views::kElementIdentifierKey,
+                                kCookieButtonElementId);
+  }
   cookie_button_->SetTitleTextStyleAndColor(views::style::STYLE_BODY_3_MEDIUM,
                                             kColorPageInfoForeground);
   cookie_button_->SetSubtitleTextStyleAndColor(

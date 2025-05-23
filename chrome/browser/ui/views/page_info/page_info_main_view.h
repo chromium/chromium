@@ -48,6 +48,7 @@ class PageInfoMainView : public views::View,
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPrivacyAndSiteDataButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMerchantTrustElementId);

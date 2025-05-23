@@ -27,6 +27,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -283,6 +284,16 @@ void PageInfoBubbleView::OpenCookiesPage() {
   cookies_page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(cookies_page_view));
   AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
+}
+
+void PageInfoBubbleView::OpenPrivacyAndSiteDataPage() {
+  std::unique_ptr<views::View> privacy_and_site_data_page_view =
+      view_factory_->CreatePrivacyAndSiteDataPageView();
+  privacy_and_site_data_page_view->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
+  page_container_->SwitchToPage(std::move(privacy_and_site_data_page_view));
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER));
 }
 
 void PageInfoBubbleView::OpenMerchantTrustPage(

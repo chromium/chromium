@@ -342,6 +342,12 @@
         Tracking protections enabled
       </message>
       <!-- Page Info -->
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" translateable="false">
+        Privacy and site data
+      </message>
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="" translateable="false">
+        Options for privacy and site data
+      </message>
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="" translateable="false">
         Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
       </message>

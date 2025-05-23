@@ -41,6 +41,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
+    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_PRIVACY_SITE_DATA_SUBPAGE,
     VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS,
     VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER,
@@ -134,6 +135,7 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreatePrivacyAndSiteDataPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:
