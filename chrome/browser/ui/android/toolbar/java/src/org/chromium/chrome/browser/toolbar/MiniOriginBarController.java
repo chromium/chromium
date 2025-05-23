@@ -120,9 +120,11 @@ public class MiniOriginBarController implements Observer {
     private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier;
     private final ObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing;
     private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
+    private final Callback<Boolean> mAccessorySheetShowingObserver;
     private @MiniOriginState int mMiniOriginBarState = MiniOriginState.NOT_READY;
     private FrameLayout.LayoutParams mDefaultLocationBarLayoutParams;
     private final TouchEventObserver mTouchEventObserver;
+    private final InsetObserver mInsetObserver;
     private final int mDefaultLocationBarRightPadding;
     // The starting horizontal position of the location bar when the mini origin bar is in its
     // least-minimized state.
@@ -162,6 +164,7 @@ public class MiniOriginBarController implements Observer {
         mBrowserControlsSizer = browserControlsSizer;
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mIsKeyboardAccessorySheetShowing = isKeyboardAccessorySheetShowing;
+        mInsetObserver = insetObserver;
         mDefaultLocationBarRightPadding = mLocationBar.getContainerView().getPaddingRight();
         mDefaultLocationBarLayoutParams =
                 (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
@@ -180,7 +183,7 @@ public class MiniOriginBarController implements Observer {
                                                 : MiniOriginEvent.KEYBOARD_ANIMATION_ENDED),
                         this::updateAnimationProgress,
                         this::waitingForImeAnimationToStart);
-        insetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
+        mInsetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
 
         mIsFormFieldFocusedObserver =
                 (focused) -> {
@@ -213,12 +216,13 @@ public class MiniOriginBarController implements Observer {
                 };
         controlContainer.addTouchEventObserver(mTouchEventObserver);
 
-        mIsKeyboardAccessorySheetShowing.addObserver(
+        mAccessorySheetShowingObserver =
                 (showing) ->
                         updateMiniOriginBarState(
                                 showing
                                         ? MiniOriginEvent.ACCESSORY_SHEET_APPEARED
-                                        : MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED));
+                                        : MiniOriginEvent.ACCESSORY_SHEET_DISAPPEARED);
+        mIsKeyboardAccessorySheetShowing.addObserver(mAccessorySheetShowingObserver);
     }
 
     private void updateMiniOriginBarState(@MiniOriginEvent int event) {
@@ -323,7 +327,9 @@ public class MiniOriginBarController implements Observer {
     public void destroy() {
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityObserver);
         mIsFormFieldFocusedSupplier.removeObserver(mIsFormFieldFocusedObserver);
+        mIsKeyboardAccessorySheetShowing.removeObserver(mAccessorySheetShowingObserver);
         mBrowserControlsSizer.removeObserver(this);
+        mInsetObserver.removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
     }
 
     @Override

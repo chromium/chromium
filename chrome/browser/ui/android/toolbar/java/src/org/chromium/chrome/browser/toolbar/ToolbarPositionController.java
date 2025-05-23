@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.annotation.Retention;
@@ -96,6 +98,20 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private int mControlContainerHeight;
     private final BottomControlsLayerWithOffset mBottomToolbarLayer;
     private final BottomControlsLayerWithOffset mProgressBarLayer;
+
+    private final Callback<Boolean> mIsNtpShowingObserver;
+    private final Callback<Boolean> mIsTabSwitcherFinishedShowingObserver;
+    private final Callback<Boolean> mIsOmniboxFocusedObserver;
+    private final Callback<Boolean> mIsFormFieldFocusedObserver;
+    private final Callback<Boolean> mIsFindInPageShowingObserver;
+    private final KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private final Callback<Integer> mKeyboardAccessoryToolbarCallback;
+    private final Callback<Integer> mKeyboardAccessoryProgressBarCallback;
+    private final KeyboardVisibilityListener mKeyboardVisibilityViewOffsetCallback;
+    private final Callback<Boolean> mFormFieldViewOffsetCallback;
+    private final Callback<Integer> mControlContainerTranslationCallback;
+    private final Callback<Integer> mControlContainerHeightCallback;
+    private final SharedPreferences mSharedPreferences;
 
     @ControlsPosition private int mCurrentPosition;
     private final int mHairlineHeight;
@@ -160,15 +176,24 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         mHairlineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
-        mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
-        mIsTabSwitcherFinishedShowingSupplier.addObserver((showing) -> updateCurrentPosition());
-        mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
-        mIsFormFieldFocusedSupplier.addObserver(
-                (focused) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
-        mIsFindInPageShowingSupplier.addObserver((showing) -> updateCurrentPosition());
-        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
-                (showing) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        mIsNtpShowingObserver = (showing) -> updateCurrentPosition();
+        mIsTabSwitcherFinishedShowingObserver = (showing) -> updateCurrentPosition();
+        mIsOmniboxFocusedObserver = (focused) -> updateCurrentPosition();
+        mIsFormFieldFocusedObserver =
+                (focused) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false);
+        mIsFindInPageShowingObserver = (showing) -> updateCurrentPosition();
+        mKeyboardVisibilityListener =
+                (showing) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false);
+
+        mIsNtpShowingSupplier.addObserver(mIsNtpShowingObserver);
+        mIsTabSwitcherFinishedShowingSupplier.addObserver(mIsTabSwitcherFinishedShowingObserver);
+        mIsOmniboxFocusedSupplier.addObserver(mIsOmniboxFocusedObserver);
+        mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
+        mIsFindInPageShowingSupplier.addObserver(mIsFindInPageShowingObserver);
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mSharedPreferences = sharedPreferences;
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         recordStartupPosition(isToolbarConfiguredToShowOnTop());
 
         mLayerVisibility = LayerVisibility.HIDDEN;
@@ -250,20 +275,46 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         mBottomControlsStacker.addLayer(mBottomToolbarLayer);
         mBottomControlsStacker.addLayer(mProgressBarLayer);
-        mKeyboardAccessoryHeightSupplier.addObserver(
-                (height) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
-        mKeyboardAccessoryHeightSupplier.addObserver(
-                (height) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
-        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
-                (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
-        mIsFormFieldFocusedSupplier.addObserver(
-                (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
-        mControlContainerTranslationSupplier.addObserver(
-                (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
+
+        mKeyboardAccessoryToolbarCallback =
+                (height) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
+        mKeyboardAccessoryProgressBarCallback =
+                (height) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
+        mKeyboardVisibilityViewOffsetCallback =
+                (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
+        mFormFieldViewOffsetCallback =
+                (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
+        mControlContainerTranslationCallback =
+                (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
+        mControlContainerHeightCallback = this::updateControlContainerHeight;
         mControlContainerHeightSupplier.addSyncObserverAndCallIfNonNull(
-                this::updateControlContainerHeight);
+                mControlContainerHeightCallback);
+
+        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardAccessoryToolbarCallback);
+        mKeyboardAccessoryHeightSupplier.addObserver(mKeyboardAccessoryProgressBarCallback);
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
+                mKeyboardVisibilityViewOffsetCallback);
+        mIsFormFieldFocusedSupplier.addObserver(mFormFieldViewOffsetCallback);
+        mControlContainerTranslationSupplier.addObserver(mControlContainerTranslationCallback);
         updateCurrentPosition();
         mHandler = handler;
+    }
+
+    public void destroy() {
+        mIsNtpShowingSupplier.removeObserver(mIsNtpShowingObserver);
+        mIsTabSwitcherFinishedShowingSupplier.removeObserver(mIsTabSwitcherFinishedShowingObserver);
+        mIsOmniboxFocusedSupplier.removeObserver(mIsOmniboxFocusedObserver);
+        mIsFormFieldFocusedSupplier.removeObserver(mIsFormFieldFocusedObserver);
+        mIsFindInPageShowingSupplier.removeObserver(mIsFindInPageShowingObserver);
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryToolbarCallback);
+        mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryProgressBarCallback);
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(
+                mKeyboardVisibilityViewOffsetCallback);
+        mIsFormFieldFocusedSupplier.removeObserver(mFormFieldViewOffsetCallback);
+        mControlContainerTranslationSupplier.removeObserver(mControlContainerTranslationCallback);
+        mControlContainerHeightSupplier.removeObserver(mControlContainerHeightCallback);
     }
 
     /**

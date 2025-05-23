@@ -868,6 +868,13 @@ public class ToolbarPositionControllerTest {
         assertEquals(15, mBottomControlsStacker.getTotalHeight());
     }
 
+    @Test
+    public void testDestroy() {
+        mController.destroy();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtTop();
+    }
+
     private void assertControlsAtBottom() {
         assertEquals(ControlsPosition.BOTTOM, mBrowserControlsSizer.getControlsPosition());
         assertEquals(0, mBrowserControlsSizer.getTopControlsHeight());

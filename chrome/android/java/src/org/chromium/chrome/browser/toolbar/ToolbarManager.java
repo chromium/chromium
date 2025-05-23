@@ -371,6 +371,7 @@ public class ToolbarManager
 
     private @Nullable StripLayoutHelperManager mStripLayoutHelperManager;
     private @Nullable MiniOriginBarController mMiniOriginBarController;
+    private @Nullable ToolbarPositionController mToolbarPositionController;
     private @Nullable UndoBarThrottle mUndoBarThrottle;
 
     private CustomTabCount mCustomTabCount;
@@ -1679,24 +1680,25 @@ public class ToolbarManager
                 new ObservableSupplierImpl<>(0);
         ObservableSupplierImpl<Integer> controlContainerHeightSupplier =
                 new ObservableSupplierImpl<>(LayoutParams.WRAP_CONTENT);
-        new ToolbarPositionController(
-                mBrowserControlsSizer,
-                ContextUtils.getAppSharedPreferences(),
-                mIsNtpShowingSupplier,
-                mIsTabSwitcherFinishedShowingSupplier,
-                mOmniboxFocusStateSupplier,
-                mFormFieldFocusedSupplier,
-                mFindInPageShowingSupplier,
-                keyboardAccessoryStateSupplier,
-                mWindowAndroid.getKeyboardDelegate(),
-                mControlContainer,
-                mBottomControlsStacker,
-                mBottomToolbarControlsOffsetSupplier,
-                mProgressBarContainer,
-                controlContainerTranslationSupplier,
-                controlContainerHeightSupplier,
-                new Handler(Looper.getMainLooper()),
-                mActivity);
+        mToolbarPositionController =
+                new ToolbarPositionController(
+                        mBrowserControlsSizer,
+                        ContextUtils.getAppSharedPreferences(),
+                        mIsNtpShowingSupplier,
+                        mIsTabSwitcherFinishedShowingSupplier,
+                        mOmniboxFocusStateSupplier,
+                        mFormFieldFocusedSupplier,
+                        mFindInPageShowingSupplier,
+                        keyboardAccessoryStateSupplier,
+                        mWindowAndroid.getKeyboardDelegate(),
+                        mControlContainer,
+                        mBottomControlsStacker,
+                        mBottomToolbarControlsOffsetSupplier,
+                        mProgressBarContainer,
+                        controlContainerTranslationSupplier,
+                        controlContainerHeightSupplier,
+                        new Handler(Looper.getMainLooper()),
+                        mActivity);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =
                     new MiniOriginBarController(
@@ -2393,6 +2395,11 @@ public class ToolbarManager
 
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(mControlContainer);
+        }
+
+        if (mToolbarPositionController != null) {
+            mToolbarPositionController.destroy();
+            mToolbarPositionController = null;
         }
 
         if (mMiniOriginBarController != null) {
