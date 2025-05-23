@@ -757,16 +757,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceAggregator.CopiedSurfaceCount"
-    units="surfaces" expires_after="2025-06-01">
-  <owner>kylechar@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    The number of surfaces where the active CompositorFrame was copied into the
-    AggregateFrame during surface aggregation. This is logged once per frame.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.CopyUs" units="microseconds"
     expires_after="2025-08-03">
   <owner>kylechar@chromium.org</owner>
@@ -805,16 +795,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PixelMovingFilters"/>
     <variant name="UnembeddedRenderPasses"/>
   </token>
-</histogram>
-
-<histogram name="Compositing.SurfaceAggregator.PrewalkedSurfaceCount"
-    units="surfaces" expires_after="2025-06-01">
-  <owner>kylechar@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    The number of surfaces that were looked at during the prewalk phase of
-    surface aggregation. This is logged once per frame.
-  </summary>
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.PrewalkUs" units="microseconds"

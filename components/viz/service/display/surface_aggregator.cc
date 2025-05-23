@@ -841,8 +841,6 @@ void SurfaceAggregator::EmitSurfaceContent(
   if (referenced_surfaces_.count(surface_id))
     return;
 
-  ++stats_->copied_surface_count;
-
 
   // If we are stretching content to fill the SurfaceDrawQuad, or if the device
   // scale factor mismatches between content and SurfaceDrawQuad, we appply an
@@ -1506,8 +1504,6 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
     return;
   }
 
-  ++stats_->copied_surface_count;
-
   const gfx::Transform surface_transform =
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
@@ -1998,7 +1994,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
     return gfx::Rect();
 
   DebugLogSurface(surface, resolved_frame.WillDraw());
-  ++stats_->prewalked_surface_count;
 
   auto& root_resolved_pass = resolved_frame.GetRootRenderPassData();
   if (parent_pass) {
@@ -2359,12 +2354,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 }
 
 void SurfaceAggregator::RecordStatHistograms() {
-  UMA_HISTOGRAM_COUNTS_100(
-      "Compositing.SurfaceAggregator.PrewalkedSurfaceCount",
-      stats_->prewalked_surface_count);
-  UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
-                           stats_->copied_surface_count);
-
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time,
       kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
