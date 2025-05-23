@@ -440,7 +440,7 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
   __weak __typeof(self) weakSelf = self;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   AccessPoint accessPoint = AccessPoint::kSettings;
-  [SigninCoordinator
+  _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self
                                           browser:_browser
                                      contextStyle:contextStyle

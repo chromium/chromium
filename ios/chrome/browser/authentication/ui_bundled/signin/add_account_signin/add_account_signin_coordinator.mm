@@ -94,7 +94,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  CHECK(!_accountManagerService, base::NotFatalUntil::M145);
+  CHECK(!_continuationProvider, base::NotFatalUntil::M145);
 }
 
 #pragma mark - ChromeCoordinator
@@ -135,6 +135,7 @@ using signin_metrics::PromoAction;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _authenticationService = nil;
+  _continuationProvider.Reset();
   _syncService = nil;
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
   // runCompletionWithSigninResult] has not been called.
