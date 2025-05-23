@@ -58,12 +58,15 @@ class CONTENT_EXPORT ServiceWorkerClient final
   using ExecutionReadyCallback = base::OnceClosure;
 
   // Constructor for window clients.
-  //
-  // For clients for prefetch, `ongoing_navigation_frame_tree_node_id` is null.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
                       bool is_parent_frame_secure,
-                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id,
-                      bool is_initiated_by_prefetch);
+                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id);
+
+  // Constructor for window clients for prefetch.
+  ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
+                      bool is_parent_frame_secure,
+                      scoped_refptr<network::SharedURLLoaderFactory>
+                          network_url_loader_factory_for_prefetch);
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
@@ -614,6 +617,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // The frame tree node ID that is set in the constructor and is reset in
   // CommitResponse().
   FrameTreeNodeId ongoing_navigation_frame_tree_node_id_;
+
+  // URLLoaderFactory used for navigation preload etc.
+  // Only set/used for clients for prefetch.
+  scoped_refptr<network::SharedURLLoaderFactory>
+      network_url_loader_factory_for_prefetch_;
 
   // For all instances --------------------------------------------------------
 

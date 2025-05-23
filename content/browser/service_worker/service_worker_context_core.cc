@@ -443,8 +443,7 @@ ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     FrameTreeNodeId ongoing_navigation_frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
       context_->AsWeakPtr(), are_ancestors_secure,
-      ongoing_navigation_frame_tree_node_id,
-      /*is_initiated_by_prefetch=*/false);
+      ongoing_navigation_frame_tree_node_id);
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))
@@ -454,13 +453,14 @@ ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
 }
 
 ScopedServiceWorkerClient
-ServiceWorkerClientOwner::CreateServiceWorkerClientForPrefetch() {
+ServiceWorkerClientOwner::CreateServiceWorkerClientForPrefetch(
+    scoped_refptr<network::SharedURLLoaderFactory> network_url_loader_factory) {
   // Currently prefetching is enabled only for top-level navigation.
   const bool are_ancestors_secure = true;
 
   auto client = std::make_unique<ServiceWorkerClient>(
-      context_->AsWeakPtr(), are_ancestors_secure, FrameTreeNodeId(),
-      /*is_initiated_by_prefetch=*/true);
+      context_->AsWeakPtr(), are_ancestors_secure,
+      std::move(network_url_loader_factory));
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))

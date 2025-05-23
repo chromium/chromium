@@ -98,7 +98,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
     const network::ResourceRequest& resource_request,
-    base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
+    base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle,
+    scoped_refptr<network::SharedURLLoaderFactory> network_url_loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
 
@@ -116,7 +117,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
       navigation_handle->context_wrapper()
           ->context()
           ->service_worker_client_owner()
-          .CreateServiceWorkerClientForPrefetch(),
+          .CreateServiceWorkerClientForPrefetch(
+              std::move(network_url_loader_factory)),
       resource_request.trusted_params->isolation_info);
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(

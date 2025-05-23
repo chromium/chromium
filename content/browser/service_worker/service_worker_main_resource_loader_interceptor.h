@@ -59,7 +59,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
   CreateForPrefetch(
       const network::ResourceRequest& resource_request,
-      base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
+      base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle,
+      scoped_refptr<network::SharedURLLoaderFactory>
+          network_url_loader_factory);
 
   ServiceWorkerMainResourceLoaderInterceptor(
       const ServiceWorkerMainResourceLoaderInterceptor&) = delete;

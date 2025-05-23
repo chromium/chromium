@@ -126,20 +126,35 @@ class ServiceWorkerClient::ServiceWorkerRunningStatusObserver final
 ServiceWorkerClient::ServiceWorkerClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool is_parent_frame_secure,
-    FrameTreeNodeId ongoing_navigation_frame_tree_node_id,
-    bool is_initiated_by_prefetch)
+    FrameTreeNodeId ongoing_navigation_frame_tree_node_id)
     : context_(std::move(context)),
       owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(is_parent_frame_secure),
-      is_initiated_by_prefetch_(is_initiated_by_prefetch),
+      is_initiated_by_prefetch_(false),
       client_info_(ServiceWorkerClientInfo()),
       process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
       ongoing_navigation_frame_tree_node_id_(
           ongoing_navigation_frame_tree_node_id) {
-  CHECK(!is_initiated_by_prefetch ||
-        ongoing_navigation_frame_tree_node_id == FrameTreeNodeId());
+  DCHECK(context_);
+}
+
+ServiceWorkerClient::ServiceWorkerClient(
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    bool is_parent_frame_secure,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        network_url_loader_factory_for_prefetch)
+    : context_(std::move(context)),
+      owner_(context_->service_worker_client_owner()),
+      create_time_(base::TimeTicks::Now()),
+      client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+      is_parent_frame_secure_(is_parent_frame_secure),
+      is_initiated_by_prefetch_(true),
+      client_info_(ServiceWorkerClientInfo()),
+      process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
+      network_url_loader_factory_for_prefetch_(
+          std::move(network_url_loader_factory_for_prefetch)) {
   DCHECK(context_);
 }
 
@@ -484,6 +499,9 @@ ServiceWorkerClient::CommitResponse(
       base::PassKey<ServiceWorkerClient>(), AsWeakPtr(), container_info,
       policy_container_policies, std::move(coep_reporter),
       std::move(dip_reporter), std::move(ukm_source_id));
+
+  // `network_url_loader_factory_for_prefetch_` is no longer used after commit.
+  network_url_loader_factory_for_prefetch_.reset();
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 
@@ -1239,6 +1257,17 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
   if (network_url_loader_factory_override_for_testing_) {
     CHECK_IS_TEST();
     return network_url_loader_factory_override_for_testing_;
+  }
+
+  if (is_initiated_by_prefetch_) {
+    // We skip `WillCreateURLLoaderFactory` below, because it is already
+    // included in `network_url_loader_factory_for_prefetch_` (see
+    // `PrefetchNetworkContext::CreateNewURLLoaderFactory()`).
+    // We also skip `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`,
+    // because this is a prefetch request and don't have to consult with search
+    // prefetch cache via
+    // `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`.
+    return network_url_loader_factory_for_prefetch_;
   }
 
   switch (type) {
