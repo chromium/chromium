@@ -393,6 +393,41 @@ void AppendValuesForMaskClipAndOrigin(CSSValueList* result_list,
   }
 }
 
+// Returns a list for a <gap-rule>. A <gap-rule> is defined as:
+// [ <line-width> || <line-style> || <color> ]. The computed value serialization
+// should follow the shortest serialization principle, making it consistent with
+// the specified serialization.
+CSSValueList* GetValueListForGapRule(const CSSValue& width_value,
+                                     const CSSValue& style_value,
+                                     const CSSValue& color_value) {
+  CSSValueList* result_list = CSSValueList::CreateSpaceSeparated();
+
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(width_value);
+      !(ident_value && ident_value->GetValueID() == CSSValueID::kMedium) &&
+      !width_value.IsInitialValue()) {
+    result_list->Append(width_value);
+  }
+
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(style_value);
+      !(ident_value && ident_value->GetValueID() == CSSValueID::kNone) &&
+      !style_value.IsInitialValue()) {
+    result_list->Append(style_value);
+  }
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(color_value);
+      !(ident_value &&
+        ident_value->GetValueID() == CSSValueID::kCurrentcolor) &&
+      !color_value.IsInitialValue()) {
+    result_list->Append(color_value);
+  }
+
+  if (result_list->length() == 0) {
+    const CSSValue* default_width =
+        CSSIdentifierValue::Create(CSSValueID::kMedium);
+    result_list->Append(*default_width);
+  }
+  return result_list;
+}
+
 }  // namespace
 
 const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
@@ -3880,8 +3915,17 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
   // behavior of handling the shorthand since values are stored as single
   // values and not lists.
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return ValuesForShorthandProperty(shorthand, style, layout_object,
-                                      allow_visited_style, value_phase);
+    const CSSValue* width_value =
+        shorthand.properties()[0]->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style, value_phase);
+    const CSSValue* style_value =
+        shorthand.properties()[1]->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style, value_phase);
+    const CSSValue* color_value =
+        shorthand.properties()[2]->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style, value_phase);
+
+    return GetValueListForGapRule(*width_value, *style_value, *color_value);
   }
 
   CHECK_EQ(shorthand.length(), 3u);
@@ -3982,10 +4026,10 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       }
 
       for (size_t j = 0; j < rules_count; ++j) {
-        CSSValueList* gap_rule = CSSValueList::CreateSpaceSeparated();
-        gap_rule->Append(width_repeat_value->Values().Item(j));
-        gap_rule->Append(style_repeat_value->Values().Item(j));
-        gap_rule->Append(color_repeat_value->Values().Item(j));
+        CSSValueList* gap_rule =
+            GetValueListForGapRule(width_repeat_value->Values().Item(j),
+                                   style_repeat_value->Values().Item(j),
+                                   color_repeat_value->Values().Item(j));
         repeated_gap_rules->Append(*gap_rule);
       }
 
@@ -4005,10 +4049,8 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
         return nullptr;
       }
 
-      CSSValueList* gap_rule = CSSValueList::CreateSpaceSeparated();
-      gap_rule->Append(width_values->Item(i));
-      gap_rule->Append(style_values->Item(i));
-      gap_rule->Append(color_values->Item(i));
+      CSSValueList* gap_rule = GetValueListForGapRule(
+          width_values->Item(i), style_values->Item(i), color_values->Item(i));
       result->Append(*gap_rule);
     }
   }
