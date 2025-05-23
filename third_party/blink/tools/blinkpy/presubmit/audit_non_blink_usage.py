@@ -2393,8 +2393,6 @@ _CONFIG = [
         ],
         'allowed': [
             'attribution_reporting::features::.*',
-            # TODO(crbug.com/385173568): Remove after AIPromptAPIForExtension OT.
-            'base::CommandLine',
         ]
     },
     {

@@ -212,8 +212,6 @@ specific_include_rules = {
     "media_values.h": [
         "+ui/base/pointer/pointer_device.h",
     ],
-    # TODO(crbug.com/385173568): Remove after AIPromptAPIForExtension OT.
-    "origin_trial_context.cc": [ "+base/command_line.h" ],
     "scripted_idle_task_controller(_test)?.(cc|h)": [
         "+base/task/delayed_task_handle.h",
     ],

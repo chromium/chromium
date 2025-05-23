@@ -1704,11 +1704,16 @@ void ChromeContentRendererClient::
     blink::WebRuntimeFeatures::EnableAdTagging(true);
 
   if (IsStandaloneContentExtensionProcess()) {
-    // These Web APIs are only exposed to workers in extensions.
+    // These Web API features are exposed in extensions.
     blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
 #if !BUILDFLAG(IS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
+    if (blink::WebRuntimeFeatures::IsAIPromptAPIForExtensionEnabled() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kAIPromptAPIForExtension)) {
+      blink::WebRuntimeFeatures::EnableAIPromptAPI(true);
+    }
     blink::WebRuntimeFeatures::EnableAIPromptAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAIRewriterAPIForWorkers(true);
     blink::WebRuntimeFeatures::EnableAISummarizationAPIForWorkers(true);
