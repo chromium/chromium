@@ -28,8 +28,7 @@
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
@@ -697,7 +696,7 @@ ApplyUpdateResult V4Store::MergeUpdate(
 
   bool calculate_checksum = !expected_checksum.empty();
   if (calculate_checksum &&
-      (expected_checksum.size() != crypto::kSHA256Length)) {
+      (expected_checksum.size() != crypto::hash::kSha256Size)) {
     return CHECKSUM_MISMATCH_FAILURE;
   }
 
@@ -720,8 +719,7 @@ ApplyUpdateResult V4Store::MergeUpdate(
   // At least one of the maps still has elements that need to be merged into the
   // new store.
 
-  std::unique_ptr<crypto::SecureHash> checksum_ctx(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
 
   // Keep track of the number of elements picked from the old map. This is used
   // to determine which elements to drop based on the raw_removals. Note that
@@ -760,8 +758,7 @@ ApplyUpdateResult V4Store::MergeUpdate(
                                  next_smallest_prefix_old);
 
         if (calculate_checksum) {
-          checksum_ctx->Update(next_smallest_prefix_old.data(),
-                               next_smallest_prefix_size);
+          checksum_ctx.Update(next_smallest_prefix_old);
         }
       } else {
         // Element not added to new map. Move the removals iterator forward.
@@ -781,8 +778,7 @@ ApplyUpdateResult V4Store::MergeUpdate(
                                next_smallest_prefix_additions);
 
       if (calculate_checksum) {
-        checksum_ctx->Update(next_smallest_prefix_additions.data(),
-                             next_smallest_prefix_size);
+        checksum_ctx.Update(next_smallest_prefix_additions);
       }
 
       // Update the iterator map, which means that we have merged one hash
@@ -802,21 +798,17 @@ ApplyUpdateResult V4Store::MergeUpdate(
   }
 
   if (calculate_checksum) {
-    std::array<char, crypto::kSHA256Length> checksum;
-    checksum_ctx->Finish(checksum.data(), checksum.size());
-    for (size_t i = 0; i < crypto::kSHA256Length; i++) {
-      if (checksum[i] != expected_checksum[i]) {
+    std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+    checksum_ctx.Finish(checksum);
+    auto expected = base::as_byte_span(expected_checksum);
+    if (expected != checksum) {
 #if DCHECK_IS_ON()
-        std::string checksum_b64 =
-            base::Base64Encode(base::as_byte_span(checksum));
-        std::string expected_checksum_b64 =
-            base::Base64Encode(expected_checksum);
-        DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
-                 << "; expected: " << expected_checksum_b64
-                 << "; store: " << *this;
+      std::string checksum_b64 = base::Base64Encode(checksum);
+      std::string expected_b64 = base::Base64Encode(expected);
+      DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
+               << "; expected: " << expected_b64 << "; store: " << *this;
 #endif
-        return CHECKSUM_MISMATCH_FAILURE;
-      }
+      return CHECKSUM_MISMATCH_FAILURE;
     }
   }
 
@@ -988,8 +980,7 @@ bool V4Store::VerifyChecksum() {
   bool has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,
                                                     &next_smallest_prefix);
 
-  std::unique_ptr<crypto::SecureHash> checksum_ctx(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  crypto::hash::Hasher checksum_ctx(crypto::hash::HashKind::kSha256);
   while (has_unmerged) {
 #if DCHECK_IS_ON()
     // This is expensive (see https://crbug.com/373928217), but it's
@@ -1027,33 +1018,28 @@ bool V4Store::VerifyChecksum() {
     // prefix of size |next_smallest_prefix_size| from hash_prefix_map_.
     iterator_map[next_smallest_prefix_size] += next_smallest_prefix_size;
 
-    checksum_ctx->Update(next_smallest_prefix.data(),
-                         next_smallest_prefix_size);
+    checksum_ctx.Update(next_smallest_prefix);
 
     // Find the next smallest unmerged element in the map.
     has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,
                                                  &next_smallest_prefix);
   }
 
-  std::array<char, crypto::kSHA256Length> checksum;
-  checksum_ctx->Finish(checksum.data(), checksum.size());
-  for (size_t i = 0; i < crypto::kSHA256Length; i++) {
-    if (checksum[i] != expected_checksum_[i]) {
-      RecordApplyUpdateResult(kReadFromDisk, CHECKSUM_MISMATCH_FAILURE,
-                              store_path_);
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  checksum_ctx.Finish(checksum);
+  auto expected = base::as_byte_span(expected_checksum_);
+  if (expected != checksum) {
+    RecordApplyUpdateResult(kReadFromDisk, CHECKSUM_MISMATCH_FAILURE,
+                            store_path_);
 #if DCHECK_IS_ON()
-      std::string checksum_b64 =
-          base::Base64Encode(base::as_byte_span(checksum));
-      std::string expected_checksum_b64 =
-          base::Base64Encode(expected_checksum_);
-      DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
-               << "; expected: " << expected_checksum_b64
-               << "; store: " << *this;
+    std::string checksum_b64 = base::Base64Encode(base::as_byte_span(checksum));
+    std::string expected_checksum_b64 = base::Base64Encode(expected_checksum_);
+    DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
+             << "; expected: " << expected_checksum_b64 << "; store: " << *this;
 #endif
-      RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
-                                   store_path_);
-      return false;
-    }
+    RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
+                                 store_path_);
+    return false;
   }
 
   RecordVerifyChecksumDuration(kReadFromDisk, thread_timer.Elapsed(),
