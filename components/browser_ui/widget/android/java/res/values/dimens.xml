@@ -20,6 +20,7 @@ found in the LICENSE file.
     <dimen name="focused_icon_background_stroke_width">2dp</dimen>
     <dimen name="cpa_button_background_radius_is_checked">12dp</dimen>
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
+    <dimen name="toolbar_progress_bar_increased_height">4dp</dimen>
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>

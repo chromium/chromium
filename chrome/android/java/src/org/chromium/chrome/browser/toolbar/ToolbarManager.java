@@ -1039,6 +1039,13 @@ public class ToolbarManager
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
         ViewStub progressBarStub = mActivity.findViewById(R.id.progress_bar_stub);
+        if (ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled()) {
+            ViewGroup.LayoutParams progressBarParams = progressBarStub.getLayoutParams();
+            progressBarParams.height = mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_progress_bar_increased_height);
+            progressBarStub.setLayoutParams(progressBarParams);
+        }
+
         mProgressBarContainer = progressBarStub.inflate();
         ToolbarProgressBar progressBar =
                 mProgressBarContainer.findViewById(R.id.toolbar_progress_bar);

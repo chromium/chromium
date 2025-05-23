@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.SnapScrollHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** This class handles snap scroll for the search box on a {@link NewTabPage}. */
 public class SnapScrollHelperImpl implements SnapScrollHelper {
@@ -43,9 +44,14 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         mUpdateSearchBoxOnScrollRunnable = mNewTabPageLayout::updateSearchBoxOnScroll;
 
         Resources res = newTabPageLayout.getResources();
-        mToolbarHeight =
-                res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+        if (ChromeFeatureList.sAndroidProgressBarVisualUpdate.isEnabled()) {
+            mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                    + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_increased_height);
+        } else {
+            mToolbarHeight =
+                    res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                            + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+        }
         mSearchBoxTransitionStartOffset =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
         mSearchBoxTransitionEndOffset =

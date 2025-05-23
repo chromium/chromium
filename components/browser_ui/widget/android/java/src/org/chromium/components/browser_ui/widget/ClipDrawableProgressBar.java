@@ -58,7 +58,7 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private GradientDrawable mEndCapCircleDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
-    protected int mProgressBarHeight;
+    protected final int mProgressBarHeight;
     private float mProgress;
     private int mDesiredVisibility;
 
@@ -78,8 +78,13 @@ public class ClipDrawableProgressBar extends ImageView {
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
         mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
-        mProgressBarHeight = getResources().getDimensionPixelSize(
-                R.dimen.toolbar_progress_bar_height);
+        if (useGradientDrawable()) {
+            mProgressBarHeight = getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_progress_bar_increased_height);
+        } else {
+            mProgressBarHeight = getResources().getDimensionPixelSize(
+                    R.dimen.toolbar_progress_bar_height);
+        }
         initializeDrawables();
         setBackgroundColor(mBackgroundColor);
     }
