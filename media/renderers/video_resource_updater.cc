@@ -807,13 +807,20 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return external_resource;
   }
 
-  auto transfer_resource = viz::TransferableResource::MakeGpu(
-      shared_image->mailbox(), shared_image->GetTextureTarget(),
-      video_frame->acquire_sync_token(), video_frame->coded_size(),
-      shared_image->format(), video_frame->metadata().allow_overlay,
-      viz::TransferableResource::ResourceSource::kVideo);
-  transfer_resource.origin = shared_image->surface_origin();
-  transfer_resource.color_space = video_frame->ColorSpace();
+  SkAlphaType alpha_type =
+      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+          ? kPremul_SkAlphaType
+          : kUnpremul_SkAlphaType;
+
+  viz::TransferableResource::MetadataOverride overrides = {
+      .size = video_frame->coded_size(),
+      .is_overlay_candidate = video_frame->metadata().allow_overlay,
+      .color_space = video_frame->ColorSpace(),
+      .alpha_type = alpha_type,
+  };
+  auto transfer_resource = viz::TransferableResource::Make(
+      shared_image, viz::TransferableResource::ResourceSource::kVideo,
+      video_frame->acquire_sync_token(), overrides);
   transfer_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
   transfer_resource.needs_detiling = video_frame->metadata().needs_detiling;
@@ -822,10 +829,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
   transfer_resource.ycbcr_info = video_frame->ycbcr_info();
-  transfer_resource.alpha_type =
-      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
-          ? kPremul_SkAlphaType
-          : kUnpremul_SkAlphaType;
 
 #if BUILDFLAG(IS_ANDROID)
   transfer_resource.is_backed_by_surface_view =
