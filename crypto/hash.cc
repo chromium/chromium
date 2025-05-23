@@ -18,6 +18,8 @@ const EVP_MD* EVPMDForHashKind(HashKind kind) {
       return EVP_sha1();
     case HashKind::kSha256:
       return EVP_sha256();
+    case HashKind::kSha384:
+      return EVP_sha384();
     case HashKind::kSha512:
       return EVP_sha512();
   }
