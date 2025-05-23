@@ -116,10 +116,6 @@ const char* const kCopyToKnownUserPrefs[] = {
     ::prefs::kUse24HourClock,
     prefs::kDarkModeEnabled};
 
-bool AreScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
-}
-
 }  // namespace
 
 Preferences::Preferences()
@@ -997,12 +993,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = mouse_sensitivity_.GetValue();
     if (user_is_active) {
       mouse_settings.SetSensitivity(sensitivity_int);
-
-      // With the flag off, also set scroll sensitivity (legacy fallback).
-      // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed()) {
-        mouse_settings.SetScrollSensitivity(sensitivity_int);
-      }
     }
     ReportSensitivityPrefApplication(reason, "Mouse.PointerSensitivity.Changed",
                                      "Mouse.PointerSensitivity.Started",
@@ -1010,11 +1000,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseScrollSensitivity) {
-    // With the flag off, use to normal sensitivity (legacy fallback).
-    // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = AreScrollSettingsAllowed()
-                                    ? mouse_scroll_sensitivity_.GetValue()
-                                    : mouse_sensitivity_.GetValue();
+    const int sensitivity_int = mouse_scroll_sensitivity_.GetValue();
     if (user_is_active) {
       mouse_settings.SetScrollSensitivity(sensitivity_int);
     }
@@ -1034,12 +1020,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = touchpad_sensitivity_.GetValue();
     if (user_is_active) {
       touchpad_settings.SetSensitivity(sensitivity_int);
-
-      // With the flag off, also set scroll sensitivity (legacy fallback).
-      // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed()) {
-        touchpad_settings.SetScrollSensitivity(sensitivity_int);
-      }
     }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.PointerSensitivity.Changed",
@@ -1047,11 +1027,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadScrollSensitivity) {
-    // With the flag off, use normal sensitivity (legacy fallback).
-    // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = AreScrollSettingsAllowed()
-                                    ? touchpad_scroll_sensitivity_.GetValue()
-                                    : touchpad_sensitivity_.GetValue();
+    const int sensitivity_int = touchpad_scroll_sensitivity_.GetValue();
     if (user_is_active) {
       touchpad_settings.SetScrollSensitivity(sensitivity_int);
     }

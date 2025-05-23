@@ -8148,10 +8148,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLinkCrossDeviceInternalsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLinkCrossDeviceInternals)},
 
-    {"allow-scroll-settings", flag_descriptions::kAllowScrollSettingsName,
-     flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAllowScrollSettings)},
-
     {"block-telephony-device-phone-mute",
      flag_descriptions::kBlockTelephonyDevicePhoneMuteName,
      flag_descriptions::kBlockTelephonyDevicePhoneMuteDescription, kOsCrOS,

@@ -3618,9 +3618,6 @@ extern const char kAllowCrossDeviceFeatureSuiteDescription[];
 extern const char kLinkCrossDeviceInternalsName[];
 extern const char kLinkCrossDeviceInternalsDescription[];
 
-extern const char kAllowScrollSettingsName[];
-extern const char kAllowScrollSettingsDescription[];
-
 extern const char kAllowUserInstalledChromeAppsName[];
 extern const char kAllowUserInstalledChromeAppsDescription[];
 
