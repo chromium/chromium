@@ -36,7 +36,8 @@ class CORE_EXPORT Variable : public Longhand {
       : Longhand(CSSPropertyID::kVariable,
                  kProperty | kValidForFirstLetter | kValidForFirstLine |
                      kValidForMarker | kValidForHighlightLegacy |
-                     kValidForHighlight | flags,
+                     kValidForHighlight | kNotVisited | kNotAnimation |
+                     kNotLegacyOverlapping | flags,
                  '\0') {}
 };
 

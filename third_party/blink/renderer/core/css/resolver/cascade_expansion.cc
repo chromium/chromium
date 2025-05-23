@@ -19,21 +19,21 @@ CascadeFilter AddValidPropertiesFilter(
     case ValidPropertyFilter::kNoFilter:
       return filter;
     case ValidPropertyFilter::kCue:
-      return filter.Add(CSSProperty::kValidForCue, false);
+      return filter.Add(CSSProperty::kValidForCue);
     case ValidPropertyFilter::kFirstLetter:
-      return filter.Add(CSSProperty::kValidForFirstLetter, false);
+      return filter.Add(CSSProperty::kValidForFirstLetter);
     case ValidPropertyFilter::kFirstLine:
-      return filter.Add(CSSProperty::kValidForFirstLine, false);
+      return filter.Add(CSSProperty::kValidForFirstLine);
     case ValidPropertyFilter::kMarker:
-      return filter.Add(CSSProperty::kValidForMarker, false);
+      return filter.Add(CSSProperty::kValidForMarker);
     case ValidPropertyFilter::kHighlightLegacy:
-      return filter.Add(CSSProperty::kValidForHighlightLegacy, false);
+      return filter.Add(CSSProperty::kValidForHighlightLegacy);
     case ValidPropertyFilter::kHighlight:
-      return filter.Add(CSSProperty::kValidForHighlight, false);
+      return filter.Add(CSSProperty::kValidForHighlight);
     case ValidPropertyFilter::kPositionTry:
-      return filter.Add(CSSProperty::kValidForPositionTry, false);
+      return filter.Add(CSSProperty::kValidForPositionTry);
     case ValidPropertyFilter::kPageContext:
-      return filter.Add(CSSProperty::kValidForPageContext, false);
+      return filter.Add(CSSProperty::kValidForPageContext);
   }
 }
 
@@ -41,13 +41,13 @@ CascadeFilter AddLinkFilter(CascadeFilter filter,
                             const MatchedProperties& matched_properties) {
   switch (matched_properties.data_.link_match_type) {
     case CSSSelector::kMatchVisited:
-      return filter.Add(CSSProperty::kVisited, false);
+      return filter.Add(CSSProperty::kVisited);
     case CSSSelector::kMatchLink:
-      return filter.Add(CSSProperty::kVisited, true);
+      return filter.Add(CSSProperty::kNotVisited);
     case CSSSelector::kMatchAll:
       return filter;
     default:
-      return filter.Add(CSSProperty::kProperty, true);
+      return filter.Add(CSSProperty::kVisited).Add(CSSProperty::kNotVisited);
   }
 }
 

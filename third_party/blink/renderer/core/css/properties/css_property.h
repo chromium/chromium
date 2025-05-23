@@ -214,10 +214,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // computed value as seen by painting (as opposed to the computed value
     // seen by CSSOM, which is represented by the unvisited property).
     kVisited = 1 << 7,
+    kNotVisited = 1ull << 33,  // Properties that are not kVisited.
     kInternal = 1 << 8,
     // Animation properties have this flag set. (I.e. longhands of the
     // 'animation' and 'transition' shorthands).
     kAnimation = 1 << 9,
+    kNotAnimation = 1ull << 34,  // Properties that are not kAnimation.
     // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling
     kValidForFirstLetter = 1 << 10,
     // https://w3c.github.io/webvtt/#the-cue-pseudo-element
@@ -256,6 +258,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kOverlapping = 1 << 25,
     // See legacy_overlapping in css_properties.json5.
     kLegacyOverlapping = 1 << 26,
+    // Properties that are not kLegacyOverlapping.
+    kNotLegacyOverlapping = 1ull << 35,
     // See valid_for_keyframes in css_properties.json5
     kValidForKeyframe = 1 << 27,
     // See valid_for_position_try in css_properties.json5
@@ -268,6 +272,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForPermissionElement = 1ull << 31,
     // See valid_for_limited_page_context in css_properties.json5
     kValidForPageContext = 1ull << 32,
+    // 1ull << 33 is taken by kNotVisited above.
+    // 1ull << 34 is taken by kNotAnimation above.
+    // 1ull << 35 is taken by kNotLegacyOverlapping above.
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
@@ -275,7 +282,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
                         char repetition_separator)
       : property_id_(static_cast<uint16_t>(property_id)),
         repetition_separator_(repetition_separator),
-        flags_(flags) {}
+        flags_(flags) {
+    // Verify that all the kNot* flags are consistent.
+    DCHECK_NE(flags_ & kVisited, flags & kNotVisited);
+    DCHECK_NE(flags_ & kAnimation, flags & kNotAnimation);
+    DCHECK_NE(flags_ & kLegacyOverlapping, flags & kNotLegacyOverlapping);
+  }
 
   enum class ValueMode {
     kNormal,

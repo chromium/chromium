@@ -554,7 +554,7 @@ int HTMLPermissionElement::DefaultTabIndex() const {
 
 CascadeFilter HTMLPermissionElement::GetCascadeFilter() const {
   // Reject all properties for which 'kValidForPermissionElement' is false.
-  return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
+  return CascadeFilter(CSSProperty::kValidForPermissionElement);
 }
 
 bool HTMLPermissionElement::CanGeneratePseudoElement(PseudoId id) const {

@@ -2316,14 +2316,14 @@ TEST_F(StyleCascadeTest, AnimationApplyFilter) {
   TestCascade cascade(GetDocument());
 
   cascade.Add("animation: test linear 10s -5s");
-  cascade.Add("color:green");
+  cascade.Add("background-color:green");
   cascade.Apply();
 
   cascade.AddInterpolations();
-  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited));
 
-  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
-  EXPECT_EQ("rgb(192, 192, 192)", cascade.ComputedValue("background-color"));
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("background-color"));
+  EXPECT_EQ("rgb(192, 192, 192)", cascade.ComputedValue("color"));
 }
 
 TEST_F(StyleCascadeTest, TransitionApplyFilter) {
@@ -2347,10 +2347,10 @@ TEST_F(StyleCascadeTest, TransitionApplyFilter) {
   cascade2.Apply();
 
   cascade2.AddInterpolations();
-  cascade2.Apply(CascadeFilter(CSSProperty::kInherited, true));
+  cascade2.Apply(CascadeFilter(CSSProperty::kInherited));
 
-  EXPECT_EQ("rgb(128, 128, 128)", cascade2.ComputedValue("color"));
-  EXPECT_EQ("rgb(192, 192, 192)", cascade2.ComputedValue("background-color"));
+  EXPECT_EQ("rgb(128, 128, 128)", cascade2.ComputedValue("background-color"));
+  EXPECT_EQ("rgb(192, 192, 192)", cascade2.ComputedValue("color"));
 }
 
 TEST_F(StyleCascadeTest, PendingKeyframeAnimation) {
@@ -3391,7 +3391,7 @@ TEST_F(StyleCascadeTest, ApplyWithFilter) {
   cascade.Add("color", "green", Origin::kAuthor);
   cascade.Add("background-color", "red", Origin::kAuthor);
   cascade.Add("display", "block", Origin::kAuthor);
-  cascade.Apply(CascadeFilter(CSSProperty::kInherited, false));
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited));
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("background-color"));
   EXPECT_EQ("inline", cascade.ComputedValue("display"));
@@ -3404,7 +3404,7 @@ TEST_F(StyleCascadeTest, FilterWebkitBorderImage) {
   cascade.Add(
       "-webkit-border-image:linear-gradient(green, red) 4 / 5 / 6 round",
       Origin::kAuthor);
-  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, true));
+  cascade.Apply(CascadeFilter(CSSProperty::kNotLegacyOverlapping));
   EXPECT_EQ("linear-gradient(rgb(0, 128, 0), rgb(255, 0, 0)) 1 / 2 / 3 round",
             cascade.ComputedValue("-webkit-border-image"));
 }
@@ -3414,7 +3414,7 @@ TEST_F(StyleCascadeTest, FilterPerspectiveOrigin) {
   cascade.Add("-webkit-perspective-origin-x:10px");
   cascade.Add("-webkit-perspective-origin-y:20px");
   cascade.Add("perspective-origin:30px 40px");
-  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, false));
+  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping));
   EXPECT_EQ("10px 20px", cascade.ComputedValue("perspective-origin"));
 }
 
@@ -3424,7 +3424,7 @@ TEST_F(StyleCascadeTest, FilterTransformOrigin) {
   cascade.Add("-webkit-transform-origin-y:20px");
   cascade.Add("-webkit-transform-origin-z:30px");
   cascade.Add("transform-origin:40px 50px 60px");
-  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, false));
+  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping));
   EXPECT_EQ("10px 20px 30px", cascade.ComputedValue("transform-origin"));
 }
 
@@ -3579,16 +3579,16 @@ TEST_F(StyleCascadeTest, AnalyzeFlagsClean) {
 TEST_F(StyleCascadeTest, ApplyMatchResultFilter) {
   TestCascade cascade(GetDocument());
   cascade.Add("display:block");
-  cascade.Add("color:green");
+  cascade.Add("color:red");
   cascade.Add("font-size:3px");
   cascade.Apply();
 
   cascade.Reset();
   cascade.Add("display:inline");
-  cascade.Add("color:red");
-  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+  cascade.Add("color:green");
+  cascade.Apply(CascadeFilter(CSSProperty::kSupportsIncrementalStyle));
 
-  EXPECT_EQ("inline", cascade.ComputedValue("display"));
+  EXPECT_EQ("block", cascade.ComputedValue("display"));
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
   EXPECT_EQ("3px", cascade.ComputedValue("font-size"));
 }
@@ -3601,10 +3601,10 @@ TEST_F(StyleCascadeTest, ApplyMatchResultAllFilter) {
 
   cascade.Reset();
   cascade.Add("all:unset");
-  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+  cascade.Apply(CascadeFilter(CSSProperty::kSupportsIncrementalStyle));
 
-  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
-  EXPECT_EQ("inline", cascade.ComputedValue("display"));
+  EXPECT_EQ("rgb(0, 0, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ("block", cascade.ComputedValue("display"));
 }
 
 TEST_F(StyleCascadeTest, MarkHasReferenceLonghand) {

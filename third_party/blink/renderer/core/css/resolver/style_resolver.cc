@@ -2543,16 +2543,16 @@ bool StyleResolver::ApplyAnimatedStyle(
     CascadeFilter filter =
         UltimateOriginatingElementOrSelf(state.GetElement()).GetCascadeFilter();
     if (state.StyleBuilder().StyleType() == kPseudoIdMarker) {
-      filter = filter.Add(CSSProperty::kValidForMarker, false);
+      filter = filter.Add(CSSProperty::kValidForMarker);
     }
     if (IsHighlightPseudoElement(state.StyleBuilder().StyleType())) {
       if (UsesHighlightPseudoInheritance(state.StyleBuilder().StyleType())) {
-        filter = filter.Add(CSSProperty::kValidForHighlight, false);
+        filter = filter.Add(CSSProperty::kValidForHighlight);
       } else {
-        filter = filter.Add(CSSProperty::kValidForHighlightLegacy, false);
+        filter = filter.Add(CSSProperty::kValidForHighlightLegacy);
       }
     }
-    filter = filter.Add(CSSProperty::kAnimation, true);
+    filter = filter.Add(CSSProperty::kNotAnimation);
 
     cascade.Apply(filter);
 
@@ -3003,12 +3003,12 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
   // while filtering out such properties. If the filter did reject
   // any legacy overlapping properties, we apply all overlapping properties
   // again to get the correct result.
-  cascade.Apply(filter.Add(CSSProperty::kLegacyOverlapping, true));
+  cascade.Apply(filter.Add(CSSProperty::kNotLegacyOverlapping));
 
   if (state.RejectedLegacyOverlapping()) {
     const ComputedStyle* non_legacy_style = state.StyleBuilder().CloneStyle();
     // Re-apply all overlapping properties (both legacy and non-legacy).
-    cascade.Apply(filter.Add(CSSProperty::kOverlapping, false));
+    cascade.Apply(filter.Add(CSSProperty::kOverlapping));
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
                               state.StyleBuilder());
   }

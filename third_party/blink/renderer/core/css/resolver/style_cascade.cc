@@ -639,7 +639,7 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   };
 
   const CSSProperty& webkit_border_image = GetCSSPropertyWebkitBorderImage();
-  if (!resolver.filter_.Rejects(webkit_border_image)) {
+  if (resolver.filter_.Accepts(webkit_border_image)) {
     if (const CascadePriority* priority =
             map_.Find(webkit_border_image.GetCSSPropertyName())) {
       LookupAndApply(webkit_border_image, resolver);
@@ -652,7 +652,7 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   }
 
   const CSSProperty& perspective_origin = GetCSSPropertyPerspectiveOrigin();
-  if (!resolver.filter_.Rejects(perspective_origin)) {
+  if (resolver.filter_.Accepts(perspective_origin)) {
     if (const CascadePriority* priority =
             map_.Find(perspective_origin.GetCSSPropertyName())) {
       LookupAndApply(perspective_origin, resolver);
@@ -662,7 +662,7 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   }
 
   const CSSProperty& transform_origin = GetCSSPropertyTransformOrigin();
-  if (!resolver.filter_.Rejects(transform_origin)) {
+  if (resolver.filter_.Accepts(transform_origin)) {
     if (const CascadePriority* priority =
             map_.Find(transform_origin.GetCSSPropertyName())) {
       LookupAndApply(transform_origin, resolver);
@@ -675,7 +675,7 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   // vertical-align will become a shorthand in the future - in order to
   // mitigate the forward compat risk, skip the baseline-source longhand.
   const CSSProperty& vertical_align = GetCSSPropertyVerticalAlign();
-  if (!resolver.filter_.Rejects(vertical_align)) {
+  if (resolver.filter_.Accepts(vertical_align)) {
     if (const CascadePriority* priority =
             map_.Find(vertical_align.GetCSSPropertyName())) {
       LookupAndApply(vertical_align, resolver);
@@ -688,7 +688,7 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   // a ComputedStyle location, and therefore need to be handled here.
   const CSSProperty& webkit_box_decoration_break =
       GetCSSPropertyWebkitBoxDecorationBreak();
-  if (!resolver.filter_.Rejects(webkit_box_decoration_break)) {
+  if (resolver.filter_.Accepts(webkit_box_decoration_break)) {
     if (const CascadePriority* priority =
             map_.Find(webkit_box_decoration_break.GetCSSPropertyName())) {
       LookupAndApply(webkit_box_decoration_break, resolver);
