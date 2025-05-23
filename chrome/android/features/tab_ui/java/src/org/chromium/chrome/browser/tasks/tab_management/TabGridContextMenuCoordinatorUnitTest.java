@@ -391,9 +391,9 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.move_tab_to_group, getMenuItemTitleId(0));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
-        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.share, getMenuItemTitleId(0));
+        assertEquals(R.string.menu_move_tab_to_group, getMenuItemTitleId(1));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
         assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
@@ -406,9 +406,9 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
-        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.share, getMenuItemTitleId(0));
+        assertEquals(R.string.menu_add_tab_to_group, getMenuItemTitleId(1));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
         assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
@@ -421,9 +421,9 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
-        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.share, getMenuItemTitleId(0));
+        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(1));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
         assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
@@ -438,9 +438,9 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
-        assertEquals(R.string.edit_bookmark, getMenuItemTitleId(1));
-        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.share, getMenuItemTitleId(0));
+        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(1));
+        assertEquals(R.string.edit_bookmark, getMenuItemTitleId(2));
         assertEquals(R.string.select_tab, getMenuItemTitleId(3));
         assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
@@ -453,7 +453,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());
-        assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.menu_add_tab_to_group, getMenuItemTitleId(0));
         assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
         assertEquals(R.string.select_tab, getMenuItemTitleId(2));
         assertEquals(R.string.close_tab, getMenuItemTitleId(3));
@@ -467,11 +467,23 @@ public class TabGridContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testGetMenuWidth() {
+    public void testGetMenuWidth_withTabGroups() {
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
         assertEquals(
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.tab_switcher_context_menu_max_width),
+                        .getDimensionPixelSize(R.dimen.tab_grid_context_menu_max_width),
+                // Provide an arbitrary value for anchorViewWidthPx for the test.
+                mCoordinator.getMenuWidth(/* anchorViewWidthPx= */ 0));
+    }
+
+    @Test
+    public void testGetMenuWidth_noTabGroups() {
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_grid_context_menu_extended_width),
                 // Provide an arbitrary value for anchorViewWidthPx for the test.
                 mCoordinator.getMenuWidth(/* anchorViewWidthPx= */ 0));
     }

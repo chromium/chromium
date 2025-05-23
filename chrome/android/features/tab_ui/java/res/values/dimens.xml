@@ -162,8 +162,9 @@ found in the LICENSE file.
     <dimen name="tab_group_list_item_small_radius">3dp</dimen>
     <dimen name="tab_group_list_item_large_radius">24dp</dimen>
 
-    <!-- Dimens for tab switcher context menu. -->
-    <dimen name="tab_switcher_context_menu_max_width">225dp</dimen>
+    <!-- Dimens for tab grid context menu. -->
+    <dimen name="tab_grid_context_menu_max_width">225dp</dimen>
+    <dimen name="tab_grid_context_menu_extended_width">250dp</dimen>
 
     <!-- Dimens for archived tabs auto delete promo -->
     <dimen name="archived_tabs_auto_delete_bottom_sheet_container_dimen">80dp</dimen>

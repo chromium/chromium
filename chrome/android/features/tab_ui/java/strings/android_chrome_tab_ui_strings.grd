@@ -989,9 +989,6 @@
       </message>
 
       <!-- Tab context menu (for individual tabs) -->
-      <message name="IDS_ADD_TAB_TO_GROUP" desc="Content description for an action which adds a tab to a group.">
-        Add tab to group
-      </message>
       <message name="IDS_SELECT_TAB" desc="Content description for an action which selects a singular tab.">
         Select tab
       </message>
@@ -1002,9 +999,6 @@
         {WINDOW_COUNT, plural,
           =1 {Move tab to new window}
           other {Move tab to another window}}
-      </message>
-      <message name="IDS_MOVE_TAB_TO_GROUP" desc="Content description for an action which moves a tab to another group.">
-        Move to group
       </message>
 
       <!-- Tab Group List Bottom Sheet -->

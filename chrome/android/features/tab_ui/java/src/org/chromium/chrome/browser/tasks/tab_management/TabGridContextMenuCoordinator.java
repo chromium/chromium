@@ -203,18 +203,24 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
         if (tab == null) return;
 
+        if (ShareUtils.shouldEnableShare(tab)) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.share, R.id.share_tab, R.drawable.tab_list_editor_share_icon));
+        }
+
         if (mTabGroupModelFilter.getTabGroupCount() == 0) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.menu_add_to_new_group,
+                            R.string.menu_add_tab_to_new_group,
                             R.id.add_to_new_tab_group,
                             R.drawable.ic_widgets));
         } else {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             tab.getTabGroupId() == null
-                                    ? R.string.add_tab_to_group
-                                    : R.string.move_tab_to_group,
+                                    ? R.string.menu_add_tab_to_group
+                                    : R.string.menu_move_tab_to_group,
                             R.id.add_to_tab_group,
                             R.drawable.ic_widgets));
         }
@@ -233,12 +239,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                             R.drawable.star_outline_24dp));
         }
 
-        if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.share, R.id.share_tab, R.drawable.tab_list_editor_share_icon));
-        }
-
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.select_tab, R.id.select_tabs, R.drawable.ic_edit_24dp));
@@ -250,7 +250,10 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        return getDimensionPixelSize(R.dimen.tab_switcher_context_menu_max_width);
+        return getDimensionPixelSize(
+                mTabGroupModelFilter.getTabGroupCount() == 0
+                        ? R.dimen.tab_grid_context_menu_extended_width
+                        : R.dimen.tab_grid_context_menu_max_width);
     }
 
     @Nullable

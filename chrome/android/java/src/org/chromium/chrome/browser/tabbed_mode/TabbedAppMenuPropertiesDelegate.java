@@ -284,7 +284,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         menu.findItem(R.id.add_to_group_menu_id)
                 .setVisible(ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled())
-                .setTitle(getAddToGroupMenuItemString());
+                .setTitle(
+                        getAddToGroupMenuItemString(
+                                currentTab != null ? currentTab.getTabGroupId() : null));
 
         // Enable image descriptions if touch exploration is currently enabled, but not on the
         // native NTP.

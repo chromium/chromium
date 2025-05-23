@@ -47,7 +47,7 @@ found in the LICENSE file.
             android:title="@string/menu_new_incognito_tab"
             android:icon="@drawable/ic_incognito" />
         <item android:id="@+id/add_to_group_menu_id"
-          android:title="@string/menu_add_to_group"
+          android:title="@string/menu_add_tab_to_group"
           android:icon="@drawable/ic_widgets" />
         <item android:id="@+id/new_window_menu_id"
             android:title="@string/menu_new_window"

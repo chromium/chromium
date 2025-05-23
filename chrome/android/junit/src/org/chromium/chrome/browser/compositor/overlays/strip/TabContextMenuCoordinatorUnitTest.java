@@ -175,7 +175,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,
@@ -218,7 +218,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,
@@ -261,7 +261,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,
@@ -303,7 +303,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,
@@ -334,7 +334,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,
@@ -371,7 +371,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         assertEquals(
-                R.string.add_tab_to_group,
+                R.string.menu_add_tab_to_group,
                 modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_to_tab_group,

@@ -29,6 +29,7 @@ import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -1009,13 +1010,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
     }
 
-    public @StringRes int getAddToGroupMenuItemString() {
+    public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
         TabGroupModelFilter filter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
+        if (currentTabGroupId != null) return R.string.menu_move_tab_to_group;
         if (filter != null) {
             boolean hasGroups = filter.getTabGroupCount() != 0;
-            return hasGroups ? R.string.menu_add_to_group : R.string.menu_add_to_new_group;
+            return hasGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
         }
-        return R.string.menu_add_to_group;
+        return R.string.menu_add_tab_to_group;
     }
 }

@@ -4375,12 +4375,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NEW_TAB_GROUP" desc="Menu item for opening a new tab group. [CHAR_LIMIT=27]">
         New tab group
       </message>
-      <message name="IDS_MENU_ADD_TO_GROUP" desc="Menu item for adding a tab to a group. [CHAR_LIMIT=27]">
-        Add to group
-      </message>
-      <message name="IDS_MENU_ADD_TO_NEW_GROUP" desc="Menu item for adding a tab to a new group. [CHAR_LIMIT=27]">
-        Add to new group
-      </message>
       <message name="IDS_MENU_BOOKMARKS" desc="Menu item for opening the bookmarks page that contains all the user's bookmarks. [CHAR_LIMIT=27]">
         Bookmarks
       </message>
@@ -4475,6 +4469,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_MENU_ADD_TAB_TO_NEW_GROUP" desc="Menu item for adding a tab to a new tab group.">
         Add tab to new group
+      </message>
+      <message name="IDS_MENU_MOVE_TAB_TO_GROUP" desc="Menu item for moving a tab to another group.">
+        Move tab to group
       </message>
       <message name="IDS_MENU_OPEN_WITH" desc="Menu item to open the content with another app.">
         Open with…
