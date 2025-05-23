@@ -91,7 +91,7 @@ class AppFirewallHoleManager : public KeyedService,
   raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       observation_{this};
-  std::multimap<std::string, raw_ptr<AppFirewallHole, CtnExperimental>>
+  std::multimap<ExtensionId, raw_ptr<AppFirewallHole, CtnExperimental>>
       tracked_holes_;
 
   base::WeakPtrFactory<AppFirewallHoleManager> weak_factory_{this};
