@@ -158,17 +158,18 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
 
 EdgeImporter::EdgeImporter() = default;
 
-void EdgeImporter::StartImport(const importer::SourceProfile& source_profile,
-                               uint16_t items,
-                               ImporterBridge* bridge) {
+void EdgeImporter::StartImport(
+    const user_data_importer::SourceProfile& source_profile,
+    uint16_t items,
+    ImporterBridge* bridge) {
   bridge_ = bridge;
   bridge_->NotifyStarted();
   source_path_ = source_profile.source_path;
 
-  if ((items & importer::FAVORITES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::FAVORITES);
+  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportFavorites();
-    bridge_->NotifyItemEnded(importer::FAVORITES);
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
   bridge_->NotifyEnded();
 }

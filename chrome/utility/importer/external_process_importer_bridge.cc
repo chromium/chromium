@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "chrome/common/importer/importer_data_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 
 namespace {
 
@@ -83,7 +83,7 @@ void ExternalProcessImporterBridge::SetFavicons(
 
 void ExternalProcessImporterBridge::SetHistoryItems(
     const std::vector<user_data_importer::ImporterURLRow>& rows,
-    importer::VisitSource visit_source) {
+    user_data_importer::VisitSource visit_source) {
   observer_->OnHistoryImportStart(rows.size());
 
   // |rows_left| is required for the checks below as Windows has a
@@ -103,13 +103,13 @@ void ExternalProcessImporterBridge::SetHistoryItems(
 }
 
 void ExternalProcessImporterBridge::SetKeywords(
-    const std::vector<importer::SearchEngineInfo>& search_engines,
+    const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
     bool unique_on_host_and_path) {
   observer_->OnKeywordsImportReady(search_engines, unique_on_host_and_path);
 }
 
 void ExternalProcessImporterBridge::SetPasswordForm(
-    const importer::ImportedPasswordForm& form) {
+    const user_data_importer::ImportedPasswordForm& form) {
   observer_->OnPasswordFormImportReady(form);
 }
 
@@ -140,11 +140,12 @@ void ExternalProcessImporterBridge::NotifyStarted() {
 }
 
 void ExternalProcessImporterBridge::NotifyItemStarted(
-    importer::ImportItem item) {
+    user_data_importer::ImportItem item) {
   observer_->OnImportItemStart(item);
 }
 
-void ExternalProcessImporterBridge::NotifyItemEnded(importer::ImportItem item) {
+void ExternalProcessImporterBridge::NotifyItemEnded(
+    user_data_importer::ImportItem item) {
   observer_->OnImportItemFinished(item);
 }
 

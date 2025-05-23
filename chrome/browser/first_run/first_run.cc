@@ -89,8 +89,8 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     ended_ = true;
     if (callback_for_import_end_)
@@ -116,9 +116,10 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
 // |target_profile| for the items specified in the |items_to_import| bitfield.
 // This may be done in a separate process depending on the platform, but it will
 // always block until done.
-void ImportFromSourceProfile(const importer::SourceProfile& source_profile,
-                             Profile* target_profile,
-                             uint16_t items_to_import) {
+void ImportFromSourceProfile(
+    const user_data_importer::SourceProfile& source_profile,
+    Profile* target_profile,
+    uint16_t items_to_import) {
   // Deletes itself.
   ExternalProcessImporterHost* importer_host =
       new ExternalProcessImporterHost;
@@ -143,8 +144,8 @@ void ImportFromSourceProfile(const importer::SourceProfile& source_profile,
 // |import_bookmarks_path|.
 void ImportFromFile(Profile* profile,
                     const std::string& import_bookmarks_path) {
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_BOOKMARKS_FILE;
 
   const base::FilePath::StringType& import_bookmarks_path_str =
 #if BUILDFLAG(IS_WIN)
@@ -154,7 +155,8 @@ void ImportFromFile(Profile* profile,
 #endif
   source_profile.source_path = base::FilePath(import_bookmarks_path_str);
 
-  ImportFromSourceProfile(source_profile, profile, importer::FAVORITES);
+  ImportFromSourceProfile(source_profile, profile,
+                          user_data_importer::FAVORITES);
   g_auto_import_state |= first_run::AUTO_IMPORT_BOOKMARKS_FILE_IMPORTED;
 }
 
@@ -163,7 +165,7 @@ void ImportSettings(Profile* profile,
                     std::unique_ptr<ImporterList> importer_list,
                     uint16_t items_to_import) {
   DCHECK(items_to_import);
-  const importer::SourceProfile& source_profile =
+  const user_data_importer::SourceProfile& source_profile =
       importer_list->GetSourceProfileAt(0);
 
   // Ensure that importers aren't requested to import items that they do not
@@ -444,14 +446,14 @@ void AutoImport(
   uint16_t items_to_import = 0;
   static constexpr struct {
     const char* pref_path;
-    importer::ImportItem bit;
+    user_data_importer::ImportItem bit;
   } kImportItems[] = {
-      {prefs::kImportAutofillFormData, importer::AUTOFILL_FORM_DATA},
-      {prefs::kImportBookmarks, importer::FAVORITES},
-      {prefs::kImportHistory, importer::HISTORY},
-      {prefs::kImportHomepage, importer::HOME_PAGE},
-      {prefs::kImportSavedPasswords, importer::PASSWORDS},
-      {prefs::kImportSearchEngine, importer::SEARCH_ENGINES},
+      {prefs::kImportAutofillFormData, user_data_importer::AUTOFILL_FORM_DATA},
+      {prefs::kImportBookmarks, user_data_importer::FAVORITES},
+      {prefs::kImportHistory, user_data_importer::HISTORY},
+      {prefs::kImportHomepage, user_data_importer::HOME_PAGE},
+      {prefs::kImportSavedPasswords, user_data_importer::PASSWORDS},
+      {prefs::kImportSearchEngine, user_data_importer::SEARCH_ENGINES},
   };
 
   for (const auto& import_item : kImportItems) {

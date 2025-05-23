@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_IMPORTER_IMPORTER_TYPE_H_
-#define CHROME_COMMON_IMPORTER_IMPORTER_TYPE_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_TYPE_H_
+#define COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_TYPE_H_
 
 #include "build/build_config.h"
 
-namespace importer {
+namespace user_data_importer {
 
 // An enumeration of the type of importers that we support to import
 // settings and data from (browsers, google toolbar and a bookmarks html file).
@@ -30,7 +30,6 @@ enum ImporterType {
 #endif
 };
 
-}  // namespace importer
+}  // namespace user_data_importer
 
-
-#endif  // CHROME_COMMON_IMPORTER_IMPORTER_TYPE_H_
+#endif  // COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_TYPE_H_

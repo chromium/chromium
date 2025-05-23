@@ -10,17 +10,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 
 class GURL;
 struct ImportedBookmarkEntry;
 struct ImporterAutofillFormDataEntry;
-
-namespace importer {
-struct SearchEngineInfo;
-}
 
 class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
  public:
@@ -39,13 +35,14 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
 
   virtual void SetHistoryItems(
       const std::vector<user_data_importer::ImporterURLRow>& rows,
-      importer::VisitSource visit_source) = 0;
+      user_data_importer::VisitSource visit_source) = 0;
 
   virtual void SetKeywords(
-      const std::vector<importer::SearchEngineInfo>& search_engines,
+      const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
       bool unique_on_host_and_path) = 0;
 
-  virtual void SetPasswordForm(const importer::ImportedPasswordForm& form) = 0;
+  virtual void SetPasswordForm(
+      const user_data_importer::ImportedPasswordForm& form) = 0;
 
   virtual void SetAutofillFormData(
       const std::vector<ImporterAutofillFormDataEntry>& entries) = 0;
@@ -55,11 +52,11 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
 
   // Notifies the coordinator that the collection of data for the specified
   // item has begun.
-  virtual void NotifyItemStarted(importer::ImportItem item) = 0;
+  virtual void NotifyItemStarted(user_data_importer::ImportItem item) = 0;
 
   // Notifies the coordinator that the collection of data for the specified
   // item has completed.
-  virtual void NotifyItemEnded(importer::ImportItem item) = 0;
+  virtual void NotifyItemEnded(user_data_importer::ImportItem item) = 0;
 
   // Notifies the coordinator that the entire import operation has completed.
   virtual void NotifyEnded() = 0;

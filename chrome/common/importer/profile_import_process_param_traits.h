@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/notreached.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
@@ -18,13 +18,13 @@ namespace mojo {
 
 template <>
 struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
-                  importer::ImportedPasswordForm::Scheme> {
+                  user_data_importer::ImportedPasswordForm::Scheme> {
   static chrome::mojom::ImportedPasswordForm::Scheme ToMojom(
-      importer::ImportedPasswordForm::Scheme input) {
+      user_data_importer::ImportedPasswordForm::Scheme input) {
     switch (input) {
-      case importer::ImportedPasswordForm::Scheme::kHtml:
+      case user_data_importer::ImportedPasswordForm::Scheme::kHtml:
         return chrome::mojom::ImportedPasswordForm::Scheme::kHtml;
-      case importer::ImportedPasswordForm::Scheme::kBasic:
+      case user_data_importer::ImportedPasswordForm::Scheme::kBasic:
         return chrome::mojom::ImportedPasswordForm::Scheme::kBasic;
       default:
         break;
@@ -33,13 +33,13 @@ struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
   }
 
   static bool FromMojom(chrome::mojom::ImportedPasswordForm::Scheme input,
-                        importer::ImportedPasswordForm::Scheme* out) {
+                        user_data_importer::ImportedPasswordForm::Scheme* out) {
     switch (input) {
       case chrome::mojom::ImportedPasswordForm::Scheme::kHtml:
-        *out = importer::ImportedPasswordForm::Scheme::kHtml;
+        *out = user_data_importer::ImportedPasswordForm::Scheme::kHtml;
         return true;
       case chrome::mojom::ImportedPasswordForm::Scheme::kBasic:
-        *out = importer::ImportedPasswordForm::Scheme::kBasic;
+        *out = user_data_importer::ImportedPasswordForm::Scheme::kBasic;
         return true;
     }
     NOTREACHED();
@@ -48,51 +48,52 @@ struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
 
 template <>
 struct StructTraits<chrome::mojom::ImportedPasswordFormDataView,
-                    importer::ImportedPasswordForm> {
-  static importer::ImportedPasswordForm::Scheme scheme(
-      const importer::ImportedPasswordForm& r) {
+                    user_data_importer::ImportedPasswordForm> {
+  static user_data_importer::ImportedPasswordForm::Scheme scheme(
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.scheme;
   }
 
   static const std::string& signon_realm(
-      const importer::ImportedPasswordForm& r) {
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.signon_realm;
   }
 
-  static const GURL& url(const importer::ImportedPasswordForm& r) {
+  static const GURL& url(const user_data_importer::ImportedPasswordForm& r) {
     return r.url;
   }
 
-  static const GURL& action(const importer::ImportedPasswordForm& r) {
+  static const GURL& action(const user_data_importer::ImportedPasswordForm& r) {
     return r.action;
   }
 
   static const std::u16string& username_element(
-      const importer::ImportedPasswordForm& r) {
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.username_element;
   }
 
   static const std::u16string& username_value(
-      const importer::ImportedPasswordForm& r) {
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.username_value;
   }
 
   static const std::u16string& password_element(
-      const importer::ImportedPasswordForm& r) {
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.password_element;
   }
 
   static const std::u16string& password_value(
-      const importer::ImportedPasswordForm& r) {
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.password_value;
   }
 
-  static bool blocked_by_user(const importer::ImportedPasswordForm& r) {
+  static bool blocked_by_user(
+      const user_data_importer::ImportedPasswordForm& r) {
     return r.blocked_by_user;
   }
 
   static bool Read(chrome::mojom::ImportedPasswordFormDataView data,
-                   importer::ImportedPasswordForm* out);
+                   user_data_importer::ImportedPasswordForm* out);
 };
 
 }  // namespace mojo

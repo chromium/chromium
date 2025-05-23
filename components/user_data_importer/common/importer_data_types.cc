@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-#include "chrome/common/importer/importer_data_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 
-namespace importer {
+#include "build/build_config.h"
+
+namespace user_data_importer {
 
 SourceProfile::SourceProfile()
-    : importer_type(TYPE_UNKNOWN),
-      services_supported(0) {
-}
+    : importer_type(TYPE_UNKNOWN), services_supported(0) {}
 
 SourceProfile::SourceProfile(const SourceProfile& other) = default;
 
@@ -42,4 +41,4 @@ ImportedPasswordForm& ImportedPasswordForm::operator=(
 
 ImportedPasswordForm::~ImportedPasswordForm() = default;
 
-}  // namespace importer
+}  // namespace user_data_importer

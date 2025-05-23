@@ -137,9 +137,10 @@ SafariImporter::SafariImporter(const base::FilePath& library_dir)
 
 SafariImporter::~SafariImporter() = default;
 
-void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
-                                 uint16_t items,
-                                 ImporterBridge* bridge) {
+void SafariImporter::StartImport(
+    const user_data_importer::SourceProfile& source_profile,
+    uint16_t items,
+    ImporterBridge* bridge) {
   bridge_ = bridge;
   // The order here is important!
   bridge_->NotifyStarted();
@@ -147,10 +148,10 @@ void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
   // In keeping with import on other platforms (and for other browsers), we
   // don't import the home page (since it may lead to a useless homepage); see
   // crbug.com/25603.
-  if ((items & importer::FAVORITES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::FAVORITES);
+  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();
-    bridge_->NotifyItemEnded(importer::FAVORITES);
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
 
   bridge_->NotifyEnded();

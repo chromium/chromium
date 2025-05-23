@@ -34,7 +34,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -44,6 +43,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -457,7 +457,7 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
 
   // Read the bookmarks back in.
   std::vector<ImportedBookmarkEntry> parsed_bookmarks;
-  std::vector<importer::SearchEngineInfo> parsed_search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> parsed_search_engines;
   favicon_base::FaviconUsageDataList favicons;
   bookmark_html_reader::ImportBookmarksFile(
       base::RepeatingCallback<bool(void)>(),

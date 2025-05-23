@@ -39,10 +39,10 @@
 #include "chrome/common/importer/ie_importer_utils_win.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/pstore_declarations.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -421,42 +421,44 @@ const GUID IEImporter::kUnittestGUID = {
 
 IEImporter::IEImporter() : edge_import_mode_(false) {}
 
-void IEImporter::StartImport(const importer::SourceProfile& source_profile,
-                             uint16_t items,
-                             ImporterBridge* bridge) {
-  edge_import_mode_ = source_profile.importer_type == importer::TYPE_EDGE;
+void IEImporter::StartImport(
+    const user_data_importer::SourceProfile& source_profile,
+    uint16_t items,
+    ImporterBridge* bridge) {
+  edge_import_mode_ =
+      source_profile.importer_type == user_data_importer::TYPE_EDGE;
   bridge_ = bridge;
 
   if (edge_import_mode_) {
     // When using for Edge imports we only support Favorites.
-    DCHECK_EQ(items, importer::FAVORITES);
+    DCHECK_EQ(items, user_data_importer::FAVORITES);
     // As coming from untrusted source ensure items is correct.
-    items = importer::FAVORITES;
+    items = user_data_importer::FAVORITES;
   }
   source_path_ = source_profile.source_path;
 
   bridge_->NotifyStarted();
 
-  if ((items & importer::HOME_PAGE) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::HOME_PAGE);
+  if ((items & user_data_importer::HOME_PAGE) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::HOME_PAGE);
     ImportHomepage();  // Doesn't have a UI item.
-    bridge_->NotifyItemEnded(importer::HOME_PAGE);
+    bridge_->NotifyItemEnded(user_data_importer::HOME_PAGE);
   }
   // The order here is important!
-  if ((items & importer::HISTORY) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::HISTORY);
+  if ((items & user_data_importer::HISTORY) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::HISTORY);
     ImportHistory();
-    bridge_->NotifyItemEnded(importer::HISTORY);
+    bridge_->NotifyItemEnded(user_data_importer::HISTORY);
   }
-  if ((items & importer::FAVORITES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::FAVORITES);
+  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportFavorites();
-    bridge_->NotifyItemEnded(importer::FAVORITES);
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
-  if ((items & importer::SEARCH_ENGINES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::SEARCH_ENGINES);
+  if ((items & user_data_importer::SEARCH_ENGINES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::SEARCH_ENGINES);
     ImportSearchEngines();
-    bridge_->NotifyItemEnded(importer::SEARCH_ENGINES);
+    bridge_->NotifyItemEnded(user_data_importer::SEARCH_ENGINES);
   }
   bridge_->NotifyEnded();
 }
@@ -539,7 +541,8 @@ void IEImporter::ImportHistory() {
     }
 
     if (!cancelled()) {
-      bridge_->SetHistoryItems(rows, importer::VISIT_SOURCE_IE_IMPORTED);
+      bridge_->SetHistoryItems(rows,
+                               user_data_importer::VISIT_SOURCE_IE_IMPORTED);
     }
   }
 }
@@ -587,10 +590,10 @@ void IEImporter::ImportSearchEngines() {
     }
   }
   // ProfileWriter::AddKeywords() requires a vector and we have a map.
-  std::vector<importer::SearchEngineInfo> search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> search_engines;
   for (SearchEnginesMap::iterator i = search_engines_map.begin();
        i != search_engines_map.end(); ++i) {
-    importer::SearchEngineInfo search_engine_info;
+    user_data_importer::SearchEngineInfo search_engine_info;
     search_engine_info.url = base::UTF8ToUTF16(i->first);
     search_engine_info.display_name = i->second;
     search_engines.push_back(search_engine_info);

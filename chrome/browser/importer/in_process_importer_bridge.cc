@@ -43,26 +43,26 @@ history::URLRows ConvertImporterURLRowsToHistoryURLRows(
 }
 
 history::VisitSource ConvertImporterVisitSourceToHistoryVisitSource(
-    importer::VisitSource visit_source) {
+    user_data_importer::VisitSource visit_source) {
   switch (visit_source) {
-    case importer::VISIT_SOURCE_BROWSED:
+    case user_data_importer::VISIT_SOURCE_BROWSED:
       return history::SOURCE_BROWSED;
-    case importer::VISIT_SOURCE_FIREFOX_IMPORTED:
+    case user_data_importer::VISIT_SOURCE_FIREFOX_IMPORTED:
       return history::SOURCE_FIREFOX_IMPORTED;
-    case importer::VISIT_SOURCE_IE_IMPORTED:
+    case user_data_importer::VISIT_SOURCE_IE_IMPORTED:
       return history::SOURCE_IE_IMPORTED;
-    case importer::VISIT_SOURCE_SAFARI_IMPORTED:
+    case user_data_importer::VISIT_SOURCE_SAFARI_IMPORTED:
       return history::SOURCE_SAFARI_IMPORTED;
   }
   NOTREACHED();
 }
 
 password_manager::PasswordForm::Scheme ConvertToPasswordFormScheme(
-    importer::ImportedPasswordForm::Scheme scheme) {
+    user_data_importer::ImportedPasswordForm::Scheme scheme) {
   switch (scheme) {
-    case importer::ImportedPasswordForm::Scheme::kHtml:
+    case user_data_importer::ImportedPasswordForm::Scheme::kHtml:
       return password_manager::PasswordForm::Scheme::kHtml;
-    case importer::ImportedPasswordForm::Scheme::kBasic:
+    case user_data_importer::ImportedPasswordForm::Scheme::kBasic:
       return password_manager::PasswordForm::Scheme::kBasic;
   }
 
@@ -70,7 +70,7 @@ password_manager::PasswordForm::Scheme ConvertToPasswordFormScheme(
 }
 
 password_manager::PasswordForm ConvertImportedPasswordForm(
-    const importer::ImportedPasswordForm& form) {
+    const user_data_importer::ImportedPasswordForm& form) {
   password_manager::PasswordForm result;
   result.scheme = ConvertToPasswordFormScheme(form.scheme);
   result.signon_realm = form.signon_realm;
@@ -125,7 +125,7 @@ void InProcessImporterBridge::SetFavicons(
 
 void InProcessImporterBridge::SetHistoryItems(
     const std::vector<user_data_importer::ImporterURLRow>& rows,
-    importer::VisitSource visit_source) {
+    user_data_importer::VisitSource visit_source) {
   history::URLRows converted_rows =
       ConvertImporterURLRowsToHistoryURLRows(rows);
   history::VisitSource converted_visit_source =
@@ -134,7 +134,7 @@ void InProcessImporterBridge::SetHistoryItems(
 }
 
 void InProcessImporterBridge::SetKeywords(
-    const std::vector<importer::SearchEngineInfo>& search_engines,
+    const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
     bool unique_on_host_and_path) {
   TemplateURLService::OwnedTemplateURLVector owned_template_urls;
   for (const auto& search_engine : search_engines) {
@@ -147,7 +147,7 @@ void InProcessImporterBridge::SetKeywords(
 }
 
 void InProcessImporterBridge::SetPasswordForm(
-    const importer::ImportedPasswordForm& form) {
+    const user_data_importer::ImportedPasswordForm& form) {
   writer_->AddPasswordForm(ConvertImportedPasswordForm(form));
 }
 
@@ -172,11 +172,13 @@ void InProcessImporterBridge::NotifyStarted() {
   host_->NotifyImportStarted();
 }
 
-void InProcessImporterBridge::NotifyItemStarted(importer::ImportItem item) {
+void InProcessImporterBridge::NotifyItemStarted(
+    user_data_importer::ImportItem item) {
   host_->NotifyImportItemStarted(item);
 }
 
-void InProcessImporterBridge::NotifyItemEnded(importer::ImportItem item) {
+void InProcessImporterBridge::NotifyItemEnded(
+    user_data_importer::ImportItem item) {
   host_->NotifyImportItemEnded(item);
 }
 

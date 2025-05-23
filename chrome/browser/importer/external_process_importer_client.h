@@ -15,10 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,7 +42,7 @@ class ExternalProcessImporterClient
  public:
   ExternalProcessImporterClient(
       base::WeakPtr<ExternalProcessImporterHost> importer_host,
-      const importer::SourceProfile& source_profile,
+      const user_data_importer::SourceProfile& source_profile,
       uint16_t items,
       InProcessImporterBridge* bridge);
 
@@ -59,8 +59,8 @@ class ExternalProcessImporterClient
   // chrome::mojom::ProfileImportObserver:
   void OnImportStart() override;
   void OnImportFinished(bool succeeded, const std::string& error_msg) override;
-  void OnImportItemStart(importer::ImportItem item) override;
-  void OnImportItemFinished(importer::ImportItem item) override;
+  void OnImportItemStart(user_data_importer::ImportItem item) override;
+  void OnImportItemFinished(user_data_importer::ImportItem item) override;
   void OnHistoryImportStart(uint32_t total_history_rows_count) override;
   void OnHistoryImportGroup(
       const std::vector<user_data_importer::ImporterURLRow>& history_rows_group,
@@ -74,9 +74,9 @@ class ExternalProcessImporterClient
   void OnFaviconsImportGroup(
       const favicon_base::FaviconUsageDataList& favicons_group) override;
   void OnPasswordFormImportReady(
-      const importer::ImportedPasswordForm& form) override;
+      const user_data_importer::ImportedPasswordForm& form) override;
   void OnKeywordsImportReady(
-      const std::vector<importer::SearchEngineInfo>& search_engines,
+      const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
       bool unique_on_host_and_path) override;
   void OnAutofillFormDataImportStart(
       uint32_t total_autofill_form_data_entry_count) override;
@@ -133,7 +133,7 @@ class ExternalProcessImporterClient
   base::WeakPtr<ExternalProcessImporterHost> process_importer_host_;
 
   // Data to be passed from the importer host to the external importer.
-  importer::SourceProfile source_profile_;
+  user_data_importer::SourceProfile source_profile_;
   uint16_t items_;
 
   // Takes import data coming over IPC and delivers it to be written by the

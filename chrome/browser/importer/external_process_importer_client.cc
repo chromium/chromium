@@ -22,7 +22,7 @@
 
 ExternalProcessImporterClient::ExternalProcessImporterClient(
     base::WeakPtr<ExternalProcessImporterHost> importer_host,
-    const importer::SourceProfile& source_profile,
+    const user_data_importer::SourceProfile& source_profile,
     uint16_t items,
     InProcessImporterBridge* bridge)
     : total_bookmarks_count_(0),
@@ -121,7 +121,7 @@ void ExternalProcessImporterClient::OnImportFinished(
 }
 
 void ExternalProcessImporterClient::OnImportItemStart(
-    importer::ImportItem import_item) {
+    user_data_importer::ImportItem import_item) {
   if (cancelled_)
     return;
 
@@ -129,7 +129,7 @@ void ExternalProcessImporterClient::OnImportItemStart(
 }
 
 void ExternalProcessImporterClient::OnImportItemFinished(
-    importer::ImportItem import_item) {
+    user_data_importer::ImportItem import_item) {
   if (cancelled_)
     return;
 
@@ -155,8 +155,9 @@ void ExternalProcessImporterClient::OnHistoryImportGroup(
   history_rows_.insert(history_rows_.end(), history_rows_group.begin(),
                        history_rows_group.end());
   if (history_rows_.size() >= total_history_rows_count_)
-    bridge_->SetHistoryItems(history_rows_,
-                             static_cast<importer::VisitSource>(visit_source));
+    bridge_->SetHistoryItems(
+        history_rows_,
+        static_cast<user_data_importer::VisitSource>(visit_source));
 }
 
 void ExternalProcessImporterClient::OnHomePageImportReady(
@@ -212,7 +213,7 @@ void ExternalProcessImporterClient::OnFaviconsImportGroup(
 }
 
 void ExternalProcessImporterClient::OnPasswordFormImportReady(
-    const importer::ImportedPasswordForm& form) {
+    const user_data_importer::ImportedPasswordForm& form) {
   if (cancelled_)
     return;
 
@@ -220,7 +221,7 @@ void ExternalProcessImporterClient::OnPasswordFormImportReady(
 }
 
 void ExternalProcessImporterClient::OnKeywordsImportReady(
-    const std::vector<importer::SearchEngineInfo>& search_engines,
+    const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
     bool unique_on_host_and_path) {
   if (cancelled_)
     return;

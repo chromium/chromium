@@ -32,7 +32,7 @@ mojom("interfaces") {
         },
         {
           mojom = "chrome.mojom.ImporterIE7PasswordInfo"
-          cpp = "::importer::ImporterIE7PasswordInfo"
+          cpp = "::user_data_importer::ImporterIE7PasswordInfo"
         },
         {
           mojom = "chrome.mojom.ImporterURLRow"
@@ -40,26 +40,26 @@ mojom("interfaces") {
         },
         {
           mojom = "chrome.mojom.SearchEngineInfo"
-          cpp = "::importer::SearchEngineInfo"
+          cpp = "::user_data_importer::SearchEngineInfo"
         },
         {
           mojom = "chrome.mojom.SourceProfile"
-          cpp = "::importer::SourceProfile"
+          cpp = "::user_data_importer::SourceProfile"
         },
         {
           mojom = "chrome.mojom.ImportItem"
-          cpp = "::importer::ImportItem"
+          cpp = "::user_data_importer::ImportItem"
         },
         {
           mojom = "chrome.mojom.ImportedPasswordForm"
-          cpp = "::importer::ImportedPasswordForm"
+          cpp = "::user_data_importer::ImportedPasswordForm"
         },
       ]
       traits_headers = [
         "//chrome/common/importer/imported_bookmark_entry.h",
         "//chrome/common/importer/importer_autofill_form_data_entry.h",
-        "//chrome/common/importer/importer_data_types.h",
         "//components/favicon_base/favicon_usage_data.h",
+        "//components/user_data_importer/common/importer_data_types.h",
         "//components/user_data_importer/common/importer_url_row.h",
       ]
       traits_private_headers = [
@@ -88,9 +88,6 @@ source_set("importer") {
     "importer_autofill_form_data_entry.h",
     "importer_bridge.cc",
     "importer_bridge.h",
-    "importer_data_types.cc",
-    "importer_data_types.h",
-    "importer_type.h",
     "pstore_declarations.h",
   ]
   if (is_chromeos || is_linux) {

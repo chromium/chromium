@@ -24,15 +24,17 @@ class MockImporterBridge : public ImporterBridge {
   MOCK_METHOD1(SetFavicons, void(const favicon_base::FaviconUsageDataList&));
   MOCK_METHOD2(SetHistoryItems,
                void(const std::vector<user_data_importer::ImporterURLRow>&,
-                    importer::VisitSource));
+                    user_data_importer::VisitSource));
   MOCK_METHOD2(SetKeywords,
-               void(const std::vector<importer::SearchEngineInfo>&, bool));
-  MOCK_METHOD1(SetPasswordForm, void(const importer::ImportedPasswordForm&));
+               void(const std::vector<user_data_importer::SearchEngineInfo>&,
+                    bool));
+  MOCK_METHOD1(SetPasswordForm,
+               void(const user_data_importer::ImportedPasswordForm&));
   MOCK_METHOD1(SetAutofillFormData,
                void(const std::vector<ImporterAutofillFormDataEntry>&));
   MOCK_METHOD0(NotifyStarted, void());
-  MOCK_METHOD1(NotifyItemStarted, void(importer::ImportItem));
-  MOCK_METHOD1(NotifyItemEnded, void(importer::ImportItem));
+  MOCK_METHOD1(NotifyItemStarted, void(user_data_importer::ImportItem));
+  MOCK_METHOD1(NotifyItemEnded, void(user_data_importer::ImportItem));
   MOCK_METHOD0(NotifyEnded, void());
   MOCK_METHOD1(GetLocalizedString, std::u16string(int));
 

@@ -41,7 +41,7 @@ void ExternalProcessImporterHost::Cancel() {
 }
 
 void ExternalProcessImporterHost::StartImportSettings(
-    const importer::SourceProfile& source_profile,
+    const user_data_importer::SourceProfile& source_profile,
     Profile* target_profile,
     uint16_t items,
     ProfileWriter* writer) {
@@ -70,13 +70,13 @@ void ExternalProcessImporterHost::NotifyImportStarted() {
 }
 
 void ExternalProcessImporterHost::NotifyImportItemStarted(
-    importer::ImportItem item) {
+    user_data_importer::ImportItem item) {
   if (observer_)
     observer_->ImportItemStarted(item);
 }
 
 void ExternalProcessImporterHost::NotifyImportItemEnded(
-    importer::ImportItem item) {
+    user_data_importer::ImportItem item) {
   if (observer_)
     observer_->ImportItemEnded(item);
 }
@@ -154,9 +154,10 @@ void ExternalProcessImporterHost::OnImportLockDialogEnd(bool is_continue) {
 }
 
 bool ExternalProcessImporterHost::CheckForFirefoxLock(
-    const importer::SourceProfile& source_profile) {
-  if (source_profile.importer_type != importer::TYPE_FIREFOX)
+    const user_data_importer::SourceProfile& source_profile) {
+  if (source_profile.importer_type != user_data_importer::TYPE_FIREFOX) {
     return true;
+  }
 
   DCHECK(!firefox_lock_.get());
   firefox_lock_ =
@@ -181,7 +182,8 @@ void ExternalProcessImporterHost::CheckForLoadedModels(uint16_t items) {
 
   // BookmarkModel should be loaded before adding IE favorites. So we observe
   // the BookmarkModel if needed, and start the task after it has been loaded.
-  if ((items & importer::FAVORITES) && !writer_->BookmarkModelIsLoaded()) {
+  if ((items & user_data_importer::FAVORITES) &&
+      !writer_->BookmarkModelIsLoaded()) {
     bookmark_model_observation_for_loading_.Observe(
         BookmarkModelFactory::GetForBrowserContext(profile_));
   }
@@ -189,7 +191,8 @@ void ExternalProcessImporterHost::CheckForLoadedModels(uint16_t items) {
   // Observes the TemplateURLService if needed to import search engines from the
   // other browser. We also check to see if we're importing bookmarks because
   // we can import bookmark keywords from Firefox as search engines.
-  if ((items & importer::SEARCH_ENGINES) || (items & importer::FAVORITES)) {
+  if ((items & user_data_importer::SEARCH_ENGINES) ||
+      (items & user_data_importer::FAVORITES)) {
     if (!writer_->TemplateURLServiceIsLoaded()) {
       TemplateURLService* model =
           TemplateURLServiceFactory::GetForProfile(profile_);

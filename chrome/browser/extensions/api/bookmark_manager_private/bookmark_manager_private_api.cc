@@ -858,16 +858,15 @@ void BookmarkManagerPrivateImportFunction::FileSelected(
     int index) {
   // Deletes itself.
   ExternalProcessImporterHost* importer_host = new ExternalProcessImporterHost;
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_BOOKMARKS_FILE;
   source_profile.source_path = file.path();
-  importer_host->StartImportSettings(source_profile,
-                                     GetProfile(),
-                                     importer::FAVORITES,
+  importer_host->StartImportSettings(source_profile, GetProfile(),
+                                     user_data_importer::FAVORITES,
                                      new ProfileWriter(GetProfile()));
 
   importer::LogImporterUseToMetrics("BookmarksAPI",
-                                    importer::TYPE_BOOKMARKS_FILE);
+                                    user_data_importer::TYPE_BOOKMARKS_FILE);
   select_file_dialog_.reset();
   Release();  // Balanced in BookmarkManagerPrivateIOFunction::SelectFile()
 }

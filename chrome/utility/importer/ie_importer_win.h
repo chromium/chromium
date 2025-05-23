@@ -25,7 +25,7 @@ class IEImporter : public Importer {
   IEImporter& operator=(const IEImporter&) = delete;
 
   // Importer:
-  void StartImport(const importer::SourceProfile& source_profile,
+  void StartImport(const user_data_importer::SourceProfile& source_profile,
                    uint16_t items,
                    ImporterBridge* bridge) override;
 

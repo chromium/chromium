@@ -4,6 +4,9 @@
 
 source_set("common") {
   sources = [
+    "importer_data_types.cc",
+    "importer_data_types.h",
+    "importer_type.h",
     "importer_url_row.cc",
     "importer_url_row.h",
   ]

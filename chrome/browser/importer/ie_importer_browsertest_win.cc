@@ -45,12 +45,12 @@
 #include "chrome/common/importer/ie_importer_utils_win.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -235,18 +235,20 @@ class TestObserver : public ProfileWriter,
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     std::move(quit_closure_).Run();
-    if (importer_items_ & importer::FAVORITES) {
+    if (importer_items_ & user_data_importer::FAVORITES) {
       EXPECT_EQ(std::size(kIEBookmarks), bookmark_count_);
       EXPECT_EQ(std::size(kIEFaviconGroup), favicon_count_);
     }
-    if (importer_items_ & importer::HISTORY)
+    if (importer_items_ & user_data_importer::HISTORY) {
       EXPECT_EQ(2u, history_count_);
-    if (importer_items_ & importer::HOME_PAGE)
+    }
+    if (importer_items_ & user_data_importer::HOME_PAGE) {
       EXPECT_EQ(1u, homepage_count_);
+    }
   }
 
   // ProfileWriter:
@@ -348,8 +350,8 @@ class MalformedFavoritesRegistryTestObserver
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     std::move(quit_closure_).Run();
     EXPECT_EQ(std::size(kIESortedBookmarks), bookmark_count_);
@@ -469,15 +471,17 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
   base::RunLoop loop;
   TestObserver* observer = new TestObserver(
-      importer::HISTORY | importer::FAVORITES, loop.QuitWhenIdleClosure());
+      user_data_importer::HISTORY | user_data_importer::FAVORITES,
+      loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_IE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_IE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(source_profile, browser()->profile(),
-                            importer::HISTORY | importer::FAVORITES, observer);
+  host->StartImportSettings(
+      source_profile, browser()->profile(),
+      user_data_importer::HISTORY | user_data_importer::FAVORITES, observer);
   loop.Run();
 
   // Cleans up.
@@ -548,15 +552,12 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
         new MalformedFavoritesRegistryTestObserver(loop.QuitWhenIdleClosure());
     host->set_observer(observer);
 
-    importer::SourceProfile source_profile;
-    source_profile.importer_type = importer::TYPE_IE;
+    user_data_importer::SourceProfile source_profile;
+    source_profile.importer_type = user_data_importer::TYPE_IE;
     source_profile.source_path = temp_dir_.GetPath();
 
-    host->StartImportSettings(
-        source_profile,
-        browser()->profile(),
-        importer::FAVORITES,
-        observer);
+    host->StartImportSettings(source_profile, browser()->profile(),
+                              user_data_importer::FAVORITES, observer);
     loop.Run();
   }
 }
@@ -566,8 +567,8 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
   // Deletes itself.
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
   base::RunLoop loop;
-  TestObserver* observer =
-      new TestObserver(importer::HOME_PAGE, loop.QuitWhenIdleClosure());
+  TestObserver* observer = new TestObserver(user_data_importer::HOME_PAGE,
+                                            loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
   std::wstring key_path(importer::GetIESettingsKey());
@@ -576,14 +577,11 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
             key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
   key.WriteValue(L"Start Page", L"http://www.test.com/");
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_IE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_IE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(
-      source_profile,
-      browser()->profile(),
-      importer::HOME_PAGE,
-      observer);
+  host->StartImportSettings(source_profile, browser()->profile(),
+                            user_data_importer::HOME_PAGE, observer);
   loop.Run();
 }

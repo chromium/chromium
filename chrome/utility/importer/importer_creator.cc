@@ -22,25 +22,26 @@
 
 namespace importer {
 
-scoped_refptr<Importer> CreateImporterByType(ImporterType type) {
+scoped_refptr<Importer> CreateImporterByType(
+    user_data_importer::ImporterType type) {
   switch (type) {
 #if BUILDFLAG(IS_WIN)
-    case TYPE_IE:
+    case user_data_importer::TYPE_IE:
       return new IEImporter();
-    case TYPE_EDGE:
+    case user_data_importer::TYPE_EDGE:
       // If legacy mode we pass back an IE importer.
       if (IsEdgeFavoritesLegacyMode())
         return new IEImporter();
       return new EdgeImporter();
 #endif
-    case TYPE_BOOKMARKS_FILE:
+    case user_data_importer::TYPE_BOOKMARKS_FILE:
       return new BookmarksFileImporter();
 #if !BUILDFLAG(IS_CHROMEOS)
-    case TYPE_FIREFOX:
+    case user_data_importer::TYPE_FIREFOX:
       return new FirefoxImporter();
 #endif
 #if BUILDFLAG(IS_MAC)
-    case TYPE_SAFARI:
+    case user_data_importer::TYPE_SAFARI:
       return new SafariImporter(base::apple::GetUserLibraryPath());
 #endif
     default:

@@ -13,12 +13,12 @@
 #include "base/functional/callback.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/url_formatter/url_fixer.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/common/url_constants.h"
 
 namespace {
@@ -88,18 +88,18 @@ BookmarksFileImporter::BookmarksFileImporter() = default;
 BookmarksFileImporter::~BookmarksFileImporter() = default;
 
 void BookmarksFileImporter::StartImport(
-    const importer::SourceProfile& source_profile,
+    const user_data_importer::SourceProfile& source_profile,
     uint16_t items,
     ImporterBridge* bridge) {
   // The only thing this importer can import is a bookmarks file, aka
   // "favorites".
-  DCHECK_EQ(importer::FAVORITES, items);
+  DCHECK_EQ(user_data_importer::FAVORITES, items);
 
   bridge->NotifyStarted();
-  bridge->NotifyItemStarted(importer::FAVORITES);
+  bridge->NotifyItemStarted(user_data_importer::FAVORITES);
 
   std::vector<ImportedBookmarkEntry> bookmarks;
-  std::vector<importer::SearchEngineInfo> search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> search_engines;
   favicon_base::FaviconUsageDataList favicons;
 
   bookmark_html_reader::ImportBookmarksFile(
@@ -117,6 +117,6 @@ void BookmarksFileImporter::StartImport(
   if (!favicons.empty())
     bridge->SetFavicons(favicons);
 
-  bridge->NotifyItemEnded(importer::FAVORITES);
+  bridge->NotifyItemEnded(user_data_importer::FAVORITES);
   bridge->NotifyEnded();
 }

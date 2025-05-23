@@ -11,7 +11,7 @@
 
 class ImporterBridge;
 
-namespace importer {
+namespace user_data_importer {
 struct SourceProfile;
 }
 
@@ -25,9 +25,10 @@ class Importer : public base::RefCountedThreadSafe<Importer> {
   // And it will be run in file thread by ImporterHost. Since we do async
   // import, the importer should invoke ImporterHost::NotifyImportEnded() to
   // notify its host that import stuff have been finished.
-  virtual void StartImport(const importer::SourceProfile& source_profile,
-                           uint16_t items,
-                           ImporterBridge* bridge) = 0;
+  virtual void StartImport(
+      const user_data_importer::SourceProfile& source_profile,
+      uint16_t items,
+      ImporterBridge* bridge) = 0;
 
   // Cancels the import process.
   virtual void Cancel();

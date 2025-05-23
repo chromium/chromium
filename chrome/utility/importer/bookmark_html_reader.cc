@@ -112,7 +112,7 @@ void ImportBookmarksFile(
     base::RepeatingCallback<bool(const GURL&)> valid_url_callback,
     const base::FilePath& file_path,
     std::vector<ImportedBookmarkEntry>* bookmarks,
-    std::vector<importer::SearchEngineInfo>* search_engines,
+    std::vector<user_data_importer::SearchEngineInfo>* search_engines,
     favicon_base::FaviconUsageDataList* favicons) {
   std::string content;
   base::ReadFileToString(file_path, &content);
@@ -181,7 +181,7 @@ void ImportBookmarksFile(
     if (is_bookmark && post_data.empty() &&
         CanImportURLAsSearchEngine(url, &search_engine_url) &&
             !shortcut.empty()) {
-      importer::SearchEngineInfo search_engine_info;
+      user_data_importer::SearchEngineInfo search_engine_info;
       search_engine_info.url.assign(base::UTF8ToUTF16(search_engine_url));
       search_engine_info.keyword = shortcut;
       search_engine_info.display_name = title;

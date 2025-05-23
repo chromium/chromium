@@ -19,10 +19,10 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -55,7 +55,7 @@ void LoadDefaultBookmarks(const base::FilePath& app_path,
   urls->clear();
 
   std::vector<ImportedBookmarkEntry> bookmarks;
-  std::vector<importer::SearchEngineInfo> search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> search_engines;
   bookmark_html_reader::ImportBookmarksFile(
       base::RepeatingCallback<bool(void)>(),
       base::RepeatingCallback<bool(const GURL&)>(), file, &bookmarks,
@@ -125,9 +125,10 @@ FirefoxImporter::FirefoxImporter() = default;
 
 FirefoxImporter::~FirefoxImporter() = default;
 
-void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
-                                  uint16_t items,
-                                  ImporterBridge* bridge) {
+void FirefoxImporter::StartImport(
+    const user_data_importer::SourceProfile& source_profile,
+    uint16_t items,
+    ImporterBridge* bridge) {
   bridge_ = bridge;
   source_path_ = source_profile.source_path;
   app_path_ = source_profile.app_path;
@@ -142,37 +143,37 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
     bridge->NotifyEnded();
     return;
   }
-  if ((items & importer::HOME_PAGE) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::HOME_PAGE);
+  if ((items & user_data_importer::HOME_PAGE) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::HOME_PAGE);
     ImportHomepage();  // Doesn't have a UI item.
-    bridge_->NotifyItemEnded(importer::HOME_PAGE);
+    bridge_->NotifyItemEnded(user_data_importer::HOME_PAGE);
   }
 
   // Note history should be imported before bookmarks because bookmark import
   // will also import favicons and we store favicon for a URL only if the URL
   // exist in history or bookmarks.
-  if ((items & importer::HISTORY) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::HISTORY);
+  if ((items & user_data_importer::HISTORY) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::HISTORY);
     ImportHistory();
-    bridge_->NotifyItemEnded(importer::HISTORY);
+    bridge_->NotifyItemEnded(user_data_importer::HISTORY);
   }
 
-  if ((items & importer::FAVORITES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::FAVORITES);
+  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();
-    bridge_->NotifyItemEnded(importer::FAVORITES);
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
 #if !BUILDFLAG(IS_MAC)
-  if ((items & importer::PASSWORDS) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::PASSWORDS);
+  if ((items & user_data_importer::PASSWORDS) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::PASSWORDS);
     ImportPasswords();
-    bridge_->NotifyItemEnded(importer::PASSWORDS);
+    bridge_->NotifyItemEnded(user_data_importer::PASSWORDS);
   }
 #endif  // !BUILDFLAG(IS_MAC)
-  if ((items & importer::AUTOFILL_FORM_DATA) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::AUTOFILL_FORM_DATA);
+  if ((items & user_data_importer::AUTOFILL_FORM_DATA) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::AUTOFILL_FORM_DATA);
     ImportAutofillFormData();
-    bridge_->NotifyItemEnded(importer::AUTOFILL_FORM_DATA);
+    bridge_->NotifyItemEnded(user_data_importer::AUTOFILL_FORM_DATA);
   }
   bridge_->NotifyEnded();
 }
@@ -219,7 +220,8 @@ void FirefoxImporter::ImportHistory() {
   }
 
   if (!rows.empty() && !cancelled())
-    bridge_->SetHistoryItems(rows, importer::VISIT_SOURCE_FIREFOX_IMPORTED);
+    bridge_->SetHistoryItems(rows,
+                             user_data_importer::VISIT_SOURCE_FIREFOX_IMPORTED);
 }
 
 void FirefoxImporter::ImportBookmarks() {
@@ -260,7 +262,7 @@ void FirefoxImporter::ImportBookmarks() {
     GetWholeBookmarkFolder(&db, &list, i, favicons_location, nullptr);
 
   std::vector<ImportedBookmarkEntry> bookmarks;
-  std::vector<importer::SearchEngineInfo> search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> search_engines;
   FaviconMap favicon_map;
 
   // TODO(crbug.com/40304654): We do not support POST based keywords yet.
@@ -348,7 +350,7 @@ void FirefoxImporter::ImportBookmarks() {
       // the bookmark by entering its keyword in the omnibox.)
       if (item->keyword.empty())
         continue;
-      importer::SearchEngineInfo search_engine_info;
+      user_data_importer::SearchEngineInfo search_engine_info;
       std::string search_engine_url;
       if (item->url.is_valid())
         search_engine_info.url = base::UTF8ToUTF16(item->url.spec());
@@ -401,7 +403,7 @@ void FirefoxImporter::ImportPasswords() {
   if (!base::PathExists(json_file))
     return;
 
-  std::vector<importer::ImportedPasswordForm> forms;
+  std::vector<user_data_importer::ImportedPasswordForm> forms;
   decryptor.ReadAndParseLogins(json_file, &forms);
 
   if (!cancelled()) {
