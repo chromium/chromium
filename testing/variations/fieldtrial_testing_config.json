@@ -24453,6 +24453,31 @@
             ]
         }
     ],
+    "UseFreedesktopSecretKeyProvider": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableDecryption",
+                    "enable_features": [
+                        "UseFreedesktopSecretKeyProvider"
+                    ],
+                    "disable_features": [
+                        "UseFreedesktopSecretKeyProviderForEncryption"
+                    ]
+                },
+                {
+                    "name": "EnableDecryptionAndEncryption",
+                    "enable_features": [
+                        "UseFreedesktopSecretKeyProvider",
+                        "UseFreedesktopSecretKeyProviderForEncryption"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseHeuristicForWindowsFullScreenPowerPoint": [
         {
             "platforms": [
