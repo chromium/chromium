@@ -4119,6 +4119,9 @@ extern const char kAccessibilityManifestV3ChromeVoxDescription[];
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsName[];
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
 
+extern const char kAccessibilityManifestV3EspeakNGName[];
+extern const char kAccessibilityManifestV3EspeakNGDescription[];
+
 extern const char kAccessibilityManifestV3SelectToSpeakName[];
 extern const char kAccessibilityManifestV3SelectToSpeakDescription[];
 

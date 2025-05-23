@@ -242,6 +242,9 @@ AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForChromeVox();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3EspeakNGTts);
+AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForEspeakNGTts();
+
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3SelectToSpeak);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSelectToSpeak();
 

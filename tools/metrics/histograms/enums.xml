@@ -9527,6 +9527,7 @@ from previous Chrome versions.
   <int value="-1718644168" label="SharingHubLinkToggle:disabled"/>
   <int value="-1718414372" label="ComposeTextSelection:enabled"/>
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
+  <int value="-1717775602" label="AccessibilityManifestV3EspeakNGTts:disabled"/>
   <int value="-1716654100" label="tab-capture-downscale-quality"/>
   <int value="-1716140224" label="EnableEmbeddedAssistantUI:disabled"/>
   <int value="-1715642957" label="NtpModulesRedesignedLayout:enabled"/>
@@ -18159,6 +18160,7 @@ from previous Chrome versions.
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
   <int value="1533392685"
       label="ContextMenuGoogleLensSearchOptimizations:disabled"/>
+  <int value="1533423076" label="AccessibilityManifestV3EspeakNGTts:enabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
   <int value="1534323718" label="Cr2023ActionChipsIcons:disabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>

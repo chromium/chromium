@@ -4642,6 +4642,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "espeakng-manifest-v3",
+    "owners": [
+      "mwoj@google.com",
+      "xiyuan@google.com",
+      "akihiroota@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "event-based-log-upload",
     "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
     "expiry_milestone": 140

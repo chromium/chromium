@@ -339,6 +339,14 @@ bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
       ::features::kAccessibilityManifestV3EnhancedNetworkTts);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3EspeakNGTts,
+             "AccessibilityManifestV3EspeakNGTts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForEspeakNGTts() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3EspeakNGTts);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
              "AccessibilityManifestV3AccessibilityCommon",
              base::FEATURE_DISABLED_BY_DEFAULT);
