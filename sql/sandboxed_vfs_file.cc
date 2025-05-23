@@ -18,7 +18,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -166,7 +165,6 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
 
-#if DCHECK_IS_ON()
   // See http://www.sqlite.org/fileformat2.html#database_header
   constexpr int kSqliteDatabaseHeaderOffset = 0;
   constexpr int kSqliteDatabaseHeaderSize = 100;
@@ -179,7 +177,6 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
           size == kSqliteDatabaseHeaderSize))
       << "Read from database file with lock mode " << sqlite_lock_mode_
       << "of size" << size << " at offset " << offset;
-#endif  // DCHECK_IS_ON()
 
   char* data = reinterpret_cast<char*>(buffer);
 
