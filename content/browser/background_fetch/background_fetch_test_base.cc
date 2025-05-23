@@ -5,6 +5,7 @@
 #include "content/browser/background_fetch/background_fetch_test_base.h"
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/service_worker/service_worker_context_core.h"

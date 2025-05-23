@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/browser/find_request_manager.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"
-#include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"

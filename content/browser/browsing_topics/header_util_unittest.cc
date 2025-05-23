@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/header_util.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"

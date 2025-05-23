@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"

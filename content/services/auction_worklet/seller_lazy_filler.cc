@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_util.h"
 #include "gin/converter.h"
