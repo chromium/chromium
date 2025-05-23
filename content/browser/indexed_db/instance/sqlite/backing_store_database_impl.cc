@@ -39,7 +39,7 @@ Status BackingStoreDatabaseImpl::DeleteDatabase(
     std::vector<PartitionedLock> locks,
     base::OnceClosure on_complete) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 }  // namespace content::indexed_db::sqlite

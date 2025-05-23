@@ -64,32 +64,32 @@ Status BackingStoreTransactionImpl::CreateObjectStore(
 
 Status BackingStoreTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::RenameObjectStore(
     int64_t object_store_id,
     const std::u16string& new_name) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::ClearObjectStore(int64_t object_store_id) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::CreateIndex(
     int64_t object_store_id,
     blink::IndexedDBIndexMetadata index) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::DeleteIndex(int64_t object_store_id,
                                                 int64_t index_id) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::RenameIndex(
@@ -97,14 +97,14 @@ Status BackingStoreTransactionImpl::RenameIndex(
     int64_t index_id,
     const std::u16string& new_name) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::GetRecord(int64_t object_store_id,
                                               const blink::IndexedDBKey& key,
                                               IndexedDBValue* record) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(
@@ -119,7 +119,7 @@ Status BackingStoreTransactionImpl::DeleteRange(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange&) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 StatusOr<int64_t> BackingStoreTransactionImpl::GetKeyGeneratorCurrentNumber(
@@ -133,7 +133,7 @@ Status BackingStoreTransactionImpl::MaybeUpdateKeyGeneratorCurrentNumber(
     int64_t new_state,
     bool check_current) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 StatusOr<std::optional<BackingStore::RecordIdentifier>>
@@ -150,7 +150,7 @@ Status BackingStoreTransactionImpl::PutIndexDataForRecord(
     const blink::IndexedDBKey& key,
     const BackingStore::RecordIdentifier& record) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
@@ -159,7 +159,7 @@ Status BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
     const blink::IndexedDBKey& key,
     std::unique_ptr<blink::IndexedDBKey>* primary_key) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 Status BackingStoreTransactionImpl::KeyExistsInIndex(
@@ -169,7 +169,7 @@ Status BackingStoreTransactionImpl::KeyExistsInIndex(
     std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
     bool* exists) {
   NOTIMPLEMENTED();
-  return Status::OK();
+  return Status::InvalidArgument("Not implemented");
 }
 
 StatusOr<std::unique_ptr<BackingStore::Cursor>>
@@ -178,7 +178,7 @@ BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
     const blink::IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
@@ -187,7 +187,7 @@ BackingStoreTransactionImpl::OpenObjectStoreCursor(
     const blink::IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
@@ -197,7 +197,7 @@ BackingStoreTransactionImpl::OpenIndexKeyCursor(
     const blink::IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
@@ -207,7 +207,7 @@ BackingStoreTransactionImpl::OpenIndexCursor(
     const blink::IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 }  // namespace content::indexed_db::sqlite

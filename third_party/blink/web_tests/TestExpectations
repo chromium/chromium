@@ -6706,6 +6706,13 @@ crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unha
 # Flaky timeouts on Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
+# Virtual suite mostly fails while feature is in development.
+crbug.com/40253999 virtual/indexeddb_sqlite/* [ Skip Timeout ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.serviceworker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.sharedworker.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/abort-in-initial-upgradeneeded.any.worker.html [ Pass ]
+
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 

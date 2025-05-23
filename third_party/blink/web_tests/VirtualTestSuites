@@ -4351,6 +4351,21 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "indexeddb_sqlite",
+    "owners": [
+      "abhishek.shanthkumar@microsoft.com",
+      "evanstade@microsoft.com",
+      "chrome-storage-team@google.com"
+    ],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/IndexedDB",
+      "storage/indexeddb"
+    ],
+    "args": ["--enable-features=IdbSqliteBackingStore"],
+    "expires": "never"
+  },
+  {
     "prefix": "force-allow-storage-access",
     "owners": ["arichiv@chromium.org", "cfredric@chromium.org"],
     "platforms": ["Android", "Fuchsia", "Linux", "Mac", "Win"],
