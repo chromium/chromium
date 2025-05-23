@@ -324,4 +324,8 @@ bool SeedReaderWriter::ShouldUseSeedFile() const {
          base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
 }
 
+bool SeedReaderWriter::HasPendingWrite() const {
+  return seed_writer_ && seed_writer_->HasPendingWrite();
+}
+
 }  // namespace variations

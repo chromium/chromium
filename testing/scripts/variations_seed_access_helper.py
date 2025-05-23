@@ -1,8 +1,16 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Shared helper functions for r/w of variations seed in local state."""
+"""Shared helper functions for r/w of variations seed in local state.
 
+# TODO(crbug.com/417138763): Update comment with new format.
+The seed is can be stored in either the local state file or the seed file.
+ - When stored in the seed file, the seed is stored compressed with gzip format.
+ - When stored in the local state file, the seed is compressed with gzip format
+   and encoded into base64.
+"""
+
+import base64
 import json
 import logging
 import os
@@ -12,8 +20,12 @@ _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
 
 # Constants around the Local State file and variation keys.
 _LOCAL_STATE_FILE_NAME = 'Local State'
-LOCAL_STATE_SEED_NAME = 'variations_compressed_seed'
-LOCAL_STATE_SEED_SIGNATURE_NAME = 'variations_seed_signature'
+_VARIATIONS_SEED_FILE_NAME = 'VariationsSeedV1'
+_SEED_KEY = 'variations_compressed_seed'
+_SEED_SIGNATURE_KEY = 'variations_seed_signature'
+ILL_FORMED_TEST_SEED_ERROR_MESSAGE = (
+    f'Ill-formed test seed json file: "{_SEED_KEY}" and "{_SEED_SIGNATURE_KEY}"'
+    ' are required')
 
 
 def load_test_seed_from_file(hardcoded_seed_path):
@@ -45,8 +57,8 @@ def load_test_seed_from_file(hardcoded_seed_path):
   with open(path_seed, 'r') as f:
     seed_json = json.load(f)
 
-  return (seed_json.get(LOCAL_STATE_SEED_NAME, None),
-          seed_json.get(LOCAL_STATE_SEED_SIGNATURE_NAME, None))
+  return (seed_json.get(_SEED_KEY,
+                        None), seed_json.get(_SEED_SIGNATURE_KEY, None))
 
 
 def get_test_seed_file_path(hardcoded_seed_path):
@@ -77,6 +89,8 @@ def get_test_seed_file_path(hardcoded_seed_path):
   return path_seed
 
 
+# TODO(crbug.com/417138763): Update this function to support reading the seed
+# from the seed file with proto format.
 def get_current_seed(user_data_dir):
   """Gets the current seed.
 
@@ -89,9 +103,62 @@ def get_current_seed(user_data_dir):
   with open(os.path.join(user_data_dir, _LOCAL_STATE_FILE_NAME)) as f:
     local_state = json.load(f)
 
-  return local_state.get(LOCAL_STATE_SEED_NAME,
-                         None), local_state.get(LOCAL_STATE_SEED_SIGNATURE_NAME,
-                                                None)
+  # Try to read the seed from the seed file first. If the file doesn't exist,
+  # read from local state.
+  seed_file_path = os.path.join(user_data_dir, _VARIATIONS_SEED_FILE_NAME)
+  if os.path.exists(seed_file_path):
+    with open(seed_file_path, 'rb') as f:
+      seed_file = f.read()
+      # The seed was originally stored compressed and base64-encoded in Local
+      # State. We encode it again to match the expected format.
+      seed = base64.b64encode(seed_file).decode('ascii')
+  else:
+    # The seed from Local State is already compressed and base64-encoded.
+    seed = local_state.get(_SEED_KEY, None)
+  signature = local_state.get(_SEED_SIGNATURE_KEY, None)
+
+  return seed, signature
+
+
+def _update_seed_file(user_data_dir, seed_dict):
+  """Updates the seed in the seed file.
+
+  The seed is stored compressed with gzip format.
+
+  Args:
+    user_data_dir (str): Path to the user data directory used to launch Chrome.
+    seed_dict (dict): A dict used to update current seed file.
+  """
+  # The seed is stored compressed with gzip format in the seed file.
+  decoded_seed = base64.b64decode(seed_dict.get(_SEED_KEY, None))
+  with open(os.path.join(user_data_dir, _VARIATIONS_SEED_FILE_NAME), 'wb') as f:
+    f.write(decoded_seed)
+
+  # The signature is stored in Local State.
+  # TODO(crbug.com/411431524): Store the signature in the seed file.
+  update_local_state(user_data_dir, {
+      _SEED_SIGNATURE_KEY: seed_dict.get(_SEED_SIGNATURE_KEY),
+  })
+
+
+# TODO(crbug.com/417138763): Update this function to support updating the seed
+# to the seed file with proto format.
+def update_seed(user_data_dir, seed, signature):
+  """Updates the seed in the local state and seed file.
+
+  Args:
+    user_data_dir (str): Path to the user data directory used to launch Chrome.
+    seed (str): A variations seed.
+    signature (str): A seed signature.
+  """
+  seed_dict = {
+      _SEED_KEY: seed,
+      _SEED_SIGNATURE_KEY: signature,
+  }
+
+  update_local_state(user_data_dir, seed_dict)
+  _update_seed_file(user_data_dir, seed_dict)
+
 
 
 def update_local_state(user_data_dir, update_dict):
@@ -121,11 +188,7 @@ def inject_test_seed(seed, signature, user_data_dir):
   Returns:
     bool: Whether the injection succeeded.
   """
-  seed_dict = {
-      LOCAL_STATE_SEED_NAME: seed,
-      LOCAL_STATE_SEED_SIGNATURE_NAME: signature,
-  }
-  update_local_state(user_data_dir, seed_dict)
+  update_seed(user_data_dir, seed, signature)
   current_seed, current_signature = get_current_seed(user_data_dir)
   if current_seed != seed or current_signature != signature:
     return False

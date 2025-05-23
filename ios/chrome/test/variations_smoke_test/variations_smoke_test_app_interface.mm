@@ -32,13 +32,14 @@ base::Time GetProcessStartTime() {
 @implementation VariationsSmokeTestAppInterface
 
 + (BOOL)variationsSeedInLocalStatePrefs {
-  variations::StoredSeed storedSeed = GetApplicationContext()
-                                          ->GetVariationsService()
-                                          ->GetSeedStoreForTesting()
-                                          ->GetSeedReaderWriterForTesting()
-                                          ->GetSeedData();
-
-  return !storedSeed.data.empty() && !storedSeed.signature.empty();
+  variations::SeedReaderWriter* seedReaderWriter =
+      GetApplicationContext()
+          ->GetVariationsService()
+          ->GetSeedStoreForTesting()
+          ->GetSeedReaderWriterForTesting();
+  variations::StoredSeed storedSeed = seedReaderWriter->GetSeedData();
+  return !storedSeed.data.empty() && !storedSeed.signature.empty() &&
+         !seedReaderWriter->HasPendingWrite();
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {

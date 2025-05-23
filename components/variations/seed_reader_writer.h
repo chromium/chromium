@@ -115,6 +115,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
+  // Returns true if a write is scheduled but has not yet completed.
+  bool HasPendingWrite() const;
+
  private:
   // TODO(crbug.com/380465790): Represents the seed and other related info.
   // This info will be stored together in the SeedFile. Once all the
