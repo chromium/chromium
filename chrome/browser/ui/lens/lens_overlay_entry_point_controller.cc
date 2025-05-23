@@ -189,7 +189,7 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
   UpdatePageActionState();
 }
 
-bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) {
+bool LensOverlayEntryPointController::IsUrlEduEligible(const GURL& url) const {
   if (!IsEnabled()) {
     return false;
   }

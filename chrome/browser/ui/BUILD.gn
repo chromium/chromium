@@ -4151,6 +4151,8 @@ static_library("ui") {
       "views/location_bar/intent_chip_button.h",
       "views/location_bar/intent_picker_view.cc",
       "views/location_bar/intent_picker_view.h",
+      "views/location_bar/lens_overlay_homework_page_action_icon_view.cc",
+      "views/location_bar/lens_overlay_homework_page_action_icon_view.h",
       "views/location_bar/lens_overlay_page_action_icon_view.cc",
       "views/location_bar/lens_overlay_page_action_icon_view.h",
       "views/location_bar/location_bar_bubble_delegate_view.cc",

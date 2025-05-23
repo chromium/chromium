@@ -40,6 +40,8 @@ std::string InvocationSourceToString(
       return "OmniboxPageAction";
     case LensOverlayInvocationSource::kOmniboxContextualSuggestion:
       return "OmniboxContextualSuggestion";
+    case LensOverlayInvocationSource::kHomeworkActionChip:
+      return "HomeworkActionChip";
   }
 }
 
@@ -392,6 +394,8 @@ void RecordTimeToFirstInteraction(
       event.SetFindInPage(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kOmnibox:
+    // TODO(crbug.com/419051875): Add separate UKM for homework action chip.
+    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
       event.SetOmnibox(time_to_first_interaction.InMilliseconds());
       break;
     case lens::LensOverlayInvocationSource::kOmniboxPageAction:

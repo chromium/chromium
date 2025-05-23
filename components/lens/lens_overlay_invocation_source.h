@@ -52,7 +52,10 @@ enum class LensOverlayInvocationSource {
   // contextual answers in the side panel.
   kOmniboxContextualSuggestion = 10,
 
-  kMaxValue = kOmniboxContextualSuggestion
+  // The Lens homework action chip in the omnibox.
+  kHomeworkActionChip = 11,
+
+  kMaxValue = kHomeworkActionChip
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

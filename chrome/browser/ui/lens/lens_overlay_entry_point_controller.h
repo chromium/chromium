@@ -67,7 +67,7 @@ class LensOverlayEntryPointController : public FullscreenObserver,
 
   // Returns true if the given URL is eligible for EDU promos present on some
   // entrypoints.
-  bool IsUrlEduEligible(const GURL& url);
+  bool IsUrlEduEligible(const GURL& url) const;
 
   // Invokes the entrypoint action.
   static void InvokeAction(tabs::TabInterface* active_tab,

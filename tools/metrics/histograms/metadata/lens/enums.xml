@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Context Menu"/>
   <int value="9" label="Omnibox Page Action"/>
   <int value="10" label="Omnibox Contextual Suggestion"/>
+  <int value="11" label="Homework action chip"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

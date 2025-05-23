@@ -47,7 +47,8 @@ enum class PageActionIconType {
   kOptimizationGuide = 31,
   kCollaborationMessaging = 32,
   kChangePassword = 33,
-  kMaxValue = kChangePassword,
+  kLensOverlayHomework = 34,
+  kMaxValue = kLensOverlayHomework,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
@@ -83,6 +84,7 @@ static_assert(static_cast<int>(PageActionIconType::kOptimizationGuide) == 31);
 static_assert(static_cast<int>(PageActionIconType::kCollaborationMessaging) ==
               32);
 static_assert(static_cast<int>(PageActionIconType::kChangePassword) == 33);
+static_assert(static_cast<int>(PageActionIconType::kLensOverlayHomework) == 34);
 
 // Returns a bool indicating whether the given page action type has been
 // migrated to the new framework, which is based on ActionItems instead of

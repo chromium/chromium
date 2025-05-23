@@ -334,6 +334,8 @@ LenOverlayEntryPointFromInvocationSource(
       return lens::LensOverlayClientLogs::OMNIBOX_CONTEXTUAL_SUGGESTION;
     case lens::LensOverlayInvocationSource::kOmniboxPageAction:
       return lens::LensOverlayClientLogs::OMNIBOX_PAGE_ACTION;
+    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
+      return lens::LensOverlayClientLogs::HOMEWORK_ACTION_CHIP;
     case lens::LensOverlayInvocationSource::kToolbar:
       return lens::LensOverlayClientLogs::TOOLBAR_BUTTON;
     case lens::LensOverlayInvocationSource::kFindInPage:

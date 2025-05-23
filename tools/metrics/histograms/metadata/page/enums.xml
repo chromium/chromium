@@ -296,6 +296,9 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Lens Overlay"/>
   <int value="30" label="Discounts"/>
   <int value="31" label="Optimization Guide"/>
+  <int value="32" label="Collaboration Messaging"/>
+  <int value="33" label="Change Password"/>
+  <int value="34" label="Lens Overlay Homework"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->

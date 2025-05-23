@@ -88,7 +88,7 @@ void LensUrlMatcher::InitializeForceAllowUrlPatterns(
 void LensUrlMatcher::InitializePathAllowMatcher(
     std::string path_match_allow_filters,
     base::MatcherStringPattern::ID* id) {
-  auto allow_strings = JSONArrayToVector(path_match_allow_filters);
+  const auto allow_strings = JSONArrayToVector(path_match_allow_filters);
   std::vector<base::MatcherStringPattern> allow_patterns;
   std::vector<const base::MatcherStringPattern*> allow_pointers;
   allow_patterns.reserve(allow_strings.size());
@@ -106,7 +106,7 @@ void LensUrlMatcher::InitializePathAllowMatcher(
 void LensUrlMatcher::InitializePathBlockMatcher(
     std::string path_match_block_filters,
     base::MatcherStringPattern::ID* id) {
-  auto block_strings = JSONArrayToVector(path_match_block_filters);
+  const auto block_strings = JSONArrayToVector(path_match_block_filters);
   std::vector<base::MatcherStringPattern> block_patterns;
   std::vector<const base::MatcherStringPattern*> block_pointers;
   block_patterns.reserve(block_strings.size());
