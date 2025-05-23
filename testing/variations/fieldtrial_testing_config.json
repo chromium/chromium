@@ -802,9 +802,7 @@
     "AndroidSystemTracing": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -26091,6 +26089,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewDisableCHIPS"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewFieldSystemTracing": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePerfettoSystemBackgroundTracing",
+                        "EnablePerfettoSystemTracing"
                     ]
                 }
             ]
