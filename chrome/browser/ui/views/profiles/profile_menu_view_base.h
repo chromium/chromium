@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -223,6 +224,11 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void ButtonPressed(base::RepeatingClosure action);
 
   void CreateAXWidgetObserver(views::Widget* widget);
+
+  std::unique_ptr<HoverButton> CreateMenuRowButton(
+      base::RepeatingClosure action,
+      std::unique_ptr<views::View> icon_view,
+      const std::u16string& text);
 
   const raw_ptr<Browser> browser_;
 

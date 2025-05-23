@@ -107,8 +107,9 @@ constexpr int kMenuEdgeMargin = 16;
 // Empty space between the rounded rectangle (outside) and menu edge.
 constexpr int kIdentityContainerMargin = 12;
 
-// The height of the button(s) with a colored background.
-constexpr int kButtonBackgroundVerticalSize = 36;
+// Additional empty space between the menu item (e.g. icon or label) and the
+// edge menu margin.
+constexpr int kMenuItemLeftInternalPadding = 12;
 
 constexpr char kProfileMenuClickedActionableItemHistogram[] =
     "Profile.Menu.ClickedActionableItem";
@@ -479,6 +480,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
 void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
     IdentitySectionParams params) {
+  constexpr int kHeaderVerticalSize = 36;
   constexpr int kHeaderImageSize = 16;
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
@@ -491,7 +493,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // represent empty space:
   //
   // Optional header:
-  //     HoverButton: (size: kButtonBackgroundVerticalSize)
+  //     HoverButton: (size: kHeaderVerticalSize)
   //     Horizontal Separator
   // [kAvatarTopMargin]
   // Image: Avatar (size: kIdentityInfoImageSize)
@@ -542,9 +544,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
             GetCircularSizedImage(params.header_image, kHeaderImageSize)),
         params.header_string, std::u16string(), nullptr, true, std::u16string(),
         kManagementHeaderIconLabelSpacing);
-    hover_button->SetPreferredSize(
-        gfx::Size(kMenuWidth - 2 * kIdentityContainerMargin,
-                  kButtonBackgroundVerticalSize));
+    hover_button->SetPreferredSize(gfx::Size(
+        kMenuWidth - 2 * kIdentityContainerMargin, kHeaderVerticalSize));
     hover_button->SetIconHorizontalMargins(0, 0);
     hover_button->title()->SetTextStyle(views::style::STYLE_BODY_5);
 
@@ -655,25 +656,18 @@ void ProfileMenuViewBase::AddFeatureButton(
         views::BoxLayout::Orientation::kVertical));
   }
 
-  std::unique_ptr<FeatureButtonIconView> icon_view;
-  if (&icon != &gfx::VectorIcon::EmptyIcon()) {
-    icon_view =
-        std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
-  }
-
-  auto button = std::make_unique<HoverButton>(
-      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                          base::Unretained(this), std::move(action)),
-      std::move(icon_view), text, /*subtitle=*/std::u16string(),
-      /*secondary_view=*/nullptr, /*add_vertical_label_spacing=*/false);
+  std::unique_ptr<HoverButton> button = CreateMenuRowButton(
+      std::move(action),
+      std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio), text);
   if (background_color.has_value()) {
     constexpr int background_corner_radius = 8;
+    constexpr int button_background_vertical_size = 40;
     button->SetBackground(std::make_unique<RoundedRectBackground>(
         *background_color, background_corner_radius,
         gfx::Insets::VH(0, kIdentityContainerMargin)));
     // Button with a background should have a larger size to fit the background.
     button->SetPreferredSize(
-        gfx::Size(kMenuWidth, kButtonBackgroundVerticalSize));
+        gfx::Size(kMenuWidth, button_background_vertical_size));
   }
   if (add_vertical_margin) {
     auto margin = gfx::Insets().set_bottom(kDefaultMargin);
@@ -708,8 +702,10 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   profile_mgmt_heading_container_->RemoveAllChildViews();
   profile_mgmt_heading_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-  profile_mgmt_heading_container_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(kDefaultMargin, kMenuEdgeMargin)));
+  profile_mgmt_heading_container_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(
+          kDefaultMargin, kMenuEdgeMargin + kMenuItemLeftInternalPadding,
+          kDefaultMargin, kMenuEdgeMargin)));
 
   // Add heading.
   views::Label* label = profile_mgmt_heading_container_->AddChildView(
@@ -740,14 +736,10 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
   DCHECK(!image_model.IsEmpty());
   ui::ImageModel sized_image =
       GetCircularSizedImage(image_model, kOtherProfileImageSize);
-  views::Button* button = selectable_profiles_container_->AddChildView(
-      std::make_unique<HoverButton>(
-          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                              base::Unretained(this), std::move(action)),
-          std::make_unique<views::ImageView>(sized_image), name,
-          /*subtitle=*/std::u16string(),
-          /*secondary_view=*/nullptr,
-          /*add_vertical_label_spacing=*/false));
+  views::Button* button =
+      selectable_profiles_container_->AddChildView(CreateMenuRowButton(
+          std::move(action), std::make_unique<views::ImageView>(sized_image),
+          name));
 
   if (!is_guest && !first_profile_button_) {
     first_profile_button_ = button;
@@ -774,12 +766,8 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
 
   auto icon_view =
       std::make_unique<FeatureButtonIconView>(icon, /*icon_to_image_ratio=*/1);
-  profile_mgmt_features_container_->AddChildView(std::make_unique<HoverButton>(
-      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                          base::Unretained(this), std::move(action)),
-      std::move(icon_view), text, /*subtitle=*/std::u16string(),
-      /*secondary_view=*/nullptr,
-      /*add_vertical_label_spacing=*/false));
+  profile_mgmt_features_container_->AddChildView(
+      CreateMenuRowButton(std::move(action), std::move(icon_view), text));
 }
 
 void ProfileMenuViewBase::AddBottomMargin() {
@@ -957,6 +945,20 @@ void ProfileMenuViewBase::ButtonPressed(base::RepeatingClosure action) {
 
 void ProfileMenuViewBase::CreateAXWidgetObserver(views::Widget* widget) {
   ax_widget_observer_ = std::make_unique<AXMenuWidgetObserver>(this, widget);
+}
+
+std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
+    base::RepeatingClosure action,
+    std::unique_ptr<views::View> icon_view,
+    const std::u16string& text) {
+  CHECK(icon_view);
+  auto button = std::make_unique<HoverButton>(
+      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                          base::Unretained(this), std::move(action)),
+      std::move(icon_view), text, /*subtitle=*/std::u16string(),
+      /*secondary_view=*/nullptr, /*add_vertical_label_spacing=*/false);
+  button->SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
+  return button;
 }
 
 // Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave
