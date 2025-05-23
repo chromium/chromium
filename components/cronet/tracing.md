@@ -30,10 +30,38 @@ need to rebuild Cronet nor the app.
 
 ## Getting started
 
+There are two ways to gather a Cronet-focused trace:
+
+ - Using the **Android System Tracing** feature built into the Android system UI;
+   - The easiest method. Only usable on recent versions of Android.
+ - Or using **Perfetto tools**.
+   - Requires adb access. More flexible and produces more detailed traces.
+
+### Using the Android System Tracing app (Traceur)
+
+*** note
+Using this method, events from Cronet native code and NetLog will only be
+included in the trace if your Android version is recent enough for Traceur to
+[use track events](https://r.android.com/2852485) in its Perfetto trace config.
+This is true for Android 15+, and some versions of Android 14.
+***
+
+To capture a trace using this method, follow the [Android instructions on how
+to capture a system trace](https://developer.android.com/topic/performance/tracing/on-device).
+
+To ensure Cronet events are recorded, make sure that:
+
+ - The *Trace debuggable applications* setting is on so that Cronet Android
+   trace API (ATrace) events are captured.
+ - The *webview* category is enabled so that Cronet track events (native code
+   and NetLog) are captured.
+
+### Using Perfetto tools
+
 To record a trace using Perfetto, refer to the [Perfetto Android Quick Start
 guide](https://perfetto.dev/docs/quickstart/android-tracing).
 
-### Recommended config
+#### Recommended config
 
 The following [Perfetto trace config](https://perfetto.dev/docs/concepts/config)
 provides a good starting point for gathering a Cronet-focused trace:
