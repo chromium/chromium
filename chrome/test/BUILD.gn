@@ -11344,6 +11344,11 @@ if (!is_android && !is_chromeos_device) {
       ]
     }
 
+    if (is_win && is_chrome_branded) {
+      deps +=
+          [ "//chrome/browser/win/installer_downloader:interactive_ui_tests" ]
+    }
+
     if (toolkit_views) {
       sources += [
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",

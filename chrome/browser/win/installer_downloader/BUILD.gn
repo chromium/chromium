@@ -31,6 +31,7 @@ source_set("controller") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":infobar",
     ":prefs",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
@@ -38,6 +39,7 @@ source_set("controller") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//components/download/public/common:public",
+    "//components/infobars/content",
     "//components/infobars/core",
     "//components/prefs",
     "//components/tabs:public",
@@ -46,16 +48,42 @@ source_set("controller") {
 }
 
 source_set("infobar") {
+  friend = [
+    ":infobar_impl",
+    ":controller",
+  ]
+
   public = [ "installer_downloader_infobar_delegate.h" ]
 
-  sources = [ "installer_downloader_infobar_delegate.cc" ]
+  sources = [
+    "installer_downloader_active_browser_window_tracker.h",
+    "installer_downloader_infobar_window_active_tab_tracker.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser/ui:browser_list",
+    "//components/infobars/core",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("infobar_impl") {
+  sources = [
+    "installer_downloader_active_browser_window_tracker.cc",
+    "installer_downloader_infobar_delegate.cc",
+    "installer_downloader_infobar_window_active_tab_tracker.cc",
+  ]
 
   deps = [
     ":controller",
-    "//base",
+    ":infobar",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/omnibox/browser:vector_icons",
@@ -89,5 +117,25 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "installer_downloader_interactive_uitest.cc" ]
+
+  deps = [
+    ":controller",
+    ":prefs",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

@@ -34,16 +34,14 @@ constexpr infobars::InfoBarDelegate::InfoBarIdentifier
 }  // namespace
 
 // static
-void InstallerDownloaderInfoBarDelegate::Show(content::WebContents* contents,
-                                              base::OnceClosure accept_cb,
-                                              base::OnceClosure close_cb) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(contents);
-
+infobars::InfoBar* InstallerDownloaderInfoBarDelegate::Show(
+    infobars::ContentInfoBarManager* infobar_manager,
+    base::OnceClosure accept_cb,
+    base::OnceClosure close_cb) {
   std::unique_ptr<InstallerDownloaderInfoBarDelegate> delegate =
       std::make_unique<InstallerDownloaderInfoBarDelegate>(std::move(accept_cb),
                                                            std::move(close_cb));
-  infobar_manager->AddInfoBar(
+  return infobar_manager->AddInfoBar(
       std::make_unique<ConfirmInfoBar>(std::move(delegate)));
 }
 
@@ -70,6 +68,11 @@ bool InstallerDownloaderInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
   // Returns false if the infobar should not be dismissed on navigation.
   return false;
+}
+
+bool InstallerDownloaderInfoBarDelegate::Accept() {
+  std::move(accept_cb_).Run();
+  return true;
 }
 
 void InstallerDownloaderInfoBarDelegate::InfoBarDismissed() {

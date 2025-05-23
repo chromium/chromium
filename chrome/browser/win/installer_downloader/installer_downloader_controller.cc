@@ -22,9 +22,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_infobar_window_active_tab_tracker.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model_impl.h"
 #include "chrome/browser/win/installer_downloader/system_info_provider_impl.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
@@ -76,7 +80,9 @@ InstallerDownloaderController::InstallerDownloaderController(
       model_(std::make_unique<InstallerDownloaderModelImpl>(
           std::make_unique<SystemInfoProviderImpl>())),
       get_active_web_contents_callback_(
-          base::BindRepeating(&GetActiveWebContents)) {}
+          base::BindRepeating(&GetActiveWebContents)) {
+  RegisterBrowserWindowEvents();
+}
 
 InstallerDownloaderController::InstallerDownloaderController(
     ShowInfobarCallback show_infobar_callback,
@@ -86,15 +92,52 @@ InstallerDownloaderController::InstallerDownloaderController(
       show_infobar_callback_(std::move(show_infobar_callback)),
       model_(std::move(model)),
       get_active_web_contents_callback_(
-          base::BindRepeating(&GetActiveWebContents)) {}
+          base::BindRepeating(&GetActiveWebContents)) {
+  RegisterBrowserWindowEvents();
+}
+
+void InstallerDownloaderController::RegisterBrowserWindowEvents() {
+  active_window_subscription_ =
+      window_tracker_.RegisterActiveWindowChangedCallback(base::BindRepeating(
+          &InstallerDownloaderController::OnActiveBrowserWindowChanged,
+          base::Unretained(this)));
+
+  removed_window_subscription_ =
+      window_tracker_.RegisterRemovedWindowCallback(base::BindRepeating(
+          &InstallerDownloaderController::OnRemovedBrowserWindow,
+          base::Unretained(this)));
+}
 
 InstallerDownloaderController::~InstallerDownloaderController() = default;
 
-void InstallerDownloaderController::MaybeShowInfoBar() {
-  // At this point, the decision to show the infobar should be taken.
-  // 1. Check local state whether shown limit has been reached or not.
-  // 2. Check eligibility.
+void InstallerDownloaderController::OnActiveBrowserWindowChanged(
+    BrowserWindowInterface* bwi) {
+  // This can be null during  the startup or when the last window is closed.
+  if (!bwi) {
+    return;
+  }
 
+  if (bwi_and_active_tab_tracker_map_.contains(bwi)) {
+    return;
+  }
+
+  bwi_and_active_tab_tracker_map_[bwi] =
+      std::make_unique<InstallerDownloaderInfobarWindowActiveTabTracker>(
+          bwi,
+          base::BindRepeating(&InstallerDownloaderController::MaybeShowInfoBar,
+                              base::Unretained(this)));
+}
+
+void InstallerDownloaderController::OnRemovedBrowserWindow(
+    BrowserWindowInterface* bwi) {
+  if (!bwi_and_active_tab_tracker_map_.contains(bwi)) {
+    return;
+  }
+
+  bwi_and_active_tab_tracker_map_.erase(bwi);
+}
+
+void InstallerDownloaderController::MaybeShowInfoBar() {
   // The max show count of the infobar have been reached. Eligibility check is
   // no longer needed.
   if (model_->IsMaxShowCountReached()) {
@@ -108,6 +151,20 @@ void InstallerDownloaderController::MaybeShowInfoBar() {
 
 void InstallerDownloaderController::OnEligibilityReady(
     std::optional<base::FilePath> destination) {
+  if (infobar_closed_) {
+    return;
+  }
+
+  auto* contents = get_active_web_contents_callback_.Run();
+
+  if (!contents) {
+    return;
+  }
+
+  if (visible_infobars_web_contents_.contains(contents)) {
+    return;
+  }
+
   // Early return when we have no destination and bypass is not allowed.
   if (!destination.has_value() && !model_->ShouldByPassEligibilityCheck()) {
     return;
@@ -123,28 +180,58 @@ void InstallerDownloaderController::OnEligibilityReady(
     destination = std::move(desktop_path);
   }
 
-  // TODO(https://crbug.com/417708652): Ensure that the infobar is visible on
-  // the last activated windows.
-  auto* contents = get_active_web_contents_callback_.Run();
-
-  if (!contents) {
-    return;
-  }
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
 
   // Installer Downloader is a global feature, therefore it's guaranteed that
   // InstallerDownloaderController will be alive at any point during the browser
   // runtime.
-  show_infobar_callback_.Run(
-      contents,
+  infobars::InfoBar* infobar = show_infobar_callback_.Run(
+      infobar_manager,
       base::BindOnce(&InstallerDownloaderController::OnDownloadRequestAccepted,
                      base::Unretained(this), destination.value()),
       base::BindOnce(&InstallerDownloaderController::OnInfoBarDismissed,
                      base::Unretained(this)));
+
+  if (!infobar) {
+    return;
+  }
+
+  infobar_manager->AddObserver(this);
   model_->IncrementShowCount();
+  visible_infobars_web_contents_[contents] = infobar;
+}
+
+void InstallerDownloaderController::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                                     bool animate) {
+  auto it = std::find_if(
+      visible_infobars_web_contents_.begin(),
+      visible_infobars_web_contents_.end(),
+      [infobar](const auto& entry) { return entry.second == infobar; });
+
+  if (it == visible_infobars_web_contents_.end()) {
+    return;
+  }
+
+  it->second->owner()->RemoveObserver(this);
+  visible_infobars_web_contents_.erase(it);
+
+  if (!user_initiated_info_bar_close_pending_) {
+    return;
+  }
+
+  for (auto [contents, infobar_instance] : visible_infobars_web_contents_) {
+    infobar_instance->owner()->RemoveObserver(this);
+    infobar_instance->RemoveSelf();
+  }
+
+  visible_infobars_web_contents_.clear();
+  infobar_closed_ = true;
 }
 
 void InstallerDownloaderController::OnDownloadRequestAccepted(
     const base::FilePath& destination) {
+  user_initiated_info_bar_close_pending_ = true;
   // User have explicitly gave download consent. Therefore, a background
   // download should be issued.
   auto* contents = get_active_web_contents_callback_.Run();
@@ -185,8 +272,7 @@ void InstallerDownloaderController::SetActiveWebContentsCallbackForTesting(
 }
 
 void InstallerDownloaderController::OnInfoBarDismissed() {
-  // TODO(crbug.com/417709084):Dismisses all installer Downloader infobars
-  // since this infobar is global.
+  user_initiated_info_bar_close_pending_ = true;
 }
 
 }  // namespace installer_downloader

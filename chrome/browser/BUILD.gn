@@ -2608,6 +2608,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/win/installer_downloader:controller",
       "//chrome/browser/win/installer_downloader:infobar",
+      "//chrome/browser/win/installer_downloader:infobar_impl",
     ]
   }
 

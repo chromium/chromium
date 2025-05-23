@@ -15,6 +15,11 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 
+namespace infobars {
+class InfoBar;
+class ContentInfoBarManager;
+}  // namespace infobars
+
 namespace installer_downloader {
 
 class InstallerDownloaderInfoBarDelegate : public ConfirmInfoBarDelegate {
@@ -22,9 +27,9 @@ class InstallerDownloaderInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Creates a installer downloader infobar and adds it to the provided
   // `infobar_manager`. The `infobar_manager` will own the returned infobar.
   // `accept_cb` is called when the user accepts the infobar.
-  static void Show(content::WebContents* contents,
-                   base::OnceClosure accept_cb,
-                   base::OnceClosure close_cb);
+  static infobars::InfoBar* Show(infobars::ContentInfoBarManager* contents,
+                                 base::OnceClosure accept_cb,
+                                 base::OnceClosure close_cb);
 
   InstallerDownloaderInfoBarDelegate& operator=(
       const InstallerDownloaderInfoBarDelegate&) = delete;
@@ -37,6 +42,7 @@ class InstallerDownloaderInfoBarDelegate : public ConfirmInfoBarDelegate {
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  bool Accept() override;
   void InfoBarDismissed() override;
   std::u16string GetMessageText() const override;
   std::u16string GetLinkText() const override;
