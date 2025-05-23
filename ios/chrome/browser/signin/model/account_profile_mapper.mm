@@ -116,6 +116,22 @@ void RecordHostedDomainFetchEvent(HostedDomainFetchEvent event) {
   base::UmaHistogramEnumeration("Signin.IOSHostedDomainFetchEvent", event);
 }
 
+// Enum for `Signin.AccountProfileStartupState` histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(AccountProfileStartupState)
+enum class AccountProfileStartupState {
+  kManagedAccountInPersonalProfile = 0,
+  kManagedAccountInManagedProfile = 1,
+  kPersonalAccountInManagedProfile = 2,
+  kPersonalAccountInPersonalProfile = 3,
+  kMaxValue = kPersonalAccountInPersonalProfile
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountProfileStartupState)
+
+void RecordAccountProfileStartupState(AccountProfileStartupState state) {
+  base::UmaHistogramEnumeration("Signin.AccountProfileStartupState", state);
+}
+
 }  // namespace
 
 // Helper class that handles assignment of accounts to profiles. Specifically,
@@ -763,6 +779,13 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     // Found the profile! Check if it's the right kind of profile.
     bool is_personal_profile = (profile_name == GetPersonalProfileName());
     if (is_personal_profile == !is_managed_account) {
+      if (is_personal_profile) {
+        RecordAccountProfileStartupState(
+            AccountProfileStartupState::kPersonalAccountInPersonalProfile);
+      } else {
+        RecordAccountProfileStartupState(
+            AccountProfileStartupState::kManagedAccountInManagedProfile);
+      }
       // The account is already assigned to the right profile.
       return;
     }
@@ -784,6 +807,8 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     }
     if (is_primary_account) {
       if (is_personal_profile && is_managed_account) {
+        RecordAccountProfileStartupState(
+            AccountProfileStartupState::kManagedAccountInPersonalProfile);
         // Record force migration pref for managed accounts.
         if (local_pref_service_->GetTime(
                 prefs::kWaitingForMultiProfileForcedMigrationTimestamp) ==
@@ -792,6 +817,9 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
               prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
               base::Time::Now());
         }
+      } else {
+        RecordAccountProfileStartupState(
+            AccountProfileStartupState::kPersonalAccountInManagedProfile);
       }
       // TODO(crbug.com/408131474): Trigger forced-migration.
       //  It's the primary account - leave the current assignment in place.
