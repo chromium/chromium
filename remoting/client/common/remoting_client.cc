@@ -4,6 +4,7 @@
 
 #include "remoting/client/common/remoting_client.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -21,6 +22,7 @@
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/client/common/frame_consumer_wrapper.h"
 #include "remoting/client/common/logging.h"
+#include "remoting/proto/control.pb.h"
 #include "remoting/proto/remoting/v1/host_info.pb.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -28,6 +30,7 @@
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/jingle_session.h"
 #include "remoting/protocol/jingle_session_manager.h"
@@ -45,6 +48,10 @@
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 
 namespace remoting {
+
+namespace {
+constexpr std::int32_t kMinBitrateBps = 10485760;
+}
 
 RemotingClient::RemotingClient(
     base::OnceClosure quit_closure,
@@ -240,6 +247,15 @@ void RemotingClient::OnConnectionState(protocol::ConnectionToHost::State state,
                                        protocol::ErrorCode error) {
   CLIENT_LOG << "OnConnectionState change: "
              << protocol::ConnectionToHost::StateToString(state);
+  if (state == protocol::ConnectionToHost::State::CONNECTED &&
+      connection_->host_stub()) {
+    protocol::PeerConnectionParameters peer_connection_params;
+    peer_connection_params.set_preferred_min_bitrate_bps(kMinBitrateBps);
+    connection_->host_stub()->ControlPeerConnection(peer_connection_params);
+  } else if (state == protocol::ConnectionToHost::State::CLOSED ||
+             state == protocol::ConnectionToHost::State::FAILED) {
+    StopSession();
+  }
 }
 
 void RemotingClient::OnConnectionReady(bool ready) {
