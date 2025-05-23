@@ -92,6 +92,14 @@ std::string MaskUsername(const std::u16string& username) {
       {kMaskedUsername, base::UTF16ToUTF8(username.substr(pos))});
 }
 
+::google3_protos::Timestamp ToProtoTimestamp(base::Time time) {
+  int64_t millis = time.InMillisecondsFSinceUnixEpoch();
+  ::google3_protos::Timestamp timestamp;
+  timestamp.set_seconds(millis / 1000);
+  timestamp.set_nanos((millis % 1000) * 1000000);
+  return timestamp;
+}
+
 std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
     const enterprise_connectors::ReportingSettings& settings,
     const char* event_type) {

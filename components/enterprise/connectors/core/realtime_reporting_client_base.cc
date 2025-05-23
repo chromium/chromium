@@ -4,6 +4,8 @@
 
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
+#include <ctime>
+
 #include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/i18n/time_formatting.h"
@@ -186,9 +188,7 @@ void RealtimeReportingClientBase::ReportEvent(
 
   // If the timestamp is not set, it's a realtime event so use current time.
   if (!event.has_time()) {
-    int64_t timestamp_millis = base::Time::Now().InMillisecondsSinceUnixEpoch();
-    event.mutable_time()->set_seconds(timestamp_millis / 1000);
-    event.mutable_time()->set_nanos((timestamp_millis % 1000) * 1000000);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

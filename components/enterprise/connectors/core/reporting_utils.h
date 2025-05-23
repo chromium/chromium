@@ -25,6 +25,9 @@ inline constexpr int kReferrerUserGestureLimit = 5;
 // username should be masked.
 std::string MaskUsername(const std::u16string& username);
 
+// Convert base::Time to Timestamp proto.
+::google3_protos::Timestamp ToProtoTimestamp(base::Time);
+
 // Verify if the given `matcher` matches the `url`.
 bool IsUrlMatched(url_matcher::URLMatcher* matcher, const GURL& url);
 

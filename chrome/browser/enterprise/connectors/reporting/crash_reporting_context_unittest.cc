@@ -5,6 +5,8 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -16,6 +18,8 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,8 +30,10 @@
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
+using base::test::EqualsProto;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::ByRef;
 using ::testing::Eq;
 using ::testing::Return;
 
@@ -60,18 +66,31 @@ constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
 
 }  // namespace
 
-class CrashReportingContextTest : public testing::Test {
+class CrashReportingContextTest : public testing::TestWithParam<bool> {
  public:
   CrashReportingContextTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-  void SetUp() override { EXPECT_TRUE(profile_manager_.SetUp()); }
+  void SetUp() override {
+    EXPECT_TRUE(profile_manager_.SetUp());
+
+    if (use_proto_format()) {
+      feature_list_.InitAndEnableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          policy::kUploadRealtimeReportingEventsUsingProto);
+    }
+  }
+
+  bool use_proto_format() { return GetParam(); }
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(CrashReportingContextTest, GetNewReportsFromDB) {
+TEST_P(CrashReportingContextTest, GetNewReportsFromDB) {
   base::ScopedTempDir database_dir;
   ASSERT_TRUE(database_dir.CreateUniqueTempDir());
   std::unique_ptr<crashpad::CrashReportDatabase> database =
@@ -86,7 +105,7 @@ TEST_F(CrashReportingContextTest, GetNewReportsFromDB) {
   EXPECT_EQ(reports.size(), 1u);
 }
 
-TEST_F(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
+TEST_P(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
   time_t timestamp = base::Time::Now().ToTimeT();
 
   SetLatestCrashReportTime(g_browser_process->local_state(), timestamp);
@@ -94,7 +113,7 @@ TEST_F(CrashReportingContextTest, GetAndSetLatestCrashReportingTime) {
             GetLatestCrashReportTime(g_browser_process->local_state()));
 }
 
-TEST_F(CrashReportingContextTest, UploadToReportingServer) {
+TEST_P(CrashReportingContextTest, UploadToReportingServer) {
   EXPECT_EQ(static_cast<long>(0u),
             GetLatestCrashReportTime(g_browser_process->local_state()));
 
@@ -102,6 +121,7 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
   std::vector<crashpad::CrashReportDatabase::Report> reports;
   crashpad::CrashReportDatabase::Report report;
   report.creation_time = timestamp;
+  report.id = "123";
   reports.push_back(report);
 
   TestingProfile* profile =
@@ -121,15 +141,44 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
       static_cast<test::MockRealtimeReportingClient*>(
           RealtimeReportingClientFactory::GetForProfile(profile));
 
-  EXPECT_CALL(*reporting_client,
-              ReportPastEvent(kBrowserCrashEvent, _, _,
-                              base::Time::FromTimeT(timestamp)))
-      .Times(1);
+  ::chrome::cros::reporting::proto::Event expected_event_proto;
+  base::Value::Dict expected_event;
+
+  if (use_proto_format()) {
+    auto* browser_crash_event =
+        expected_event_proto.mutable_browser_crash_event();
+    browser_crash_event->set_channel(
+        version_info::GetChannelString(chrome::GetChannel()));
+    browser_crash_event->set_version(version_info::GetVersionNumber());
+    browser_crash_event->set_report_id("123");
+    browser_crash_event->set_platform(version_info::GetOSType());
+    *expected_event_proto.mutable_time() =
+        ToProtoTimestamp(base::Time::FromTimeT(timestamp));
+
+    EXPECT_CALL(*reporting_client,
+                ReportEvent(EqualsProto(expected_event_proto), _))
+        .Times(1);
+  } else {
+    expected_event.Set("channel",
+                       version_info::GetChannelString(chrome::GetChannel()));
+    expected_event.Set("version", version_info::GetVersionNumber());
+    expected_event.Set("reportId", "123");
+    expected_event.Set("platform", version_info::GetOSType());
+
+    EXPECT_CALL(
+        *reporting_client,
+        ReportPastEvent(kBrowserCrashEvent, _, Eq(ByRef(expected_event)),
+                        base::Time::FromTimeT(timestamp)))
+        .Times(1);
+  }
+
   UploadToReportingServer(reporting_client->AsWeakPtrImpl(),
                           g_browser_process->local_state(), reports);
   EXPECT_EQ(timestamp,
             GetLatestCrashReportTime(g_browser_process->local_state()));
 }
+
+INSTANTIATE_TEST_SUITE_P(, CrashReportingContextTest, ::testing::Bool());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
 
@@ -151,9 +200,9 @@ class CrashpadPollingIntervalTest
 
 TEST_P(CrashpadPollingIntervalTest, GetCrashpadPollingInterval) {
   chrome::ScopedChannelOverride scoped_channel(GetParam().channel);
-  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
-  commandLine->AppendSwitchASCII(kCrashpadPollingIntervalFlag,
-                                 GetParam().cmd_flag);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitchASCII(kCrashpadPollingIntervalFlag,
+                                  GetParam().cmd_flag);
   EXPECT_EQ(GetCrashpadPollingInterval(),
             base::Seconds(GetParam().expected_interval));
 }
