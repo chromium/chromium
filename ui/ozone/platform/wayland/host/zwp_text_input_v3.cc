@@ -136,31 +136,26 @@ void ZwpTextInputV3Impl::Reset() {
   // Clear last committed values.
   ResetCommittedImeData();
   // There is no explicit reset API in v3. See [1].
-  // So use disable+enable to force a reset.
+  // Disable+enable to force a reset has been discussed as a possible solution.
+  // But this is not implemented yet in compositors. In fact, it was seen in
+  // both mutter and kwin that it can cause the IME to enter a grab state
+  // unexpectedly. So at this point, leave it unimplemented.
   //
-  // TODO(crbug.com/352352898) Calling enable below as per text-input-v3 will
-  // reset all state including surrounding text but chromium expects reset to
-  // only clear preedit, see WaylandInputMethodContext::Reset(). This needs to
-  // be addressed on the protocol side and/or chromium side so that they match.
   // If no reset is implemented at all, it can lead to bad user experience,
   // e.g. preedit being duplicated if composition is aborted on the chromium
   // side by clicking in the input field. So the logic below is still needed
   // until a proper fix is in place.
   //
+  // Even though chromium expects only preedit to be reset, the surrounding text
+  // in fact could change along with reset being called if composition was
+  // canceled internally. So we shouldn't keep old surrounding text anyway. See
+  // related crbug.com/353915732 where surrounding text update is not sent after
+  // reset when composition is canceled.
+  //
   // [1]
   // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/merge_requests/34
-  zwp_text_input_v3_disable(obj_.get());
-  Commit();
-  // Pending state should be reset on enable as per the protocol. Even though
-  // chromium expects only preedit to be reset, the surrounding text in fact
-  // could change along with reset being called if composition was canceled
-  // internally. So we shouldn't keep old surrounding text anyway. See related
-  // crbug.com/353915732 where surrounding text update is not sent after reset
-  // when composition is canceled.
   ResetPendingImeData();
   ResetInputEventsState();
-  zwp_text_input_v3_enable(obj_.get());
-  Commit();
 }
 
 void ZwpTextInputV3Impl::SetClient(ZwpTextInputV3Client* context) {

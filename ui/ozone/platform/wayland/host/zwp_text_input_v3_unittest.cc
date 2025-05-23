@@ -74,13 +74,11 @@ TEST_F(ZwpTextInputV3Test, Reset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     InSequence s;
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Disable())
-        .Times(1);
-    EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
-        .Times(1);
+        .Times(0);
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Enable())
-        .Times(1);
+        .Times(0);
     EXPECT_CALL(*server->text_input_manager_v3()->text_input(), Commit())
-        .Times(1);
+        .Times(0);
   });
   text_input_v3_->Reset();
 }
@@ -546,10 +544,9 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnReset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Enable());
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
   });
   text_input_v3_->Reset();
   VerifyAndClearExpectations();
@@ -730,10 +727,9 @@ TEST_F(ZwpTextInputV3Test, PendingInputEventsClearedOnReset) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
-    EXPECT_CALL(*zwp_text_input, Enable());
-    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
   });
   text_input_v3_->Reset();
   VerifyAndClearExpectations();
