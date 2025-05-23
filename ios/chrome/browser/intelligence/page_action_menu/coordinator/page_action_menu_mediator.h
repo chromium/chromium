@@ -7,10 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
-
 // The mediator for the page action menu.
-@interface PageActionMenuMediator : NSObject <PageActionMenuMutator>
+@interface PageActionMenuMediator : NSObject
 
 @end
 

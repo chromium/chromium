@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
 #import "build/branding_buildflags.h"
-#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
+#import "ios/chrome/browser/shared/public/commands/glic_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -219,6 +219,9 @@ const CGFloat kMenuHeaderHeight = 58;
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(handleGlicTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
 
   return button;
 }
@@ -258,6 +261,17 @@ const CGFloat kMenuHeaderHeight = 58;
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   return button;
+}
+
+#pragma mark - Private
+
+// Dismisses this view controller and starts the GLIC overlay.
+- (void)handleGlicTapped:(UIButton*)button {
+  PageActionMenuViewController* __weak weakSelf = self;
+  [self dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf.handler startGlicFlow];
+                           }];
 }
 
 @end

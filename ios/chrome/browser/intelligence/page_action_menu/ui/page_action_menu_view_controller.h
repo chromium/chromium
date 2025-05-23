@@ -7,13 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol PageActionMenuMutator;
+@protocol GlicCommands;
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController : UIViewController
 
-// The mutator for communicating with the mediator.
-@property(nonatomic, weak) id<PageActionMenuMutator> mutator;
+// The handler for sending GLIC commands.
+@property(nonatomic, weak) id<GlicCommands> handler;
 
 @end
 

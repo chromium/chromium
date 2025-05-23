@@ -31,6 +31,7 @@ source_set("commands") {
     "find_in_page_commands.h",
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
+    "glic_commands.h",
     "google_one_commands.h",
     "guided_tour_commands.h",
     "help_commands.h",
