@@ -189,6 +189,12 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" translateable="false" desc="Name of the Glic settings section related to permissions.">
         Permissions
       </message>
+      <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" translateable="false" desc="Name of the toggle that controls whether the glic button is shown in the tabstrip.">
+        Show glic at the top of the browser
+      </message>
+      <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the toggle that controls whether the glic button is shown in the tabstrip.">
+        Quickly open glic whenever you need it
+      </message>
       <if expr="is_macosx">
         <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Mac only).">
           Feature in your toolbar
