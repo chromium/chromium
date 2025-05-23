@@ -482,6 +482,18 @@ class AvatarToolbarButtonBaseBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
+  void SimulateTypeManagedByPolicy(syncer::UserSelectableType type) {
+    GetTestSyncService()->GetUserSettings()->SetTypeIsManagedByPolicy(type,
+                                                                      true);
+    GetTestSyncService()->FireStateChanged();
+  }
+
+  void SimulateTypeManagedByCustodian(syncer::UserSelectableType type) {
+    GetTestSyncService()->GetUserSettings()->SetTypeIsManagedByCustodian(type,
+                                                                         true);
+    GetTestSyncService()->FireStateChanged();
+  }
+
   void SimulatePassphraseError() {
     GetTestSyncService()->GetUserSettings()->SetPassphraseRequired(
         std::string(kTestPassphrase));
@@ -1090,6 +1102,77 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   // if sync is not allowed.
   EXPECT_TRUE(avatar->GetText().empty());
 }
+
+enum class ManagedBy {
+  kPolicy,
+  kCustodian,
+};
+
+struct HistorySyncOptinSyncManagedTypeTestCase {
+  ManagedBy managed_by;
+  syncer::UserSelectableType managed_type;
+};
+
+class AvatarToolbarButtonHistorySyncOptinManagedTypeTest
+    : public AvatarToolbarButtonHistorySyncOptinBrowserTest,
+      public WithParamInterface<HistorySyncOptinSyncManagedTypeTestCase> {};
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
+  DISABLED_HistorySyncOptinNotShownWhenSyncManaged
+#else
+#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
+  HistorySyncOptinNotShownWhenSyncManaged
+#endif
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
+                       MAYBE_HistorySyncOptinNotShownWhenSyncManaged) {
+  switch (GetParam().managed_by) {
+    case ManagedBy::kPolicy:
+      SimulateTypeManagedByPolicy(GetParam().managed_type);
+      break;
+    case ManagedBy::kCustodian:
+      SimulateTypeManagedByCustodian(GetParam().managed_type);
+      break;
+    default:
+      NOTREACHED();
+  }
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string account_name(u"Account name");
+  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
+  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should NOT be followed by the history sync opt-in entry point
+  // if sync is not allowed.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+const HistorySyncOptinSyncManagedTypeTestCase
+    kHistorySyncOptinSyncManagedTypeTestCases[] = {
+        {
+            ManagedBy::kPolicy,
+            syncer::UserSelectableType::kHistory,
+        },
+        {
+            ManagedBy::kPolicy,
+            syncer::UserSelectableType::kTabs,
+        },
+        {
+            ManagedBy::kCustodian,
+            syncer::UserSelectableType::kHistory,
+        },
+        {
+            ManagedBy::kCustodian,
+            syncer::UserSelectableType::kTabs,
+        },
+};
+
+INSTANTIATE_TEST_SUITE_P(HistorySyncOptinManagedType,
+                         AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
+                         ValuesIn(kHistorySyncOptinSyncManagedTypeTestCases));
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)

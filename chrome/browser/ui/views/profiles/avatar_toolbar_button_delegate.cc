@@ -66,6 +66,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -637,7 +638,7 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
     if (!sync_promo_identity_pill_manager_.ShouldShowPromo()) {
       return;
     }
-    if (!IsAllowedToSync()) {
+    if (!IsSyncPromoEligible()) {
       return;
     }
     access_point_ = access_point;
@@ -699,10 +700,33 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
                 kHistorySyncOptinExpansionPillOnInactivity);
   }
 
-  bool IsAllowedToSync() const {
-    return SyncServiceFactory::IsSyncAllowed(&profile_.get()) &&
-           signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
-               &profile_.get())) == signin_util::SignedInState::kSignedIn;
+  bool IsSyncPromoEligible() const {
+    if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+            &profile_.get())) != signin_util::SignedInState::kSignedIn) {
+      return false;
+    }
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(&profile_.get());
+    if (!sync_service) {
+      return false;
+    }
+    if (sync_service->HasDisableReason(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+      return false;
+    }
+    if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+            syncer::UserSelectableType::kHistory) ||
+        sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+            syncer::UserSelectableType::kTabs)) {
+      return false;
+    }
+    if (sync_service->GetUserSettings()->IsTypeManagedByCustodian(
+            syncer::UserSelectableType::kHistory) ||
+        sync_service->GetUserSettings()->IsTypeManagedByCustodian(
+            syncer::UserSelectableType::kTabs)) {
+      return false;
+    }
+    return true;
   }
 
   signin_metrics::AccessPoint access_point_ =
