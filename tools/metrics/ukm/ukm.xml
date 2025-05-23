@@ -9133,14 +9133,15 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="CompletionStatus.ErrorCode">
     <summary>
-      An integer representing the error code of the request when it completes or
-      fails. This comes from network::URLLoaderCompletionStatus.error_code.
+      Deprecated as of 2025/05/22. An integer representing the error code of the
+      request when it completes or fails. This comes from
+      network::URLLoaderCompletionStatus.error_code.
     </summary>
   </metric>
   <metric name="CompletionStatus.ExtendedErrorCode">
     <summary>
-      An integer representing the error code of the request when it completes or
-      fails. This comes from
+      Deprecated as of 2025/05/22. An integer representing the error code of the
+      request when it completes or fails. This comes from
       network::URLLoaderCompletionStatus.extended_error_code.
     </summary>
   </metric>
@@ -9167,6 +9168,20 @@ be describing additional metrics about the same event.
       Whether the Context is detached or not when this event is logged.
     </summary>
   </metric>
+  <metric name="LoaderCompleted.ErrorCode">
+    <summary>
+      An integer representing the error code of the request when it reaches the
+      kLoaderCompleted stage. This comes from
+      network::URLLoaderCompletionStatus.error_code.
+    </summary>
+  </metric>
+  <metric name="LoaderCompleted.ExtendedErrorCode">
+    <summary>
+      An integer representing the extended error code of the request when it
+      reaches the kLoaderCompleted stage. This comes from
+      network::URLLoaderCompletionStatus.extended_error_code.
+    </summary>
+  </metric>
   <metric name="NumRedirects">
     <summary>
       The number of redirects a fetch keepalive request loader has experienced
@@ -9183,6 +9198,20 @@ be describing additional metrics about the same event.
 
       When the request is abandoned from the &quot;LoaderCreated&quot; stage,
       this is also set to &quot;LoaderCreated&quot; stage.
+    </summary>
+  </metric>
+  <metric name="RequestFailed.ErrorCode">
+    <summary>
+      An integer representing the error code of the request when it reaches the
+      kRequestfailed stage. This comes from
+      network::URLLoaderCompletionStatus.error_code.
+    </summary>
+  </metric>
+  <metric name="RequestFailed.ExtendedErrorCode">
+    <summary>
+      An integer representing the extended error code of the request when it
+      reaches the kRequestFailed stage. This comes from
+      network::URLLoaderCompletionStatus.extended_error_code.
     </summary>
   </metric>
   <metric name="RequestType" enum="FetchKeepAliveRequestType">

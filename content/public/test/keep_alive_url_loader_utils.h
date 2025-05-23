@@ -110,8 +110,26 @@ class KeepAliveRequestUkmMatcher {
     std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage =
         std::nullopt;
     std::optional<base::UnguessableToken> keepalive_token = std::nullopt;
-    std::optional<int64_t> error_code = std::nullopt;
-    std::optional<int64_t> extended_error_code = std::nullopt;
+    std::optional<int64_t> failed_error_code = std::nullopt;
+    std::optional<int64_t> failed_extended_error_code = std::nullopt;
+    std::optional<int64_t> completed_error_code = std::nullopt;
+    std::optional<int64_t> completed_extended_error_code = std::nullopt;
+
+    CommonUkm(
+        KeepAliveRequestTracker::RequestType request_type,
+        size_t category_id,
+        size_t num_redirects,
+        bool is_context_detached,
+        KeepAliveRequestTracker::RequestStageType end_stage,
+        std::optional<KeepAliveRequestTracker::RequestStageType>
+            previous_stage = std::nullopt,
+        const std::optional<base::UnguessableToken>& keepalive_token =
+            std::nullopt,
+        std::optional<int64_t> failed_error_code = std::nullopt,
+        std::optional<int64_t> failed_extended_error_code = std::nullopt,
+        std::optional<int64_t> completed_error_code = std::nullopt,
+        std::optional<int64_t> completed_extended_error_code = std::nullopt);
+    CommonUkm(const CommonUkm& other);
   };
 
   // Verifies all the common UKM metrics.
@@ -128,8 +146,10 @@ class KeepAliveRequestUkmMatcher {
           std::nullopt,
       const std::optional<base::UnguessableToken>& keepalive_token =
           std::nullopt,
-      std::optional<int64_t> error_code = std::nullopt,
-      std::optional<int64_t> extended_error_code = std::nullopt);
+      std::optional<int64_t> failed_error_code = std::nullopt,
+      std::optional<int64_t> failed_extended_error_code = std::nullopt,
+      std::optional<int64_t> completed_error_code = std::nullopt,
+      std::optional<int64_t> completed_extended_error_code = std::nullopt);
   void ExpectCommonUkms(const std::vector<CommonUkm>& ukms);
 
   // Verifies that UKM TimeDelta.* listed in `time_sorted_metric_names` are all
@@ -155,8 +175,10 @@ class KeepAliveRequestUkmMatcher {
           std::nullopt,
       const std::optional<base::UnguessableToken>& keepalive_token =
           std::nullopt,
-      std::optional<int64_t> error_code = std::nullopt,
-      std::optional<int64_t> extended_error_code = std::nullopt);
+      std::optional<int64_t> failed_error_code = std::nullopt,
+      std::optional<int64_t> failed_extended_error_code = std::nullopt,
+      std::optional<int64_t> completed_error_code = std::nullopt,
+      std::optional<int64_t> completed_extended_error_code = std::nullopt);
 };
 
 // `NavigationKeepAliveRequestUkmMatcher` provides common matchers and
