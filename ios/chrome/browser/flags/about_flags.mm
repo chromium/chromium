@@ -1404,6 +1404,8 @@ const FeatureEntry::FeatureParam kSingleScreenForGLICPromoConsent[] = {
     {kGLICPromoConsentParams, "1"}};
 const FeatureEntry::FeatureParam kDoubleScreenForGLICPromoConsent[] = {
     {kGLICPromoConsentParams, "2"}};
+const FeatureEntry::FeatureParam kSkipGLICPromoConsent[] = {
+    {kGLICPromoConsentParams, "3"}};
 
 const FeatureEntry::FeatureVariation kGLICPromoConsentVariations[] = {
     {"Single screen for GLIC Promo Consent Flow",
@@ -1411,7 +1413,9 @@ const FeatureEntry::FeatureVariation kGLICPromoConsentVariations[] = {
      std::size(kSingleScreenForGLICPromoConsent), nullptr},
     {"Double screen for GLIC Promo Consent Flow",
      kDoubleScreenForGLICPromoConsent,
-     std::size(kDoubleScreenForGLICPromoConsent), nullptr}};
+     std::size(kDoubleScreenForGLICPromoConsent), nullptr},
+    {"Skip FRE", kSkipGLICPromoConsent, std::size(kSkipGLICPromoConsent),
+     nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:

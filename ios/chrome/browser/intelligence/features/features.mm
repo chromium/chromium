@@ -36,6 +36,9 @@ GLICPromoConsentVariations GLICPromoConsentVariationsParam() {
   if (param == 2) {
     return GLICPromoConsentVariations::kDoublePage;
   }
+  if (param == 3) {
+    return GLICPromoConsentVariations::kSkipConsent;
+  }
   return GLICPromoConsentVariations::kDisabled;
 }
 

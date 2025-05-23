@@ -5,23 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_GEMINI_COORDINATOR_GLIC_MEDIATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_GEMINI_COORDINATOR_GLIC_MEDIATOR_DELEGATE_H_
 
-namespace optimization_guide {
-namespace proto {
-class PageContext;
-}  // namespace proto
-}  // namespace optimization_guide
-
 @class GLICConsentMediator;
 
 // Delegate for the GLICMediator.
 @protocol GLICMediatorDelegate
 
+// Presents the Glic first run experience.
+- (void)presentGlicFRE;
+
 // Dismisses the GLIC consent UI.
 - (void)dismissGLICConsentUI;
-
-// Opens GLIC Overlay.
-- (void)openGLICOverlayForPage:
-    (std::unique_ptr<optimization_guide::proto::PageContext>)pageContext;
 
 @end
 

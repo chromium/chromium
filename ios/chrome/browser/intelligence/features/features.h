@@ -26,6 +26,7 @@ enum class GLICPromoConsentVariations {
   kDisabled = 0,
   kSinglePage = 1,
   kDoublePage = 2,
+  kSkipConsent = 3,
 };
 
 // Returns the variation of the GLIC Promo Consent flow.
