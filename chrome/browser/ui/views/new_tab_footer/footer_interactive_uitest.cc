@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -20,10 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/test_extension_dir.h"
-
-namespace {
-constexpr char kFooterViewName[] = "footer_view";
-}  // namespace
 
 class FooterInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
@@ -76,6 +74,17 @@ class FooterInteractiveTest
     nav_observer.Wait();
   }
 
+  InteractiveTestApi::MultiStep OpenCustomizeChromeSidePanel(
+      const ui::ElementIdentifier& contents_id) {
+    return Steps(Do(base::BindLambdaForTesting([=, this]() {
+                   chrome::ExecuteCommand(browser(),
+                                          IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+                 })),
+                 WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
+                 InstrumentNonTabWebView(
+                     contents_id, kCustomizeChromeSidePanelWebViewElementId));
+  }
+
   new_tab_footer::NewTabFooterWebView* GetFooterView() {
     return browser()->GetBrowserView().new_tab_footer_web_view();
   }
@@ -91,12 +100,8 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open extension NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      Steps(NameView(kFooterViewName, GetFooterView()),
-            // Ensure footer is visible.
-            CheckView(kFooterViewName,
-                      [](new_tab_footer::NewTabFooterWebView* footer) {
-                        return footer->GetVisible();
-                      })));
+      // Ensure footer is visible.
+      Steps(WaitForShow(kNtpFooterId)));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
@@ -105,16 +110,64 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open extension NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      Steps(NameView(kFooterViewName, GetFooterView()),
-            // Ensure footer is visible.
-            CheckView(kFooterViewName,
-                      [](new_tab_footer::NewTabFooterWebView* footer) {
-                        return footer->GetVisible();
-                      })),
+      // Ensure footer is visible.
+      Steps(WaitForShow(kNtpFooterId)),
       // Navigate to non-extension NTP and check that the footer isn't visible.
       Do(base::BindLambdaForTesting(
           [&, this]() { NavigateTo(GURL("https://google.com")); })),
-      WaitForHide(kFooterViewName));
+      WaitForHide(kNtpFooterId));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
+                       CustomizeChrome_ToggleHidesFooter) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible,
+                                                  true);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
+                                    "customize-chrome-footer",
+                                    "#showToggleContainer", "#showToggle"};
+
+  LoadNtpOverridingExtension(browser()->profile());
+  RunTestSequence(
+      // Open extension NTP.
+      Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
+      // Ensure footer is visible.
+      WaitForShow(kNtpFooterId),
+      OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+      Steps(
+          // Click the footer section toggle.
+          ScrollIntoView(kLocalCustomizeChromeElementId, kFooterSection),
+          EnsurePresent(kLocalCustomizeChromeElementId, kFooterSection),
+          ExecuteJsAt(kLocalCustomizeChromeElementId, kFooterSection,
+                      "(toggle) => toggle.click()"),
+          // Ensure the footer is no longer visible.
+          WaitForHide(kNtpFooterId)));
+}
+
+IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
+                       CustomizeChrome_ToggleShowsFooter) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible,
+                                                  false);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLocalCustomizeChromeElementId);
+  const DeepQuery kFooterSection = {"customize-chrome-app", "#footer",
+                                    "customize-chrome-footer",
+                                    "#showToggleContainer", "#showToggle"};
+  LoadNtpOverridingExtension(browser()->profile()),
+      RunTestSequence(
+          Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
+          // Ensure footer is not visible.
+          EnsureNotPresent(kNtpFooterId),
+          OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
+          Steps(
+              // Click the footer section toggle.
+              ScrollIntoView(kLocalCustomizeChromeElementId, kFooterSection),
+              EnsurePresent(kLocalCustomizeChromeElementId, kFooterSection),
+              ExecuteJsAt(kLocalCustomizeChromeElementId, kFooterSection,
+                          "(toggle) => toggle.click()"),
+              // Ensure footer is visible.
+              WaitForShow(kNtpFooterId)));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -126,12 +179,8 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      Steps(NameView(kFooterViewName, GetFooterView()),
-            // Ensure footer is visible.
-            CheckView(kFooterViewName,
-                      [](new_tab_footer::NewTabFooterWebView* footer) {
-                        return footer->GetVisible();
-                      })));
+      // Ensure footer is visible.
+      Steps(WaitForShow(kNtpFooterId)));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
@@ -143,12 +192,8 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open extension NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      Steps(NameView(kFooterViewName, GetFooterView()),
-            // Ensure footer is visible.
-            CheckView(kFooterViewName,
-                      [](new_tab_footer::NewTabFooterWebView* footer) {
-                        return footer->GetVisible();
-                      })));
+      // Ensure footer is visible.
+      Steps(WaitForShow(kNtpFooterId)));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
@@ -159,16 +204,13 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
   RunTestSequence(
       // Open NTP.
       Do(base::BindLambdaForTesting([&, this]() { OpenNewTabPage(); })),
-      Steps(NameView(kFooterViewName, GetFooterView()),
-            // Ensure footer is visible.
-            CheckView(kFooterViewName,
-                      [](new_tab_footer::NewTabFooterWebView* footer) {
-                        return footer->GetVisible();
-                      })),
+      Steps(
+          // Ensure footer is visible.
+          Steps(WaitForShow(kNtpFooterId))),
       // Navigate to non-extension NTP and check that the footer isn't visible.
       Do(base::BindLambdaForTesting(
           [&, this]() { NavigateTo(GURL("https://google.com")); })),
-      WaitForHide(kFooterViewName));
+      WaitForHide(kNtpFooterId));
 }
 
 IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,

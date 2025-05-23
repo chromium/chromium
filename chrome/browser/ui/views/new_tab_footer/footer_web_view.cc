@@ -12,6 +12,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kNtpFooterId);
 
 namespace new_tab_footer {
 
@@ -25,6 +28,7 @@ NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser_window)
   SetWebContents(contents_wrapper_->web_contents());
   webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
                                    browser_window);
+  SetProperty(views::kElementIdentifierKey, kNtpFooterId);
 }
 
 NewTabFooterWebView::~NewTabFooterWebView() {

@@ -13,6 +13,8 @@
 class BrowserWindowInterface;
 class WebUIContentsWrapper;
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kNtpFooterId);
+
 namespace new_tab_footer {
 
 // NewTabFooterWebView is used to present the WebContents of the New Tab Footer.
