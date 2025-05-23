@@ -407,6 +407,10 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     features_h = os.path.join(install_root, "usr", "include", "features.h")
     replace_in_file(features_h, r"(#define\s+__GLIBC_MINOR__)", r"\1 26 //")
 
+    # C23 STRTOL requires glibc >= 2.38
+    replace_in_file(features_h, r"(#\s?define\s+__GLIBC_USE_C23_STRTOL)",
+                    r"\1 0 //")
+
     # fcntl64() was introduced in glibc 2.28. Make sure to use fcntl() instead.
     fcntl_h = os.path.join(install_root, "usr", "include", "fcntl.h")
     replace_in_file(
@@ -448,7 +452,7 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     # Avoid requiring unsupported glibc versions.
     for lib in ["libc.so.6", "libm.so.6", "libcrypt.so.1"]:
         lib_path = os.path.join(install_root, "lib", TRIPLES[arch], lib)
-        reversion_glibc.reversion_glibc(lib_path)
+        reversion_glibc.reversion_glibc(lib_path, arch)
 
     # GTK4 is provided by bookworm (12), but pango is provided by bullseye
     # (11).  Fix the GTK4 pkgconfig file to relax the pango version
