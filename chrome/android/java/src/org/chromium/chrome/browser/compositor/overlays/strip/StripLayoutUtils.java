@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -386,5 +387,10 @@ public class StripLayoutUtils {
     public static void performHapticFeedback(View view) {
         if (view == null) return;
         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+    }
+
+    public static boolean skipTabEdgePositionCalculation(StripLayoutTab tab) {
+        return (tab.isDying() && !ChromeFeatureList.sTabletTabStripAnimation.isEnabled())
+                || tab.isDraggedOffStrip();
     }
 }
