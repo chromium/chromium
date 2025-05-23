@@ -133,6 +133,9 @@ class IOSCollaborationControllerDelegate
   // be called to dismiss the join screen.
   void OnCollaborationJoinSuccess(ProceduralBlock dismiss_join_screen);
 
+  // Called when the join flow is complete.
+  void OnJoinComplete(ResultCallback result, Outcome outcome);
+
   // Called when the share flow is finished with an `outcome`.
   void OnShareFlowComplete(ShareKitFlowOutcome outcome);
 
@@ -178,6 +181,9 @@ class IOSCollaborationControllerDelegate
 
   // Presents the scrim view.
   void AddScrimView();
+
+  // Removes the scrim view if it exists.
+  void RemoveScrimView(bool delayed);
 
   raw_ptr<Browser> browser_ = nullptr;
 

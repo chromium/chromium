@@ -81,6 +81,10 @@ const CGFloat kFaviconSize = 16.0;
 // The opacity of the scrim view.
 const CGFloat kScrimOpacity = 0.3;
 
+// The timing to show/hide the scrim view.
+const CGFloat kScrimAnimationDelay = 0.5;
+const CGFloat kScrimAnimationTiming = 0.25;
+
 // Maximum delay to return preview items.
 constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(5);
 
@@ -144,9 +148,9 @@ void IOSCollaborationControllerDelegate::PrepareFlowUI(
   exit_callback_ = std::move(exit_callback);
   switch (flow_type_) {
     case FlowType::kJoin:
-    case FlowType::kShareOrManage:
       AddScrimView();
       break;
+    case FlowType::kShareOrManage:
     case FlowType::kLeaveOrDelete:
       break;
   }
@@ -203,6 +207,10 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
   if (!browser_) {
     return;
   }
+
+  // Make sure that the scrim view is added to avoid interaction with the app in
+  // between the authentication steps.
+  AddScrimView();
 
   ServiceStatus service_status = collaboration_service_->GetServiceStatus();
 
@@ -433,7 +441,7 @@ void IOSCollaborationControllerDelegate::OnFlowFinished() {
     NOTREACHED(base::NotFatalUntil::M140);
     std::move(dismiss_join_screen_callback_).Run();
   }
-  [scrim_view_ removeFromSuperview];
+  RemoveScrimView(/*delayed=*/false);
 }
 
 void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
@@ -518,7 +526,14 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
 
 void IOSCollaborationControllerDelegate::OnCollaborationJoinSuccess(
     void (^dismiss_join_screen)()) {
+  RemoveScrimView(/*delayed=*/false);
   dismiss_join_screen_callback_ = base::BindOnce(dismiss_join_screen);
+}
+
+void IOSCollaborationControllerDelegate::OnJoinComplete(ResultCallback result,
+                                                        Outcome outcome) {
+  RemoveScrimView(/*delayed=*/false);
+  std::move(result).Run(outcome);
 }
 
 void IOSCollaborationControllerDelegate::OnShareFlowComplete(
@@ -655,18 +670,24 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
   config.previewItems = preview_items;
   config.previewImage = JoinGroupImage(preview_items);
 
+  // The scrim will be dismissed on completion.
   auto join_success_completion = base::BindOnce(
       &IOSCollaborationControllerDelegate::OnCollaborationJoinSuccess,
       weak_ptr_factory_.GetWeakPtr());
   config.joinCollaborationGroupSuccessBlock =
       base::CallbackToBlock(std::move(join_success_completion));
 
-  auto completion_block = base::CallbackToBlock(std::move(result));
+  auto completion_block = base::CallbackToBlock(
+      base::BindOnce(&IOSCollaborationControllerDelegate::OnJoinComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertShareKitFlowOutcome(outcome));
   };
 
   session_id_ = share_kit_service_->JoinTabGroup(config);
+
+  // The scrim will be dismissed on the completion.
 }
 
 void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
@@ -694,6 +715,9 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
                      weak_ptr_factory_.GetWeakPtr()));
 
   session_id_ = share_kit_service_->ShareTabGroup(config);
+
+  // Remove the scrim view to avoid having it visible when dismissing the flow.
+  RemoveScrimView(/*delayed=*/true);
 }
 
 void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
@@ -738,6 +762,9 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
                      weak_ptr_factory_.GetWeakPtr(), local_id));
 
   session_id_ = share_kit_service_->ManageTabGroup(config);
+
+  // Remove the scrim view to avoid having it visible when dismissing the flow.
+  RemoveScrimView(/*delayed=*/true);
 }
 
 UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
@@ -754,7 +781,9 @@ UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
 }
 
 void IOSCollaborationControllerDelegate::AddScrimView() {
-  CHECK(!scrim_view_);
+  if (scrim_view_) {
+    return;
+  }
   // TODO(crbug.com/399584431): Improve the design of the spinner/scrim.
   scrim_view_ = [[UIView alloc] init];
   scrim_view_.backgroundColor = [UIColor colorWithWhite:0 alpha:kScrimOpacity];
@@ -767,6 +796,33 @@ void IOSCollaborationControllerDelegate::AddScrimView() {
   scrim_view_.translatesAutoresizingMaskIntoConstraints = NO;
   [base_view_controller_.view addSubview:scrim_view_];
   AddSameConstraints(base_view_controller_.view, scrim_view_);
+}
+
+void IOSCollaborationControllerDelegate::RemoveScrimView(bool delayed) {
+  if (!scrim_view_) {
+    return;
+  }
+  UIView* scrim = scrim_view_;
+  scrim_view_ = nil;
+
+  auto animation_block = ^{
+    [UIView animateWithDuration:kScrimAnimationTiming
+        animations:^{
+          scrim.alpha = 0;
+        }
+        completion:^(BOOL finished) {
+          [scrim removeFromSuperview];
+        }];
+  };
+
+  if (delayed) {
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW,
+                      (int64_t)(kScrimAnimationDelay * NSEC_PER_SEC)),
+        dispatch_get_main_queue(), animation_block);
+  } else {
+    animation_block();
+  }
 }
 
 }  // namespace collaboration
