@@ -318,7 +318,8 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   // Lens invocation action with secondary text that shows URL host.
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
-  match.contents = base::UTF8ToUTF16(input.current_url().host());
+  match.contents =
+      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().host()));
   if (!match.contents.empty()) {
     match.contents_class = {{0, ACMatchClassification::DIM}};
   }
@@ -326,6 +327,7 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   if (!match.description.empty()) {
     match.description_class = {{0, ACMatchClassification::NONE}};
   }
+  match.fill_into_edit = match.description;
   matches_.push_back(match);
 }
 

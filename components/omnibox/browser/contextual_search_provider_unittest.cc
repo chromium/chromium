@@ -118,3 +118,40 @@ TEST_F(ContextualSearchProviderTest, LensAdActionConditions) {
     EXPECT_FALSE(has_actions());
   }
 }
+
+TEST_F(ContextualSearchProviderTest, LensAdActionFillsEditAndElidesWwwOnly) {
+  EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(true));
+  {
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL("https://something.example.com"));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    const AutocompleteMatch& match = provider_->matches()[0];
+    EXPECT_FALSE(match.fill_into_edit.empty());
+    EXPECT_EQ(match.contents, u"something.example.com");
+  }
+  {
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL("https://www.example.com"));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    const AutocompleteMatch& match = provider_->matches()[0];
+    EXPECT_FALSE(match.fill_into_edit.empty());
+    EXPECT_EQ(match.contents, u"example.com");
+  }
+  {
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL("file:///home/personal/file.pdf"));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    const AutocompleteMatch& match = provider_->matches()[0];
+    EXPECT_FALSE(match.fill_into_edit.empty());
+    EXPECT_EQ(match.contents, u"");
+  }
+}
