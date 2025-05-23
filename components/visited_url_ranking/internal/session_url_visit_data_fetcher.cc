@@ -42,6 +42,9 @@ void AddAggregateVisitDataFromSession(
         int selected_index =
             std::min(tab->current_navigation_index,
                      static_cast<int>(tab->navigations.size() - 1));
+        if (selected_index < 0) {
+          continue;
+        }
         const sessions::SerializedNavigationEntry& current_navigation =
             tab->navigations.at(selected_index);
         const GURL& tab_url = current_navigation.virtual_url();
