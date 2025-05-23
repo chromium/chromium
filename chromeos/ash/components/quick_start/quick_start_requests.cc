@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 
 #include "base/base64.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"

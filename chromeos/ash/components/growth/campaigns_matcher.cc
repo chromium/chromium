@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"

@@ -13,6 +13,7 @@
 #include "app_controls_metrics_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"

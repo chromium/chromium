@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_prefs.h"

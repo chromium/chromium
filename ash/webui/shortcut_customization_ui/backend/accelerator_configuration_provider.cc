@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"

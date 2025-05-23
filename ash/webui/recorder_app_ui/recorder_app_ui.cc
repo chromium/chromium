@@ -25,6 +25,7 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/constants/devicetype.h"

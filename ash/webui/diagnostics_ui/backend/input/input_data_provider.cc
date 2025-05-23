@@ -28,6 +28,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"

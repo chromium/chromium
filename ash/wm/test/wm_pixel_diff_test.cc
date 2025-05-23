@@ -25,6 +25,7 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "third_party/skia/include/core/SkColor.h"

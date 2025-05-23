@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/session_parser.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/base_requests.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"

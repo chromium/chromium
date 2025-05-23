@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"

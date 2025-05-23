@@ -63,6 +63,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"

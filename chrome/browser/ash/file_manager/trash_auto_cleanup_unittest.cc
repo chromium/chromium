@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
