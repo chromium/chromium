@@ -17,4 +17,9 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/arc/policy",
+  "+chrome/browser/ash/arc/session",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/ash/multi_user",
+  "+chromeos/ash/components/settings",
 ]

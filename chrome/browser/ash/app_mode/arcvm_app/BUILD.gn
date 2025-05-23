@@ -14,20 +14,28 @@ static_library("arcvm_app") {
     "kiosk_arcvm_app_launcher.h",
     "kiosk_arcvm_app_manager.cc",
     "kiosk_arcvm_app_manager.h",
+    "kiosk_arcvm_app_service.cc",
+    "kiosk_arcvm_app_service.h",
   ]
   deps = [
     "//ash",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/multi_user",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
     "//components/account_id",
     "//components/exo",
+    "//components/keyed_service/core",
     "//components/prefs",
     "//content/public/browser",
     "//ui/aura",
+    "//ui/display",
     "//ui/gfx",
   ]
 }
