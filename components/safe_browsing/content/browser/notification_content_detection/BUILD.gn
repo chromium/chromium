@@ -21,6 +21,7 @@ source_set("notification_content_detection") {
     "//components/permissions:permissions",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common:features",
+    "//components/site_engagement/content:content",
     "//third_party/blink/public/common:headers",
     "//url:url",
   ]
@@ -66,6 +67,8 @@ source_set("unittests") {
     "//components/prefs:prefs",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common:features",
+    "//components/site_engagement/content:content",
+    "//components/user_prefs:user_prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",

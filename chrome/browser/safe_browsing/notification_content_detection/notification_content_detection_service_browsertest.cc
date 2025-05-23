@@ -278,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
                                       "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SiteEngagementLevel");
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
@@ -363,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(
                                       "DidUserAlwaysAllowNotifications", false);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", true);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SiteEngagementLevel");
 
   EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   EXPECT_FALSE(
@@ -579,6 +581,7 @@ IN_PROC_BROWSER_TEST_P(
                                       "DidUserAlwaysAllowNotifications", true);
   test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
   test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SiteEngagementLevel");
 }
 
 IN_PROC_BROWSER_TEST_P(

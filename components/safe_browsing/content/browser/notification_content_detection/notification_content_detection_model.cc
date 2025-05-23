@@ -18,6 +18,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 namespace safe_browsing {
 
@@ -126,9 +127,17 @@ void NotificationContentDetectionModel::PostprocessCategories(
       // Log "suspicious" score from model's response.
       base::UmaHistogramPercentage(kSuspiciousScoreHistogram,
                                    100 * category.score);
+      // Since blink::mojom::SiteEngagementLevel::NONE corresponds to 0, use as
+      // default engagement level.
+      uint64_t site_engagement_level = 0;
+      if (site_engagement::SiteEngagementService::Get(browser_context_)) {
+        site_engagement_level = static_cast<uint64_t>(
+            site_engagement::SiteEngagementService::Get(browser_context_)
+                ->GetEngagementLevel(origin));
+      }
       permissions::PermissionUmaUtil::RecordPermissionUsageNotificationShown(
           is_allowlisted_by_user, did_match_allowlist, 100 * category.score,
-          browser_context_, origin);
+          browser_context_, origin, site_engagement_level);
       bool is_suspicious =
           (100 * category.score >
            kShowWarningsForSuspiciousNotificationsScoreThreshold.Get()) &&

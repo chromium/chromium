@@ -277,6 +277,7 @@ void RecordPermissionUsageNotificationShownUkm(
     bool did_user_always_allow_notifications,
     bool is_allowlisted,
     int suspicious_score,
+    uint64_t site_engagement_level,
     std::optional<ukm::SourceId> source_id) {
   if (!source_id.has_value()) {
     return;
@@ -287,6 +288,7 @@ void RecordPermissionUsageNotificationShownUkm(
       did_user_always_allow_notifications);
   builder.SetIsAllowlisted(is_allowlisted);
   builder.SetSuspiciousScore(suspicious_score);
+  builder.SetSiteEngagementLevel(site_engagement_level);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -1226,13 +1228,14 @@ void PermissionUmaUtil::RecordPermissionUsageNotificationShown(
     bool is_allowlisted,
     int suspicious_score,
     content::BrowserContext* browser_context,
-    const GURL& requesting_origin) {
+    const GURL& requesting_origin,
+    uint64_t site_engagement_level) {
   PermissionsClient::Get()->GetUkmSourceId(
       ContentSettingsType::NOTIFICATIONS, browser_context, nullptr,
       requesting_origin,
       base::BindOnce(&RecordPermissionUsageNotificationShownUkm,
                      did_user_always_allow_notifications, is_allowlisted,
-                     suspicious_score));
+                     suspicious_score, site_engagement_level));
 }
 
 void PermissionUmaUtil::RecordPermissionAction(

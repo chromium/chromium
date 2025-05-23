@@ -770,7 +770,8 @@ class PermissionUmaUtil {
       bool is_allowlisted,
       int suspicious_score,
       content::BrowserContext* browser_context,
-      const GURL& requesting_origin);
+      const GURL& requesting_origin,
+      uint64_t site_engagement_level);
 
   static void RecordTimeElapsedBetweenGrantAndUse(
       ContentSettingsType type,

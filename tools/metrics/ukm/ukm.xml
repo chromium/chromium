@@ -19659,6 +19659,13 @@ be describing additional metrics about the same event.
       not.
     </summary>
   </metric>
+  <metric name="SiteEngagementLevel">
+    <summary>
+      The site engagement level of the site when the user receives a
+      notification from them. Set to 0 even if the origin is not tracked by the
+      Site Engagement Service.
+    </summary>
+  </metric>
   <metric name="SuspiciousScore">
     <summary>
       The 'suspicious' score given to notification contents that came from the
