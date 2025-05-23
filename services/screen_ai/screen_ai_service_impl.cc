@@ -173,7 +173,7 @@ class HangTimer : public base::OneShotTimer {
           base::BindOnce(
               [](bool request_is_ocr) {
                 base::UmaHistogramBoolean(
-                    "Accessibility.ScreenAI.Service.NotReponsive.IsOCR",
+                    "Accessibility.ScreenAI.Service.NotResponsive.IsOCR",
                     request_is_ocr);
                 base::Process::TerminateCurrentProcessImmediately(0);
               },

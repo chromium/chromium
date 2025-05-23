@@ -3367,7 +3367,7 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.Service.NotReponsive.IsOCR"
+<histogram name="Accessibility.ScreenAI.Service.NotResponsive.IsOCR"
     enum="BooleanYesNo" expires_after="2026-03-21">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
