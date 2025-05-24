@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux)
+
+source_set("shortcuts") {
+  sources = [
+    "desktop_shortcuts_utils.cc",
+    "desktop_shortcuts_utils.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//extensions/common:common_constants",
+  ]
+}
