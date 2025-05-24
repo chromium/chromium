@@ -139,7 +139,7 @@
           Όταν δημιουργείτε περιεχόμενο με AI, η οδηγία αποστέλλεται στους διακομιστές Google AI για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Το generative AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.</translation>
+          Το παραγωγικό AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.</translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="155865706765934889">Επιφάνεια Αφής</translation>
 <translation id="1561927818299383735">χρώμα φωτισμού στο πίσω μέρος</translation>
@@ -713,7 +713,7 @@
           Όταν δημιουργείτε τη δική σας ταπετσαρία, η οδηγία αποστέλλεται στους διακομιστές της Google για τη δημιουργία εικόνων και τη βελτίωση του προϊόντος, σύμφωνα με τους <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Όρους Παροχής Υπηρεσιών και την Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Μη συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Μάθετε περισσότερα<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Μάθετε περισσότερα<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
 <translation id="4266143281602681663">νήμα</translation>
 <translation id="4269815121975886860">Προτιμήσεις εκκίνησης</translation>
@@ -799,7 +799,7 @@
 <translation id="4650608062294027130">Δεξί shift</translation>
 <translation id="4654549501020883054">Αλλαγή καθημερινά</translation>
 <translation id="4655868084888499342">Η εικόνα ορίστηκε ως ταπετσαρία</translation>
-<translation id="4660989616054030633">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του</translation>
+<translation id="4660989616054030633">Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του</translation>
 <translation id="4661249927038176904">Σουρεαλιστικό</translation>
 <translation id="4661392828086261436">Αυτή η ενημέρωση παρέχεται από τον κατασκευαστή της συσκευής και δεν έχει επαληθευτεί από την Google</translation>
 <translation id="4664651912255946953">γούνα</translation>
@@ -1390,7 +1390,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">πράσινο και γαλαζοπράσινο</translation>
 <translation id="7328475450575141167">πουλί του παραδείσου</translation>
-<translation id="7331297744262591636">Πρέπει να είστε τουλάχιστον 18 ετών και να συμφωνήσετε ότι η από μέρους σας χρήση των ταπετσαριών AI υπόκειται στους <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> και στους <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Πρόσθετους Όρους Παροχής Υπηρεσιών Generative AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+<translation id="7331297744262591636">Πρέπει να είστε τουλάχιστον 18 ετών και να συμφωνήσετε ότι η από μέρους σας χρήση των ταπετσαριών AI υπόκειται στους <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> και στους <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Πρόσθετους Όρους Παροχής Υπηρεσιών Παραγωγικού AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Μπορείτε να δημιουργήσετε ταπετσαρίες με AI μόνο για προσωπική και μη εμπορική χρήση. Όταν λαμβάνετε βοήθεια για τις ταπετσαρίες, το κείμενο αποστέλλεται στους διακομιστές του Google AI για τη δημιουργία προτάσεων ταπετσαριών σύμφωνα με την <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Πολιτική απορρήτου της Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1537,7 +1537,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME_1" /> ξεκίνησε αυτόματα}other{# εφαρμογές ξεκίνησαν αυτόματα}}</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
-<translation id="8010765388850538088">Μάθετε περισσότερα σχετικά με το generative AI</translation>
+<translation id="8010765388850538088">Μάθετε περισσότερα σχετικά με το παραγωγικό AI</translation>
 <translation id="8017679124341497925">Η συντόμευση τροποποιήθηκε</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8027467664787098346">Μάθετε περισσότερα για την επιλεγμένη ταπετσαρία</translation>
@@ -1659,7 +1659,7 @@
 <translation id="8543574988889671960">Επανάληψη φόρτωσης καρτέλας</translation>
 <translation id="8550364285433943656">Τοποθετήστε στοιχεία ελέγχου στις ενέργειες παιχνιδιού για να παίξετε με τα πλήκτρα του πληκτρολογίου</translation>
 <translation id="8557447961879934694">WPA2</translation>
-<translation id="8558521694042102707">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
+<translation id="8558521694042102707">Το παραγωγικό AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8584654835905316966">Απαιτείται επανεκκίνηση, για να ολοκληρωθεί η εγκατάσταση του υλικολογισμικού <ph name="VERSION" /> στη συσκευή <ph name="DEVICE_NAME" />. Ο υπολογιστής σας μπορεί να δείχνει ότι κάνει πολλές επανεκκινήσεις. Αυτή η συμπεριφορά είναι αναμενόμενη.</translation>

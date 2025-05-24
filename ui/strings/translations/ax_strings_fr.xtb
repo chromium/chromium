@@ -4,7 +4,7 @@
 <translation id="1018939186200882850">élément de menu</translation>
 <translation id="10623998915015855">bouton d'activation/de désactivation</translation>
 <translation id="1088086359088493902">Secondes</translation>
-<translation id="1142001580032786438">Afficher l'outil de sélection de la semaine</translation>
+<translation id="1142001580032786438">Afficher le sélecteur de semaine</translation>
 <translation id="1188858454923323853">complémentaire</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1206693055195146388">curseur</translation>
@@ -35,7 +35,7 @@
 <translation id="2291999235780842123">case à cocher</translation>
 <translation id="2305998414066445040">pied de page de section</translation>
 <translation id="2311842470354187719">saut de page</translation>
-<translation id="2335594187091864976">outil de sélection de la date et de l'heure</translation>
+<translation id="2335594187091864976">sélecteur de date et d'heure</translation>
 <translation id="2393030564806080191">Valeur de couleur hexadécimale</translation>
 <translation id="2398813069815436052">boîte de dialogue ouverte.</translation>
 <translation id="245932805758469625">nombre de secondes de vidéo restantes</translation>
@@ -63,7 +63,7 @@
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3557673793733683882">titre <ph name="HEADING_LEVEL" /></translation>
-<translation id="3670698553867754311">outil de sélection de semaine</translation>
+<translation id="3670698553867754311">sélecteur de semaine</translation>
 <translation id="3706100364254443312">interrupteur</translation>
 <translation id="3808586225841795776">terme</translation>
 <translation id="3920932319529768807">conclusion</translation>
@@ -94,10 +94,10 @@
 <translation id="479989351350248267">rechercher</translation>
 <translation id="4912200001568447310">élément actuel</translation>
 <translation id="4912536737030637138">entrée bibliographique</translation>
-<translation id="4915360478455618802">Afficher l'outil de sélection de l'heure</translation>
+<translation id="4915360478455618802">Afficher le sélecteur d'heure</translation>
 <translation id="492244087561876220">commentaire</translation>
 <translation id="4924138096460353083">indéterminée</translation>
-<translation id="4950364064308314478">Afficher l'outil de sélection de la date et de l'heure locales</translation>
+<translation id="4950364064308314478">Afficher le sélecteur de date et d'heure locales</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4971739861736909480">L'élément "<ph name="ACCNAME" />" est sélectionné</translation>
 <translation id="5022314756875057021">groupe de lignes</translation>
@@ -151,14 +151,14 @@
 <translation id="6404546809543547843">curseur durée audio</translation>
 <translation id="6443871981718447451">afficher le menu des sous-titres</translation>
 <translation id="6453774872122745852">remerciements</translation>
-<translation id="648732519525291180">outil de sélection de l'heure</translation>
+<translation id="648732519525291180">sélecteur de l'heure</translation>
 <translation id="6567071839949112727">cliquer sur l'ancêtre</translation>
 <translation id="6572309429103589720">Grammaire non valide</translation>
 <translation id="658823671542763450">activer le mode plein écran</translation>
 <translation id="663493177488814956">flux</translation>
 <translation id="6637586476836377253">journal</translation>
 <translation id="6692633176391053278">curseur</translation>
-<translation id="6696580792574109116">outil de sélection du mois</translation>
+<translation id="6696580792574109116">sélecteur de mois</translation>
 <translation id="6719914554879143100">Cochée. Dans le groupe, option <ph name="INDEX" /> sur <ph name="COUNT" /></translation>
 <translation id="6755330956360078551">info-bulle</translation>
 <translation id="6820615603175220800">référence bibliographique</translation>
@@ -202,7 +202,7 @@
 <translation id="8053789581856978548">champ de recherche de texte</translation>
 <translation id="8057695513531652401">notification</translation>
 <translation id="8105797009065549151">référence de note</translation>
-<translation id="8208673686607688524">outil de sélection de la date et de l'heure locales</translation>
+<translation id="8208673686607688524">sélecteur de date et d'heure locales</translation>
 <translation id="8261464734335370856">Orthographe non valide</translation>
 <translation id="8346634859695247203">section</translation>
 <translation id="838869780401515933">cocher</translation>
@@ -220,7 +220,7 @@
 <translation id="860475260694818407">sommaire</translation>
 <translation id="8613126697340063924">contrôler la lecture à distance</translation>
 <translation id="862370744433916922">sous-titre</translation>
-<translation id="8634971699417195529">Afficher l'outil de sélection du mois</translation>
+<translation id="8634971699417195529">Afficher le sélecteur de mois</translation>
 <translation id="8711688047404765493">sortie</translation>
 <translation id="8808573423886751634">chapitre</translation>
 <translation id="8851136666856101339">principal</translation>
