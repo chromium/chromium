@@ -1689,6 +1689,49 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Elu& elu) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Gather& gather) {
+  if (!IsDequantizeOutput(gather.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // Input and output must all have same scale/zero_point, see quantization
+  // requirements of gather at
+  // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(gather.input_operand_id);
+  const OperandDataType quantized_type =
+      GetOperand(input_dequantize.input_operand_id).descriptor.data_type();
+  if (!DataTypeConstraint::kInts8.Has(quantized_type)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(gather.output_operand_id, {quantized_type});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  if (!std::ranges::equal(input_scale_values, output_scale_values)) {
+    return std::nullopt;
+  }
+  base::FixedArray<int64_t> input_zero_point_values =
+      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (!std::ranges::equal(input_zero_point_values, output_zero_point_values)) {
+    return std::nullopt;
+  }
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
   // L2Pool doesn't support quantized implementation.
   CHECK_NE(pool2d.kind, mojom::Pool2d::Kind::kL2Pool2d);
@@ -3914,10 +3957,18 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
   const auto gather_options =
       ::tflite::CreateGatherOptions(builder_, checked_axis.ValueOrDie());
 
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(gather);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(gather.input_operand_id));
+                   SerializeInputTensorInfo(
+                       gather.input_operand_id,
+                       /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
   const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(gather.output_operand_id).index;
+      fuse_dequantize
+          ? quantized_output->index
+          : SerializeOutputTensorInfo(gather.output_operand_id).index;
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,

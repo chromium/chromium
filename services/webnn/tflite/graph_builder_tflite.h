@@ -723,6 +723,8 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseBinary& binary);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Gather& gather);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Pool2d& pool2d);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Reshape& reshape);
