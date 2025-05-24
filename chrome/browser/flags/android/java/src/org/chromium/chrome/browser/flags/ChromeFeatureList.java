@@ -754,7 +754,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeBottomChin =
             newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeMonitorConfigurations =
-            newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ false);
+            newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
             newCachedFlag(
                     EDGE_TO_EDGE_EVERYWHERE,
