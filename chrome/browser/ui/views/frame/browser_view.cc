@@ -1584,11 +1584,9 @@ void BrowserView::UpdateContentsInSplitView(
       multi_contents_view_->GetActiveContentsView()->HasFocus();
 
   // Clear web contents for prev_tabs in preparation to reset for new_tabs.
-  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : prev_tabs) {
-    CHECK(split_id == split_tab_with_index.first->GetSplit());
-    int relative_index = split_tab_with_index.second - first_split_tab_index;
-    multi_contents_view_->SetWebContentsAtIndex(nullptr, relative_index);
-  }
+  multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
+  multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
+
   // Set web contents in multi_contents_view_ to match new_tabs and update the
   // active multi_contents_view_ index.
   for (std::pair<tabs::TabInterface*, int> split_tab_with_index : new_tabs) {
@@ -2101,10 +2099,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(nullptr);
     }
-    active_contents_view->SetWebContents(nullptr);
     if (multi_contents_view_) {
       multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
     }
+    active_contents_view->SetWebContents(nullptr);
     devtools_web_view_->SetWebContents(nullptr);
   }
 
