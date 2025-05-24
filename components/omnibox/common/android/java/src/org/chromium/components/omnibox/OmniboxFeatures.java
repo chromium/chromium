@@ -119,6 +119,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxMobileParityUpdate =
             newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_TEST);
 
+    public static final BooleanCachedFeatureParam sOmniboxParityRetrieveTrueFavicon =
+            newBooleanParam(sOmniboxMobileParityUpdate, "retrieve_true_favicon", false);
+
     public static final BooleanCachedFeatureParam sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 

@@ -1807,6 +1807,13 @@ constexpr FeatureEntry::FeatureVariation kOmniboxDiagnosticsAndroidVaiants[] = {
     {"- InputConnection", kOmniboxDiagInputConnection,
      std::size(kOmniboxDiagInputConnection), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxMobileParityRetrieveTrueFavicon[] = {
+    {OmniboxFieldTrial::kMobileParityRetrieveTrueFavicon.name, "true"}};
+const FeatureEntry::FeatureVariation kOmniboxMobileParityVariants[] = {
+    {"with True Favicon", kOmniboxMobileParityRetrieveTrueFavicon,
+     std::size(kOmniboxMobileParityRetrieveTrueFavicon)},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
@@ -6810,7 +6817,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-mobile-parity-update",
      flag_descriptions::kOmniboxMobileParityUpdateName,
      flag_descriptions::kOmniboxMobileParityUpdateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdate,
+                                    kOmniboxMobileParityVariants,
+                                    "OmniboxMobileParityUpdate")},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",

@@ -784,8 +784,14 @@ constexpr base::FeatureParam<size_t> kOmniboxNumSrpZpsRelatedSearches{
 inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
     &omnibox::kDiagnostics, "omnibox_diag_input_connection", false};
 #endif
-
 // <- Diagnostics
+// ---------------------------------------------------------
+// Mobile Parity update -->
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::FeatureParam<bool> kMobileParityRetrieveTrueFavicon{
+    &omnibox::kOmniboxMobileParityUpdate, "retrieve_true_favicon", false};
+#endif
+// <-- Mobile Parity update
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
