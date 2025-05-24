@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -175,8 +176,11 @@ void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
     return;
   }
   session_captions_enabled_ = session_captions_enabled;
-  session_translations_enabled_ = translations_enabled;
-  caption_controller_->SetLiveTranslateEnabled(session_translations_enabled_);
+  if (features::IsBocaTranslateToggleEnabled()) {
+    caption_controller_->SetTranslateAllowed(translations_enabled);
+  } else {
+    caption_controller_->SetLiveTranslateEnabled(translations_enabled);
+  }
   if (!session_captions_enabled_) {
     VLOG(1) << "[BabelOrca] session caption disabled, stop receiving";
     StopReceiving();
@@ -324,7 +328,7 @@ void BabelOrcaConsumer::OnJoinGroupResponse(TachyonResponse response) {
 void BabelOrcaConsumer::OnTranscriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
-  if (session_translations_enabled_) {
+  if (caption_controller_->IsTranslateAllowedAndEnabled()) {
     translator_->Translate(
         transcript,
         base::BindOnce(&BabelOrcaConsumer::DispatchTranscription,

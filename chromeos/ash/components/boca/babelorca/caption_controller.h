@@ -19,6 +19,7 @@ namespace captions {
 class CaptionBubbleContext;
 class CaptionBubbleController;
 class CaptionBubbleSettings;
+class TranslationViewWrapperBase;
 }  // namespace captions
 
 namespace media {
@@ -56,11 +57,17 @@ class CaptionController : public ::captions::CaptionControllerBase {
 
   void SetLiveTranslateEnabled(bool enabled);
 
+  void SetTranslateAllowed(bool allowed);
+
+  bool IsTranslateAllowedAndEnabled();
+
   std::string GetLiveTranslateTargetLanguageCode();
 
  private:
   // CaptionControllerBase:
   captions::CaptionBubbleSettings* caption_bubble_settings() override;
+  std::unique_ptr<captions::TranslationViewWrapperBase>
+  CreateTranslationViewWrapper() override;
 
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
   const std::unique_ptr<CaptionBubbleSettingsImpl> caption_bubble_settings_;

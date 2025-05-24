@@ -316,6 +316,12 @@ BASE_FEATURE(kBocaSequentialInsertActivity,
              "BocaSequentialInsertActivity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables translation toggle for caption bubble in the context of
+// boca.
+BASE_FEATURE(kBocaTranslateToggle,
+             "BocaTranslateToggle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3548,6 +3554,10 @@ bool IsBocaSpotlightRobotRequesterEnabled() {
 
 bool IsBocaSequentialInsertActivityEnabled() {
   return base::FeatureList::IsEnabled(kBocaSequentialInsertActivity);
+}
+
+bool IsBocaTranslateToggleEnabled() {
+  return base::FeatureList::IsEnabled(kBocaTranslateToggle);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

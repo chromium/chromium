@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/caption_bubble_settings_impl.h"
@@ -66,7 +68,7 @@ class BabelOrcaConsumerTest : public testing::Test {
 
   void TearDown() override { caption_controller_delegate_ = nullptr; }
 
-  void CreateConsumer() {
+  void CreateConsumer(bool translate_enabled = false) {
     auto caption_controller_delegate =
         std::make_unique<FakeCaptionControllerDelegate>();
     caption_controller_delegate_ = caption_controller_delegate.get();
@@ -78,6 +80,7 @@ class BabelOrcaConsumerTest : public testing::Test {
         nullptr, &pref_service_, kApplicationLocale,
         std::move(caption_bubble_settings),
         std::move(caption_controller_delegate));
+    caption_controller->SetLiveTranslateEnabled(translate_enabled);
     auto fake_translation_dispatcher =
         std::make_unique<FakeBabelOrcaTranslationDispatcher>();
     fake_translation_dispatcher_ = fake_translation_dispatcher->GetWeakPtr();
@@ -345,10 +348,81 @@ TEST_F(BabelOrcaConsumerTest, DisableLocalCaptions) {
       1);
 }
 
-TEST_F(BabelOrcaConsumerTest, EnableTranslations) {
+TEST_F(BabelOrcaConsumerTest,
+       EnableTranslationsTranslationToggleFeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kBocaTranslateToggle);
   request_data_provider_ = std::make_unique<FakeTachyonRequestDataProvider>(
       kSessionId, "tachyon-token", "group_id", kEmail);
   CreateConsumer();
+  consumer_->OnSessionStarted();
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/true);
+  consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
+
+  // Join Tachyon group.
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  ASSERT_TRUE(streaming_client_waiter_.Wait());
+
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  ASSERT_FALSE(on_message_cb_.is_null());
+  mojom::BabelOrcaMessagePtr message = CreateMessage();
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
+  on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
+  EXPECT_EQ(fake_translation_dispatcher_->GetNumGetTranslationCalls(), 1);
+  EXPECT_TRUE(caption_bubble_settings_->IsLiveTranslateFeatureEnabled());
+  EXPECT_TRUE(caption_bubble_settings_->GetLiveTranslateEnabled());
+}
+
+TEST_F(BabelOrcaConsumerTest,
+       AllowAndDisableTranslationsTranslationToggleFeatureEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBocaTranslateToggle);
+  request_data_provider_ = std::make_unique<FakeTachyonRequestDataProvider>(
+      kSessionId, "tachyon-token", "group_id", kEmail);
+  CreateConsumer();
+  consumer_->OnSessionStarted();
+  consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
+                                           /*translations_enabled=*/true);
+  consumer_->OnLocalCaptionConfigUpdated(/*local_captions_enabled=*/true);
+
+  // Join Tachyon group.
+  url_loader_factory_.AddResponse(JoinGroupUrl(), "");
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  ASSERT_TRUE(streaming_client_waiter_.Wait());
+
+  EXPECT_TRUE(caption_controller_delegate_->IsCaptionBubbleAlive());
+  ASSERT_FALSE(on_message_cb_.is_null());
+  mojom::BabelOrcaMessagePtr message = CreateMessage();
+  media::SpeechRecognitionResult transcript(
+      message->current_transcript->text, message->current_transcript->is_final);
+  on_message_cb_.Run(std::move(message));
+
+  ASSERT_THAT(caption_controller_delegate_->GetTranscriptions(),
+              testing::SizeIs(1));
+  EXPECT_EQ(caption_controller_delegate_->GetTranscriptions().at(0),
+            transcript);
+  EXPECT_EQ(fake_translation_dispatcher_->GetNumGetTranslationCalls(), 0);
+  EXPECT_TRUE(caption_bubble_settings_->IsLiveTranslateFeatureEnabled());
+  EXPECT_FALSE(caption_bubble_settings_->GetLiveTranslateEnabled());
+}
+
+TEST_F(BabelOrcaConsumerTest,
+       AllowAndEnableTranslationsTranslationToggleFeatureEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBocaTranslateToggle);
+  request_data_provider_ = std::make_unique<FakeTachyonRequestDataProvider>(
+      kSessionId, "tachyon-token", "group_id", kEmail);
+  CreateConsumer(/*translate_enabled=*/true);
   consumer_->OnSessionStarted();
   consumer_->OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/true,
                                            /*translations_enabled=*/true);

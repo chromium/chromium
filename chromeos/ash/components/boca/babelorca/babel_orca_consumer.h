@@ -133,7 +133,6 @@ class BabelOrcaConsumer : public BabelOrcaController {
 
   bool signed_in_ = false;
   bool joined_group_ = false;
-  bool session_translations_enabled_ = false;
   bool local_captions_enabled_ = false;
   bool session_captions_enabled_ = false;
   bool in_session_ = false;

@@ -70,7 +70,7 @@ TEST_F(CaptionBubbleSettingsImplTest, SetLiveTranslateEnabled) {
   caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
 
   EXPECT_FALSE(caption_bubble_settings.GetLiveTranslateEnabled());
-  EXPECT_FALSE(caption_bubble_settings.IsLiveTranslateFeatureEnabled());
+  EXPECT_TRUE(caption_bubble_settings.IsLiveTranslateFeatureEnabled());
 
   EXPECT_CALL(observer_, OnLiveTranslateEnabledChanged).Times(1);
   caption_bubble_settings.SetLiveTranslateEnabled(true);

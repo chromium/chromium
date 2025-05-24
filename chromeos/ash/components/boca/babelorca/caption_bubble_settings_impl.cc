@@ -49,7 +49,7 @@ void CaptionBubbleSettingsImpl::RemoveObserver() {
 }
 
 bool CaptionBubbleSettingsImpl::IsLiveTranslateFeatureEnabled() {
-  return translate_enabled_;
+  return true;
 }
 
 bool CaptionBubbleSettingsImpl::GetLiveCaptionBubbleExpanded() {
