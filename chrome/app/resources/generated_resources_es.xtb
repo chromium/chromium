@@ -2956,7 +2956,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3022978424994383087">No te he entendido.</translation>
 <translation id="3023464535986383522">Enunciar selección</translation>
 <translation id="3024374909719388945">Usar reloj de 24 horas</translation>
-<translation id="3025174326431589540">{COUNT,plural, =0{No hay contraseñas guardadas}=1{Contraseñas de {COUNT} sitio comprobadas}other{Contraseñas de {COUNT} sitios o aplicaciones comprobadas}}</translation>
+<translation id="3025174326431589540">{COUNT,plural, =0{No hay contraseñas guardadas}=1{Se han comprobado las contraseñas de {COUNT} sitio}other{Se han comprobado las contraseñas de {COUNT} sitios o aplicaciones}}</translation>
 <translation id="3027296729579831126">Activar Compartir con Nearby</translation>
 <translation id="3027644380269727216">Se basa en tu actividad en un sitio. Esta opción está activada.</translation>
 <translation id="3028371505549235127">En lugar de introducir la contraseña de tu cuenta de Google para iniciar sesión, puedes crear una contraseña de <ph name="DEVICE_TYPE" /> para este dispositivo</translation>

@@ -866,7 +866,7 @@
 <translation id="4647758699119474035">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني المستخدَم هو <ph name="USER_EMAIL" />. حدث خطأ في حساب Google. يؤدي النقر على هذا الزر إلى فتح قائمة الحسابات.</translation>
 <translation id="4650125387981512669">المتابعة بحساب "<ph name="FIRST_RUN_ACCOUNT_NAME" />"</translation>
 <translation id="4651927776207937667">{count,plural, =1{إخفاء علامات التبويب بعد دقيقة واحدة}zero{إخفاء علامات التبويب بعد {count} دقيقة}two{إخفاء علامات التبويب بعد دقيقتَين ({count})}few{إخفاء علامات التبويب بعد {count} دقائق}many{إخفاء علامات التبويب بعد {count} دقيقة}other{إخفاء علامات التبويب بعد {count} دقيقة}}</translation>
-<translation id="4652817563047461855">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="4652817563047461855">ستساعدك هذه الميزة في  التأكّد من أنّ كلمات مرورك آمنة وما إذا تم اختراقها، وستزوّدك بنصائح لحماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">حفظ</translation>
 <translation id="466307903888586355">حظرت مؤسستك حفظ الملفات</translation>
 <translation id="4668929960204016307">،</translation>
@@ -1132,7 +1132,7 @@
 <translation id="5738887413654608789">يتيح لك هذا اكتشاف صفحات الويب ذات الصلة حسب الأشياء المحيطة بك.</translation>
 <translation id="573974402615125334">لمشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها، يجب مزامنة السجلّ وعلامات التبويب</translation>
 <translation id="5740123193752401435">البحث في علامات التبويب…</translation>
-<translation id="5744274077973758795">إشعارات "<ph name="FEATURE_NAME" />" مفعَّلة</translation>
+<translation id="5744274077973758795">تم تفعيل إشعارات "<ph name="FEATURE_NAME" />"</translation>
 <translation id="5745598824054949526">لم يتم العثور على نص</translation>
 <translation id="574762237186762643">الأحداث</translation>
 <translation id="5749158352074143502">المتابعة باستخدام علامة التبويب هذه</translation>
