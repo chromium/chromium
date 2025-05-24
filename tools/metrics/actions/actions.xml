@@ -43654,6 +43654,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Tab.PinnedTabToastClosedAfterConfirmation">
+  <owner>dljames@google.com</owner>
+  <owner>chrome-desktop-ui@google.com</owner>
+  <description>
+    On desktop, triggered when a user invokes the keyboard shortcut to close a
+    tab on a single selected pinned tab after the confirmation toast has been
+    displayed.
+  </description>
+</action>
+
 <action name="Tab.Screenshot">
   <owner>petewil@chromium.org</owner>
   <description>

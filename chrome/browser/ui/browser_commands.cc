@@ -1031,9 +1031,10 @@ void CloseTab(Browser* browser) {
   }
 
   tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab();
-  bool single_tab_selected =
+  const bool single_pinned_tab_selected =
+      tab->IsPinned() &&
       browser->tab_strip_model()->selection_model().size() == 1;
-  if (tab->IsPinned() && single_tab_selected &&
+  if (single_pinned_tab_selected &&
       toast_controller->GetCurrentToastId() != ToastId::kClosePinnedTab) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
@@ -1044,13 +1045,13 @@ void CloseTab(Browser* browser) {
     ToastParams params(ToastId::kClosePinnedTab);
     params.body_string_replacement_params.emplace_back(
         accelerator.GetShortcutText());
-
-    // Closing a single pinned tab will show a toast asking the user to press
-    // the command again to close the tab. Triggering the action again will
-    // enter the else path of this block.
     toast_controller->MaybeShowToast(std::move(params));
   } else {
     browser->tab_strip_model()->CloseSelectedTabs();
+    if (single_pinned_tab_selected) {
+      base::RecordAction(
+          UserMetricsAction("Tab.PinnedTabToastClosedAfterConfirmation"));
+    }
   }
 }
 
