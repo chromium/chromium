@@ -7788,7 +7788,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         AI created theme
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL" desc="The second line of the label for the button that opens a link to a third party theme.">
-        Current theme you have installed.
+        Current theme you have installed
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL" desc="The label for the option to show cards in the customization menu on the New Tab Page">
         Show cards

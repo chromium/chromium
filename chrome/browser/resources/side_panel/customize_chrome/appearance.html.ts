@@ -38,6 +38,7 @@ ${this.showManagedButton_ ? html`
                            this.ntpManagedByName_)}"
       class="link-out-button theme-button"
       @click="${this.onNewTabPageManageByButtonClicked_}"
+      label="${this.ntpManagedByName_}"
       label-description="${this.i18n('newTabPageManagedBy',
                            this.ntpManagedByName_)}">
   </customize-chrome-hover-button>
