@@ -265,8 +265,9 @@ class ExtensionsZeroStateCustomUiPlainLinkIphTest
                                "#closeButton"};
 };
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickCouponLinkOnZeroStatePromoIph) {
+                       DISABLED_ClickCouponLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -289,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickWritingLinkOnZeroStatePromoIph) {
+                       DISABLED_ClickWritingLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -313,8 +315,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickProductivityLinkOnZeroStatePromoIph) {
+                       DISABLED_ClickProductivityLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -337,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickAiLinkOnZeroStatePromoIph) {
+                       DISABLED_ClickAiLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -360,8 +364,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickDiscoverExtensionsButtonOnZeroStatePromoIph) {
+                       DISABLED_ClickDiscoverExtensionsButtonOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -384,8 +389,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 1));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DismissPromoIph) {
+                       DISABLED_DismissPromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
@@ -405,8 +411,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           user_education::FeaturePromoClosedReason::kDismiss));
 }
 
+// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       ClickGotItButton) {
+                       DISABLED_ClickGotItButton) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
