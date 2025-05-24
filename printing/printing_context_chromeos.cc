@@ -583,15 +583,16 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
       &job_id_, converted_name, username_, ipp_options_.get());
 
   if (job_id_ == 0) {
-    DLOG(WARNING) << "Creating cups job failed"
-                  << ippErrorString(create_status);
+    LOG(ERROR) << printer_->GetName() << ": Creating cups job failed: "
+               << ippErrorString(create_status);
     return OnError();
   }
 
   // we only send one document, so it's always the last one
   if (!printer_->StartDocument(job_id_, converted_name, true, username_,
                                ipp_options_.get())) {
-    LOG(ERROR) << "Starting document failed";
+    LOG(ERROR) << printer_->GetName() << ": Starting document failed for job "
+               << job_id_;
     return OnError();
   }
 
