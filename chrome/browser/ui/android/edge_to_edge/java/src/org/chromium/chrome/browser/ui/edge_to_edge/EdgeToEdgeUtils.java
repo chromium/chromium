@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -340,19 +342,22 @@ public class EdgeToEdgeUtils {
 
         var rootInsets = window.getDecorView().getRootWindowInsets();
         assert rootInsets != null;
-        Insets navigationBarInsets =
-                WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
-                        .getInsets(WindowInsetsCompat.Type.navigationBars());
-        Insets tappableElementInsets =
-                WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
-                        .getInsets(WindowInsetsCompat.Type.tappableElement());
-        // Return whether there is any overlap in navigation bar and tappable element insets.
+
         boolean hasTappableNavBar =
-                (navigationBarInsets.bottom > 0 && tappableElementInsets.bottom > 0)
-                        || (navigationBarInsets.left > 0 && tappableElementInsets.left > 0)
-                        || (navigationBarInsets.right > 0 && tappableElementInsets.right > 0);
+                hasTappableNavigationBarFromInsets(
+                        WindowInsetsCompat.toWindowInsetsCompat(rootInsets));
         sObservedTappableNavigationBar |= hasTappableNavBar;
         return hasTappableNavBar;
+    }
+
+    /** Returns whether the given window's insets contains a tappable navigation bar. */
+    static boolean hasTappableNavigationBarFromInsets(WindowInsetsCompat insets) {
+        Insets navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        Insets tappableElementInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        // Return whether there is any overlap in navigation bar and tappable element insets.
+        return (navigationBarInsets.bottom > 0 && tappableElementInsets.bottom > 0)
+                || (navigationBarInsets.left > 0 && tappableElementInsets.left > 0)
+                || (navigationBarInsets.right > 0 && tappableElementInsets.right > 0);
     }
 
     /**
@@ -379,5 +384,106 @@ public class EdgeToEdgeUtils {
     public static void setObservedTappableNavigationBarForTesting(boolean observed) {
         sObservedTappableNavigationBar = observed;
         ResettersForTesting.register(() -> sObservedTappableNavigationBar = false);
+    }
+
+    /**
+     * A class to store the debugging info for edge-to-edge error case, when EdgeToEdgeController is
+     * presented in an unsupported configuration.
+     */
+    public static class EdgeToEdgeDebuggingInfo {
+        boolean mHasUploaded;
+        @Nullable @MissingNavbarInsetsReason Integer mMissingNavBarReason;
+
+        /**
+         * Gather the current debug information
+         *
+         * @param window The current window.
+         * @param windowAndroid The window android of the activity.
+         * @param hasEdgeToEdgeController Whether the activity has an EdgeToEdgeController.
+         * @param isSupportedConfiguration Whether the activity supports for edge-to-edge.
+         * @param callSite The call site of the debugging info.
+         * @param reportUploadCallback The callback to update debugging report.
+         */
+        public void buildDebugReport(
+                @Nullable Window window,
+                @Nullable WindowAndroid windowAndroid,
+                boolean hasEdgeToEdgeController,
+                boolean isSupportedConfiguration,
+                String callSite,
+                Callback<String> reportUploadCallback) {
+            if (mHasUploaded || !ChromeFeatureList.sEdgeToEdgeDebugging.isEnabled()) return;
+
+            if (!isCaseOfInterests(hasEdgeToEdgeController, window)) return;
+
+            String state =
+                    "EdgeToEdgeDebugging: callSite: "
+                            + callSite
+                            + " \nEdgeToEdgeController hasValue: "
+                            + hasEdgeToEdgeController
+                            + " \nisSupportedConfiguration: "
+                            + isSupportedConfiguration
+                            + " \nedgeToEdgeEverywhere: "
+                            + EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                            + " \nobservedTappableNavigationBar: "
+                            + sObservedTappableNavigationBar
+                            + " \nmissingNavBarReason: "
+                            + mMissingNavBarReason;
+
+            String rootInsetsState = "";
+            if (window != null && window.getDecorView().getRootWindowInsets() != null) {
+                var rootWindowInsets =
+                        WindowInsetsCompat.toWindowInsetsCompat(
+                                window.getDecorView().getRootWindowInsets());
+                var insetsString =
+                        rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).toString();
+                rootInsetsState = " \nrootWindowInsets: " + insetsString;
+            }
+
+            String rawWindowInsetsState = "";
+            if (windowAndroid != null && windowAndroid.getInsetObserver() != null) {
+                var lastRawWindowInsets = windowAndroid.getInsetObserver().getLastRawWindowInsets();
+                var insetsString =
+                        lastRawWindowInsets == null
+                                ? "null"
+                                : lastRawWindowInsets
+                                        .getInsets(WindowInsetsCompat.Type.systemBars())
+                                        .toString();
+                rawWindowInsetsState = " \nlastRawWindowInsets: " + insetsString;
+            }
+
+            // Ensure report is only sent once.
+            mHasUploaded = true;
+            reportUploadCallback.onResult(state + rootInsetsState + rawWindowInsetsState);
+        }
+
+        /** Returns whether the the instance has uploaded any report. */
+        public boolean isUsed() {
+            return mHasUploaded;
+        }
+
+        /** Set the reason why nav bar insets is missing when controller is initialized. */
+        public void setMissingNavBarInsetsReason(@MissingNavbarInsetsReason int reason) {
+            mMissingNavBarReason = reason;
+        }
+
+        /** Whether the current state contains useful debug information. */
+        boolean isCaseOfInterests(boolean hasEdgeToEdgeController, @Nullable Window window) {
+            if (window == null || window.getDecorView().getRootWindowInsets() == null) {
+                return false;
+            }
+
+            // Case of interest:
+            // a) When e2e controller is created but tappable navigation bar is observed.
+            boolean hasTappableNavBarAndController =
+                    hasEdgeToEdgeController
+                            && hasTappableNavigationBarFromInsets(
+                                    WindowInsetsCompat.toWindowInsetsCompat(
+                                            window.getDecorView().getRootWindowInsets()));
+
+            // b) controller created due to an empty insets being presented.
+            boolean missingNavBarOnControllerCreation =
+                    hasEdgeToEdgeController && mMissingNavBarReason != null;
+            return hasTappableNavBarAndController || missingNavBarOnControllerCreation;
+        }
     }
 }
