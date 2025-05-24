@@ -83,6 +83,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableBorderGlow'),
       },
+      enableCsbMotionTweaks: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
+      },
       forceHideSearchBox: {
         type: Boolean,
         value: false,
@@ -209,6 +214,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the border glow is enabled via feature flag.
   declare enableBorderGlow: boolean;
   // Whether the user is currently focused into the searchbox.
+  // Whether CSB motion tweaks are enabled via feature flag.
+  declare enableCsbMotionTweaks: boolean;
   declare isSearchboxFocused: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text (this doesn't create a zero suggset

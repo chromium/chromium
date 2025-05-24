@@ -252,6 +252,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableRegionSelectedGlow",
       lens::features::GetVisualSelectionUpdatesEnableRegionSelectedGlow());
+  html_source->AddBoolean(
+      "enableCsbMotionTweaks",
+      lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());
   html_source->AddBoolean("autoFocusSearchbox",
                           lens::features::ShouldAutoFocusSearchbox());
   html_source->AddBoolean("cornerSlidersEnabled",

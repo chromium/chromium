@@ -792,6 +792,10 @@ extern bool GetVisualSelectionUpdatesEnableGradientSuperG();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
 
+// Whether to enable the motion tweaks in the contextual searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableCsbMotionTweaks();
+
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
 // upload request is sent.

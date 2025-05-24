@@ -31,8 +31,11 @@
   }
 
   .button-container,
-  #searchboxContainer  {
+  :host(:not([enable-csb-motion-tweaks])) #searchboxContainer {
     transition: opacity 150ms, visibility 150ms;
+  }
+
+  .button-container, #searchboxContainer {
     z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
@@ -40,6 +43,11 @@
     animation: searchboxGrow 300ms ease forwards;
     transform-origin: right;
     animation-delay: 350ms;
+  }
+
+  :host([enable-csb-motion-tweaks]) #searchboxContainer {
+    animation: searchboxEnter 300ms cubic-bezier(0, 0, 0, 1) forwards;
+    opacity: 0;
   }
 
   /* Keyframes for the searchbox grow animation */
@@ -52,9 +60,21 @@
     }
   }
 
+  /* Keyframes for the searchbox enter animation */
+  @keyframes searchboxEnter {
+    0% {
+      opacity: 0;
+      transform: scaleX(.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
   :host([should-fade-out-buttons]) .button-container,
   :host(:not([initial-flash-animation-has-ended])) .button-container,
-  :host(:not([initial-flash-animation-has-ended])) #searchboxContainer {
+  :host(:not([initial-flash-animation-has-ended]):not([enable-csb-motion-tweaks])) #searchboxContainer {
     opacity: 0;
     visibility: hidden;
   }
@@ -130,6 +150,11 @@
     height: 48px;
     width: 48px;
     --cr-icon-button-fill-color: var(--color-primary);
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #closeButton {
+    animation: searchboxEnter 300ms cubic-bezier(0, 0, 0, 1) forwards;
+    opacity: 0;
   }
 
   :host([side-panel-opened]) #closeButton {
@@ -271,7 +296,7 @@
     inset-block-start: 38px;
   }
 
-  #searchboxContainer {
+  :host(:not([csb-motion-tweaks-enabled])) #searchboxContainer {
     transition: inset-inline-end 200ms ease;
   }
 
