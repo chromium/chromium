@@ -264,6 +264,7 @@
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">naujas elementas</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> pask. naudojamas toks pat slaptažodis</translation>
+<translation id="2054044186557130763">Prisijunkite kaip <ph name="NAME" /> <ph name="EMAIL" />, kurį valdo jūsų organizacija.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2060638295449304809">Šis adresas išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Matavimo vieneto tipo parinkiklis</translation>
@@ -610,6 +611,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3572607909481582402">„Google“ paskyroje</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3575426792457739946">Šiame sąraše yra visi įkelti profiliai.</translation>
+<translation id="3578866308944526475"><ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="3587885837929752825">Jūsų organizacija riboja, ką galite išsaugoti savo „Google“ paskyroje.</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
@@ -876,6 +878,9 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4669618761237477717">Jūsų organizacija reikalauja, kad naršytumėte privačiai. Skirtukų grupės nesinchronizuojamos inkognito režimu.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Susisiekite su įmone pradėdami telefono skambutį</translation>
+<translation id="4673565891421389203">Prisijungus prie valdomos paskyros galima atskirti su organizacija susijusį naršymą (įskaitant skirtukus, istoriją ir slaptažodžius) nuo kitos naršymo veiklos.
+
+       Pasirinkite, ką norite daryti su esamais naršymo duomenimis šiame įrenginyje.</translation>
 <translation id="4682496302933121474">Versti puslapį?</translation>
 <translation id="4682686630151240767">1. Atidarykite „iPhone“ nustatymus</translation>
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
@@ -884,6 +889,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4719927025381752090">Siūlyti versti</translation>
 <translation id="4720530280568305198">Pasirinkimas atidarytas naujame skirtuke</translation>
 <translation id="472259426228234149">Kaina 100–180 USD</translation>
+<translation id="4735849923335729414">Prisijunkite kaip <ph name="EMAIL" />, kurį valdo jūsų organizacija.</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="474209246745757965">Apsipirkite ir verskite naudodami fotoaparatą</translation>
 <translation id="4742407542027196863">Tvarkyti slaptažodžius…</translation>
@@ -956,6 +962,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4985921635659180565">Kai failas suplanuotas ištrinti, jo negalima atšaukti.</translation>
 <translation id="498624032394115435">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus.</translation>
 <translation id="4989065233040279145">Pasirinkite, kur išsaugoti „<ph name="FILENAME" />“</translation>
+<translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="4992255726304765516">Skirtukų grupės spalva <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5012914568031465281">Nepavyko stebėti kainos.</translation>
@@ -1015,6 +1022,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5234094073825090254">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}.}one{Žymės išsaugotos „Google“ paskyroje {email}.}few{Žymės išsaugotos „Google“ paskyroje {email}.}many{Žymės išsaugotos „Google“ paskyroje {email}.}other{Žymės išsaugotos „Google“ paskyroje {email}.}}</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5241106044372754566">Šiuo metu pasirinktas <ph name="NAME" />, <ph name="EMAIL" />, kurį valdo jūsų organizacija. Pasirinkite paskyrą.</translation>
 <translation id="5242899254250321823">Pakeisti slaptažodį svetainėje</translation>
 <translation id="5248640482715684545">Ši svetainė bando atidaryti kitą programą.</translation>
 <translation id="5250371859659394278">Iš nežinomo šaltinio</translation>
@@ -1071,6 +1079,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5524590039848017563">Sutrauktas pagrindinės įrankių juostos mygtukas</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nesudėtingas slaptažodis}one{{COUNT} nesudėtingas slaptažodis}few{{COUNT} nesudėtingi slaptažodžiai}many{{COUNT} nesudėtingo slaptažodžio}other{{COUNT} nesudėtingų slaptažodžių}}</translation>
 <translation id="5532545557415295622">Neveikos skirtojo laiko dialogo langas</translation>
+<translation id="5547868626772433490">Klausti „Gemini“</translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
 Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įrenginiuose turi būti naudojama ta pati „iCloud“ paskyra.</translation>
@@ -1282,6 +1291,9 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6339793034470834130">Jei norite naudoti Žiniatinklio tikrintuvą, prisijunkite prie „Safari“ kompiuteriu naudodami laidą ir pasiekite „iPhone“ meniu „Develop“. Meniu „Develop“ galite įgalinti kompiuterio „Safari“ nustatymų skiltyje „Advanced“.</translation>
 <translation id="6340285871011301182">Dalinis vertimas nepasiekiamas.</translation>
 <translation id="6340526405444716530">Suasmeninimas</translation>
+<translation id="6341140761912903432">Prisijungus prie valdomos paskyros galima atskirti su organizacija susijusį naršymą (įskaitant skirtukus, istoriją ir slaptažodžius) nuo kitos naršymo veiklos.
+
+       Esami naršymo duomenys bus saugomi atskirai. Jei norite jį naudoti, atsijunkite nuo valdomos paskyros.</translation>
 <translation id="6342069812937806050">Ką tik</translation>
 <translation id="6344533709188026708">Atskira darbo erdvė</translation>
 <translation id="6347953390226388422">{count,plural, =1{Šis adresas bus ištrintas iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}one{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}few{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}many{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}other{Šie adresai bus ištrinti iš jūsų „Google“ paskyros (<ph name="USER_EMAIL" />) ir šio įrenginio.}}</translation>
@@ -1954,6 +1966,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8923178205567790913">Slaptažodžiai</translation>
 <translation id="892776311701544612">Sužinokite daugiau…</translation>
 <translation id="8928133177108699615">Stalinio kompiuterio</translation>
+<translation id="8928426232677696166">Šiuo metu pasirinktas <ph name="EMAIL" />, kurį valdo jūsų organizacija. Pasirinkite paskyrą.</translation>
 <translation id="894191600409472540">Kurkite sudėtingus slaptažodžius</translation>
 <translation id="8943780400130412484">Pradėti naują atsisiuntimą?</translation>
 <translation id="8944844131570002190">Atidaryti vietą…</translation>

@@ -2653,7 +2653,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2798347533012571708">Panatilihin ang mga update</translation>
 <translation id="2799162042226656283">Ang Iyong Chrome</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
-<translation id="2800309299477632167">Custom na keymap</translation>
 <translation id="2800760947029405028">Mag-upload ng larawan</translation>
 <translation id="2800996978423439835">Makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="2801134910297796778">Naka-sign in sa <ph name="EMAIL" /></translation>
@@ -8299,7 +8298,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6832218595502288407">I-align sa kaliwa</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Alisin ang Tab at I-delete ang Grupo?}=1{Alisin ang Mga Tab at I-delete ang Grupo?}one{Alisin ang Mga Tab at I-delete ang Mga Grupo?}other{Alisin ang Mga Tab at I-delete ang Mga Grupo?}}</translation>
-<translation id="6833103209700200188">Footer</translation>
 <translation id="6833479554815567477">Inalis ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balanse (inirerekomenda)</translation>
 <translation id="6835762382653651563">Mangyaring kumonekta sa Internet upang ma-update ang iyong <ph name="DEVICE_TYPE" />.</translation>

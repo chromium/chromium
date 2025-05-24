@@ -2651,7 +2651,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2798347533012571708">Zadrži ažuriranja</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
-<translation id="2800309299477632167">Prilagođena mapa tipki</translation>
 <translation id="2800760947029405028">Otpremite sliku</translation>
 <translation id="2800996978423439835">Pristupajte svojim oznakama i drugim podacima na svim svojim uređajima</translation>
 <translation id="2801134910297796778">Prijavljeni ste na <ph name="EMAIL" /></translation>
@@ -8299,7 +8298,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6832218595502288407">Poravnaj lijevo</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Ukloniti karticu i izbrisati grupu?}=1{Ukloniti kartice i izbrisati grupu?}one{Ukloniti kartice i izbrisati grupe?}few{Ukloniti kartice i izbrisati grupe?}other{Ukloniti kartice i izbrisati grupe?}}</translation>
-<translation id="6833103209700200188">Podnožje</translation>
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Uravnoteženo (preporučeno)</translation>
 <translation id="6835762382653651563">Povežite se na internet da ažurirate uređaj <ph name="DEVICE_TYPE" />.</translation>
@@ -10007,6 +10005,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8037801708772278989">Upravo provjereno</translation>
 <translation id="8038111231936746805">(zadano)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopiranje 1 fajla na uslugu <ph name="CLOUD_PROVIDER" />}one{Kopiranje {NUM_OF_FILES} fajla na uslugu <ph name="CLOUD_PROVIDER" />}few{Kopiranje {NUM_OF_FILES} fajla na uslugu <ph name="CLOUD_PROVIDER" />}other{Kopiranje {NUM_OF_FILES} fajlova na uslugu <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Ova Chromeova aplikacija će prestati funkcionirati nakon ažuriranja verzije ChromeOS-a. Sačuvajte podatke aplikacije koje želite zadržati. Da saznate više o opcijama, kontaktirajte programera aplikacije ili tim za IT podršku.</translation>
 <translation id="8041089156583427627">Pošaljite povratne informacije</translation>
 <translation id="8041093619605951337">Sretno</translation>
 <translation id="8041267120753677077">Prenosite aplikacije s telefona</translation>

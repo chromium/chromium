@@ -2655,7 +2655,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2798347533012571708">Ohrani posodobitve</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
-<translation id="2800309299477632167">Razporeditev tipk po meri</translation>
 <translation id="2800760947029405028">Naloži sliko</translation>
 <translation id="2800996978423439835">Dostop do zaznamkov in drugih podatkov v vseh vaših napravah</translation>
 <translation id="2801134910297796778">Prijavljen v račun <ph name="EMAIL" /></translation>
@@ -8307,7 +8306,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6832218595502288407">Poravnaj levo</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite odstraniti zavihek in izbrisati skupino?}=1{Želite odstraniti zavihke in izbrisati skupino?}one{Želite odstraniti zavihke in izbrisati skupine?}two{Želite odstraniti zavihke in izbrisati skupine?}few{Želite odstraniti zavihke in izbrisati skupine?}other{Želite odstraniti zavihke in izbrisati skupine?}}</translation>
-<translation id="6833103209700200188">Noga</translation>
 <translation id="6833479554815567477">Zavihek je odstranjen iz skupine <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6833753236242482566">Uravnoteženo (priporočeno)</translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>

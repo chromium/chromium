@@ -177,6 +177,7 @@
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
 <translation id="7966321538264951561">Đóng nội dung đề xuất.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển thẻ sang một cửa sổ khác}}</translation>
 <translation id="799469866974412355">Nhóm mới từ thiết bị khác của bạn</translation>
 <translation id="8029301326595421733">Thông tin về cửa hàng này đã mở trên toàn màn hình</translation>
 <translation id="8053770993984522566">Danh sách nhóm thẻ, mở trên một nửa màn hình</translation>
@@ -198,6 +199,7 @@
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8730999928494395583">Hoạt động của bạn trong các thẻ ẩn danh này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Tạo <ph name="NUM_MONTHS_ONE" /> tháng trước}other{Tạo <ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
+<translation id="8813708480179818649">Xoá thẻ khỏi nhóm</translation>
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
 <translation id="883379923675618699">Chrome tự động đóng các mục trong phần không hoạt động mà bạn không dùng đến trong vòng 3 tháng. Bạn có thể tắt tính năng này ngay bây giờ hoặc bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="8887921976452567404">Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ.</translation>

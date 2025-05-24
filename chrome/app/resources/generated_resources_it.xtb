@@ -2639,7 +2639,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2798347533012571708">Aggiorna regolarmente</translation>
 <translation id="2799162042226656283">Il tuo Chrome</translation>
 <translation id="2799223571221894425">Riavvia</translation>
-<translation id="2800309299477632167">Mappa dei tasti personalizzata</translation>
 <translation id="2800760947029405028">Carica un'immagine</translation>
 <translation id="2800996978423439835">Utilizza i tuoi Preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2801134910297796778">Accesso eseguito a <ph name="EMAIL" /></translation>
@@ -8279,7 +8278,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6832218595502288407">Allinea a sinistra</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Rimuovere scheda ed eliminare gruppo?}=1{Rimuovere scheda ed eliminare gruppo?}other{Rimuovere le schede ed eliminare i gruppi?}}</translation>
-<translation id="6833103209700200188">Piè di pagina</translation>
 <translation id="6833479554815567477">Scheda spostata dal gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Bilanciato (consigliato)</translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>

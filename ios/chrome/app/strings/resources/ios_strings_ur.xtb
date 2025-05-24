@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
 <translation id="1977621687170192347">"پوشیدگی میں دیگر ایپس سے لنکس کھولنے کے لیے پوچھیں" کو آن کریں۔</translation>
+<translation id="1979055159547313322">اکاؤنٹ <ph name="USER_EMAIL" /> کا <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے جو کچھ معلومات دیکھ سکتا ہے، بشمول</translation>
 <translation id="1979188886349613713">وہ فائل ایکسٹینشنز شامل کریں جن کا ویب سائٹ کے ذریعے تعین نہیں کیا گیا ہے</translation>
 <translation id="1980417445547898121">{count,plural, =1{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیب حاصل کریں}other{‏اس iPhone پر اپنے دوسرے آلے سے حال ہی میں فعال اپنے {count} ٹیبز حاصل کریں}}</translation>
 <translation id="1981118202195772574">موبائل</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="2104436223719117661">رجحان ساز تلاشیں</translation>
 <translation id="21133533946938348">ٹیب کو پن کریں</translation>
+<translation id="2117650889962717098">پوشیدگی وضع پر سوئچ کر کے اپنی براؤزنگ کو نجی رکھیں</translation>
 <translation id="2119636449201577317">اس میں کھولیں…</translation>
 <translation id="2120553909046681540">آپ کی تنظیم نے نجی براؤزنگ کو آف کر دیا ہے۔</translation>
 <translation id="2122754583996902531">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@
 <translation id="3348387552617855658">یہ کارڈ آپ کو اپنے پیکیجز پر نظر رکھنے، ساتھ ہی آپ کو اہم ڈیلیوری سے متعلق اپ ڈیٹس فراہم کرنے میں مدد کرتا ہے۔</translation>
 <translation id="3349031117032695619">پاپ اپس مسدود کریں</translation>
 <translation id="3349676726073650389">‏آپ جن سائٹس اور تلاشوں کی پیروی کرتے ہیں وہ آپ کے Google اکاؤنٹ میں محفوظ کی جاتی ہیں۔ آپ کسی بھی وقت ترتیبات میں اپنی پیرویوں کا نظم کر سکتے ہیں۔</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />۔ یہ اکاؤنٹ نظم کردہ ہے۔</translation>
 <translation id="3365529507898144230">تصاویر میں محفوظ کریں</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="3377063233124932127">اب آپ کے محفوظ کردہ بک مارکس، پاس ورڈز اور بہت کچھ سب سے اوپر ہیں۔</translation>
@@ -670,6 +673,7 @@
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3878657761594430423">شیٹ گریبر</translation>
 <translation id="3885587018298784481">فیملی گروپ میں شامل ہوں</translation>
+<translation id="3888230626190453136">پوشیدگی میں براؤز کریں</translation>
 <translation id="3888863481921783344">اس کا استعمال آپ کو آپ کے ایونٹ کے ممکنہ مدعو کنندگان دکھانے کے لیے کیا جائے گا۔</translation>
 <translation id="3891414008432200754">قیمت</translation>
 <translation id="3892144330757387737">آپ کو اپنی سرگزشت یہاں ملے گی</translation>

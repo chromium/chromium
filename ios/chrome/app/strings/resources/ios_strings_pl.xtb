@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
 <translation id="1977621687170192347">Włącz „Poproś o otwieranie linków z innych aplikacji w trybie incognito”.</translation>
+<translation id="1979055159547313322">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje, w tym</translation>
 <translation id="1979188886349613713">Uwzględnij rozszerzenia plików nieokreślone przez witrynę</translation>
 <translation id="1980417445547898121">{count,plural, =1{Pobierz na tego iPhone'a {count} ostatnio aktywną kartę z innego urządzenia}few{Pobierz na tego iPhone'a {count} ostatnio aktywne karty z innego urządzenia}many{Pobierz na tego iPhone'a {count} ostatnio aktywnych kart z innego urządzenia}other{Pobierz na tego iPhone'a {count} ostatnio aktywnej karty z innego urządzenia}}</translation>
 <translation id="1981118202195772574">Mobilny</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="2104436223719117661">Wyszukiwania zyskujące popularność</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
+<translation id="2117650889962717098">Zadbaj o prywatność podczas przeglądania, przechodząc do trybu incognito</translation>
 <translation id="2119636449201577317">Otwórz w…</translation>
 <translation id="2120553909046681540">Twoja organizacja wyłączyła przeglądanie prywatne.</translation>
 <translation id="2122754583996902531">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3348387552617855658">Na tej karcie możesz śledzić swoje przesyłki i sprawdzać ważne informacje o ich dostarczaniu.</translation>
 <translation id="3349031117032695619">Blokuj wyskakujące okienka</translation>
 <translation id="3349676726073650389">Obserwowane przez Ciebie witryny i wyszukiwania są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. To konto jest zarządzane.</translation>
 <translation id="3365529507898144230">Zapisz w Zdjęciach</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
@@ -670,6 +673,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3878657761594430423">Uchwyt arkusza</translation>
 <translation id="3885587018298784481">Dołącz do grupy rodzinnej</translation>
+<translation id="3888230626190453136">Przeglądanie w trybie incognito</translation>
 <translation id="3888863481921783344">Będziemy z tego korzystać, aby sugerować Ci osoby, które możesz zaprosić na swoje wydarzenie.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tu znajdziesz swoją historię</translation>

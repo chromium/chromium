@@ -2646,7 +2646,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2798347533012571708">Behold oppdateringer</translation>
 <translation id="2799162042226656283">Tilpass Chrome</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
-<translation id="2800309299477632167">Spesialtilpasset tastaturoppsett</translation>
 <translation id="2800760947029405028">Last opp et bilde</translation>
 <translation id="2800996978423439835">Få bokmerker, logg med mer på alle enhetene dine.</translation>
 <translation id="2801134910297796778">Logget på <ph name="EMAIL" /></translation>
@@ -8285,7 +8284,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="6832218595502288407">Venstrejustering</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du fjerne fanen og slette gruppen?}=1{Vil du fjerne fanene og slette gruppen?}other{Vil du fjerne fanene og slette gruppene?}}</translation>
-<translation id="6833103209700200188">Bunntekst</translation>
 <translation id="6833479554815567477">Fanen er fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balansert (anbefales)</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>

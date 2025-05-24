@@ -2650,7 +2650,6 @@
 <translation id="2798347533012571708">အပ်ဒိတ်များ သိမ်းထားရန်</translation>
 <translation id="2799162042226656283">သင့် Chrome</translation>
 <translation id="2799223571221894425">ပြန်လည်ဖွင့်တင်ရန်</translation>
-<translation id="2800309299477632167">စိတ်ကြိုက် ကီးနေရာချခြင်း</translation>
 <translation id="2800760947029405028">ပုံအပ်လုဒ်လုပ်ရန်</translation>
 <translation id="2800996978423439835">သင့်စက်အားလုံးပေါ်ရှိ လိပ်စာ စသည်တို့ကို ရယူနိုင်သည်</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသည်</translation>
@@ -8292,7 +8291,6 @@
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
 <translation id="6832218595502288407">ဘယ်သို့ ကပ်ရန်</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။}=1{တဘ်များဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။}other{တဘ်များဖယ်ရှားပြီး အုပ်စုများကို ဖျက်မလား။}}</translation>
-<translation id="6833103209700200188">အောက်ခြေပိုင်း</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">မျှမျှတတ (အကြံပြုထားသည်)</translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>

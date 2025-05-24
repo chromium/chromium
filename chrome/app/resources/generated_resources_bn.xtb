@@ -2653,7 +2653,6 @@
 <translation id="2798347533012571708">আপডেট সেভ করুন</translation>
 <translation id="2799162042226656283">আপনার Chrome</translation>
 <translation id="2799223571221894425">পুনঃশুরু</translation>
-<translation id="2800309299477632167">কাস্টম কীম্যাপ</translation>
 <translation id="2800760947029405028">একটি ছবি আপলোড করুন</translation>
 <translation id="2800996978423439835">আপনার সবকটি ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পান</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" />-এ সাইন-ইন করেছে</translation>
@@ -8300,7 +8299,6 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6832218595502288407">বাঁদিকে সারিবদ্ধ করুন</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}=1{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}one{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}other{ট্যাব সরিয়ে গ্রুপগুলি মুছে দেবেন?}}</translation>
-<translation id="6833103209700200188">পাদলেখ</translation>
 <translation id="6833479554815567477">এই গ্রুপ থেকে ট্যাব সরানো হয়েছে: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">ব্য়ালেন্স (সাজেস্ট করা হয়েছে)</translation>
 <translation id="6835762382653651563">আপনার <ph name="DEVICE_TYPE" /> আপডেট করার জন্য দয়া করে ইন্টারনেটে সংযুক্ত হোন।</translation>

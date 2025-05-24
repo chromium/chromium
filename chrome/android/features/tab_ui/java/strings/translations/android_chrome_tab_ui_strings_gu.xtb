@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">તમારા ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે સાચવવામાં આવશે</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ગ્રૂપને નવી વિન્ડોમાં ખસેડો}one{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}other{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}}</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6212567362666004597">ગ્રૂપમાં ટૅબ ઉમેરો</translation>
 <translation id="6220820548421939212">હા. હું સંમત છું</translation>

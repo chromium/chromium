@@ -2640,7 +2640,6 @@
 <translation id="2798347533012571708">Усталёўваць абнаўленні аўтаматычна</translation>
 <translation id="2799162042226656283">Ваш Chrome</translation>
 <translation id="2799223571221894425">Перазапусціць</translation>
-<translation id="2800309299477632167">Карыстальніцкая раскладка клавіятуры</translation>
 <translation id="2800760947029405028">Запампаваць відарыс</translation>
 <translation id="2800996978423439835">Выкарыстоўвайце свае закладкі і іншае змесціва на ўсіх сваіх прыладах</translation>
 <translation id="2801134910297796778">Вы ўвайшлі ва ўліковы запіс <ph name="EMAIL" /></translation>
@@ -8287,7 +8286,6 @@
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6832218595502288407">Выраўнаваць па левым краі</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Прыбраць укладку і выдаліць групу?}=1{Прыбраць укладкі і выдаліць групу?}one{Прыбраць укладкі і выдаліць групы?}few{Прыбраць укладкі і выдаліць групы?}many{Прыбраць укладкі і выдаліць групы?}other{Прыбраць укладкі і выдаліць групы?}}</translation>
-<translation id="6833103209700200188">Ніжні калонтытул</translation>
 <translation id="6833479554815567477">Укладка выдалена з групы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Збалансаваны рэжым (рэкамендуецца)</translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
@@ -9993,6 +9991,7 @@
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
 <translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Ідзе капіраванне 1 файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}one{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}few{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}many{Ідзе капіраванне {NUM_OF_FILES} файлаў у сэрвіс "<ph name="CLOUD_PROVIDER" />"}other{Ідзе капіраванне {NUM_OF_FILES} файла ў сэрвіс "<ph name="CLOUD_PROVIDER" />"}}</translation>
+<translation id="8039525676147630657">Пасля абнаўлення вашай версіі ChromeOS гэта праграма Chrome спыніць працу. Захавайце ўсе даныя праграмы, якія трэба пакінуць. Звярніцеся да распрацоўшчыка праграм або да вашай службы IT-падтрымкі, каб даведацца пра даступныя варыянты дзеянняў.</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8041093619605951337">Шчаслівы</translation>
 <translation id="8041267120753677077">Перадача плынню змесціва праграм з тэлефона</translation>

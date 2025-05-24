@@ -2639,7 +2639,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2798347533012571708">Mantendu eguneratzeak</translation>
 <translation id="2799162042226656283">Zure Chrome</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
-<translation id="2800309299477632167">Teklatu-mapa pertsonalizatua</translation>
 <translation id="2800760947029405028">Kargatu irudi bat</translation>
 <translation id="2800996978423439835">Atzitu laster-markak eta bestelako datuak gailu guztietan</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> gisa hasi duzu saioa</translation>
@@ -8276,7 +8275,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6832218595502288407">Lerrokatu ezkerrean</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa kendu, eta taldea ezabatu nahi duzu?}=1{Fitxak kendu, eta taldea ezabatu nahi duzu?}other{Fitxak kendu, eta taldeak ezabatu nahi dituzu?}}</translation>
-<translation id="6833103209700200188">Orri-oina</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> taldetik kendu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Orekatua (gomendatua)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
