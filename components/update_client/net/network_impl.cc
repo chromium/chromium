@@ -138,7 +138,7 @@ void NetworkFetcherImpl::PostRequest(
   simple_url_loader->SetOnDownloadProgressCallback(base::BindRepeating(
       &NetworkFetcherImpl::OnProgressCallback, weak_ptr_factory_.GetWeakPtr(),
       std::move(progress_callback)));
-  constexpr size_t kMaxResponseSize = 1024 * 1024;
+  static constexpr size_t kMaxResponseSize = 1024 * 1024;
   simple_url_loader->DownloadToString(
       shared_url_network_factory_.get(),
       base::BindOnce(

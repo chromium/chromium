@@ -34,7 +34,7 @@ namespace {
 using ::testing::_;
 
 constexpr char kTestRulesetVersion[] = "1.2.3.4";
-const int kInvalidRulesetFormat = 0;
+constexpr int kInvalidRulesetFormat = 0;
 
 class TestRulesetService : public subresource_filter::RulesetService {
  public:

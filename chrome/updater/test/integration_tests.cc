@@ -3515,7 +3515,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Bool());
 
 TEST_P(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
-  constexpr char kTargetVersionPrefix[] = "1.0.";
+  static constexpr char kTargetVersionPrefix[] = "1.0.";
   ExpectInstallEvent(*test_server_, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install(GetInstallSwitches()));
   ExpectInstallEvent(*test_server_, kApp1.appid);

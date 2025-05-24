@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
-  constexpr char kHostname[] = "example.com";
+  static constexpr char kHostname[] = "example.com";
   https_server_ok.SetCertHostnames({kHostname});
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_ok.Start());
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   // what's in Chrome Root Store.
   net::TestRootCerts::GetInstance()->Clear();
 
-  constexpr char kHostname[] = "a.example.com";
+  static constexpr char kHostname[] = "a.example.com";
 
   ASSERT_TRUE(https_server_ok.Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -59,8 +59,8 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
         if (!global_prefs_dir)
           return nullptr;
         std::string contents;
-        constexpr char kUpdaterPrefsFilename[] = "prefs.json";
-        constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
+        static constexpr char kUpdaterPrefsFilename[] = "prefs.json";
+        static constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
         if (!base::ReadFileToStringWithMaxSize(
                 global_prefs_dir->AppendASCII(kUpdaterPrefsFilename), &contents,
                 kMaxPrefsFileSize)) {

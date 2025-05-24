@@ -300,7 +300,7 @@ void CrOSComponentInstaller::Load(const std::string& name,
     LoadInternal(name, std::move(load_callback));
   } else {
     // A compatible component is installed, do not load it.
-    constexpr Error error = Error::NONE;
+    static constexpr Error error = Error::NONE;
     ReportError(error);
     std::move(load_callback).Run(error, base::FilePath());
   }
@@ -424,7 +424,7 @@ void CrOSComponentInstaller::Install(const std::string& name,
                                      LoadCallback load_callback) {
   const ComponentConfig* config = FindConfig(name);
   if (!config) {
-    constexpr Error error = Error::UNKNOWN_COMPONENT;
+    static constexpr Error error = Error::UNKNOWN_COMPONENT;
     ReportError(error);
     std::move(load_callback).Run(error, base::FilePath());
     return;
@@ -482,7 +482,7 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
   } else if (mount_policy == MountPolicy::kMount) {
     LoadInternal(name, std::move(load_callback));
   } else {
-    constexpr Error err = Error::NONE;
+    static constexpr Error err = Error::NONE;
     ReportError(err);
     std::move(load_callback).Run(err, base::FilePath());
   }

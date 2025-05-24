@@ -60,7 +60,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             "prod_id", "1.0", "channel", "OS", "cacheable",
                             std::nullopt, {{"extra", "params"}}, {},
                             std::move(apps)));
-    constexpr char regex[] =
+    static constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
         R"("acceptformat":"crx3,download,puff,run,xz,zucc",)"
         R"("apps":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
@@ -104,7 +104,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             "", "", "", "", std::nullopt, {}, {},
                             std::move(apps)));
 
-    constexpr char regex[] =
+    static constexpr char regex[] =
         R"("apps":\[{"appid":"id1","enabled":true,)"
         R"("updatecheck":{"sameversionupdate":true},"version":"1.0"}])";
     EXPECT_TRUE(RE2::PartialMatch(request, regex)) << request << "\n VS \n"
@@ -145,7 +145,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
        {"autoupdatecheckenabled", "0"},
        {"updatepolicy", "-1"}},
       {}));
-  constexpr char regex[] =
+  static constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
       R"("acceptformat":"crx3,download,puff,run,xz,zucc",)"
       R"("arch":"\w+","dedup":"cr",)"

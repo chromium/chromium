@@ -546,7 +546,7 @@ void RegisterComponentUpdateServicePrefs(PrefRegistrySimple* registry) {
   // If the preference is not set the component updates are enabled by default
   // unless in Chrome for Testing where we never want components to be updated
   // automatically.
-  constexpr bool kComponentUpdatesEnabledByDefault =
+  static constexpr bool kComponentUpdatesEnabledByDefault =
       !BUILDFLAG(CHROME_FOR_TESTING);
 
   registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled,

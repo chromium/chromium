@@ -257,7 +257,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   // Only positive values for throttle_sec are effective. 0 means that no
   // throttling occurs and it resets the throttle.
   // Negative values are not trusted and are ignored.
-  constexpr int kMaxRetryAfterSec = 24 * 60 * 60;  // 24 hours.
+  static constexpr int kMaxRetryAfterSec = 24 * 60 * 60;  // 24 hours.
   const int throttle_sec =
       std::min(update_context->retry_after_sec, kMaxRetryAfterSec);
   if (throttle_sec >= 0) {

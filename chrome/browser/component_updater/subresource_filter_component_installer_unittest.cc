@@ -309,8 +309,8 @@ TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesDefault) {
 }
 
 TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesCustomTag) {
-  constexpr char kTagKey[] = "tag";
-  constexpr char kTagValue[] = "a";
+  static constexpr char kTagKey[] = "tag";
+  static constexpr char kTagValue[] = "a";
 
   subresource_filter::testing::ScopedSubresourceFilterConfigurator
       scoped_configuration(CreateConfigUsingRulesetFlavor(kTagValue));
