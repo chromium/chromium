@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2025 The Chromium Authors.
+Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -11,5 +11,5 @@ found in the LICENSE file.
     <size
         android:width="@dimen/ntp_customization_edit_icon_background_size"
         android:height="@dimen/ntp_customization_edit_icon_background_size" />
-    <solid android:color="@color/ntp_customization_edit_icon_background_color"/>
+    <solid android:color="@color/color_primary_with_alpha_15"/>
 </shape>
