@@ -47,7 +47,7 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'applyDeferredUpdate',
+      'applyDeferredUpdateAdvanced',
       'pageReady',
       'refreshUpdateStatus',
       'openHelpPage',
@@ -287,8 +287,8 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordExtendedUpdatesShown');
   }
 
-  applyDeferredUpdate(): void {
-    this.methodCalled('applyDeferredUpdate');
+  applyDeferredUpdateAdvanced(): void {
+    this.methodCalled('applyDeferredUpdateAdvanced');
   }
 
   openProductLicenseOther(): void {

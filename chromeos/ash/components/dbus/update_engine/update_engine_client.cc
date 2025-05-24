@@ -245,8 +245,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        std::move(callback)));
   }
 
-  void ApplyDeferredUpdate(bool shutdown_after_update,
-                           base::OnceClosure failure_callback) override {
+  void ApplyDeferredUpdateAdvanced(
+      bool shutdown_after_update,
+      base::OnceClosure failure_callback) override {
     update_engine::ApplyUpdateConfig config;
     config.set_done_action(shutdown_after_update
                                ? update_engine::UpdateDoneAction::SHUTDOWN
@@ -265,7 +266,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
     update_engine_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdate,
+        base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdateAdvanced,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(failure_callback)));
   }
@@ -547,11 +548,12 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     std::move(callback).Run(success);
   }
 
-  // Called when a response for `ApplyDeferredUpdate()` is received.
-  void OnApplyDeferredUpdate(base::OnceClosure failure_callback,
-                             dbus::Response* response) {
+  // Called when a response for `ApplyDeferredUpdateAdvanced()` is received.
+  void OnApplyDeferredUpdateAdvanced(base::OnceClosure failure_callback,
+                                     dbus::Response* response) {
     if (!response) {
-      LOG(ERROR) << update_engine::kApplyDeferredUpdate << " call failed.";
+      LOG(ERROR) << update_engine::kApplyDeferredUpdateAdvanced
+                 << " call failed.";
       std::move(failure_callback).Run();
       return;
     }
@@ -705,9 +707,10 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     std::move(callback).Run(std::nullopt);
   }
 
-  void ApplyDeferredUpdate(bool shutdown_after_update,
-                           base::OnceClosure failure_callback) override {
-    VLOG(1) << "Applying deferred update and "
+  void ApplyDeferredUpdateAdvanced(
+      bool shutdown_after_update,
+      base::OnceClosure failure_callback) override {
+    VLOG(1) << "Applying deferred update advanced and "
             << (shutdown_after_update ? "shutdown." : "reboot.");
   }
 
