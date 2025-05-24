@@ -1360,12 +1360,16 @@ TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
 TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
   ui::AXNodeData node;
   node.id = 4;
+  controller().InitAXPositionWithNode(node.id);
+  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
 
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
   SendUpdateWithNodes({std::move(node)});
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
+
+  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
   EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
   EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
   EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
