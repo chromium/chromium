@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
+#include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom-forward.h"
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -12,11 +13,15 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_urls.h"
+#include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/interaction/state_observer.h"
+#include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kZeroStatePromoWebUiIphId);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
+                                    kOpenedTabUrlState);
 }  // namespace
 
 class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
@@ -59,6 +64,23 @@ class ExtensionsZeroStatePromoTestBase : public InteractiveFeaturePromoTest {
     });
   }
 
+  // Waits for the nth `tab` to be open to `url`. Doesn't require `url` to
+  // load, as a test machine may not actually have connectivity to the internet.
+  auto WaitForTabOpenedTo(int tab, GURL url) {
+    return Steps(
+        PollState(
+            kOpenedTabUrlState,
+            [this, tab]() {
+              auto* const model = browser()->tab_strip_model();
+              if (model->active_index() != tab) {
+                return GURL();
+              }
+              return model->GetTabAtIndex(tab)->GetContents()->GetVisibleURL();
+            }),
+        WaitForState(kOpenedTabUrlState, url),
+        StopObservingState(kOpenedTabUrlState));
+  }
+
  private:
   base::HistogramTester histogram_tester_;
 };
@@ -77,15 +99,14 @@ class ExtensionsZeroStateCustomActionIphTest
 // Chrome Web Store.
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
-                       DISABLED_ShowingZeroStatePromoCustomActionIph) {
+                       ShowingZeroStatePromoCustomActionIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       InAnyContext(WaitForPromo(
           feature_engagement::kIPHExtensionsZeroStatePromoFeature)),
-      InstrumentNextTab(kSecondTabContents), PressDefaultPromoButton(),
-      WaitForWebContentsReady(kSecondTabContents,
-                              extension_urls::GetWebstoreLaunchURL()));
+      PressDefaultPromoButton(),
+      WaitForTabOpenedTo(1, extension_urls::GetWebstoreLaunchURL()));
 }
 
 class ExtensionsZeroStateCustomUiChipIphTest
@@ -112,10 +133,10 @@ class ExtensionsZeroStateCustomUiChipIphTest
 // page to the Chrome Web Store.
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DISABLED_ClickCouponChipOnZeroStatePromoIph) {
+                       ClickCouponChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -124,13 +145,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kCouponButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
@@ -140,10 +158,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // page to the Chrome Web Store.
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DISABLED_ClickWritingChipOnZeroStatePromoIph) {
+                       ClickWritingChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -152,13 +170,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kWritingButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
@@ -168,10 +183,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // page to the Chrome Web Store.
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DISABLED_ClickProductivityChipOnZeroStatePromoIph) {
+                       ClickProductivityChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -180,13 +195,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kProductivityButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1, GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
@@ -196,10 +209,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // page to the Chrome Web Store.
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DISABLED_ClickAiChipOnZeroStatePromoIph) {
+                       ClickAiChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -208,22 +221,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kAiButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(kSecondTabContents,
-                              GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
-                       DISABLED_DismissPromoIph) {
+                       DismissPromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -267,10 +278,10 @@ class ExtensionsZeroStateCustomUiPlainLinkIphTest
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickCouponLinkOnZeroStatePromoIph) {
+                       ClickCouponLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -279,23 +290,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kCouponLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kCouponWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickWritingLinkOnZeroStatePromoIph) {
+                       ClickWritingLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -304,23 +312,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kWritingLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kWritingWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickProductivityLinkOnZeroStatePromoIph) {
+                       ClickProductivityLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -329,23 +334,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kProductivityLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1, GURL(zero_state_promo::mojom::kProductivityWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickAiLinkOnZeroStatePromoIph) {
+                       ClickAiLinkOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -354,22 +357,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kAiLink,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(kSecondTabContents,
-                              GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
+      WaitForTabOpenedTo(1, GURL(zero_state_promo::mojom::kAiWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickDiscoverExtensionsButtonOnZeroStatePromoIph) {
+                       ClickDiscoverExtensionsButtonOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -378,23 +379,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
           GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 0),
-      InstrumentNextTab(kSecondTabContents),
       ClickElement(kZeroStatePromoWebUiIphId, kDiscoverExtensionsButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
-      WaitForWebContentsReady(
-          kSecondTabContents,
-          GURL(zero_state_promo::mojom::kDiscoverExtensionWebStoreUrl)),
+      WaitForTabOpenedTo(
+          1, GURL(zero_state_promo::mojom::kDiscoverExtensionWebStoreUrl)),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 1));
 }
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_DismissPromoIph) {
+                       DismissPromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
@@ -413,10 +412,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
 
 // TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
-                       DISABLED_ClickGotItButton) {
+                       ClickGotItButton) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GURL(chrome ::kChromeUIAboutURL)),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
       WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
