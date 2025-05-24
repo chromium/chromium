@@ -391,7 +391,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'c67d1c724ab9dcf466346f2e95b92bd0012982bc',
+  'devtools_frontend_revision': 'aa8542f24f4e595b1463b145e646433bc6d21b2e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
