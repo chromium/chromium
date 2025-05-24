@@ -45,6 +45,14 @@ class LanguageModelCreateClient
   void ResetReceiver() override;
 
  private:
+  // Continue creation after any initial prompts were processed or rejected.
+  void OnInitialPromptsResolved(
+      mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
+      Vector<mojom::blink::AILanguageModelExpectedPtr> expected_inputs,
+      Vector<mojom::blink::AILanguageModelExpectedPtr> expected_outputs,
+      Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts);
+  void OnInitialPromptsRejected(const ScriptValue& error);
+
   HeapMojoReceiver<mojom::blink::AIManagerCreateLanguageModelClient,
                    LanguageModelCreateClient>
       receiver_;

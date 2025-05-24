@@ -76,12 +76,31 @@ void LanguageModelCreateClient::Create() {
   }
   sampling_params = std::move(sampling_params_or_exception.value());
 
+  WTF::HashSet<mojom::blink::AILanguageModelPromptType> maybe_allowed_types;
+  maybe_allowed_types.insert(mojom::blink::AILanguageModelPromptType::kText);
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options_->expectedInputs());
+    for (const auto& expected : expected_in) {
+      if (expected->type != mojom::blink::AILanguageModelPromptType::kText &&
+          !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
+        GetResolver()->Reject(DOMException::Create(
+            kExceptionMessageUnableToCreateSession,
+            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      }
+      // TODO(crbug.com/417817645): Check model capabilities before conversion.
+      maybe_allowed_types.insert(expected->type);
+    }
   }
   if (options_->hasExpectedOutputs()) {
     expected_out = ToMojoExpectations(options_->expectedOutputs());
+    for (const auto& expected : expected_out) {
+      if (expected->type != mojom::blink::AILanguageModelPromptType::kText) {
+        GetResolver()->Reject(DOMException::Create(
+            kExceptionMessageUnableToCreateSession,
+            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      }
+    }
   }
 
   // TODO(crbug.com/381974893): Remove this warning after a couple milestones.
@@ -93,55 +112,32 @@ void LanguageModelCreateClient::Create() {
         "`initialPrompts: [{role: 'system', content: ... }, ...]` instead.");
   }
 
-  // TODO(crbug.com/419583879): Add better test coverage for initialPrompts.
-  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
-  if (options_->hasInitialPrompts()) {
-    for (const auto& message : options_->initialPrompts()) {
-      if (message->role() == V8LanguageModelMessageRole::Enum::kSystem &&
-          !initial_prompts.empty()) {
-        // Only the first prompt supports the `system` role.
-        GetResolver()->RejectWithTypeError(
-            kExceptionMessageSystemPromptIsNotTheFirst);
-        return;
-      }
-      // TODO(crbug.com/417817645): Use ConvertPromptInputsToMojo here.
-      mojom::blink::AILanguageModelPromptPtr mojo_prompt =
-          mojom::blink::AILanguageModelPrompt::New();
-      mojo_prompt->role = LanguageModel::ConvertRoleToMojo(message->role());
-      if (message->content()->IsLanguageModelMessageContentSequence()) {
-        for (const auto& content :
-             message->content()->GetAsLanguageModelMessageContentSequence()) {
-          if (content->type().AsEnum() !=
-                  V8LanguageModelMessageType::Enum::kText ||
-              !content->value()->IsString()) {
-            GetResolver()->RejectWithTypeError("Input type not supported");
-            return;
-          }
+  if (!options_->hasInitialPrompts()) {
+    OnInitialPromptsResolved(std::move(sampling_params), std::move(expected_in),
+                             std::move(expected_out), /*initial_prompts=*/{});
+    return;
+  }
 
-          mojo_prompt->content.push_back(
-              mojom::blink::AILanguageModelPromptContent::NewText(
-                  content->value()->GetAsString()));
-        }
-      } else {
-        CHECK(message->content()->IsString());
-        mojo_prompt->content.push_back(
-            mojom::blink::AILanguageModelPromptContent::NewText(
-                message->content()->GetAsString()));
-      }
-      initial_prompts.push_back(std::move(mojo_prompt));
+  // TODO(crbug.com/419583879): Add better test coverage for initialPrompts.
+  for (const auto& message : options_->initialPrompts()) {
+    if (message->role() == V8LanguageModelMessageRole::Enum::kSystem &&
+        message != options_->initialPrompts().front()) {
+      // Only the first prompt supports the `system` role.
+      GetResolver()->RejectWithTypeError(
+          kExceptionMessageSystemPromptIsNotTheFirst);
+      return;
     }
   }
 
-  mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
-      client_remote;
-  receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(), task_runner_);
-  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
-      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
-  ai_manager_remote->CreateLanguageModel(
-      std::move(client_remote),
-      mojom::blink::AILanguageModelCreateOptions::New(
-          std::move(sampling_params), std::move(initial_prompts),
-          std::move(expected_in), std::move(expected_out)));
+  ConvertPromptInputsToMojo(
+      GetScriptState(), options_->getSignalOr(nullptr),
+      MakeGarbageCollected<V8LanguageModelPrompt>(options_->initialPrompts()),
+      maybe_allowed_types,
+      WTF::BindOnce(&LanguageModelCreateClient::OnInitialPromptsResolved,
+                    WrapPersistent(this), std::move(sampling_params),
+                    std::move(expected_in), std::move(expected_out)),
+      WTF::BindOnce(&LanguageModelCreateClient::OnInitialPromptsRejected,
+                    WrapPersistent(this)));
 }
 
 void LanguageModelCreateClient::OnResult(
@@ -214,6 +210,33 @@ void LanguageModelCreateClient::OnError(
 
 void LanguageModelCreateClient::ResetReceiver() {
   receiver_.reset();
+}
+
+void LanguageModelCreateClient::OnInitialPromptsResolved(
+    mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
+    Vector<mojom::blink::AILanguageModelExpectedPtr> expected_inputs,
+    Vector<mojom::blink::AILanguageModelExpectedPtr> expected_outputs,
+    Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts) {
+  if (!GetResolver()) {
+    return;
+  }
+  mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
+      client_remote;
+  receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(), task_runner_);
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CreateLanguageModel(
+      std::move(client_remote),
+      mojom::blink::AILanguageModelCreateOptions::New(
+          std::move(sampling_params), std::move(initial_prompts),
+          std::move(expected_inputs), std::move(expected_outputs)));
+}
+
+void LanguageModelCreateClient::OnInitialPromptsRejected(
+    const ScriptValue& error) {
+  if (GetResolver()) {
+    GetResolver()->Reject(error);
+  }
 }
 
 }  // namespace blink

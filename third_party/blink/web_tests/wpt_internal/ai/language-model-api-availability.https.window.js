@@ -4,6 +4,8 @@
 
 'use strict';
 
+// These tests have no availability requirements, they only test the API shape.
+
 promise_test(async () => {
   assert_true(!!LanguageModel);
   assert_equals(typeof LanguageModel.availability, 'function');
