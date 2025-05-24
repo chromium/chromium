@@ -129,7 +129,9 @@ enum class Result {
   kRemoveEntityInstance_Failure = 301,
   kRemoveEntityInstancesModifiedBetween_Success = 310,
   kRemoveEntityInstancesModifiedBetween_Failure = 311,
-  kMaxValue = kRemoveEntityInstancesModifiedBetween_Failure,
+  kCleanupForCrbug411681430_Success = 312,
+  kCleanupForCrbug411681430_Failure = 313,
+  kMaxValue = kCleanupForCrbug411681430_Failure,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWebDataBackendImplOperationResult)
 
@@ -892,6 +894,17 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcs(WebDatabase* db) {
     return WebDatabase::COMMIT_NEEDED;
   }
   ReportResult(Result::kClearLocalCvcs_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::CleanupForCrbug411681430(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (PaymentsAutofillTable::FromWebDatabase(db)->CleanupForCrbug411681430()) {
+    ReportResult(Result::kCleanupForCrbug411681430_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kCleanupForCrbug411681430_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 

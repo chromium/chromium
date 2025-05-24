@@ -266,6 +266,12 @@ PaymentsDataManager::PaymentsDataManager(
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
           *pref_service_);
     }
+#if !BUILDFLAG(IS_IOS)
+    // Clean up for crbug.com/411681430.
+    if (!IsPaymentCvcStorageEnabled()) {
+      CleanupForCrbug411681430();
+    }
+#endif
   }
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
@@ -1538,6 +1544,17 @@ void PaymentsDataManager::ClearLocalCvcs() {
 
   // Clear the local CVCs in the web database.
   GetLocalDatabase()->ClearLocalCvcs();
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
+void PaymentsDataManager::CleanupForCrbug411681430() {
+  if (!GetLocalDatabase()) {
+    return;
+  }
+
+  GetLocalDatabase()->CleanupForCrbug411681430();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();

@@ -69,6 +69,8 @@ class PaymentsAutofillTableTest : public testing::Test {
  public:
   PaymentsAutofillTableTest() = default;
 
+  long kCleanupForCrbug411681430LongTimestamp = 1747828800;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -509,6 +511,51 @@ TEST_F(PaymentsAutofillTableTest, LocalCvcs_ClearAll) {
   cvc_statement.BindString(0, card_2.guid());
   ASSERT_TRUE(cvc_statement.is_valid());
   EXPECT_FALSE(cvc_statement.Step());
+}
+
+TEST_F(PaymentsAutofillTableTest, CleanupForCrbug411681430_Test) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card_1 = test::WithCvc(test::GetCreditCard());
+  CreditCard card_2 = test::WithCvc(test::GetCreditCard2());
+  EXPECT_TRUE(table_->AddCreditCard(card_1));
+  EXPECT_TRUE(table_->AddCreditCard(card_2));
+
+  // Get the credit cards and the CVCs should match.
+  std::unique_ptr<CreditCard> db_card_1 = table_->GetCreditCard(card_1.guid());
+  std::unique_ptr<CreditCard> db_card_2 = table_->GetCreditCard(card_2.guid());
+  EXPECT_EQ(card_1.cvc(), db_card_1->cvc());
+  EXPECT_EQ(card_2.cvc(), db_card_2->cvc());
+
+  // Update the timestamp to later date for one of the CVCs added above.
+  sql::Statement update_cvc_statement(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "UPDATE local_stored_cvc SET last_updated_timestamp = ? "
+          "WHERE guid=?"));
+  update_cvc_statement.BindString(
+      0, std::string_view(
+             base::NumberToString(kCleanupForCrbug411681430LongTimestamp + 1)));
+  update_cvc_statement.BindString(1, card_2.guid());
+  ASSERT_TRUE(update_cvc_statement.is_valid());
+  EXPECT_TRUE(update_cvc_statement.Run());
+
+  table_->CleanupForCrbug411681430();
+
+  sql::Statement cvc_statement(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT guid FROM local_stored_cvc WHERE guid=?"));
+
+  // Verify `card_1` CVC is deleted.
+  cvc_statement.BindString(0, card_1.guid());
+  ASSERT_TRUE(cvc_statement.is_valid());
+  EXPECT_FALSE(cvc_statement.Step());
+  ASSERT_TRUE(table_->GetCreditCard(card_1.guid())->cvc().empty());
+  cvc_statement.Reset(/*clear_bound_vars=*/true);
+
+  // Verify `card_2` CVC is not deleted.
+  cvc_statement.BindString(0, card_2.guid());
+  ASSERT_TRUE(cvc_statement.is_valid());
+  EXPECT_TRUE(cvc_statement.Step());
+  ASSERT_FALSE(table_->GetCreditCard(card_2.guid())->cvc().empty());
 }
 
 // Tests that verify add, update and clear server cvc function working as

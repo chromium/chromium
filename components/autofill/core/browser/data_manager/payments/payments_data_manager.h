@@ -303,6 +303,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
 
+  // Method to clean up for crbug.com/411681430.
+  virtual void CleanupForCrbug411681430();
+
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
 
